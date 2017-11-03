@@ -16,7 +16,9 @@ enum Rank {
     Observer = 'Observer'
 }
 
-interface MemberData {
+export type MemberID = String;
+
+export interface MemberData {
   present: boolean;
   rank: Rank;
   voting: boolean;

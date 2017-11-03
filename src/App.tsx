@@ -1,5 +1,6 @@
 import * as React from 'react';
 import * as firebase from 'firebase';
+import { Route } from 'react-router-dom';
 import './App.css';
 
 const firebaseConfig = {
@@ -13,20 +14,21 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 
-import Timer from './Timer';
-import Member from './Member';
+import Welcome from './Welcome';
+// import Timer from './Timer';
+// import Member from './Member';
 
 class App extends React.Component {
   render() {
 
-    const committeeRef = firebase.database().ref('commitees/6019497035172651252');
-    const caucusRef = committeeRef.child('caucuses').child('General');
+    // TODO: Rename this database attribute from `commitees` to `committees`
+    // const committeeRef = firebase.database().ref('commitees/6019497035172651252');
+    // const caucusRef = committeeRef.child('caucuses').child('General');
 
     return (
       <div className="App">
         <p>Hello world</p>
-        <Timer fref={caucusRef.child('caucusTimer')} />
-        <Member fref={committeeRef.child('members').child('Russia')} />
+        <Route exact={true} path="/" component={Welcome} />
       </div>
     );
   }

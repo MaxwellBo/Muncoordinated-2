@@ -10,7 +10,7 @@ interface State {
   timerId: any;
 }
 
-interface TimerData {
+export interface TimerData {
   elapsed: number;
   remaining: number;
   ticking: boolean;
