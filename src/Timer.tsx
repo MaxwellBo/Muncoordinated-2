@@ -1,10 +1,12 @@
 import * as React from 'react';
 import * as firebase from 'firebase';
 
-interface Props { }
+interface Props { 
+  fref: firebase.database.Reference;
+}
+
 interface State {
   timer: TimerData;
-  timerRef: firebase.database.Reference;
   timerId: any;
 }
 
@@ -18,8 +20,6 @@ export default class Timer extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
 
-    const caucusRef = firebase.database().ref('commitees/6019497035172651252/caucuses/General');
-
     const defaultTimer = {
       elapsed: 0,
       remaining: 0,
@@ -28,7 +28,6 @@ export default class Timer extends React.Component<Props, State> {
 
     this.state = {
       timer: defaultTimer,
-      timerRef: caucusRef.child('caucusTimer'),
       timerId: null
     };
   }
@@ -54,11 +53,11 @@ export default class Timer extends React.Component<Props, State> {
 
     this.setState({timer: newTimer});
 
-    this.state.timerRef.set(this.state.timer);
+    this.props.fref.set(this.state.timer);
   }
 
   componentDidMount() {
-    this.state.timerRef.on('value', (timer) => {
+    this.props.fref.on('value', (timer) => {
       if (timer) {
         this.setState({ timer: timer.val() });
       }
@@ -68,7 +67,7 @@ export default class Timer extends React.Component<Props, State> {
   }
 
   componentWillUnmount() {
-    this.state.timerRef.off();
+    this.props.fref.off();
 
     clearInterval(this.state.timerId);
   }

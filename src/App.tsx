@@ -14,13 +14,19 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 
 import Timer from './Timer';
+import Member from './Member';
 
 class App extends React.Component {
   render() {
+
+    const committeeRef = firebase.database().ref('commitees/6019497035172651252');
+    const caucusRef = committeeRef.child('caucuses').child('General');
+
     return (
       <div className="App">
         <p>Hello world</p>
-        <Timer />
+        <Timer fref={caucusRef.child('caucusTimer')} />
+        <Member fref={committeeRef.child('members').child('Russia')} />
       </div>
     );
   }
