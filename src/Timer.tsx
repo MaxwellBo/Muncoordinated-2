@@ -16,18 +16,18 @@ export interface TimerData {
   ticking: boolean;
 }
 
+export const DEFAULT_TIMER = {
+  elapsed: 0,
+  remaining: 0,
+  ticking: false
+};
+
 export default class Timer extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
 
-    const defaultTimer = {
-      elapsed: 0,
-      remaining: 0,
-      ticking: false
-    };
-
     this.state = {
-      timer: defaultTimer,
+      timer: DEFAULT_TIMER,
       timerId: null
     };
   }

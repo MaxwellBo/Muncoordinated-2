@@ -15,20 +15,20 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 
 import Welcome from './Welcome';
-// import Timer from './Timer';
-// import Member from './Member';
+import Committee from './Committee';
+
+const Footer = () => {
+  return <div>Footer</div>;
+};
 
 class App extends React.Component {
   render() {
 
-    // TODO: Rename this database attribute from `commitees` to `committees`
-    // const committeeRef = firebase.database().ref('commitees/6019497035172651252');
-    // const caucusRef = committeeRef.child('caucuses').child('General');
-
     return (
       <div className="App">
-        <p>Hello world</p>
         <Route exact={true} path="/" component={Welcome} />
+        <Route path="/committee/:committeeID" component={Committee} />
+        <Footer />
       </div>
     );
   }

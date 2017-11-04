@@ -24,7 +24,7 @@ export interface MemberData {
   voting: boolean;
 }
 
-export default class Timer extends React.Component<Props, State> {
+export default class Member extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
 
