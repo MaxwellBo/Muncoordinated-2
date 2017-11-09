@@ -29,7 +29,7 @@ export interface CommitteeData {
 function CommitteeMeta(props: { data: CommitteeData }) {
   return (
     <div>
-      <p>{`name: ${props.data.name}, chairperson: ${props.data.chair}, topic: ${props.data.name}`}</p>
+      <p>{`name: ${props.data.name}, chairperson: ${props.data.chair}, topic: ${props.data.topic}`}</p>
     </div>
   );
 }
@@ -79,13 +79,14 @@ export default class Committee extends React.Component<Props, State> {
       );
     };
     
-    const CommitteeCaucuses = (props: {}) => {
+    const CommitteeCaucuses = () => {
       const caucusItems = Object.keys(this.state.committee.caucuses).map(key => 
         <CaucusItem key={key} id={key} data={this.state.committee.caucuses[key]} />
       );
 
       return (
         <div>
+          <h3>Caucuses</h3>
           {caucusItems}
         </div>
       );

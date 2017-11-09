@@ -14,7 +14,7 @@ function CommitteeItem(props: { id: CommitteeID, data: CommitteeData } ) {
   return (
     <div>
       <p>{props.data.name}</p>
-      <Link to={`/committee/${props.id}`}><button>Route</button></Link>
+      <Link to={`/committees/${props.id}`}><button>Route</button></Link>
     </div>
   );
 }

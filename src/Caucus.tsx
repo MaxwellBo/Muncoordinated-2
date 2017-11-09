@@ -1,14 +1,16 @@
 import * as React from 'react';
 import * as firebase from 'firebase';
 import { TimerData, DEFAULT_TIMER } from './Timer';
+import { RouteComponentProps } from 'react-router';
 import { MemberID } from './Member';
+import { CommitteeID } from './Committee';
 
-interface Props { 
-  fref: firebase.database.Reference;
+interface Props extends RouteComponentProps<any> {
 }
 
 interface State {
   caucus: CaucusData;
+  fref: firebase.database.Reference;
 }
 
 export type CaucusID = string;
@@ -60,13 +62,17 @@ export class Caucus extends React.Component<Props, State> {
       history: {} as Map<String, SpeakerEvent>,
     };
 
+    const committeeID: CommitteeID = this.props.match.params.committeeID;
+    const caucusID: CaucusID = this.props.match.params.caucusID;
+
     this.state = {
       caucus: defaultCaucus,
+      fref: firebase.database().ref('commitees').child(committeeID).child('caucuses').child(caucusID)
     };
   }
 
   componentDidMount() {
-    this.props.fref.on('value', (caucus) => {
+    this.state.fref.on('value', (caucus) => {
       if (caucus) {
         this.setState({ caucus: caucus.val() });
       }
@@ -74,7 +80,7 @@ export class Caucus extends React.Component<Props, State> {
   }
 
   componentWillUnmount() {
-    this.props.fref.off();
+    this.state.fref.off();
   }
 
   render() {
