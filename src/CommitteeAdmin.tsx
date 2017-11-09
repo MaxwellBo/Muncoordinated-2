@@ -15,7 +15,7 @@ export default class CommitteeAdmin extends React.PureComponent<Props, State> {
   render() {
     return (
       <div>
-        <p>Admin</p>
+        <h3>Admin</h3>
       </div>
     );
   }

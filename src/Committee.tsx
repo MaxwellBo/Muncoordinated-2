@@ -29,7 +29,8 @@ export interface CommitteeData {
 function CommitteeMeta(props: { data: CommitteeData }) {
   return (
     <div>
-      <p>{`name: ${props.data.name}, chairperson: ${props.data.chair}, topic: ${props.data.topic}`}</p>
+      <h3>{props.data.name}</h3>
+      <p>{`chairperson: ${props.data.chair}, topic: ${props.data.topic}`}</p>
     </div>
   );
 }
@@ -108,7 +109,7 @@ export default class Committee extends React.Component<Props, State> {
         <CommitteeMeta data={this.state.committee} />
         <CommitteeNav />
         <Route exact={true} path="/committees/:committeeID/admin" component={CommitteeAdmin} />
-        <Route exact={true} path="/committees/:committeeID/caucuses" render={CommitteeCaucuses} />
+        <Route path="/committees/:committeeID/caucuses" render={CommitteeCaucuses} />
         <Route path="/committees/:committeeID/caucuses/:caucusID" component={Caucus} />
       </div>
     );

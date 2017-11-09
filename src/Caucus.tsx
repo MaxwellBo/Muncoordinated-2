@@ -86,7 +86,7 @@ export class Caucus extends React.Component<Props, State> {
   render() {
     return (
       <div>
-        <p>{this.state.caucus.topic}</p>
+        <h3>{this.state.caucus.topic}</h3>
       </div>
     );
   }
