@@ -10,11 +10,11 @@ interface State {
   committees: Map<String, CommitteeData>;
 }
 
-function CommitteeItem(props: { id: CommitteeID, value: CommitteeData } ) {
+function CommitteeItem(props: { id: CommitteeID, data: CommitteeData } ) {
   return (
     <div>
-      <p>{props.value.name}</p>
-      <Link to={'committee/' + props.id}><button>Route</button></Link>
+      <p>{props.data.name}</p>
+      <Link to={`/committee/${props.id}`}><button>Route</button></Link>
     </div>
   );
 }
@@ -45,7 +45,7 @@ export default class Welcome extends React.Component<Props, State> {
 
   render() {
     const items = Object.keys(this.state.committees).map(key => 
-      <CommitteeItem key={key} id={key} value={this.state.committees[key]} />
+      <CommitteeItem key={key} id={key} data={this.state.committees[key]} />
     );
 
     return (

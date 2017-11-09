@@ -3,7 +3,7 @@ import * as firebase from 'firebase';
 import { RouteComponentProps } from 'react-router';
 import { Route, Link } from 'react-router-dom';
 import { MemberData, MemberID } from './Member';
-import { CaucusData, CaucusID } from './Caucus';
+import { Caucus, CaucusData, CaucusID } from './Caucus';
 import { ResolutionData, ResolutionID } from './Resolution';
 import CommitteeAdmin from './CommitteeAdmin';
 
@@ -29,19 +29,7 @@ export interface CommitteeData {
 function CommitteeMeta(props: { data: CommitteeData }) {
   return (
     <div>
-      <p>Committee Meta</p>
-      <p>{props.data.name}</p>
-      <p>{props.data.chair}</p>
-      <p>{props.data.topic}</p>
-    </div>
-  );
-}
-
-function CaucusItem(props: { id: CaucusID, data: CaucusData } ) {
-  return (
-    <div>
-      <p>{props.data.topic}</p>
-      <Link to={'committee/' + props.id}><button>Committees</button></Link>
+      <p>{`name: ${props.data.name}, chairperson: ${props.data.chair}, topic: ${props.data.name}`}</p>
     </div>
   );
 }
@@ -82,13 +70,34 @@ export default class Committee extends React.Component<Props, State> {
   render() {
     const committeeID: CommitteeID = this.props.match.params.committeeID;
 
+    const CaucusItem = (props: { id: CaucusID, data: CaucusData } ) => {
+      return (
+        <div>
+          <p>{props.data.topic}</p>
+          <Link to={`/committees/${committeeID}/caucuses/${props.id}`}><button>Route</button></Link>
+        </div>
+      );
+    };
+    
+    const CommitteeCaucuses = (props: {}) => {
+      const caucusItems = Object.keys(this.state.committee.caucuses).map(key => 
+        <CaucusItem key={key} id={key} data={this.state.committee.caucuses[key]} />
+      );
+
+      return (
+        <div>
+          {caucusItems}
+        </div>
+      );
+    };
+    
     const CommitteeNav = () => (
       <nav>
         <ul>
-          <li><Link to={`/committee/${committeeID}/admin`}>Admin</Link></li>
-          <li><Link to={`/committee/${committeeID}/caucuses`}>Caucuses</Link></li>
-          <li><Link to={`/committee/${committeeID}/report`}>Report</Link></li>
-          <li><Link to={`/committee/${committeeID}/resolutions`}>Resolutions</Link></li>
+          <li><Link to={`/committees/${committeeID}/admin`}>Admin</Link></li>
+          <li><Link to={`/committees/${committeeID}/caucuses`}>Caucuses</Link></li>
+          <li><Link to={`/committees/${committeeID}/report`}>Report</Link></li>
+          <li><Link to={`/committees/${committeeID}/resolutions`}>Resolutions</Link></li>
         </ul>
       </nav>
     );
@@ -97,7 +106,9 @@ export default class Committee extends React.Component<Props, State> {
       <div>
         <CommitteeMeta data={this.state.committee} />
         <CommitteeNav />
-        <Route path="/committee/:committeeID/admin" component={CommitteeAdmin} />
+        <Route exact={true} path="/committees/:committeeID/admin" component={CommitteeAdmin} />
+        <Route exact={true} path="/committees/:committeeID/caucuses" render={CommitteeCaucuses} />
+        <Route path="/committees/:committeeID/caucuses/:caucusID" component={Caucus} />
       </div>
     );
   }

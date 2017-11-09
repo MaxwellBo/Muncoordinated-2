@@ -40,7 +40,7 @@ export interface SpeakerEvent {
   duration: number;
 }
 
-export default class Caucus extends React.Component<Props, State> {
+export class Caucus extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
 
