@@ -60,6 +60,20 @@ export const DEFAULT_CAUCUS: CaucusData = {
   history: {} as Map<string, SpeakerEvent>,
 };
 
+function CaucusMeta(props: { data: CaucusData, fref: firebase.database.Reference; }) {
+  const makeHandler = (field: string) => (e: React.FormEvent<HTMLInputElement>) =>
+  props.fref.child(field).set(e.currentTarget.value);
+
+  return (
+    <div>
+      <h1>{props.data.name}</h1>
+      <input value={props.data.name} onChange={makeHandler('name')} />
+      <h3>Topic</h3>
+      <input value={props.data.topic} onChange={makeHandler('topic')} />
+    </div>
+  );
+}
+
 export class Caucus extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
@@ -88,7 +102,7 @@ export class Caucus extends React.Component<Props, State> {
   render() {
     return (
       <div>
-        <h3>{this.state.caucus.topic}</h3>
+        <CaucusMeta data={this.state.caucus} fref={this.state.fref} />
       </div>
     );
   }
