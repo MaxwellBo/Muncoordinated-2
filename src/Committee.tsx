@@ -28,11 +28,19 @@ export interface CommitteeData {
   resolutions: Map<ResolutionID, ResolutionData>;
 }
 
-function CommitteeMeta(props: { data: CommitteeData }) {
+function CommitteeMeta(props: { data: CommitteeData, fref: firebase.database.Reference; }) {
+
+  const makeHandler = (field: string) => (e: React.FormEvent<HTMLInputElement>) =>
+  props.fref.child(field).set(e.currentTarget.value);
+
   return (
     <div>
-      <h3>{props.data.name}</h3>
-      <p>{`chairperson: ${props.data.chair}, topic: ${props.data.topic}`}</p>
+      <h1>{props.data.name}</h1>
+      <input value={props.data.name} onChange={makeHandler('name')} />
+      <h3>Chairperson</h3>
+      <input value={props.data.chair} onChange={makeHandler('chair')} />
+      <h3>Topic</h3>
+      <input value={props.data.topic} onChange={makeHandler('topic')} />
     </div>
   );
 }
@@ -152,7 +160,7 @@ export default class Committee extends React.Component<Props, State> {
 
     return (
       <div>
-        <CommitteeMeta data={this.state.committee} />
+        <CommitteeMeta data={this.state.committee} fref={this.state.fref} />
         <CommitteeNav />
         <Route exact={true} path="/committees/:committeeID/admin" component={CommitteeAdmin} />
         <Route path="/committees/:committeeID/caucuses" render={CommitteeCaucuses} />
