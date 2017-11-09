@@ -3,7 +3,7 @@ import * as firebase from 'firebase';
 import { RouteComponentProps } from 'react-router';
 import { Route, Link } from 'react-router-dom';
 import { MemberData, MemberID } from './Member';
-import { Caucus, CaucusData, CaucusID } from './Caucus';
+import { Caucus, CaucusData, CaucusID, DEFAULT_CAUCUS } from './Caucus';
 import { ResolutionData, ResolutionID } from './Resolution';
 import CommitteeAdmin from './CommitteeAdmin';
 
@@ -13,14 +13,16 @@ interface Props extends RouteComponentProps<any> {
 interface State {
   committee: CommitteeData;
   fref: firebase.database.Reference;
+  newCaucusName: CaucusData['name'];
+  newCaucusTopic: CaucusData['topic'];
 }
 
 export type CommitteeID = string;
 
 export interface CommitteeData {
-  name: String;
-  chair: String;
-  topic: String;
+  name: string;
+  chair: string;
+  topic: string;
   members: Map<MemberID, MemberData>;
   caucuses: Map<CaucusID, CaucusData>;
   resolutions: Map<ResolutionID, ResolutionData>;
@@ -39,7 +41,7 @@ export default class Committee extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
 
-    const defaultCommittee = {
+    const defaultCommittee: CommitteeData = {
       name: '',
       chair: '',
       topic: '',
@@ -52,7 +54,9 @@ export default class Committee extends React.Component<Props, State> {
 
     this.state = {
       committee: defaultCommittee,
-      fref: firebase.database().ref('commitees').child(committeeID)
+      fref: firebase.database().ref('commitees').child(committeeID),
+      newCaucusTopic: '',
+      newCaucusName: '',
     };
   }
 
@@ -68,20 +72,52 @@ export default class Committee extends React.Component<Props, State> {
     this.state.fref.off();
   }
 
+  pushCaucus = () => {
+    const newCaucus = {
+      ...DEFAULT_CAUCUS,
+      name: this.state.newCaucusName,
+      topic: this.state.newCaucusTopic
+    };
+
+    this.state.fref.child('caucuses').push().set(newCaucus);
+  }
+
   render() {
     const committeeID: CommitteeID = this.props.match.params.committeeID;
 
-    const CaucusItem = (props: { id: CaucusID, data: CaucusData } ) => {
+    const CaucusItem = (props: { id: CaucusID, data: CaucusData }) => {
       return (
-        <div style={{border: 'solid'}}>
+        <div style={{ border: 'solid' }}>
           <p>{props.data.topic}</p>
           <Link to={`/committees/${committeeID}/caucuses/${props.id}`}><button>Route</button></Link>
         </div>
       );
     };
-    
+
+    const NewCaucusForm = () => {
+      const nameHandler = (e: React.FormEvent<HTMLInputElement>) => 
+        this.setState({newCaucusName: e.currentTarget.value});
+
+      const topicHandler = (e: React.FormEvent<HTMLInputElement>) => 
+      this.setState({newCaucusTopic: e.currentTarget.value});
+
+      return (
+          <form onSubmit={this.pushCaucus}>
+            <label>
+              Name:
+          <input type="text" value={this.state.newCaucusName} onChange={nameHandler} />
+            </label>
+            <label>
+              Topic:
+          <input type="text" value={this.state.newCaucusTopic} onChange={topicHandler} />
+            </label>
+            <input type="submit" value="Submit" />
+          </form>
+      );
+    };
+
     const CommitteeCaucuses = () => {
-      const caucusItems = Object.keys(this.state.committee.caucuses).map(key => 
+      const caucusItems = Object.keys(this.state.committee.caucuses).map(key =>
         <CaucusItem key={key} id={key} data={this.state.committee.caucuses[key]} />
       );
 
@@ -89,10 +125,11 @@ export default class Committee extends React.Component<Props, State> {
         <div>
           <h3>Caucuses</h3>
           {caucusItems}
+          <NewCaucusForm />
         </div>
       );
     };
-    
+
     const CommitteeNav = () => (
       <nav>
         <ul>

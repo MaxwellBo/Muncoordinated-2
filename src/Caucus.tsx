@@ -27,13 +27,14 @@ enum Stance {
 }
 
 export interface CaucusData {
-  topic: String;
+  name: string;
+  topic: string;
   status: CaucusStatus;
   speakerTimer: TimerData;
   caucusTimer: TimerData;
   speaking?: SpeakerEvent;
-  queue: Map<String, SpeakerEvent>;
-  history: Map<String, SpeakerEvent>;
+  queue: Map<string, SpeakerEvent>;
+  history: Map<string, SpeakerEvent>;
 }
 
 export interface SpeakerEvent {
@@ -42,31 +43,32 @@ export interface SpeakerEvent {
   duration: number;
 }
 
+const DEFAULT_SPEAKER_EVENT = {
+  who: '',
+  stance: Stance.Neutral,
+  duration: 0
+};
+
+export const DEFAULT_CAUCUS: CaucusData = {
+  name: '',
+  topic: '',
+  status: CaucusStatus.Open,
+  speakerTimer: DEFAULT_TIMER,
+  caucusTimer: DEFAULT_TIMER,
+  speaking: DEFAULT_SPEAKER_EVENT,
+  queue: {} as Map<string, SpeakerEvent>,
+  history: {} as Map<string, SpeakerEvent>,
+};
+
 export class Caucus extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
-
-    const defaultSpeakerEvent = {
-      who: '',
-      stance: Stance.Neutral,
-      duration: 0
-    };
-
-    const defaultCaucus = {
-      topic: '',
-      status: CaucusStatus.Open,
-      speakerTimer: DEFAULT_TIMER,
-      caucusTimer: DEFAULT_TIMER,
-      speaking: defaultSpeakerEvent,
-      queue: {} as Map<String, SpeakerEvent>,
-      history: {} as Map<String, SpeakerEvent>,
-    };
 
     const committeeID: CommitteeID = this.props.match.params.committeeID;
     const caucusID: CaucusID = this.props.match.params.caucusID;
 
     this.state = {
-      caucus: defaultCaucus,
+      caucus: DEFAULT_CAUCUS,
       fref: firebase.database().ref('commitees').child(committeeID).child('caucuses').child(caucusID)
     };
   }
