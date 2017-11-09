@@ -73,7 +73,7 @@ export default class Committee extends React.Component<Props, State> {
 
     const CaucusItem = (props: { id: CaucusID, data: CaucusData } ) => {
       return (
-        <div>
+        <div style={{border: 'solid'}}>
           <p>{props.data.topic}</p>
           <Link to={`/committees/${committeeID}/caucuses/${props.id}`}><button>Route</button></Link>
         </div>
