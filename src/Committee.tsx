@@ -90,6 +90,9 @@ export default class Committee extends React.Component<Props, State> {
     const CaucusItem = (props: { id: CaucusID, data: CaucusData }) => {
       return (
         <div style={{ border: 'solid' }}>
+          <h4>Name</h4>
+          <p>{props.data.name}</p>
+          <h4>Topic</h4>
           <p>{props.data.topic}</p>
           <Link to={`/committees/${committeeID}/caucuses/${props.id}`}><button>Route</button></Link>
           <button onClick={() => this.state.fref.child('caucuses').child(props.id).remove()}>
