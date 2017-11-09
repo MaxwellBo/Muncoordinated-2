@@ -11,9 +11,15 @@ interface State {
 }
 
 function CommitteeItem(props: { id: CommitteeID, data: CommitteeData } ) {
+  // XXX: Might want to share code with CaucusItem?
   return (
-    <div>
+    <div style={{ border: 'solid' }}>
+      <h4>Name</h4>
       <p>{props.data.name}</p>
+      <h4>Chair</h4>
+      <p>{props.data.chair}</p>
+      <h4>Topic</h4>
+      <p>{props.data.topic}</p>
       <Link to={`/committees/${props.id}`}><button>Route</button></Link>
     </div>
   );
@@ -50,6 +56,7 @@ export default class Welcome extends React.Component<Props, State> {
 
     return (
       <div>
+        <h3>Welcome!</h3>
         {items}
       </div>
     );

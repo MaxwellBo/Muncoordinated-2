@@ -88,6 +88,7 @@ export default class Committee extends React.Component<Props, State> {
     const committeeID: CommitteeID = this.props.match.params.committeeID;
 
     const CaucusItem = (props: { id: CaucusID, data: CaucusData }) => {
+      // XXX: Might want to share code with CommitteeItem?
       return (
         <div style={{ border: 'solid' }}>
           <h4>Name</h4>
