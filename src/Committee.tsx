@@ -55,8 +55,8 @@ export default class Committee extends React.Component<Props, State> {
     this.state = {
       committee: defaultCommittee,
       fref: firebase.database().ref('commitees').child(committeeID),
-      newCaucusTopic: '',
       newCaucusName: '',
+      newCaucusTopic: ''
     };
   }
 
@@ -80,6 +80,8 @@ export default class Committee extends React.Component<Props, State> {
     };
 
     this.state.fref.child('caucuses').push().set(newCaucus);
+
+    this.setState({newCaucusName: '', newCaucusTopic: ''});
   }
 
   render() {
@@ -90,29 +92,32 @@ export default class Committee extends React.Component<Props, State> {
         <div style={{ border: 'solid' }}>
           <p>{props.data.topic}</p>
           <Link to={`/committees/${committeeID}/caucuses/${props.id}`}><button>Route</button></Link>
+          <button onClick={() => this.state.fref.child('caucuses').child(props.id).remove()}>
+            Delete
+          </button>
         </div>
       );
     };
 
     const NewCaucusForm = () => {
-      const nameHandler = (e: React.FormEvent<HTMLInputElement>) => 
-        this.setState({newCaucusName: e.currentTarget.value});
+      const nameHandler = (e: React.FormEvent<HTMLInputElement>) =>
+        this.setState({ newCaucusName: e.currentTarget.value });
 
-      const topicHandler = (e: React.FormEvent<HTMLInputElement>) => 
-      this.setState({newCaucusTopic: e.currentTarget.value});
+      const topicHandler = (e: React.FormEvent<HTMLInputElement>) =>
+        this.setState({ newCaucusTopic: e.currentTarget.value });
 
       return (
-          <form onSubmit={this.pushCaucus}>
-            <label>
-              Name:
+        <form onSubmit={this.pushCaucus}>
+          <label>
+            Name:
           <input type="text" value={this.state.newCaucusName} onChange={nameHandler} />
-            </label>
-            <label>
-              Topic:
+          </label>
+          <label>
+            Topic:
           <input type="text" value={this.state.newCaucusTopic} onChange={topicHandler} />
-            </label>
-            <input type="submit" value="Submit" />
-          </form>
+          </label>
+          <input type="submit" value="Submit" />
+        </form>
       );
     };
 
