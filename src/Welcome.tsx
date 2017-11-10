@@ -2,7 +2,6 @@ import * as React from 'react';
 import { Link } from 'react-router-dom';
 import * as firebase from 'firebase';
 import { CommitteeData, CommitteeID } from './Committee';
-import TimerData from './Timer';
 
 interface Props { }
 
