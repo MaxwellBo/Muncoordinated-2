@@ -19,23 +19,40 @@ enum Rank {
 export type MemberID = String;
 
 export interface MemberData {
+  name: string;
   present: boolean;
   rank: Rank;
   voting: boolean;
 }
 
+export const MemberView = (props: { data: MemberData }) => {
+  return (
+    <div style={{ border: 'solid '}}>
+      <h4>Name</h4>
+      <p>{props.data.name}</p>
+      <h4>Present</h4>
+      <p>{props.data.present}</p>
+      <h4>Rank</h4>
+      <p>{props.data.rank}</p>
+      <h4>Voting</h4>
+      <p>{props.data.voting}</p>
+    </div>
+  );
+};
+
+const DEFAULT_MEMBER = {
+  name: '',
+  present: true,
+  rank: Rank.Standard,
+  voting: true,
+};
+
 export default class Member extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
 
-    const defaultMember = {
-      present: true,
-      rank: Rank.Standard,
-      voting: true,
-    };
-
-    this.state = {
-      member: defaultMember,
+    this.state = { 
+      member: DEFAULT_MEMBER,
     };
   }
 
@@ -53,11 +70,7 @@ export default class Member extends React.Component<Props, State> {
 
   render() {
     return (
-      <div>
-        <p>{this.state.member.present}</p>
-        <p>{this.state.member.rank}</p>
-        <p>{this.state.member.voting}</p>
-      </div>
+      <MemberView data={this.state.member} />
     );
   }
 }

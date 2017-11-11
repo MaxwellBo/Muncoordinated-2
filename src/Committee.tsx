@@ -133,7 +133,7 @@ export default class Committee extends React.Component<Props, State> {
       );
     };
 
-    const CommitteeCaucuses = () => {
+    const Caucuses = () => {
       const caucusItems = Object.keys(this.state.committee.caucuses).map(key =>
         <CaucusItem key={key} id={key} data={this.state.committee.caucuses[key]} />
       );
@@ -147,7 +147,13 @@ export default class Committee extends React.Component<Props, State> {
       );
     };
 
-    const CommitteeNav = () => (
+    const Admin = () => {
+      return (
+        <CommitteeAdmin fref={this.state.fref} committee={this.state.committee} /> 
+      );
+    };
+
+    const Nav = () => (
       <nav>
         <ul>
           <li><Link to={`/committees/${committeeID}/admin`}>Admin</Link></li>
@@ -161,9 +167,9 @@ export default class Committee extends React.Component<Props, State> {
     return (
       <div>
         <CommitteeMeta data={this.state.committee} fref={this.state.fref} />
-        <CommitteeNav />
-        <Route exact={true} path="/committees/:committeeID/admin" component={CommitteeAdmin} />
-        <Route path="/committees/:committeeID/caucuses" render={CommitteeCaucuses} />
+        <Nav />
+        <Route exact={true} path="/committees/:committeeID/admin" render={Admin} />
+        <Route path="/committees/:committeeID/caucuses" render={Caucuses} />
         <Route path="/committees/:committeeID/caucuses/:caucusID" component={Caucus} />
       </div>
     );
