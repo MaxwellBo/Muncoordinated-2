@@ -3,14 +3,19 @@ import * as firebase from 'firebase';
 import { Timer, TimerData, DEFAULT_TIMER } from './Timer';
 import { RouteComponentProps } from 'react-router';
 import { MemberID } from './Member';
-import { CommitteeID } from './Committee';
+import { CommitteeID, CommitteeData } from './Committee';
 
-interface Props extends RouteComponentProps<any> {
+interface URLParameters {
+  caucusID: CaucusID;
+  committeeID: CommitteeID;
+}
+
+interface Props extends RouteComponentProps<URLParameters> {
+  committee: CommitteeData;
+  fref: firebase.database.Reference;
 }
 
 interface State {
-  caucus: CaucusData;
-  fref: firebase.database.Reference;
 }
 
 export type CaucusID = string;
@@ -65,7 +70,7 @@ function CaucusMeta(props: { data: CaucusData, fref: firebase.database.Reference
   props.fref.child(field).set(e.currentTarget.value);
 
   // TODO: Make status either a dropdown or a checkbox / on/off slider
-  return (
+  return props.data ? (
     <div>
       <h1>{props.data.name}</h1>
       <input value={props.data.name} onChange={makeHandler('name')} />
@@ -74,7 +79,7 @@ function CaucusMeta(props: { data: CaucusData, fref: firebase.database.Reference
       <h3>Status</h3>
       <p>{props.data.status}</p>
     </div>
-  );
+  ) : <p>Loading</p>;
 }
 
 function CaucusView(props: { data: CaucusData, fref: firebase.database.Reference }) {
@@ -90,52 +95,15 @@ function CaucusView(props: { data: CaucusData, fref: firebase.database.Reference
 }
 
 export class Caucus extends React.Component<Props, State> {
-  constructor(props: Props) {
-    super(props);
-
-    const committeeID: CommitteeID = this.props.match.params.committeeID;
-    const caucusID: CaucusID = this.props.match.params.caucusID;
-
-    this.state = {
-      caucus: DEFAULT_CAUCUS,
-      fref: firebase.database().ref('commitees').child(committeeID).child('caucuses').child(caucusID)
-    };
-  }
-
-  componentDidMount() {
-    this.state.fref.on('value', (caucus) => {
-      if (caucus) {
-        this.setState({ caucus: caucus.val() });
-      }
-    });
-  }
-
-  componentWillReceiveProps(nextProps: Props) {
-    // XXX: This is to ensure that if the component is asked to point at a new
-    // committee, it tosses away its old ref and makes a new one
-    const committeeID: CommitteeID = this.props.match.params.committeeID;
-    const oldID: CaucusID = this.props.match.params.caucusID;
-    const newID: CaucusID = nextProps.match.params.caucusID;
-
-    if (newID !== oldID) {
-      this.state.fref.off();
-      const fref = firebase.database().ref('commitees').child(committeeID).child('caucuses').child(newID);
-      
-      fref.on('value', (caucus) => {
-        if (caucus) {
-          this.setState({ caucus: caucus.val() });
-        }
-      });
-
-      this.setState({ fref: fref });
-    }
-  }
-
-  componentWillUnmount() {
-    this.state.fref.off();
-  }
 
   render() {
-    return <CaucusView data={this.state.caucus} fref={this.state.fref} />;
+    const caucusID: CaucusID = this.props.match.params.caucusID;
+
+    return (
+      <CaucusView 
+        data={this.props.committee.caucuses[caucusID]} 
+        fref={this.props.fref.child('caucuses').child(caucusID)} 
+      />
+    );
   }
 }

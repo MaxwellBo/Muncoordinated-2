@@ -7,7 +7,12 @@ import { Caucus, CaucusData, CaucusID, DEFAULT_CAUCUS } from './Caucus';
 import { ResolutionData, ResolutionID } from './Resolution';
 import CommitteeAdmin from './CommitteeAdmin';
 
-interface Props extends RouteComponentProps<any> {
+interface URLParameters {
+  committeeID: CommitteeID;
+  caucusID: CaucusID;
+}
+
+interface Props extends RouteComponentProps<URLParameters> {
 }
 
 interface State {
@@ -147,11 +152,15 @@ export default class Committee extends React.Component<Props, State> {
       );
     };
 
-    const Admin = () => {
-      return (
-        <CommitteeAdmin fref={this.state.fref} committee={this.state.committee} /> 
-      );
-    };
+    const CaucusComponent = (props: RouteComponentProps<URLParameters>) => (
+      <Caucus 
+        committee={this.state.committee} 
+        fref={this.state.fref} 
+        {...props} 
+      />
+    );
+
+    const Admin = () => <CommitteeAdmin committee={this.state.committee} fref={this.state.fref} />;
 
     const Nav = () => (
       <nav>
@@ -170,7 +179,7 @@ export default class Committee extends React.Component<Props, State> {
         <Nav />
         <Route exact={true} path="/committees/:committeeID/admin" render={Admin} />
         <Route path="/committees/:committeeID/caucuses" render={Caucuses} />
-        <Route path="/committees/:committeeID/caucuses/:caucusID" component={Caucus} />
+        <Route path="/committees/:committeeID/caucuses/:caucusID" render={CaucusComponent} />
       </div>
     );
   }
