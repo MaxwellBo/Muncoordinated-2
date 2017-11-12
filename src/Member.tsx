@@ -16,7 +16,7 @@ export enum Rank {
     Observer = 'Observer'
 }
 
-export type MemberID = String;
+export type MemberID = string;
 
 export interface MemberData {
   name: string;

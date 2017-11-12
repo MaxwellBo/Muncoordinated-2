@@ -13,6 +13,39 @@ interface State {
   newMemberRank: Rank;
 }
 
+// FIXME: Make this global and replace all references to `Object.keys` with it
+function objectToList<T>(object: Map<string, T>): T[] {
+  return Object.keys(object).map(key => object[key]);
+}
+
+function CommitteeStats(props: { data: CommitteeData }) {
+  const memberItems = objectToList(props.data.members);
+
+  const delegates = memberItems.length;
+
+  const canVote = ({rank}: MemberData) => rank === Rank.Veto || rank === Rank.Standard;
+  const voting = memberItems.filter(canVote).length;
+
+  const quorum =  Math.ceil(voting * 0.5);
+  const draftResolution =  Math.ceil(voting * 0.25);
+  const amendment =  Math.ceil(voting * 0.1);
+
+  return (
+    <div>
+      <h5>Total delegates</h5>
+      <p>{delegates.toString()}</p>
+      <h5>Voting</h5>
+      <p>{voting.toString()}</p>
+      <h5>Quorum</h5>
+      <p>{quorum.toString()}</p>
+      <h5>Draft Resolution</h5>
+      <p>{draftResolution.toString()}</p>
+      <h5>Amendment</h5>
+      <p>{amendment.toString()}</p>
+    </div>
+  );
+}
+
 function MemberItem(props: { data: MemberData, fref: firebase.database.Reference } ) {
   // XXX: Might want to share code with CaucusItem?
   return (
@@ -80,6 +113,8 @@ export default class CommitteeAdmin extends React.PureComponent<Props, State> {
         <h4>Members</h4>
         {memberItems}
         <NewMemberForm />
+        <h4>Stats</h4>
+        <CommitteeStats data={this.props.committee} />
       </div>
     );
   }
