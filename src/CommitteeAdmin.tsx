@@ -15,16 +15,16 @@ interface State {
 }
 
 function CommitteeStats(props: { data: CommitteeData }) {
-  const memberItems = Utils.objectToList(props.data.members);
+  const memberItems: MemberData[] = Utils.objectToList(props.data.members);
 
-  const delegates = memberItems.length;
+  const delegates: number = memberItems.length;
 
   const canVote = ({rank}: MemberData) => rank === Rank.Veto || rank === Rank.Standard;
-  const voting = memberItems.filter(canVote).length;
+  const voting: number = memberItems.filter(canVote).length;
 
-  const quorum =  Math.ceil(voting * 0.5);
-  const draftResolution =  Math.ceil(voting * 0.25);
-  const amendment =  Math.ceil(voting * 0.1);
+  const quorum: number =  Math.ceil(voting * 0.5);
+  const draftResolution: number =  Math.ceil(voting * 0.25);
+  const amendment: number =  Math.ceil(voting * 0.1);
 
   return (
     <div>
