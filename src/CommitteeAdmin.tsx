@@ -49,7 +49,7 @@ function MemberItem(props: { data: MemberData, fref: firebase.database.Reference
   );
 }
 
-export default class CommitteeAdmin extends React.PureComponent<Props, State> {
+export default class CommitteeAdmin extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
 
@@ -59,7 +59,9 @@ export default class CommitteeAdmin extends React.PureComponent<Props, State> {
     };
   }
 
-  pushMember = () => {
+  pushMember = (event: any) => {
+    event.preventDefault();
+
     const newMember: MemberData = {
       name: this.state.newMemberName,
       rank: this.state.newMemberRank,
@@ -82,21 +84,15 @@ export default class CommitteeAdmin extends React.PureComponent<Props, State> {
     );
 
     const NewMemberForm = () => {
-      const nameHandler = (e: React.FormEvent<HTMLInputElement>) =>
-        this.setState({ newMemberName: e.currentTarget.value });
-
-      const rankHander = (e: React.FormEvent<HTMLInputElement>) =>
-        this.setState({ newMemberRank: e.currentTarget.value as Rank });
+      const nameHandler = (event: any) => {
+        this.setState({ newMemberName: event.target.value });
+      };
 
       return (
-        <form onSubmit={this.pushMember}>
+        <form key="newMemberForm" onSubmit={this.pushMember}>
           <label>
             Name:
-          <input type="text" value={this.state.newMemberName} onChange={nameHandler} />
-          </label>
-          <label>
-            Rank:
-          <input type="text" value={this.state.newMemberRank} onChange={rankHander} />
+          <input key="nameField" type="text" value={this.state.newMemberName} onChange={nameHandler} />
           </label>
           <input type="submit" value="Submit" />
         </form>
