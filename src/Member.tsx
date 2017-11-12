@@ -9,9 +9,9 @@ interface State {
   member: MemberData;
 }
 
-enum Rank {
+export enum Rank {
     Veto = 'Veto',
-    Standard = 'Observer',
+    Standard = 'Standard',
     NGO = 'NGO',
     Observer = 'Observer'
 }
@@ -25,11 +25,14 @@ export interface MemberData {
   voting: boolean;
 }
 
-export const MemberView = (props: { data: MemberData }) => {
+export const MemberView = (props: { data: MemberData, fref: firebase.database.Reference }) => {
+  const makeHandler = (field: string) => (e: React.FormEvent<HTMLInputElement>) =>
+    props.fref.child(field).set(e.currentTarget.value);
+
   return (
     <div style={{ border: 'solid '}}>
       <h4>Name</h4>
-      <p>{props.data.name}</p>
+      <input value={props.data.name} onChange={makeHandler('name')} />
       <h4>Present</h4>
       <p>{props.data.present}</p>
       <h4>Rank</h4>
@@ -70,7 +73,7 @@ export default class Member extends React.Component<Props, State> {
 
   render() {
     return (
-      <MemberView data={this.state.member} />
+      <MemberView data={this.state.member} fref={this.props.fref} />
     );
   }
 }

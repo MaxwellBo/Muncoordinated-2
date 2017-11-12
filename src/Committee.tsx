@@ -31,7 +31,7 @@ export interface CommitteeData {
 function CommitteeMeta(props: { data: CommitteeData, fref: firebase.database.Reference; }) {
 
   const makeHandler = (field: string) => (e: React.FormEvent<HTMLInputElement>) =>
-  props.fref.child(field).set(e.currentTarget.value);
+    props.fref.child(field).set(e.currentTarget.value);
 
   return (
     <div>
