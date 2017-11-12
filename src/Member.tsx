@@ -42,6 +42,9 @@ export const MemberView = (props: { data: MemberData, fref: firebase.database.Re
       <p>{props.data.rank}</p>
       <h4>Voting</h4>
       <p>{props.data.voting ? 'Yes' : 'No'}</p>
+      <button onClick={() => props.fref.remove()}>
+        Delete
+      </button>
     </div>
   );
 };
