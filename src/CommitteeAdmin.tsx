@@ -2,6 +2,7 @@ import * as React from 'react';
 import * as firebase from 'firebase';
 import { CommitteeData, CommitteeID } from './Committee';
 import { MemberView, MemberData, MemberID, Rank } from './Member';
+import * as Utils from './utils';
 
 interface Props {
   committee: CommitteeData;
@@ -13,13 +14,8 @@ interface State {
   newMemberRank: Rank;
 }
 
-// FIXME: Make this global and replace all references to `Object.keys` with it
-function objectToList<T>(object: Map<string, T>): T[] {
-  return Object.keys(object).map(key => object[key]);
-}
-
 function CommitteeStats(props: { data: CommitteeData }) {
-  const memberItems = objectToList(props.data.members);
+  const memberItems = Utils.objectToList(props.data.members);
 
   const delegates = memberItems.length;
 
