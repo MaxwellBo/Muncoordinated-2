@@ -72,8 +72,6 @@ export default class Member extends React.Component<Props, State> {
   }
 
   render() {
-    return (
-      <MemberView data={this.state.member} fref={this.props.fref} />
-    );
+    return <MemberView data={this.state.member} fref={this.props.fref} />;
   }
 }

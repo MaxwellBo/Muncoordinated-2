@@ -60,12 +60,11 @@ export const DEFAULT_CAUCUS: CaucusData = {
   history: {} as Map<string, SpeakerEvent>,
 };
 
-function CaucusMeta(props: { data: CaucusData, fref: firebase.database.Reference; }) {
+function CaucusMeta(props: { data: CaucusData, fref: firebase.database.Reference }) {
   const makeHandler = (field: string) => (e: React.FormEvent<HTMLInputElement>) =>
   props.fref.child(field).set(e.currentTarget.value);
 
   // TODO: Make status either a dropdown or a checkbox / on/off slider
-
   return (
     <div>
       <h1>{props.data.name}</h1>
@@ -74,6 +73,18 @@ function CaucusMeta(props: { data: CaucusData, fref: firebase.database.Reference
       <input value={props.data.topic} onChange={makeHandler('topic')} />
       <h3>Status</h3>
       <p>{props.data.status}</p>
+    </div>
+  );
+}
+
+function CaucusView(props: { data: CaucusData, fref: firebase.database.Reference }) {
+  return (
+    <div>
+      <CaucusMeta data={props.data} fref={props.fref} />
+      <h3>Caucus Timer</h3>
+      {/* <Timer fref={this.state.fref.child('caucusTimer')} /> */}
+      <h3>Speaker Timer</h3>
+      {/* <Timer fref={this.state.fref.child('speakerTimer')} /> */}
     </div>
   );
 }
@@ -125,14 +136,6 @@ export class Caucus extends React.Component<Props, State> {
   }
 
   render() {
-    return (
-      <div>
-        <CaucusMeta data={this.state.caucus} fref={this.state.fref} />
-        <h3>Caucus Timer</h3>
-        {/* <Timer fref={this.state.fref.child('caucusTimer')} /> */}
-        <h3>Speaker Timer</h3>
-        {/* <Timer fref={this.state.fref.child('speakerTimer')} /> */}
-      </div>
-    );
+    return <CaucusView data={this.state.caucus} fref={this.state.fref} />;
   }
 }
