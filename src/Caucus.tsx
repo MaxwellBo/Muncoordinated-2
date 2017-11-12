@@ -95,7 +95,6 @@ function CaucusView(props: { data: CaucusData, fref: firebase.database.Reference
 }
 
 export class Caucus extends React.Component<Props, State> {
-
   render() {
     const caucusID: CaucusID = this.props.match.params.caucusID;
 

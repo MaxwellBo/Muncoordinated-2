@@ -29,16 +29,19 @@ export const MemberView = (props: { data: MemberData, fref: firebase.database.Re
   const makeHandler = (field: string) => (e: React.FormEvent<HTMLInputElement>) =>
     props.fref.child(field).set(e.currentTarget.value);
 
+  // TODO: Make the yes-no displays tick/checkmarks
+  // TODO: Make the Rank display a dropdown for the Rank Enum
+
   return (
     <div style={{ border: 'solid '}}>
       <h4>Name</h4>
       <input value={props.data.name} onChange={makeHandler('name')} />
       <h4>Present</h4>
-      <p>{props.data.present}</p>
+      <p>{props.data.present ? 'Yes' : 'No'}</p>
       <h4>Rank</h4>
       <p>{props.data.rank}</p>
       <h4>Voting</h4>
-      <p>{props.data.voting}</p>
+      <p>{props.data.voting ? 'Yes' : 'No'}</p>
     </div>
   );
 };

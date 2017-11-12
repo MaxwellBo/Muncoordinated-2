@@ -7,6 +7,7 @@ import { Caucus, CaucusData, CaucusID, DEFAULT_CAUCUS } from './Caucus';
 import { ResolutionData, ResolutionID } from './Resolution';
 import CommitteeAdmin from './CommitteeAdmin';
 
+// FIXME: This is repeatedly declared in every file where URLParameters are needed
 interface URLParameters {
   committeeID: CommitteeID;
   caucusID: CaucusID;
