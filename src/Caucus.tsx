@@ -39,8 +39,8 @@ export interface CaucusData {
   speakerTimer: TimerData;
   caucusTimer: TimerData;
   speaking?: SpeakerEvent;
-  queue: Map<string, SpeakerEvent>;
-  history: Map<string, SpeakerEvent>;
+  queue?: Map<string, SpeakerEvent>;
+  history?: Map<string, SpeakerEvent>;
 }
 
 export interface SpeakerEvent {
@@ -68,7 +68,7 @@ export const DEFAULT_CAUCUS: CaucusData = {
 
 function CaucusMeta(props: { data: CaucusData, fref: firebase.database.Reference }) {
   const makeHandler = (field: string) => (e: React.FormEvent<HTMLInputElement>) =>
-  props.fref.child(field).set(e.currentTarget.value);
+    props.fref.child(field).set(e.currentTarget.value);
 
   // TODO: Make status either a dropdown or a checkbox / on/off slider
   return props.data ? (
@@ -83,27 +83,36 @@ function CaucusMeta(props: { data: CaucusData, fref: firebase.database.Reference
   ) : <p>Loading</p>;
 }
 
-const SpeakerEvent = (props: { event?: SpeakerEvent } ) => {
-  return props.event ? (
+const SpeakerEvent = (props: { data?: SpeakerEvent, fref: firebase.database.Reference } ) => {
+  const makeHandler = (field: string) => (e: React.FormEvent<HTMLInputElement>) =>
+    props.fref.child(field).set(e.currentTarget.value);
+
+  return props.data ? (
     <div style={{ border: 'solid' }}>
       <h5>Who</h5>
-      <p>{props.event.who}</p>
+      {/* <p>{props.event.who}</p> */}
+      {/* FIXME: Should be a dropdown */}
+      <input value={props.data.who} onChange={makeHandler('who')} />
       <h5>Stance</h5>
-      <p>{props.event.stance}</p>
+      {/* FIXME: Should be a dropdown */}
+      <p>{props.data.stance}</p>
       <h5>Duration</h5>
-      <p>{props.event.duration.toString()}</p>
+      {/* FIXME: Should be a number input field */}
+      <p>{props.data.duration.toString()}</p>
     </div>
   ) : <div><p>No-one speaking</p></div>;
 };
 
-function SpeakerEvents(props: { events: Map<string, SpeakerEvent> }) {
-  const events = Object.keys(props.events).map(key => 
-    <SpeakerEvent key={key} event={props.events[key]} />
+function SpeakerEvents(props: { data?: Map<string, SpeakerEvent>, fref: firebase.database.Reference }) {
+  const events = props.data ? props.data : {};
+
+  const eventItems = Object.keys(events).map(key => 
+    <SpeakerEvent key={key} data={events[key]} fref={props.fref.child(key)} />
   );
 
   return (
     <div>
-      {events}
+      {eventItems}
     </div>
   );
 }
@@ -113,11 +122,9 @@ function CaucusView(props: { data: CaucusData, fref: firebase.database.Reference
     <div>
       <CaucusMeta data={props.data} fref={props.fref} />
       <h4>Now Speaking</h4>
-      <SpeakerEvent event={props.data.speaking} />
-      <h4>Next Speaking</h4>
-
+      <SpeakerEvent data={props.data.speaking} fref={props.fref.child('speaking')} />
       <h4>Queue</h4>
-
+      <SpeakerEvents data={props.data.queue} fref={props.fref.child('queue')} />
       <h4>Caucus Timer</h4>
       {/* <Timer fref={this.state.fref.child('caucusTimer')} /> */}
       <h4>Speaker Timer</h4>
