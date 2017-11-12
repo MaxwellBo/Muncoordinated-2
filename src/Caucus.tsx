@@ -4,6 +4,7 @@ import { Timer, TimerData, DEFAULT_TIMER } from './Timer';
 import { RouteComponentProps } from 'react-router';
 import { MemberID } from './Member';
 import { CommitteeID, CommitteeData } from './Committee';
+import * as Utils from './utils';
 
 interface URLParameters {
   caucusID: CaucusID;
@@ -82,12 +83,37 @@ function CaucusMeta(props: { data: CaucusData, fref: firebase.database.Reference
   ) : <p>Loading</p>;
 }
 
+const SpeakerEvent = (props: { event?: SpeakerEvent } ) => {
+  return props.event ? (
+    <div style={{ border: 'solid' }}>
+      <h5>Who</h5>
+      <p>{props.event.who}</p>
+      <h5>Stance</h5>
+      <p>{props.event.stance}</p>
+      <h5>Duration</h5>
+      <p>{props.event.duration.toString()}</p>
+    </div>
+  ) : <div><p>No-one speaking</p></div>;
+};
+
+function SpeakerEvents(props: { events: Map<string, SpeakerEvent> }) {
+  const events = Object.keys(props.events).map(key => 
+    <SpeakerEvent key={key} event={props.events[key]} />
+  );
+
+  return (
+    <div>
+      {events}
+    </div>
+  );
+}
+
 function CaucusView(props: { data: CaucusData, fref: firebase.database.Reference }) {
   return (
     <div>
       <CaucusMeta data={props.data} fref={props.fref} />
       <h4>Now Speaking</h4>
-
+      <SpeakerEvent event={props.data.speaking} />
       <h4>Next Speaking</h4>
 
       <h4>Queue</h4>
