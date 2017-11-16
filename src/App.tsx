@@ -26,7 +26,7 @@ class App extends React.Component {
 
     return (
       <div className="App">
-        <Route exact={true} path="/" component={Welcome} />
+        <Route exact={true} path="/committees" component={Welcome} />
         <Route path="/committees/:committeeID" component={Committee} />
         <Footer />
       </div>
