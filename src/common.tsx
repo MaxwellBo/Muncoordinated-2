@@ -1,4 +1,4 @@
-export const stateOptions = [
+export const STATE_OPTIONS = [
   { key: 'AL', value: 'AL', text: 'Alabama' },
   { key: 'AK', value: 'AK', text: 'Alaska' },
   { key: 'AZ', value: 'AZ', text: 'Arizona' },
@@ -59,7 +59,7 @@ export interface CountryOption {
   text: string;
 }
 
-export const countryOptions: CountryOption[] = [
+export const COUNTRY_OPTIONS: CountryOption[] = [
   { key: 'af', value: 'af', flag: 'af', text: 'Afghanistan' },
   { key: 'ax', value: 'ax', flag: 'ax', text: 'Aland Islands' },
   { key: 'al', value: 'al', flag: 'al', text: 'Albania' },
@@ -303,7 +303,7 @@ export const countryOptions: CountryOption[] = [
   { key: 'zw', value: 'zw', flag: 'zw', text: 'Zimbabwe' },
 ];
 
-export const languageOptions = [
+export const LANGUAGE_OPTIONS = [
   { key: 'Arabic', text: 'Arabic', value: 'Arabic' },
   { key: 'Chinese', text: 'Chinese', value: 'Chinese' },
   { key: 'Danish', text: 'Danish', value: 'Danish' },
@@ -327,7 +327,7 @@ export const languageOptions = [
   { key: 'Vietnamese', text: 'Vietnamese', value: 'Vietnamese' },
 ];
 
-export const tagOptions = [
+export const TAG_OPTIONS = [
   {
     key: 'Important',
     text: 'Important',
@@ -382,4 +382,4 @@ export const tagOptions = [
     value: 'Discussion',
     label: { color: 'green', empty: true, circular: true },
   },
-]
+];

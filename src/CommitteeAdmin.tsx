@@ -4,7 +4,7 @@ import { CommitteeData, CommitteeID } from './Committee';
 import { MemberView, MemberData, MemberID, Rank } from './Member';
 import * as Utils from './utils';
 import { Dropdown, Segment, Header, Flag, Table, List, Button, Checkbox, Icon } from 'semantic-ui-react';
-import { countryOptions, CountryOption } from './common';
+import { COUNTRY_OPTIONS, CountryOption } from './common';
 
 interface Props {
   committee: CommitteeData;
@@ -141,7 +141,7 @@ export default class CommitteeAdmin extends React.Component<Props, State> {
     super(props);
 
     this.state = {
-      newCountry: countryOptions[0],
+      newCountry: COUNTRY_OPTIONS[0],
       newMemberRank: Rank.Standard,
       newMemberVoting: true,
       newMemberPresent: true
@@ -161,24 +161,6 @@ export default class CommitteeAdmin extends React.Component<Props, State> {
     this.props.fref.child('members').push().set(newMember);
   }
 
-  NewMemberForm = () => {
-    const nameHandler = (event: any, data: any) => {
-      // FIXME: Probably a hack but it's the best I can do lmao 
-      this.setState({ newCountry: countryOptions.filter(c => c.value === data.value)[0] });
-    };
-
-    return (
-      <Dropdown
-        placeholder="Select Country"
-        search
-        selection
-        options={countryOptions}
-        onChange={nameHandler}
-        value={this.state.newCountry.value}
-      />
-    );
-  }
-
   CommitteeMembers = (props: { data: CommitteeData, fref: firebase.database.Reference }) => {
 
     const members = this.props.committee.members ? this.props.committee.members : {};
@@ -191,6 +173,11 @@ export default class CommitteeAdmin extends React.Component<Props, State> {
         />
       )
     );
+
+    const nameHandler = (event: any, data: any) => {
+      // FIXME: Probably a hack but it's the best I can do lmao 
+      this.setState({ newCountry: COUNTRY_OPTIONS.filter(c => c.value === data.value)[0] });
+    };
 
     const presentHandler = (event: any, data: any) => {
       this.setState({ newMemberPresent: data.checked });
@@ -223,7 +210,14 @@ export default class CommitteeAdmin extends React.Component<Props, State> {
         <Table.Footer fullWidth>
           <Table.Row>
             <Table.HeaderCell>
-              <this.NewMemberForm />
+              <Dropdown
+                placeholder="Select Country"
+                search
+                selection
+                options={COUNTRY_OPTIONS}
+                onChange={nameHandler}
+                value={this.state.newCountry.value}
+              />
             </Table.HeaderCell>
             <Table.HeaderCell>
               <Dropdown

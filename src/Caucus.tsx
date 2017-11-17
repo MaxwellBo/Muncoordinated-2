@@ -2,10 +2,11 @@ import * as React from 'react';
 import * as firebase from 'firebase';
 import { Timer, TimerData, DEFAULT_TIMER } from './Timer';
 import { RouteComponentProps } from 'react-router';
-import { MemberID } from './Member';
+import { MemberID, MemberData } from './Member';
 import { CommitteeID, CommitteeData } from './Committee';
 import * as Utils from './utils';
 import { Segment, Loader, Dimmer, Header, Input, Button, Icon } from 'semantic-ui-react';
+import { COUNTRY_OPTIONS, CountryOption } from './common';
 
 interface URLParameters {
   caucusID: CaucusID;
@@ -141,7 +142,8 @@ function SpeakerEvents(props: { data?: Map<string, SpeakerEvent>, fref: firebase
   );
 }
 
-function CaucusView(props: { data?: CaucusData, fref: firebase.database.Reference }) {
+function CaucusView(props: 
+  { data?: CaucusData, members?: Map<string, MemberData>, fref: firebase.database.Reference }) {
 
   const nextSpeaker = () => {
     const nowRef = props.fref.child('speaking');
@@ -195,6 +197,7 @@ export class Caucus extends React.Component<Props, State> {
     return (
       <CaucusView
         data={this.props.committee.caucuses[caucusID]}
+        members={this.props.committee.members}
         fref={this.props.fref.child('caucuses').child(caucusID)}
       />
     );
