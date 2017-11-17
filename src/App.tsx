@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as firebase from 'firebase';
 import { Route } from 'react-router-dom';
-import { Button, Container, Header } from 'semantic-ui-react';
+import { Button, Container, Header, Message } from 'semantic-ui-react';
 import './App.css';
 
 const firebaseConfig = {
@@ -19,7 +19,11 @@ import Welcome from './Welcome';
 import Committee from './Committee';
 
 const Footer = () => {
-  return <div>Footer</div>;
+  return (
+    <Message size="mini">
+      Made with 💖 by <a href="http://maxbo.me/">Max Bo</a>, <a href="http://hugokawamata.com/">Hugo Kawmata</a>, 
+      and <a href="http://charltongroves.com/">Charlie Groves</a>
+    </Message>);
 };
 
 class App extends React.Component {

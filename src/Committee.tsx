@@ -7,7 +7,6 @@ import { Caucus, CaucusData, CaucusID, DEFAULT_CAUCUS } from './Caucus';
 import { ResolutionData, ResolutionID } from './Resolution';
 import CommitteeAdmin from './CommitteeAdmin';
 import { Dropdown, Icon, Input, Menu, Sticky } from 'semantic-ui-react';
-import { EditableText } from '@blueprintjs/core';
 
 // FIXME: This is repeatedly declared in every file where URLParameters are needed
 interface URLParameters {
@@ -97,25 +96,21 @@ export default class Committee extends React.Component<Props, State> {
 
     this.state.fref.child('caucuses').push().set(newCaucus);
 
-    this.setState({newCaucusName: '', newCaucusTopic: ''});
+    this.setState({ newCaucusName: '', newCaucusTopic: '' });
   }
 
   render() {
     const committeeID: CommitteeID = this.props.match.params.committeeID;
+    const caucusID: CommitteeID = this.props.match.params.committeeID;
 
     const CaucusItem = (props: { id: CaucusID, data: CaucusData }) => {
-      // XXX: Might want to share code with CommitteeItem?
       return (
-        <div style={{ border: 'solid' }}>
-          <h4>Name</h4>
-          <p>{props.data.name}</p>
-          <h4>Topic</h4>
-          <p>{props.data.topic}</p>
-          <Link to={`/committees/${committeeID}/caucuses/${props.id}`}><button>Route</button></Link>
-          <button onClick={() => this.state.fref.child('caucuses').child(props.id).remove()}>
-            Delete
-          </button>
-        </div>
+        <Link to={`/committees/${committeeID}/caucuses/${props.id}`}>
+          <Menu.Item name={props.data.name} active={props.id === caucusID}>
+            {props.data.name}
+          </Menu.Item>
+        </Link>
+        // <button onClick={() => this.state.fref.child('caucuses').child(props.id).remove()}>
       );
     };
 
@@ -141,25 +136,28 @@ export default class Committee extends React.Component<Props, State> {
       );
     };
 
-    const Caucuses = () => {
+    const NewNav = () => {
       const caucusItems = Object.keys(this.state.committee.caucuses).map(key =>
         <CaucusItem key={key} id={key} data={this.state.committee.caucuses[key]} />
       );
 
       return (
-        <div>
-          <h3>Caucuses</h3>
-          {caucusItems}
-          <NewCaucusForm />
-        </div>
+        <Menu vertical>
+          <Menu.Item>
+            Caucuses
+            <Menu.Menu>
+              {caucusItems}
+            </Menu.Menu>
+          </Menu.Item>
+        </Menu>
       );
     };
 
     const CaucusComponent = (props: RouteComponentProps<URLParameters>) => (
-      <Caucus 
-        committee={this.state.committee} 
-        fref={this.state.fref} 
-        {...props} 
+      <Caucus
+        committee={this.state.committee}
+        fref={this.state.fref}
+        {...props}
       />
     );
 
@@ -180,8 +178,8 @@ export default class Committee extends React.Component<Props, State> {
       <div>
         <CommitteeMeta data={this.state.committee} fref={this.state.fref} />
         <Nav />
+        <NewNav />
         <Route exact={true} path="/committees/:committeeID/admin" render={Admin} />
-        <Route path="/committees/:committeeID/caucuses" render={Caucuses} />
         <Route path="/committees/:committeeID/caucuses/:caucusID" render={CaucusComponent} />
       </div>
     );

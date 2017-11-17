@@ -5,7 +5,7 @@ import { RouteComponentProps } from 'react-router';
 import { MemberID } from './Member';
 import { CommitteeID, CommitteeData } from './Committee';
 import * as Utils from './utils';
-import { Segment, Loader, Dimmer } from 'semantic-ui-react';
+import { Segment, Loader, Dimmer, Header, Input } from 'semantic-ui-react';
 
 interface URLParameters {
   caucusID: CaucusID;
@@ -67,21 +67,27 @@ export const DEFAULT_CAUCUS: CaucusData = {
   history: {} as Map<string, SpeakerEvent>,
 };
 
+function CaucusHeader(props: { data: CaucusData, fref: firebase.database.Reference }) {
+  const makeHandler = (field: string) => (e: React.FormEvent<HTMLInputElement>) =>
+    props.fref.child(field).set(e.currentTarget.value);
+
+  // TODO: Make status either a dropdown or a checkbox / on/off slider
+  return (
+    <Input value={props.data.name} onChange={makeHandler('name')} attatched="top" />
+  );
+}
+
 function CaucusMeta(props: { data: CaucusData, fref: firebase.database.Reference }) {
   const makeHandler = (field: string) => (e: React.FormEvent<HTMLInputElement>) =>
     props.fref.child(field).set(e.currentTarget.value);
 
   // TODO: Make status either a dropdown or a checkbox / on/off slider
   return (
-    <Segment>
-      <div>
-        <h1>{props.data.name}</h1>
-        <input value={props.data.name} onChange={makeHandler('name')} />
-        <h3>Topic</h3>
-        <input value={props.data.topic} onChange={makeHandler('topic')} />
-        <h3>Status</h3>
-        <p>{props.data.status}</p>
-      </div>
+    <Segment attached>
+      <h3>Topic</h3>
+      <input value={props.data.topic} onChange={makeHandler('topic')} />
+      <h3>Status</h3>
+      <p>{props.data.status}</p>
     </Segment>
   );
 }
@@ -145,20 +151,23 @@ function CaucusView(props: { data?: CaucusData, fref: firebase.database.Referenc
   };
 
   return props.data ? (
-    <Segment>
+    <div>
+      <CaucusHeader data={props.data} fref={props.fref} />
       <CaucusMeta data={props.data} fref={props.fref} />
-      <h4>Now Speaking</h4>
-      <SpeakerEvent data={props.data.speaking} fref={props.fref.child('speaking')} />
-      <button onClick={nextSpeaker} >Next Speaker</button>
-      <h4>Queue</h4>
-      <SpeakerEvents data={props.data.queue} fref={props.fref.child('queue')} />
-      <h4>History</h4>
-      <SpeakerEvents data={props.data.history} fref={props.fref.child('history')} />
-      <h4>Caucus Timer</h4>
-      {/* <Timer fref={this.state.fref.child('caucusTimer')} /> */}
-      <h4>Speaker Timer</h4>
-      {/* <Timer fref={this.state.fref.child('speakerTimer')} /> */}
-    </Segment>
+      <Segment attached="bottom">
+        <h4>Now Speaking</h4>
+        <SpeakerEvent data={props.data.speaking} fref={props.fref.child('speaking')} />
+        <button onClick={nextSpeaker} >Next Speaker</button>
+        <h4>Queue</h4>
+        <SpeakerEvents data={props.data.queue} fref={props.fref.child('queue')} />
+        <h4>History</h4>
+        <SpeakerEvents data={props.data.history} fref={props.fref.child('history')} />
+        <h4>Caucus Timer</h4>
+        {/* <Timer fref={this.state.fref.child('caucusTimer')} /> */}
+        <h4>Speaker Timer</h4>
+        {/* <Timer fref={this.state.fref.child('speakerTimer')} /> */}
+      </Segment>
+    </div>
   ) : (
       <Dimmer active>
         <Loader>Loading</Loader>
