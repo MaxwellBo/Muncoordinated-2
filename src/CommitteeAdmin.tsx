@@ -41,57 +41,52 @@ function CommitteeStats(props: { data: CommitteeData }) {
   const amendment: number = Math.ceil(voting * 0.1);
 
   return (
-    <div>
-      <Header as="h3">
-        Stats
-      </Header>
-      <Table definition>
-        <Table.Header>
-          <Table.Row>
-            <Table.HeaderCell />
-            <Table.HeaderCell>Number</Table.HeaderCell>
-            <Table.HeaderCell>Description</Table.HeaderCell>
-            <Table.HeaderCell>Threshold</Table.HeaderCell>
-          </Table.Row>
-        </Table.Header>
+    <Table definition>
+      <Table.Header>
+        <Table.Row>
+          <Table.HeaderCell />
+          <Table.HeaderCell>Number</Table.HeaderCell>
+          <Table.HeaderCell>Description</Table.HeaderCell>
+          <Table.HeaderCell>Threshold</Table.HeaderCell>
+        </Table.Row>
+      </Table.Header>
 
-        <Table.Body>
-          <Table.Row>
-            <Table.Cell>Total</Table.Cell>
-            <Table.Cell>{delegates.toString()}</Table.Cell>
-            <Table.Cell>Delegates in committee</Table.Cell>
-          </Table.Row>
-          <Table.Row>
-            <Table.Cell>Present</Table.Cell>
-            <Table.Cell>{present.toString()}</Table.Cell>
-            <Table.Cell>Delegates in attendance</Table.Cell>
-          </Table.Row>
-          <Table.Row>
-            <Table.Cell>Voting</Table.Cell>
-            <Table.Cell>{voting.toString()}</Table.Cell>
-            <Table.Cell>Delegates with voting rights</Table.Cell>
-          </Table.Row>
-          <Table.Row>
-            <Table.Cell error={!hasQuorum}>Debate</Table.Cell>
-            <Table.Cell error={!hasQuorum}>{quorum.toString()}</Table.Cell>
-            <Table.Cell error={!hasQuorum}>Delegates needed for debate</Table.Cell>
-            <Table.Cell error={!hasQuorum}>50% of total</Table.Cell>
-          </Table.Row>
-          <Table.Row>
-            <Table.Cell>Draft resolution</Table.Cell>
-            <Table.Cell>{draftResolution.toString()}</Table.Cell>
-            <Table.Cell>Delegates needed to table a draft resolution</Table.Cell>
-            <Table.Cell>25% of voting</Table.Cell>
-          </Table.Row>
-          <Table.Row>
-            <Table.Cell>Amendment</Table.Cell>
-            <Table.Cell>{amendment.toString()}</Table.Cell>
-            <Table.Cell>Delegates needed to table an amendment</Table.Cell>
-            <Table.Cell>10% of voting</Table.Cell>
-          </Table.Row>
-        </Table.Body>
-      </Table>
-    </div>
+      <Table.Body>
+        <Table.Row>
+          <Table.Cell>Total</Table.Cell>
+          <Table.Cell>{delegates.toString()}</Table.Cell>
+          <Table.Cell>Delegates in committee</Table.Cell>
+        </Table.Row>
+        <Table.Row>
+          <Table.Cell>Present</Table.Cell>
+          <Table.Cell>{present.toString()}</Table.Cell>
+          <Table.Cell>Delegates in attendance</Table.Cell>
+        </Table.Row>
+        <Table.Row>
+          <Table.Cell>Voting</Table.Cell>
+          <Table.Cell>{voting.toString()}</Table.Cell>
+          <Table.Cell>Delegates with voting rights</Table.Cell>
+        </Table.Row>
+        <Table.Row>
+          <Table.Cell error={!hasQuorum}>Debate</Table.Cell>
+          <Table.Cell error={!hasQuorum}>{quorum.toString()}</Table.Cell>
+          <Table.Cell error={!hasQuorum}>Delegates needed for debate</Table.Cell>
+          <Table.Cell error={!hasQuorum}>50% of total</Table.Cell>
+        </Table.Row>
+        <Table.Row>
+          <Table.Cell>Draft resolution</Table.Cell>
+          <Table.Cell>{draftResolution.toString()}</Table.Cell>
+          <Table.Cell>Delegates needed to table a draft resolution</Table.Cell>
+          <Table.Cell>25% of voting</Table.Cell>
+        </Table.Row>
+        <Table.Row>
+          <Table.Cell>Amendment</Table.Cell>
+          <Table.Cell>{amendment.toString()}</Table.Cell>
+          <Table.Cell>Delegates needed to table an amendment</Table.Cell>
+          <Table.Cell>10% of voting</Table.Cell>
+        </Table.Row>
+      </Table.Body>
+    </Table>
   );
 }
 
@@ -117,22 +112,22 @@ function MemberItem(props: { data: MemberData, fref: firebase.database.Reference
         />
       </Table.Cell>
       <Table.Cell collapsing>
-        <Checkbox toggle checked={props.data.present} onChange={propertyHandler('present')}/>
+        <Checkbox toggle checked={props.data.present} onChange={propertyHandler('present')} />
       </Table.Cell>
       <Table.Cell collapsing>
-        <Checkbox toggle checked={props.data.voting} onChange={propertyHandler('voting')}/>
+        <Checkbox toggle checked={props.data.voting} onChange={propertyHandler('voting')} />
       </Table.Cell>
       <Table.Cell>
-        <Button 
-          floated="right" 
-          icon 
-          labelPosition="left" 
-          primary 
-          size="small" 
-          color="red" 
-          onClick={() => props.fref.remove()} 
+        <Button
+          floated="right"
+          icon
+          labelPosition="left"
+          primary
+          size="small"
+          color="red"
+          onClick={() => props.fref.remove()}
         >
-          <Icon name="trash" /> Delete 
+          <Icon name="trash" /> Delete
         </Button>
       </Table.Cell>
     </Table.Row>
@@ -260,6 +255,9 @@ export default class CommitteeAdmin extends React.Component<Props, State> {
         <Header as="h2" attached="top">Admin</Header>
         <Segment attached >
           <this.CommitteeMembers data={this.props.committee} fref={this.props.fref} />
+        </Segment>
+        <Header as="h2" attached="top">Stats</Header>
+        <Segment attached >
           <CommitteeStats data={this.props.committee} />
         </Segment>
       </div>
