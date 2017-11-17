@@ -14,6 +14,8 @@ interface Props {
 interface State {
   newCountry: CountryOption;
   newMemberRank: Rank;
+  newMemberVoting: MemberData['voting'];
+  newMemberPresent: MemberData['present'];
 }
 
 function CommitteeStats(props: { data: CommitteeData }) {
@@ -82,8 +84,34 @@ function CommitteeStats(props: { data: CommitteeData }) {
 }
 
 function MemberItem(props: { data: MemberData, fref: firebase.database.Reference }) {
+  const propertyHandler = (property: string) => (event: any, data: any) => {
+    props.fref.child(property).set(data.checked);
+  };
+
   return (
-    <MemberView data={props.data} fref={props.fref} />
+    <Table.Row>
+      <Table.Cell>{props.data.name}</Table.Cell>
+      <Table.Cell>{props.data.rank}</Table.Cell>
+      <Table.Cell collapsing>
+        <Checkbox toggle checked={props.data.present} onChange={propertyHandler('present')}/>
+      </Table.Cell>
+      <Table.Cell collapsing>
+        <Checkbox toggle checked={props.data.voting} onChange={propertyHandler('voting')}/>
+      </Table.Cell>
+      <Table.Cell>
+        <Button 
+          floated="right" 
+          icon 
+          labelPosition="left" 
+          primary 
+          size="small" 
+          color="red" 
+          onClick={() => props.fref.remove()} 
+        >
+          <Icon name="trash" /> Delete 
+        </Button>
+      </Table.Cell>
+    </Table.Row>
   );
 }
 
@@ -93,7 +121,9 @@ export default class CommitteeAdmin extends React.Component<Props, State> {
 
     this.state = {
       newCountry: countryOptions[0],
-      newMemberRank: Rank.Standard
+      newMemberRank: Rank.Standard,
+      newMemberVoting: true,
+      newMemberPresent: true
     };
   }
 
@@ -103,8 +133,8 @@ export default class CommitteeAdmin extends React.Component<Props, State> {
     const newMember: MemberData = {
       name: this.state.newCountry.text,
       rank: this.state.newMemberRank,
-      present: true,
-      voting: true
+      present: this.state.newMemberPresent,
+      voting: this.state.newMemberVoting
     };
 
     this.props.fref.child('members').push().set(newMember);
@@ -130,6 +160,25 @@ export default class CommitteeAdmin extends React.Component<Props, State> {
 
   CommitteeMembers = (props: { data: CommitteeData, fref: firebase.database.Reference }) => {
 
+    const members = this.props.committee.members ? this.props.committee.members : {};
+    const memberItems = Object.keys(members).map(key =>
+      (
+        <MemberItem
+          key={key}
+          data={props.data.members[key]}
+          fref={props.fref.child('members').child(key)}
+        />
+      )
+    );
+
+    const presentHandler = (event: any, data: any) => {
+      this.setState({ newMemberPresent: data.checked });
+    };
+
+    const votingHandler = (event: any, data: any) => {
+      this.setState({ newMemberVoting: data.checked });
+    };
+
     return (
       <Table compact celled definition>
         <Table.Header>
@@ -143,21 +192,7 @@ export default class CommitteeAdmin extends React.Component<Props, State> {
         </Table.Header>
 
         <Table.Body>
-          <Table.Row>
-            <Table.Cell>USA</Table.Cell>
-            <Table.Cell>BIG BOI</Table.Cell>
-            <Table.Cell collapsing>
-              <Checkbox slider />
-            </Table.Cell>
-            <Table.Cell collapsing>
-              <Checkbox slider />
-            </Table.Cell>
-            <Table.Cell>
-              <Button floated="right" icon labelPosition="left" primary size="small" onClick={this.pushMember} >
-                <Icon name="user" /> Delete 
-              </Button>
-            </Table.Cell>
-          </Table.Row>
+          {memberItems}
         </Table.Body>
 
         <Table.Footer fullWidth>
@@ -168,15 +203,15 @@ export default class CommitteeAdmin extends React.Component<Props, State> {
             <Table.HeaderCell>
               Dropdown boy
             </Table.HeaderCell>
-            <Table.HeaderCell>
-              <Checkbox slider />
+            <Table.HeaderCell collapsing >
+              <Checkbox toggle checked={this.state.newMemberPresent} onChange={presentHandler} />
             </Table.HeaderCell>
-            <Table.HeaderCell>
-              <Checkbox slider />
+            <Table.HeaderCell collapsing >
+              <Checkbox toggle checked={this.state.newMemberVoting} onChange={votingHandler} />
             </Table.HeaderCell>
             <Table.HeaderCell>
               <Button floated="right" icon labelPosition="left" primary size="small" onClick={this.pushMember} >
-                <Icon name="user" /> Add Delegate
+                <Icon name="user" /> Add
               </Button>
             </Table.HeaderCell>
           </Table.Row>
@@ -186,32 +221,10 @@ export default class CommitteeAdmin extends React.Component<Props, State> {
   }
 
   render() {
-    const members = this.props.committee.members ? this.props.committee.members : {};
-    const memberItems = Object.keys(members).map(key =>
-      (
-        <List.Item>
-          <MemberItem
-            key={key}
-            data={this.props.committee.members[key]}
-            fref={this.props.fref.child('members').child(key)}
-          />
-        </List.Item>
-      )
-    );
-
-    const Members = () => (
-      <div>
-        <Header as="h3">Members</Header>
-        <List>
-          {memberItems}
-        </List>
-      </div>
-    );
-
     return (
       <div>
         <Header as="h2" attached="top">Admin</Header>
-        <Segment>
+        <Segment attached >
           <this.CommitteeMembers data={this.props.committee} fref={this.props.fref} />
           <CommitteeStats data={this.props.committee} />
         </Segment>
