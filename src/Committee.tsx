@@ -6,6 +6,8 @@ import { MemberData, MemberID } from './Member';
 import { Caucus, CaucusData, CaucusID, DEFAULT_CAUCUS } from './Caucus';
 import { ResolutionData, ResolutionID } from './Resolution';
 import CommitteeAdmin from './CommitteeAdmin';
+import { Dropdown, Icon, Input, Menu, Sticky } from 'semantic-ui-react';
+import { EditableText } from '@blueprintjs/core';
 
 // FIXME: This is repeatedly declared in every file where URLParameters are needed
 interface URLParameters {
