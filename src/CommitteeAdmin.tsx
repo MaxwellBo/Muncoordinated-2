@@ -122,9 +122,9 @@ function MemberItem(props: { data: MemberData, fref: firebase.database.Reference
       </Table.Cell>
       <Table.Cell>
         <Button
-          floated="right"
           icon
-          labelPosition="left"
+          labelPosition="left" 
+          fluid
           negative
           size="small"
           onClick={() => props.fref.remove()}
@@ -242,9 +242,9 @@ export default class CommitteeAdmin extends React.Component<Props, State> {
             </Table.HeaderCell>
             <Table.HeaderCell>
               <Button 
-                floated="right" 
                 icon
                 labelPosition="left" 
+                fluid
                 primary 
                 size="small" 
                 onClick={this.pushMember} 

@@ -5,7 +5,7 @@ import { RouteComponentProps } from 'react-router';
 import { MemberID } from './Member';
 import { CommitteeID, CommitteeData } from './Committee';
 import * as Utils from './utils';
-import { Segment, Loader, Dimmer, Header, Input } from 'semantic-ui-react';
+import { Segment, Loader, Dimmer, Header, Input, Button, Icon } from 'semantic-ui-react';
 
 interface URLParameters {
   caucusID: CaucusID;
@@ -57,8 +57,8 @@ const DEFAULT_SPEAKER_EVENT = {
 };
 
 export const DEFAULT_CAUCUS: CaucusData = {
-  name: 'Default name',
-  topic: 'Default topic',
+  name: 'Default caucus name',
+  topic: 'Default caucus topic',
   status: CaucusStatus.Open,
   speakerTimer: DEFAULT_TIMER,
   caucusTimer: DEFAULT_TIMER,
@@ -94,6 +94,15 @@ function CaucusMeta(props: { data: CaucusData, fref: firebase.database.Reference
       <input value={props.data.topic} onChange={makeHandler('topic')} />
       <h3>Status</h3>
       <p>{props.data.status}</p>
+      <Button 
+        icon 
+        negative 
+        labelPosition="left" 
+        onClick={() => props.fref.remove()}
+      >
+        <Icon name="trash" />
+          Delete
+      </Button>
     </Segment>
   );
 }

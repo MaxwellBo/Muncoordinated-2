@@ -41,15 +41,15 @@ function CommitteeMeta(props: { data: CommitteeData, fref: firebase.database.Ref
 
   return (
     <Segment>
-      <Input 
-        value={props.data.name} 
-        onChange={makeHandler('name')} 
-        attached="top" 
+      <Input
+        value={props.data.name}
+        onChange={makeHandler('name')}
+        attached="top"
         size="massive"
-        fluid 
+        fluid
         placeholder="Committee Name"
       />
-      <Input value={props.data.topic} onChange={makeHandler('topic')} attached="bottom" fluid placeholder="Topic"/>
+      <Input value={props.data.topic} onChange={makeHandler('topic')} attached="bottom" fluid placeholder="Topic" />
     </Segment>
   );
 }
@@ -72,8 +72,8 @@ export default class Committee extends React.Component<Props, State> {
     this.state = {
       committee: defaultCommittee,
       fref: firebase.database().ref('commitees').child(committeeID),
-      newCaucusName: '',
-      newCaucusTopic: ''
+      newCaucusName: DEFAULT_CAUCUS.name,
+      newCaucusTopic: DEFAULT_CAUCUS.topic
     };
   }
 
@@ -107,13 +107,14 @@ export default class Committee extends React.Component<Props, State> {
 
     const CaucusItem = (props: { id: CaucusID, data: CaucusData }) => {
       return (
-        <Link to={`/committees/${committeeID}/caucuses/${props.id}`}>
-          <Menu.Item name={props.data.name} active={props.id === caucusID}>
-            <Icon name="close" />
-            {props.data.name}
-          </Menu.Item>
-        </Link>
-    // onClick={() => this.state.fref.child('caucuses').child(props.id).remove()
+        <Menu.Item
+          name={props.data.name}
+          active={props.id === caucusID}
+          onClick={() => this.props.history.push(`/committees/${committeeID}/caucuses/${props.id}`)}
+        >
+          {props.data.name}
+        </Menu.Item>
+        // onClick={() => this.state.fref.child('caucuses').child(props.id).remove()
       );
     };
 
@@ -146,11 +147,13 @@ export default class Committee extends React.Component<Props, State> {
 
       return (
         <Menu fluid vertical size="massive">
-          <Link to={`/committees/${committeeID}/admin`}>
-            <Menu.Item name="admin" active={false}>
-              Admin
-            </Menu.Item>
-          </Link>
+          <Menu.Item
+            name="admin"
+            active={false}
+            onClick={() => this.props.history.push(`/committees/${committeeID}/admin`)}
+          >
+            Admin
+          </Menu.Item>
           <Menu.Item>
             Caucuses
             <Menu.Menu>
