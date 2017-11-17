@@ -20,7 +20,7 @@ import Committee from './Committee';
 
 const Footer = () => {
   return (
-    <Message size="mini">
+    <Message compact size="mini">
       Made with 💖 by <a href="http://maxbo.me/">Max Bo</a>, <a href="http://hugokawamata.com/">Hugo Kawmata</a>, 
       and <a href="http://charltongroves.com/">Charlie Groves</a>
     </Message>);

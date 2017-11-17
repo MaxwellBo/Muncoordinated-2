@@ -6,7 +6,7 @@ import { MemberData, MemberID } from './Member';
 import { Caucus, CaucusData, CaucusID, DEFAULT_CAUCUS } from './Caucus';
 import { ResolutionData, ResolutionID } from './Resolution';
 import CommitteeAdmin from './CommitteeAdmin';
-import { Dropdown, Icon, Input, Menu, Sticky } from 'semantic-ui-react';
+import { Dropdown, Icon, Input, Menu, Sticky, Grid } from 'semantic-ui-react';
 
 // FIXME: This is repeatedly declared in every file where URLParameters are needed
 interface URLParameters {
@@ -142,13 +142,18 @@ export default class Committee extends React.Component<Props, State> {
       );
 
       return (
-        <Menu vertical>
+        <Menu fluid vertical>
           <Menu.Item>
             Caucuses
             <Menu.Menu>
               {caucusItems}
             </Menu.Menu>
           </Menu.Item>
+          <Link to={`/committees/${committeeID}/admin`}>
+            <Menu.Item name="admin" active={false}>
+                Admin
+            </Menu.Item>
+          </Link>
         </Menu>
       );
     };
@@ -163,25 +168,17 @@ export default class Committee extends React.Component<Props, State> {
 
     const Admin = () => <CommitteeAdmin committee={this.state.committee} fref={this.state.fref} />;
 
-    const Nav = () => (
-      <nav>
-        <ul>
-          <li><Link to={`/committees/${committeeID}/admin`}>Admin</Link></li>
-          <li><Link to={`/committees/${committeeID}/caucuses`}>Caucuses</Link></li>
-          <li><Link to={`/committees/${committeeID}/report`}>Report</Link></li>
-          <li><Link to={`/committees/${committeeID}/resolutions`}>Resolutions</Link></li>
-        </ul>
-      </nav>
-    );
-
     return (
-      <div>
-        <CommitteeMeta data={this.state.committee} fref={this.state.fref} />
-        <Nav />
-        <NewNav />
-        <Route exact={true} path="/committees/:committeeID/admin" render={Admin} />
-        <Route path="/committees/:committeeID/caucuses/:caucusID" render={CaucusComponent} />
-      </div>
+      <Grid>
+        <Grid.Column width={4}>
+          {/* <CommitteeMeta data={this.state.committee} fref={this.state.fref} /> */}
+          <NewNav />
+        </Grid.Column>
+        <Grid.Column stretched width={12} />
+          <Route exact={true} path="/committees/:committeeID/admin" render={Admin} />
+          <Route path="/committees/:committeeID/caucuses/:caucusID" render={CaucusComponent} />
+        <Grid.Column />
+      </Grid>
     );
   }
 }
