@@ -18,6 +18,13 @@ interface State {
   newMemberPresent: MemberData['present'];
 }
 
+const RANK_OPTIONS = [
+  { key: Rank.Standard, value: Rank.Standard, text: Rank.Standard },
+  { key: Rank.Veto, value: Rank.Veto, text: Rank.Veto },
+  { key: Rank.NGO, value: Rank.NGO, text: Rank.NGO },
+  { key: Rank.Observer, value: Rank.Observer, text: Rank.Observer }
+];
+
 function CommitteeStats(props: { data: CommitteeData }) {
   const membersMap = props.data.members ? props.data.members : {} as Map<string, MemberData>;
   const members: MemberData[] = Utils.objectToList(membersMap);
@@ -25,10 +32,10 @@ function CommitteeStats(props: { data: CommitteeData }) {
   const delegates: number = members.length;
   const present: number = members.filter(x => x.present).length;
 
-  const canVote = ({ rank }: MemberData) => rank === Rank.Veto || rank === Rank.Standard;
+  const canVote = (x: MemberData) => (x.rank === Rank.Veto || x.rank === Rank.Standard) && x.voting;
   const voting: number = members.filter(canVote).length;
 
-  const quorum: number = Math.ceil(voting * 0.5);
+  const quorum: number = Math.ceil(delegates * 0.5);
   const hasQuorum: boolean = present >= quorum;
   const draftResolution: number = Math.ceil(voting * 0.25);
   const amendment: number = Math.ceil(voting * 0.1);
@@ -42,7 +49,7 @@ function CommitteeStats(props: { data: CommitteeData }) {
         <Table.Header>
           <Table.Row>
             <Table.HeaderCell />
-            <Table.HeaderCell>Required</Table.HeaderCell>
+            <Table.HeaderCell>Number</Table.HeaderCell>
             <Table.HeaderCell>Description</Table.HeaderCell>
             <Table.HeaderCell>Threshold</Table.HeaderCell>
           </Table.Row>
@@ -55,15 +62,20 @@ function CommitteeStats(props: { data: CommitteeData }) {
             <Table.Cell>Delegates in committee</Table.Cell>
           </Table.Row>
           <Table.Row>
+            <Table.Cell>Present</Table.Cell>
+            <Table.Cell>{present.toString()}</Table.Cell>
+            <Table.Cell>Delegates in attendance</Table.Cell>
+          </Table.Row>
+          <Table.Row>
             <Table.Cell>Voting</Table.Cell>
             <Table.Cell>{voting.toString()}</Table.Cell>
             <Table.Cell>Delegates with voting rights</Table.Cell>
           </Table.Row>
           <Table.Row>
             <Table.Cell error={!hasQuorum}>Debate</Table.Cell>
-            <Table.Cell>{quorum.toString()}</Table.Cell>
-            <Table.Cell>Delegates needed for debate</Table.Cell>
-            <Table.Cell>50% of total</Table.Cell>
+            <Table.Cell error={!hasQuorum}>{quorum.toString()}</Table.Cell>
+            <Table.Cell error={!hasQuorum}>Delegates needed for debate</Table.Cell>
+            <Table.Cell error={!hasQuorum}>50% of total</Table.Cell>
           </Table.Row>
           <Table.Row>
             <Table.Cell>Draft resolution</Table.Cell>
@@ -88,10 +100,22 @@ function MemberItem(props: { data: MemberData, fref: firebase.database.Reference
     props.fref.child(property).set(data.checked);
   };
 
+  const rankHandler = (event: any, data: any) => {
+    props.fref.child('rank').set(data.value);
+  };
+
   return (
     <Table.Row>
       <Table.Cell>{props.data.name}</Table.Cell>
-      <Table.Cell>{props.data.rank}</Table.Cell>
+      <Table.Cell>
+        <Dropdown
+          search
+          selection
+          options={RANK_OPTIONS}
+          onChange={rankHandler}
+          value={props.data.rank}
+        />
+      </Table.Cell>
       <Table.Cell collapsing>
         <Checkbox toggle checked={props.data.present} onChange={propertyHandler('present')}/>
       </Table.Cell>
@@ -179,6 +203,10 @@ export default class CommitteeAdmin extends React.Component<Props, State> {
       this.setState({ newMemberVoting: data.checked });
     };
 
+    const rankHandler = (event: any, data: any) => {
+      this.setState({ newMemberRank: data.value });
+    };
+
     return (
       <Table compact celled definition>
         <Table.Header>
@@ -201,7 +229,13 @@ export default class CommitteeAdmin extends React.Component<Props, State> {
               <this.NewMemberForm />
             </Table.HeaderCell>
             <Table.HeaderCell>
-              Dropdown boy
+              <Dropdown
+                search
+                selection
+                options={RANK_OPTIONS}
+                onChange={rankHandler}
+                value={this.state.newMemberRank}
+              />
             </Table.HeaderCell>
             <Table.HeaderCell collapsing >
               <Checkbox toggle checked={this.state.newMemberPresent} onChange={presentHandler} />
