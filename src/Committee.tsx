@@ -6,7 +6,7 @@ import { MemberData, MemberID } from './Member';
 import { Caucus, CaucusData, CaucusID, DEFAULT_CAUCUS } from './Caucus';
 import { ResolutionData, ResolutionID } from './Resolution';
 import CommitteeAdmin from './CommitteeAdmin';
-import { Dropdown, Icon, Input, Menu, Sticky, Grid } from 'semantic-ui-react';
+import { Dropdown, Icon, Input, Menu, Sticky, Grid, Segment } from 'semantic-ui-react';
 
 // FIXME: This is repeatedly declared in every file where URLParameters are needed
 interface URLParameters {
@@ -36,19 +36,21 @@ export interface CommitteeData {
 }
 
 function CommitteeMeta(props: { data: CommitteeData, fref: firebase.database.Reference; }) {
-
   const makeHandler = (field: string) => (e: React.FormEvent<HTMLInputElement>) =>
     props.fref.child(field).set(e.currentTarget.value);
 
   return (
-    <div>
-      <h1>{props.data.name}</h1>
-      <input value={props.data.name} onChange={makeHandler('name')} />
-      <h3>Chairperson</h3>
-      <input value={props.data.chair} onChange={makeHandler('chair')} />
-      <h3>Topic</h3>
-      <input value={props.data.topic} onChange={makeHandler('topic')} />
-    </div>
+    <Segment>
+      <Input 
+        value={props.data.name} 
+        onChange={makeHandler('name')} 
+        attached="top" 
+        size="massive"
+        fluid 
+        placeholder="Committee Name"
+      />
+      <Input value={props.data.topic} onChange={makeHandler('topic')} attached="bottom" fluid placeholder="Topic"/>
+    </Segment>
   );
 }
 
@@ -136,24 +138,24 @@ export default class Committee extends React.Component<Props, State> {
       );
     };
 
-    const NewNav = () => {
+    const Nav = () => {
       const caucusItems = Object.keys(this.state.committee.caucuses).map(key =>
         <CaucusItem key={key} id={key} data={this.state.committee.caucuses[key]} />
       );
 
       return (
         <Menu fluid vertical>
+          <Link to={`/committees/${committeeID}/admin`}>
+            <Menu.Item name="admin" active={false}>
+              Admin
+            </Menu.Item>
+          </Link>
           <Menu.Item>
             Caucuses
             <Menu.Menu>
               {caucusItems}
             </Menu.Menu>
           </Menu.Item>
-          <Link to={`/committees/${committeeID}/admin`}>
-            <Menu.Item name="admin" active={false}>
-                Admin
-            </Menu.Item>
-          </Link>
         </Menu>
       );
     };
@@ -169,16 +171,18 @@ export default class Committee extends React.Component<Props, State> {
     const Admin = () => <CommitteeAdmin committee={this.state.committee} fref={this.state.fref} />;
 
     return (
-      <Grid>
-        <Grid.Column width={4}>
-          {/* <CommitteeMeta data={this.state.committee} fref={this.state.fref} /> */}
-          <NewNav />
-        </Grid.Column>
-        <Grid.Column stretched width={12} />
-          <Route exact={true} path="/committees/:committeeID/admin" render={Admin} />
-          <Route path="/committees/:committeeID/caucuses/:caucusID" render={CaucusComponent} />
-        <Grid.Column />
-      </Grid>
+      <div>
+        <CommitteeMeta data={this.state.committee} fref={this.state.fref} />
+        <Grid>
+          <Grid.Column width={4}>
+            <Nav />
+          </Grid.Column>
+          <Grid.Column stretched width={12}>
+            <Route exact={true} path="/committees/:committeeID/admin" render={Admin} />
+            <Route path="/committees/:committeeID/caucuses/:caucusID" render={CaucusComponent} />
+          </Grid.Column>
+        </Grid>
+      </div>
     );
   }
 }

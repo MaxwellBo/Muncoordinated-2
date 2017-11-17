@@ -73,7 +73,7 @@ function CaucusHeader(props: { data: CaucusData, fref: firebase.database.Referen
 
   // TODO: Make status either a dropdown or a checkbox / on/off slider
   return (
-    <Input value={props.data.name} onChange={makeHandler('name')} attatched="top" />
+    <Input value={props.data.name} onChange={makeHandler('name')} attatched="top" size="massive" fluid/>
   );
 }
 

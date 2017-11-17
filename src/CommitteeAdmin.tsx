@@ -3,7 +3,7 @@ import * as firebase from 'firebase';
 import { CommitteeData, CommitteeID } from './Committee';
 import { MemberView, MemberData, MemberID, Rank } from './Member';
 import * as Utils from './utils';
-import { Dropdown, Segment, Header, Table, List, Button, Checkbox, Icon } from 'semantic-ui-react';
+import { Dropdown, Segment, Header, Flag, Table, List, Button, Checkbox, Icon } from 'semantic-ui-react';
 import { countryOptions, CountryOption } from './common';
 
 interface Props {
@@ -101,7 +101,10 @@ function MemberItem(props: { data: MemberData, fref: firebase.database.Reference
 
   return (
     <Table.Row>
-      <Table.Cell>{props.data.name}</Table.Cell>
+      <Table.Cell>
+        <Flag name={props.data.name.toLowerCase() as any} />
+        {props.data.name}
+      </Table.Cell>
       <Table.Cell>
         <Dropdown
           search
@@ -122,9 +125,8 @@ function MemberItem(props: { data: MemberData, fref: firebase.database.Reference
           floated="right"
           icon
           labelPosition="left"
-          primary
+          negative
           size="small"
-          color="red"
           onClick={() => props.fref.remove()}
         >
           <Icon name="trash" /> Delete
@@ -239,7 +241,14 @@ export default class CommitteeAdmin extends React.Component<Props, State> {
               <Checkbox toggle checked={this.state.newMemberVoting} onChange={votingHandler} />
             </Table.HeaderCell>
             <Table.HeaderCell>
-              <Button floated="right" icon labelPosition="left" primary size="small" onClick={this.pushMember} >
+              <Button 
+                floated="right" 
+                icon
+                labelPosition="left" 
+                primary 
+                size="small" 
+                onClick={this.pushMember} 
+              >
                 <Icon name="user" /> Add
               </Button>
             </Table.HeaderCell>
