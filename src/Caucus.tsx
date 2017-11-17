@@ -117,20 +117,46 @@ function SpeakerEvents(props: { data?: Map<string, SpeakerEvent>, fref: firebase
   );
 }
 
-function CaucusView(props: { data: CaucusData, fref: firebase.database.Reference }) {
-  return (
+function CaucusView(props: { data?: CaucusData, fref: firebase.database.Reference }) {
+
+  const nextSpeaker = () => {
+    const nowRef = props.fref.child('speaking');
+    const nextRef = props.fref.child('queue').limitToFirst(1).ref;
+    const historyRef = props.fref.child('history');
+
+    // Move the person currently speaking into history...
+    nowRef.once('value', (nowEvent) => {
+      if (nowEvent) {
+        historyRef.push().set(nowEvent.val());
+        nowRef.set(null);
+      } // do nothing if no-one is currently speaking
+    });
+
+    // ...and transfer the person next person next to speak into the "Speaking" zone
+    nextRef.once('child_added', (nextEvent) => {
+      if (nextEvent) {
+        nowRef.set(nextEvent.val());
+        nextRef.set(null);
+      }
+    });
+  };
+
+  return props.data ? (
     <div>
       <CaucusMeta data={props.data} fref={props.fref} />
       <h4>Now Speaking</h4>
       <SpeakerEvent data={props.data.speaking} fref={props.fref.child('speaking')} />
+      <button onClick={nextSpeaker} >Next Speaker</button>
       <h4>Queue</h4>
       <SpeakerEvents data={props.data.queue} fref={props.fref.child('queue')} />
+      <h4>History</h4>
+      <SpeakerEvents data={props.data.history} fref={props.fref.child('history')} />
       <h4>Caucus Timer</h4>
       {/* <Timer fref={this.state.fref.child('caucusTimer')} /> */}
       <h4>Speaker Timer</h4>
       {/* <Timer fref={this.state.fref.child('speakerTimer')} /> */}
     </div>
-  );
+  ) : <div><p>Loading</p></div>;
 }
 
 export class Caucus extends React.Component<Props, State> {
