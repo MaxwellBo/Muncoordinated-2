@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as firebase from 'firebase';
-import { Flag } from 'semantic-ui-react';
+import { Label, Icon, Flag } from 'semantic-ui-react';
 
 interface Props { 
   fref: firebase.database.Reference;
@@ -34,19 +34,14 @@ export const MemberView = (props: { data: MemberData, fref: firebase.database.Re
   // TODO: Make the Rank display a dropdown for the Rank Enum
 
   return (
-    <div style={{ border: 'solid '}}>
-      <h4>Name</h4>
-      <input value={props.data.name} onChange={makeHandler('name')} />
-      <h4>Present</h4>
-      <p>{props.data.present ? 'Yes' : 'No'}</p>
-      <h4>Rank</h4>
-      <p>{props.data.rank}</p>
-      <h4>Voting</h4>
-      <p>{props.data.voting ? 'Yes' : 'No'}</p>
-      <button onClick={() => props.fref.remove()}>
-        Delete
-      </button>
-    </div>
+    <Label as="a" image size="large" >
+      <Flag as="i" name={props.data.name.toLowerCase() as any} />
+      {props.data.name}
+      {<Label.Detail>Present</Label.Detail>}
+      {props.data.present && <Label.Detail>Present</Label.Detail>}
+      {props.data.voting && <Label.Detail>Voting</Label.Detail>}
+      <Icon name="delete" onClick={() => props.fref.remove()} />
+    </Label>
   );
 };
 

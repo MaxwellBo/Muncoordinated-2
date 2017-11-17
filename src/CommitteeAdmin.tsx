@@ -65,8 +65,6 @@ export default class CommitteeAdmin extends React.Component<Props, State> {
   pushMember = (event: any) => {
     event.preventDefault();
 
-    console.debug(this.state);
-
     const newMember: MemberData = {
       name: this.state.newCountry.text,
       rank: this.state.newMemberRank,
