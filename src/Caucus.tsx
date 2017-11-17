@@ -5,7 +5,7 @@ import { RouteComponentProps } from 'react-router';
 import { MemberID, MemberData } from './Member';
 import { CommitteeID, CommitteeData } from './Committee';
 import * as Utils from './utils';
-import { Segment, Loader, Dimmer, Header, Input, Button, Icon } from 'semantic-ui-react';
+import { Segment, Loader, Dimmer, Header, Dropdown, Input, Button, Icon } from 'semantic-ui-react';
 import { COUNTRY_OPTIONS, CountryOption } from './common';
 
 interface URLParameters {
@@ -167,6 +167,10 @@ function CaucusView(props:
     });
   };
 
+  // FIXME: BIG OL' HACK
+  const members = props.members ? props.members : {} as Map<string, MemberData>;
+  const membersCountrySet = new Set(Utils.objectToList(members).map(x => x.name));
+
   return props.data ? (
     <div>
       <CaucusHeader data={props.data} fref={props.fref} />
@@ -177,6 +181,12 @@ function CaucusView(props:
         <button onClick={nextSpeaker} >Next Speaker</button>
         <h4>Queue</h4>
         <SpeakerEvents data={props.data.queue} fref={props.fref.child('queue')} />
+        <Dropdown
+          placeholder="Select Country"
+          search
+          selection
+          options={COUNTRY_OPTIONS.filter(x => membersCountrySet.has(x.text))}
+        />
         <h4>History</h4>
         <SpeakerEvents data={props.data.history} fref={props.fref.child('history')} />
         <Timer name="Caucus Timer" fref={props.fref.child('caucusTimer')} />
