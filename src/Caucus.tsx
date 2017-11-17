@@ -57,8 +57,8 @@ const DEFAULT_SPEAKER_EVENT = {
 };
 
 export const DEFAULT_CAUCUS: CaucusData = {
-  name: '',
-  topic: '',
+  name: 'Default name',
+  topic: 'Default topic',
   status: CaucusStatus.Open,
   speakerTimer: DEFAULT_TIMER,
   caucusTimer: DEFAULT_TIMER,
@@ -71,9 +71,15 @@ function CaucusHeader(props: { data: CaucusData, fref: firebase.database.Referen
   const makeHandler = (field: string) => (e: React.FormEvent<HTMLInputElement>) =>
     props.fref.child(field).set(e.currentTarget.value);
 
-  // TODO: Make status either a dropdown or a checkbox / on/off slider
   return (
-    <Input value={props.data.name} onChange={makeHandler('name')} attatched="top" size="massive" fluid/>
+    <Input 
+      value={props.data.name} 
+      onChange={makeHandler('name')} 
+      attatched="top" 
+      size="massive" 
+      fluid
+      placeholder="Caucus Name"
+    />
   );
 }
 

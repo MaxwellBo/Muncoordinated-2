@@ -109,10 +109,11 @@ export default class Committee extends React.Component<Props, State> {
       return (
         <Link to={`/committees/${committeeID}/caucuses/${props.id}`}>
           <Menu.Item name={props.data.name} active={props.id === caucusID}>
+            <Icon name="close" />
             {props.data.name}
           </Menu.Item>
         </Link>
-        // <button onClick={() => this.state.fref.child('caucuses').child(props.id).remove()}>
+    // onClick={() => this.state.fref.child('caucuses').child(props.id).remove()
       );
     };
 
@@ -144,7 +145,7 @@ export default class Committee extends React.Component<Props, State> {
       );
 
       return (
-        <Menu fluid vertical>
+        <Menu fluid vertical size="massive">
           <Link to={`/committees/${committeeID}/admin`}>
             <Menu.Item name="admin" active={false}>
               Admin
@@ -154,6 +155,10 @@ export default class Committee extends React.Component<Props, State> {
             Caucuses
             <Menu.Menu>
               {caucusItems}
+              <Menu.Item name="New Caucus" onClick={this.pushCaucus}>
+                <Icon name="add" />
+                New Caucus
+              </Menu.Item>
             </Menu.Menu>
           </Menu.Item>
         </Menu>
