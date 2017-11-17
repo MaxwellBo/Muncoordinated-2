@@ -163,9 +163,9 @@ function CaucusView(props: { data?: CaucusData, fref: firebase.database.Referenc
         <h4>History</h4>
         <SpeakerEvents data={props.data.history} fref={props.fref.child('history')} />
         <h4>Caucus Timer</h4>
-        {/* <Timer fref={this.state.fref.child('caucusTimer')} /> */}
+        <Timer fref={props.fref.child('caucusTimer')} />
         <h4>Speaker Timer</h4>
-        {/* <Timer fref={this.state.fref.child('speakerTimer')} /> */}
+        <Timer fref={props.fref.child('speakerTimer')} />
       </Segment>
     </div>
   ) : (

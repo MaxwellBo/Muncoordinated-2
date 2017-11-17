@@ -51,9 +51,7 @@ export class Timer extends React.Component<Props, State> {
       ticking: !this.state.timer.ticking
     };
 
-    this.setState({timer: newTimer});
-
-    this.props.fref.set(this.state.timer);
+    this.props.fref.set(newTimer);
   }
 
   componentDidMount() {
