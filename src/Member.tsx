@@ -1,5 +1,6 @@
 import * as React from 'react';
 import * as firebase from 'firebase';
+import { Flag } from 'semantic-ui-react';
 
 interface Props { 
   fref: firebase.database.Reference;

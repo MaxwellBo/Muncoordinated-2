@@ -1,6 +1,7 @@
 import * as React from 'react';
 import * as firebase from 'firebase';
 import { Route } from 'react-router-dom';
+import { Button, Container, Header } from 'semantic-ui-react';
 import './App.css';
 
 const firebaseConfig = {
@@ -25,11 +26,11 @@ class App extends React.Component {
   render() {
 
     return (
-      <div className="App">
+      <Container>
         <Route exact={true} path="/committees" component={Welcome} />
         <Route path="/committees/:committeeID" component={Committee} />
         <Footer />
-      </div>
+      </Container>
     );
   }
 }

@@ -3,6 +3,8 @@ import * as firebase from 'firebase';
 import { CommitteeData, CommitteeID } from './Committee';
 import { MemberView, MemberData, MemberID, Rank } from './Member';
 import * as Utils from './utils';
+import { Dropdown } from 'semantic-ui-react';
+import { countryOptions, CountryOption } from './common';
 
 interface Props {
   committee: CommitteeData;
@@ -10,12 +12,13 @@ interface Props {
 }
 
 interface State {
-  newMemberName: string;
+  newCountry: CountryOption;
   newMemberRank: Rank;
 }
 
 function CommitteeStats(props: { data: CommitteeData }) {
-  const memberItems: MemberData[] = Utils.objectToList(props.data.members);
+  const members = props.data.members ? props.data.members : {} as Map<string, MemberData>;
+  const memberItems: MemberData[] = Utils.objectToList(members);
 
   const delegates: number = memberItems.length;
 
@@ -54,7 +57,7 @@ export default class CommitteeAdmin extends React.Component<Props, State> {
     super(props);
 
     this.state = {
-      newMemberName: '',
+      newCountry: countryOptions[0],
       newMemberRank: Rank.Standard
     };
   }
@@ -62,8 +65,10 @@ export default class CommitteeAdmin extends React.Component<Props, State> {
   pushMember = (event: any) => {
     event.preventDefault();
 
+    console.debug(this.state);
+
     const newMember: MemberData = {
-      name: this.state.newMemberName,
+      name: this.state.newCountry.text,
       rank: this.state.newMemberRank,
       present: true,
       voting: true
@@ -73,7 +78,8 @@ export default class CommitteeAdmin extends React.Component<Props, State> {
   }
 
   render() {
-    const memberItems = Object.keys(this.props.committee.members).map(key =>
+    const members = this.props.committee.members ? this.props.committee.members : {};
+    const memberItems = Object.keys(members).map(key =>
       (
         <MemberItem 
           key={key} 
@@ -84,16 +90,22 @@ export default class CommitteeAdmin extends React.Component<Props, State> {
     );
 
     const NewMemberForm = () => {
-      const nameHandler = (event: any) => {
-        this.setState({ newMemberName: event.target.value });
+      const nameHandler = (event: any, data: any) => {
+        // FIXME: Probably a hack but it's the best I can do lmao 
+        this.setState({ newCountry: countryOptions.filter(c => c.value === data.value)[0] });
       };
 
       return (
         <form key="newMemberForm" onSubmit={this.pushMember}>
-          <label>
-            Name:
-          <input key="nameField" type="text" value={this.state.newMemberName} onChange={nameHandler} />
-          </label>
+          <Dropdown 
+            placeholder="Select Country" 
+            fluid 
+            search 
+            selection 
+            options={countryOptions} 
+            onChange={nameHandler} 
+            value={this.state.newCountry.value} 
+          />
           <input type="submit" value="Submit" />
         </form>
       );
