@@ -3,7 +3,7 @@ import * as firebase from 'firebase';
 import { CommitteeData, CommitteeID } from './Committee';
 import { MemberView, MemberData, MemberID, Rank } from './Member';
 import * as Utils from './utils';
-import { Dropdown } from 'semantic-ui-react';
+import { Dropdown, Segment, Header, Table } from 'semantic-ui-react';
 import { countryOptions, CountryOption } from './common';
 
 interface Props {
@@ -21,26 +21,64 @@ function CommitteeStats(props: { data: CommitteeData }) {
   const memberItems: MemberData[] = Utils.objectToList(members);
 
   const delegates: number = memberItems.length;
+  const present: number = memberItems.filter(x => x.present).length;
 
   const canVote = ({rank}: MemberData) => rank === Rank.Veto || rank === Rank.Standard;
   const voting: number = memberItems.filter(canVote).length;
 
   const quorum: number =  Math.ceil(voting * 0.5);
+  const hasQuorum: boolean = present >= quorum;
   const draftResolution: number =  Math.ceil(voting * 0.25);
   const amendment: number =  Math.ceil(voting * 0.1);
 
   return (
     <div>
-      <h5>Total delegates</h5>
-      <p>{delegates.toString()}</p>
-      <h5>Voting</h5>
-      <p>{voting.toString()}</p>
-      <h5>Quorum</h5>
-      <p>{quorum.toString()}</p>
-      <h5>Draft Resolution</h5>
-      <p>{draftResolution.toString()}</p>
-      <h5>Amendment</h5>
-      <p>{amendment.toString()}</p>
+      <Header as="h2" attached="top">
+        Stats
+      </Header>
+      <Segment attached>
+        <Table definition>
+          <Table.Header>
+            <Table.Row>
+              <Table.HeaderCell />
+              <Table.HeaderCell>Required</Table.HeaderCell>
+              <Table.HeaderCell>Description</Table.HeaderCell>
+              <Table.HeaderCell>Threshold</Table.HeaderCell>
+            </Table.Row>
+          </Table.Header>
+
+          <Table.Body>
+            <Table.Row>
+              <Table.Cell>Total</Table.Cell>
+              <Table.Cell>{delegates.toString()}</Table.Cell>
+              <Table.Cell>Delegates in committee</Table.Cell>
+            </Table.Row>
+            <Table.Row>
+              <Table.Cell>Voting</Table.Cell>
+              <Table.Cell>{voting.toString()}</Table.Cell>
+              <Table.Cell>Delegates with voting rights</Table.Cell>
+            </Table.Row>
+            <Table.Row>
+              <Table.Cell error={!hasQuorum}>Debate</Table.Cell>
+              <Table.Cell>{quorum.toString()}</Table.Cell>
+              <Table.Cell>Delegates needed for debate</Table.Cell>
+              <Table.Cell>50% of total</Table.Cell>
+            </Table.Row>
+            <Table.Row>
+              <Table.Cell>Draft resolution</Table.Cell>
+              <Table.Cell>{draftResolution.toString()}</Table.Cell>
+              <Table.Cell>Delegates needed to table a draft resolution</Table.Cell>
+              <Table.Cell>25% of voting</Table.Cell>
+            </Table.Row>
+            <Table.Row>
+              <Table.Cell>Amendment</Table.Cell>
+              <Table.Cell>{amendment.toString()}</Table.Cell>
+              <Table.Cell>Delegates needed to table an amendment</Table.Cell>
+              <Table.Cell>10% of voting</Table.Cell>
+            </Table.Row>
+          </Table.Body>
+        </Table>
+      </Segment>
     </div>
   );
 }
@@ -115,7 +153,6 @@ export default class CommitteeAdmin extends React.Component<Props, State> {
         <h4>Members</h4>
         {memberItems}
         <NewMemberForm />
-        <h4>Stats</h4>
         <CommitteeStats data={this.props.committee} />
       </div>
     );
