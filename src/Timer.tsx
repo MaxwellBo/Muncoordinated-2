@@ -19,7 +19,7 @@ const UNIT_OPTIONS = [
 
 interface State {
   timer: TimerData;
-  timerId: number | null;
+  timerId: any | null;
   unit: Unit;
   durationField: string;
 }
