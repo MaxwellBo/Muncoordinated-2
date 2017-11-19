@@ -62,9 +62,8 @@ export const DEFAULT_CAUCUS: CaucusData = {
   name: 'Default caucus name',
   topic: 'Default caucus topic',
   status: CaucusStatus.Open,
-  speakerTimer: DEFAULT_TIMER,
-  caucusTimer: DEFAULT_TIMER,
-  speaking: DEFAULT_SPEAKER_EVENT,
+  speakerTimer: { remaining: 60, elapsed: 0, ticking: false },
+  caucusTimer: { remaining: 60 * 10, elapsed: 0, ticking: false },
   queue: {} as Map<string, SpeakerEvent>,
   history: {} as Map<string, SpeakerEvent>,
 };
@@ -141,6 +140,7 @@ function CaucusNextSpeaking(props: { data: CaucusData, fref: firebase.database.R
     const nowRef = props.fref.child('speaking');
     const nextRef = props.fref.child('queue').limitToFirst(1).ref;
     const historyRef = props.fref.child('history');
+    const speakerTimerRef = props.fref.child('speakerTimer');
 
     // Move the person currently speaking into history...
     nowRef.once('value', (nowEvent) => {
@@ -154,6 +154,13 @@ function CaucusNextSpeaking(props: { data: CaucusData, fref: firebase.database.R
     nextRef.once('child_added', (nextEvent) => {
       if (nextEvent) {
         nowRef.set(nextEvent.val());
+
+        speakerTimerRef.update({
+          elapsed: 0,
+          remaining: nextEvent.val().duration, // load the appropriate time 
+          ticking: false, // and stop it
+        });
+
         nextRef.set(null);
       }
     });
@@ -267,24 +274,23 @@ function CaucusView(props:
       <CaucusNowSpeaking data={props.data} fref={props.fref} />
       <CaucusNextSpeaking data={props.data} fref={props.fref} />
       <CaucusQueuer data={props.data} members={members} fref={props.fref} />
-      <Timer name="Caucus Timer" fref={props.fref.child('caucusTimer')} />
       <Timer name="Speaker Timer" fref={props.fref.child('speakerTimer')} />
+      <Timer name="Caucus Timer" fref={props.fref.child('caucusTimer')} />
       <CaucusMeta data={props.data} fref={props.fref} />
     </div>
   ) : (
-      <Dimmer active>
-        <Loader>Loading</Loader>
-      </Dimmer>
+      <Loader>Loading</Loader>
     );
 }
 
 export class Caucus extends React.Component<Props, State> {
   render() {
     const caucusID: CaucusID = this.props.match.params.caucusID;
+    const caucuses = this.props.committee.caucuses ? this.props.committee.caucuses : {} as Map<string, CaucusData>;
 
     return (
       <CaucusView
-        data={this.props.committee.caucuses[caucusID]}
+        data={caucuses[caucusID]}
         members={this.props.committee.members}
         fref={this.props.fref.child('caucuses').child(caucusID)}
       />

@@ -168,7 +168,7 @@ export default class CommitteeAdmin extends React.Component<Props, State> {
       (
         <MemberItem
           key={key}
-          data={props.data.members[key]}
+          data={members[key]}
           fref={props.fref.child('members').child(key)}
         />
       )

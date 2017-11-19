@@ -30,9 +30,9 @@ export interface CommitteeData {
   name: string;
   chair: string;
   topic: string;
-  members: Map<MemberID, MemberData>;
-  caucuses: Map<CaucusID, CaucusData>;
-  resolutions: Map<ResolutionID, ResolutionData>;
+  members?: Map<MemberID, MemberData>;
+  caucuses?: Map<CaucusID, CaucusData>;
+  resolutions?: Map<ResolutionID, ResolutionData>;
 }
 
 function CommitteeMeta(props: { data: CommitteeData, fref: firebase.database.Reference; }) {
@@ -105,6 +105,8 @@ export default class Committee extends React.Component<Props, State> {
     const committeeID: CommitteeID = this.props.match.params.committeeID;
     const caucusID: CommitteeID = this.props.match.params.committeeID;
 
+    const caucuses = this.state.committee.caucuses ? this.state.committee.caucuses : {} as Map<string, CaucusData>;
+
     const CaucusItem = (props: { id: CaucusID, data: CaucusData }) => {
       return (
         <Menu.Item
@@ -141,8 +143,8 @@ export default class Committee extends React.Component<Props, State> {
     };
 
     const Nav = () => {
-      const caucusItems = Object.keys(this.state.committee.caucuses).map(key =>
-        <CaucusItem key={key} id={key} data={this.state.committee.caucuses[key]} />
+      const caucusItems = Object.keys(caucuses).map(key =>
+        <CaucusItem key={key} id={key} data={caucuses[key]} />
       );
 
       return (

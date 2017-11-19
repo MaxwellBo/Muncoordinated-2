@@ -32,7 +32,7 @@ export interface TimerData {
 
 export const DEFAULT_TIMER = {
   elapsed: 0,
-  remaining: 0,
+  remaining: 60,
   ticking: false
 };
 
