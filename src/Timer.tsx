@@ -36,6 +36,22 @@ export const DEFAULT_TIMER = {
   ticking: false
 };
 
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/padStart
+function padStart(xs: string, targetLength: number, padString?: string) {
+  targetLength = targetLength >> 0; // floor if number or convert non-number to 0;
+  padString = String(padString || ' ');
+  if (xs.length > targetLength) {
+    return String(xs);
+  } else {
+    targetLength = targetLength - xs.length;
+    if (targetLength > padString.length) {
+      // append to original to ensure we are longer than needed
+      padString += padString.repeat(targetLength / padString.length);
+    }
+    return padString.slice(0, targetLength) + String(xs);
+  }
+}
+
 export class Timer extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
@@ -126,6 +142,14 @@ export class Timer extends React.Component<Props, State> {
     const durationHandler = (e: React.FormEvent<HTMLInputElement>) =>
       this.setState({ durationField: e.currentTarget.value} );
 
+    const remaining = this.state.timer.remaining;
+
+    const sign = (remaining < 0 ? '-' : '');
+    const minutes = Math.floor(remaining / 60).toString();
+    const seconds = padStart((remaining % 60).toString(), 2, '0');
+
+    const formatted = sign + minutes + ':' + seconds;
+
     return (
       <div>
         <Header as="h3" attached="top">{this.props.name}</Header>
@@ -136,7 +160,7 @@ export class Timer extends React.Component<Props, State> {
             size="massive"
             onClick={this.toggleHandler}
           >
-            {this.state.timer.remaining}
+            {formatted}
           </Button>
 
           {/* <Statistic>
