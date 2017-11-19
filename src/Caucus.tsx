@@ -5,7 +5,7 @@ import { RouteComponentProps } from 'react-router';
 import { MemberID, MemberData } from './Member';
 import { CommitteeID, CommitteeData } from './Committee';
 import * as Utils from './utils';
-import { Segment, Loader, Dimmer, Header, Dropdown, Input, Button, Icon, Grid } from 'semantic-ui-react';
+import { Segment, Loader, Dimmer, Header, Dropdown, Input, Button, Icon, Grid, Feed, Flag } from 'semantic-ui-react';
 import { COUNTRY_OPTIONS, CountryOption } from './common';
 
 interface URLParameters {
@@ -34,6 +34,17 @@ enum Stance {
   Neutral = 'Neutral',
   Against = 'Against'
 }
+
+const StanceIcon = (props: {stance: Stance} ) => {
+  switch (props.stance) {
+    case Stance.For:
+      return <Icon name="thumbs outline up" />;
+    case Stance.Against:
+      return <Icon name="thumbs outline down" />;
+    default:
+      return <Icon name="hand outline right" />;
+  }
+};
 
 export interface CaucusData {
   name: string;
@@ -129,7 +140,9 @@ function CaucusNowSpeaking(props: { data: CaucusData, fref: firebase.database.Re
     <div>
       <Header as="h3" attached="top">Now Speaking</Header>
       <Segment attached="bottom">
-        <SpeakerEvent data={props.data.speaking} fref={props.fref.child('speaking')} />
+        <Feed size="large">
+          <SpeakerEvent data={props.data.speaking} fref={props.fref.child('speaking')} />
+        </Feed>
       </Segment>
     </div>
   );
@@ -196,24 +209,27 @@ function CaucusNextSpeaking(props: { data: CaucusData, fref: firebase.database.R
   );
 }
 
-
 const SpeakerEvent = (props: { data?: SpeakerEvent, fref: firebase.database.Reference }) => {
   const makeHandler = (field: string) => (e: React.FormEvent<HTMLInputElement>) =>
     props.fref.child(field).set(e.currentTarget.value);
 
   return props.data ? (
-    <div style={{ border: 'solid' }}>
-      <h5>Who</h5>
-      {/* <p>{props.event.who}</p> */}
-      {/* FIXME: Should be a dropdown */}
-      <input value={props.data.who} onChange={makeHandler('who')} />
-      <h5>Stance</h5>
-      {/* FIXME: Should be a dropdown */}
-      <p>{props.data.stance}</p>
-      <h5>Duration</h5>
-      {/* FIXME: Should be a number input field */}
-      <p>{props.data.duration.toString()}</p>
-    </div>
+    <Feed.Event>
+      {/* <Feed.Label image='/assets/images/avatar/small/helen.jpg' /> */}
+      <Feed.Content>
+        <Feed.Summary>
+          <Flag name={props.data.who.toLowerCase() as any} />
+          {props.data.who}
+          <Feed.Date>{props.data.duration.toString() + ' seconds'}</Feed.Date>
+        </Feed.Summary>
+        <Feed.Meta>
+          <Feed.Like>
+            <StanceIcon stance={props.data.stance} />
+            {props.data.stance}
+          </Feed.Like>
+        </Feed.Meta>
+      </Feed.Content>
+    </Feed.Event>
   ) : <div><p>No-one speaking</p></div>;
 };
 
@@ -225,9 +241,9 @@ function SpeakerEvents(props: { data?: Map<string, SpeakerEvent>, fref: firebase
   );
 
   return (
-    <div>
+    <Feed size="large">
       {eventItems}
-    </div>
+    </Feed>
   );
 }
 
