@@ -70,14 +70,25 @@ export const DEFAULT_CAUCUS: CaucusData = {
 };
 
 function CaucusHeader(props: { data: CaucusData, fref: firebase.database.Reference }) {
-  const makeHandler = (field: string) => (e: React.FormEvent<HTMLInputElement>) =>
+  const propertyHandler = (field: string) => (e: React.FormEvent<HTMLInputElement>) =>
     props.fref.child(field).set(e.currentTarget.value);
+
+  const statusHandler = (event: any, data: any) => {
+    props.fref.child('status').set(data.value);
+  };
+
+  const CAUCUS_STATUS_OPTIONS = [
+    { key: CaucusStatus.Open, text: CaucusStatus.Open, value: CaucusStatus.Open },
+    { key: CaucusStatus.Closed, text: CaucusStatus.Closed, value: CaucusStatus.Closed },
+  ];
 
   return (
     <div>
       <Input
+        label={<Dropdown value={props.data.status} options={CAUCUS_STATUS_OPTIONS} onChange={statusHandler} />}
+        labelPosition="right" 
         value={props.data.name}
-        onChange={makeHandler('name')}
+        onChange={propertyHandler('name')}
         attatched="top"
         size="massive"
         fluid
@@ -85,7 +96,7 @@ function CaucusHeader(props: { data: CaucusData, fref: firebase.database.Referen
       />
       <Input
         value={props.data.topic}
-        onChange={makeHandler('topic')}
+        onChange={propertyHandler('topic')}
         attatched="top"
         fluid
         placeholder="Caucus Topic"
