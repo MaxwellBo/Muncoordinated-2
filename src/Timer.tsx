@@ -145,8 +145,8 @@ export class Timer extends React.Component<Props, State> {
     const remaining = this.state.timer.remaining;
 
     const sign = (remaining < 0 ? '-' : '');
-    const minutes = Math.floor(remaining / 60).toString();
-    const seconds = padStart((remaining % 60).toString(), 2, '0');
+    const minutes = Math.floor(Math.abs(remaining / 60)).toString();
+    const seconds = padStart(Math.abs(remaining % 60).toString(), 2, '0');
 
     const formatted = sign + minutes + ':' + seconds;
 
