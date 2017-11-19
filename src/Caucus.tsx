@@ -230,7 +230,7 @@ const SpeakerEvent = (props: { data?: SpeakerEvent, fref: firebase.database.Refe
         </Feed.Meta>
       </Feed.Content>
     </Feed.Event>
-  ) : <div><p>No-one speaking</p></div>;
+  ) : <Feed.Event />
 };
 
 function SpeakerEvents(props: { data?: Map<string, SpeakerEvent>, fref: firebase.database.Reference }) {
