@@ -21,8 +21,9 @@ import Committee from './Committee';
 const Footer = () => {
   return (
     <Message compact size="mini">
-      Made with 💖 by <a href="http://maxbo.me/">Max Bo</a>, <a href="http://hugokawamata.com/">Hugo Kawamata</a>, 
-      and <a href="http://charltongroves.com/">Charlie Groves</a>
+      Made with 💖 by <a href="http://maxbo.me/">Max Bo</a>
+      {/* , <a href="http://hugokawamata.com/">Hugo Kawamata</a>, 
+      and <a href="http://charltongroves.com/">Charlie Groves</a> */}
     </Message>);
 };
 
