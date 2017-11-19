@@ -5,7 +5,10 @@ import { RouteComponentProps } from 'react-router';
 import { MemberID, MemberData } from './Member';
 import { CommitteeID, CommitteeData } from './Committee';
 import * as Utils from './utils';
-import { Segment, Loader, Dimmer, Header, Dropdown, Input, Button, Icon, Grid, Feed, Flag } from 'semantic-ui-react';
+import {
+  Segment, Loader, Dimmer, Header, Dropdown, Input, Button, Icon, Grid, Feed, Flag,
+  Label
+} from 'semantic-ui-react';
 import { COUNTRY_OPTIONS, CountryOption } from './common';
 
 interface URLParameters {
@@ -35,7 +38,7 @@ enum Stance {
   Against = 'Against'
 }
 
-const StanceIcon = (props: {stance: Stance} ) => {
+const StanceIcon = (props: { stance: Stance }) => {
   switch (props.stance) {
     case Stance.For:
       return <Icon name="thumbs outline up" />;
@@ -148,35 +151,45 @@ function CaucusNowSpeaking(props: { data: CaucusData, fref: firebase.database.Re
   );
 }
 
+function runLifecycle(history: firebase.database.Reference, speaking: firebase.database.Reference,
+                      queueHead: firebase.database.Reference, timer: firebase.database.Reference, yielding?: boolean) {
+
+  timer.once('value', (timerData) => {
+    if (timerData) {
+      // Move the person currently speaking into history...
+      speaking.once('value', (nowEvent) => {
+        if (nowEvent) {
+          history.push().set({ ...nowEvent.val(), duration: timerData.val().elapsed });
+          speaking.set(null);
+        } // do nothing if no-one is currently speaking
+      });
+    }
+  });
+  
+  // ...and transfer the person next to speak into the "Speaking" zone
+  queueHead.once('child_added', (nextEvent) => {
+    if (nextEvent) {
+      speaking.set(nextEvent.val());
+
+      timer.update({
+        elapsed: 0,
+        remaining: nextEvent.val().duration, // load the appropriate time 
+        ticking: false // and stop it
+      });
+
+      queueHead.set(null);
+    }
+  });
+}
+
 function CaucusNextSpeaking(props: { data: CaucusData, fref: firebase.database.Reference }) {
   const nextSpeaker = () => {
-    const nowRef = props.fref.child('speaking');
-    const nextRef = props.fref.child('queue').limitToFirst(1).ref;
+    const speakingRef = props.fref.child('speaking');
+    const queueHeadRef = props.fref.child('queue').limitToFirst(1).ref;
     const historyRef = props.fref.child('history');
     const speakerTimerRef = props.fref.child('speakerTimer');
 
-    // Move the person currently speaking into history...
-    nowRef.once('value', (nowEvent) => {
-      if (nowEvent) {
-        historyRef.push().set(nowEvent.val());
-        nowRef.set(null);
-      } // do nothing if no-one is currently speaking
-    });
-
-    // ...and transfer the person next to speak into the "Speaking" zone
-    nextRef.once('child_added', (nextEvent) => {
-      if (nextEvent) {
-        nowRef.set(nextEvent.val());
-
-        speakerTimerRef.update({
-          elapsed: 0,
-          remaining: nextEvent.val().duration, // load the appropriate time 
-          ticking: false, // and stop it
-        });
-
-        nextRef.set(null);
-      }
-    });
+    runLifecycle(historyRef, speakingRef, queueHeadRef, speakerTimerRef, true);
   };
 
   return (
@@ -218,8 +231,10 @@ const SpeakerEvent = (props: { data?: SpeakerEvent, fref: firebase.database.Refe
       {/* <Feed.Label image='/assets/images/avatar/small/helen.jpg' /> */}
       <Feed.Content>
         <Feed.Summary>
-          <Flag name={props.data.who.toLowerCase() as any} />
-          {props.data.who}
+          <Feed.User>
+            <Flag name={props.data.who.toLowerCase() as any} />
+            {props.data.who}
+          </Feed.User>
           <Feed.Date>{props.data.duration.toString() + ' seconds'}</Feed.Date>
         </Feed.Summary>
         <Feed.Meta>
@@ -227,10 +242,13 @@ const SpeakerEvent = (props: { data?: SpeakerEvent, fref: firebase.database.Refe
             <StanceIcon stance={props.data.stance} />
             {props.data.stance}
           </Feed.Like>
+          <Label size="mini" as="a" onClick={() => props.fref.remove()}>
+            Remove
+          </Label>
         </Feed.Meta>
       </Feed.Content>
     </Feed.Event>
-  ) : <Feed.Event />
+  ) : <Feed.Event />;
 };
 
 function SpeakerEvents(props: { data?: Map<string, SpeakerEvent>, fref: firebase.database.Reference }) {
@@ -297,8 +315,10 @@ export class Caucus extends React.Component<Props, State> {
   }
 
   CaucusView = (props:
-    { caucusID: CaucusID, data?: CaucusData, members?: Map<string, MemberData>, 
-      fref: firebase.database.Reference }) => {
+    {
+      caucusID: CaucusID, data?: CaucusData, members?: Map<string, MemberData>,
+      fref: firebase.database.Reference
+    }) => {
 
     const members = props.members ? props.members : {} as Map<string, MemberData>;
 
