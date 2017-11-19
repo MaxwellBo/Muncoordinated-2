@@ -1,15 +1,27 @@
 import * as React from 'react';
 import * as firebase from 'firebase';
-import { Checkbox, Segment, Header, Statistic } from 'semantic-ui-react';
+import { Checkbox, Segment, Header, Statistic, Button, Input, Select } from 'semantic-ui-react';
 
 interface Props { 
   name: string;
   fref: firebase.database.Reference;
 }
 
+enum Unit {
+  Minutes = 'min',
+  Seconds = 'sec'
+}
+
+const UNIT_OPTIONS = [
+  { key: Unit.Seconds, text: Unit.Seconds, value: Unit.Seconds },
+  { key: Unit.Minutes, text: Unit.Minutes, value: Unit.Minutes }
+];
+
 interface State {
   timer: TimerData;
-  timerId: any;
+  timerId: number | null;
+  unit: Unit;
+  durationField: string;
 }
 
 export interface TimerData {
@@ -30,7 +42,9 @@ export class Timer extends React.Component<Props, State> {
 
     this.state = {
       timer: DEFAULT_TIMER,
-      timerId: null
+      timerId: null,
+      unit: Unit.Seconds,
+      durationField: '60'
     };
   }
 
@@ -69,10 +83,49 @@ export class Timer extends React.Component<Props, State> {
   componentWillUnmount() {
     this.props.fref.off();
 
-    clearInterval(this.state.timerId);
+    if (this.state.timerId) {
+      clearInterval(this.state.timerId);
+    }
+  }
+
+  increment = () => {
+    const num = Number(this.state.durationField);
+
+    if (num) {
+      this.setState({ durationField: (num + 1).toString() });
+    }
+  }
+
+  set = () => {
+    const duration = Number(this.state.durationField);
+
+    if (duration) {
+      const newTimer = {
+        elapsed: 0,
+        remaining: this.state.unit === Unit.Minutes ? duration * 60 : duration,
+        ticking: false
+      };
+
+      this.props.fref.set(newTimer);
+    }
+  }
+
+  decrement = () => {
+    const num = Number(this.state.durationField);
+
+    if (num) {
+      this.setState({ durationField: (num - 1).toString() });
+    }
   }
 
   render() {
+    const unitHandler = (event: any, data: any) => {
+      this.setState({ unit: data.value });
+    };
+
+    const durationHandler = (e: React.FormEvent<HTMLInputElement>) =>
+      this.setState({ durationField: e.currentTarget.value} );
+
     return (
       <div>
         <Header as="h3" attached="top">{this.props.name}</Header>
@@ -81,6 +134,18 @@ export class Timer extends React.Component<Props, State> {
             <Statistic.Value>{this.state.timer.remaining}</Statistic.Value>
           </Statistic>
           <Checkbox toggle checked={this.state.timer.ticking} onChange={this.toggleHandler} />
+          <Input
+            value={this.state.durationField}
+            placeholder="Duration"
+            onChange={durationHandler}
+            action
+          >
+            <input />
+            {/* <Button icon="minus" onClick={this.decrement} />
+            <Button icon="plus"  onClick={this.increment} /> */}
+            <Select value={this.state.unit} options={UNIT_OPTIONS} compact button onChange={unitHandler} />
+            <Button onClick={this.set}>Set</Button>
+          </Input>
         </Segment>
       </div>
     );
