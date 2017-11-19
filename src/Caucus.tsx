@@ -297,7 +297,8 @@ export class Caucus extends React.Component<Props, State> {
   }
 
   CaucusView = (props:
-    { data?: CaucusData, members?: Map<string, MemberData>, fref: firebase.database.Reference }) => {
+    { caucusID: CaucusID, data?: CaucusData, members?: Map<string, MemberData>, 
+      fref: firebase.database.Reference }) => {
 
     const members = props.members ? props.members : {} as Map<string, MemberData>;
 
@@ -315,8 +316,8 @@ export class Caucus extends React.Component<Props, State> {
             <this.CaucusQueuer data={props.data} members={members} fref={props.fref} />
           </Grid.Column>
           <Grid.Column>
-            <Timer name="Speaker Timer" fref={props.fref.child('speakerTimer')} />
-            <Timer name="Caucus Timer" fref={props.fref.child('caucusTimer')} />
+            <Timer name="Speaker Timer" fref={props.fref.child('speakerTimer')} key={props.caucusID + 'speakerTimer'} />
+            <Timer name="Caucus Timer" fref={props.fref.child('caucusTimer')} key={props.caucusID + 'caucusTimer'} />
           </Grid.Column>
         </Grid.Row>
         <Grid.Row>
@@ -338,6 +339,7 @@ export class Caucus extends React.Component<Props, State> {
 
     return (
       <this.CaucusView
+        caucusID={caucusID}
         data={caucuses[caucusID]}
         members={this.props.committee.members}
         fref={this.props.fref.child('caucuses').child(caucusID)}
