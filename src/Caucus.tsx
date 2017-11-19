@@ -142,7 +142,7 @@ function CaucusNextSpeaking(props: { data: CaucusData, fref: firebase.database.R
       } // do nothing if no-one is currently speaking
     });
 
-    // ...and transfer the person next person next to speak into the "Speaking" zone
+    // ...and transfer the person next to speak into the "Speaking" zone
     nextRef.once('child_added', (nextEvent) => {
       if (nextEvent) {
         nowRef.set(nextEvent.val());
@@ -153,7 +153,7 @@ function CaucusNextSpeaking(props: { data: CaucusData, fref: firebase.database.R
 
   return (
     <div>
-      <Header as="h3" attached="top">Queue</Header>
+      <Header as="h3" attached="top">Next Speaking</Header>
       <Segment attached>
         <SpeakerEvents data={props.data.queue} fref={props.fref.child('queue')} />
       </Segment>
@@ -176,6 +176,39 @@ function CaucusNextSpeaking(props: { data: CaucusData, fref: firebase.database.R
           <Icon name="refresh" />
           Clear
         </Button>
+      </Segment>
+    </div>
+  );
+}
+
+function CaucusQueuer(props: {data: CaucusData, members: Map<string, MemberData>, fref: firebase.database.Reference} ) {
+  const membersCountrySet = new Set(Utils.objectToList(props.members).map(x => x.name));
+  const stanceHandler = (stance: Stance) => () => {
+    const newEvent: SpeakerEvent = {
+      who: 'Australia',
+      stance: stance,
+      duration: 60
+    };
+
+    props.fref.child('queue').push().set(newEvent);
+  };
+
+  return (
+    <div>
+      <Header as="h3" attached="top">Queue</Header>
+      <Segment attached>
+        <Dropdown 
+          search
+          selection
+          options={COUNTRY_OPTIONS.filter(x => membersCountrySet.has(x.text))}
+        />
+        <Button.Group size="large">
+          <Button onClick={stanceHandler(Stance.For)}>For</Button>
+          <Button.Or />
+          <Button onClick={stanceHandler(Stance.Neutral)}>Neutral</Button>
+          <Button.Or />
+          <Button onClick={stanceHandler(Stance.Against)}>Against</Button>
+        </Button.Group>
       </Segment>
     </div>
   );
@@ -218,10 +251,7 @@ function SpeakerEvents(props: { data?: Map<string, SpeakerEvent>, fref: firebase
 function CaucusView(props:
   { data?: CaucusData, members?: Map<string, MemberData>, fref: firebase.database.Reference }) {
 
-
-  // FIXME: BIG OL' HACK
   const members = props.members ? props.members : {} as Map<string, MemberData>;
-  const membersCountrySet = new Set(Utils.objectToList(members).map(x => x.name));
 
   return props.data ? (
     <div>
@@ -229,16 +259,9 @@ function CaucusView(props:
       <CaucusMeta data={props.data} fref={props.fref} />
       <CaucusNowSpeaking data={props.data} fref={props.fref} />
       <CaucusNextSpeaking data={props.data} fref={props.fref} />
+      <CaucusQueuer data={props.data} members={members} fref={props.fref} />
       <Timer name="Caucus Timer" fref={props.fref.child('caucusTimer')} />
       <Timer name="Speaker Timer" fref={props.fref.child('speakerTimer')} />
-      <Segment attached="bottom">
-        <Dropdown
-          placeholder="Select Country"
-          search
-          selection
-          options={COUNTRY_OPTIONS.filter(x => membersCountrySet.has(x.text))}
-        />
-      </Segment>
     </div>
   ) : (
       <Dimmer active>
