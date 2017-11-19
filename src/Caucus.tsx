@@ -19,6 +19,7 @@ interface Props extends RouteComponentProps<URLParameters> {
 }
 
 interface State {
+  queueCountry: CountryOption;
 }
 
 export type CaucusID = string;
@@ -73,14 +74,23 @@ function CaucusHeader(props: { data: CaucusData, fref: firebase.database.Referen
     props.fref.child(field).set(e.currentTarget.value);
 
   return (
-    <Input 
-      value={props.data.name} 
-      onChange={makeHandler('name')} 
-      attatched="top" 
-      size="massive" 
-      fluid
-      placeholder="Caucus Name"
-    />
+    <div>
+      <Input
+        value={props.data.name}
+        onChange={makeHandler('name')}
+        attatched="top"
+        size="massive"
+        fluid
+        placeholder="Caucus Name"
+      />
+      <Input
+        value={props.data.topic}
+        onChange={makeHandler('topic')}
+        attatched="top"
+        fluid
+        placeholder="Caucus Topic"
+      />
+    </div>
   );
 }
 
@@ -92,19 +102,82 @@ function CaucusMeta(props: { data: CaucusData, fref: firebase.database.Reference
   return (
     <Segment attached>
       <h3>Topic</h3>
-      <input value={props.data.topic} onChange={makeHandler('topic')} />
       <h3>Status</h3>
       <p>{props.data.status}</p>
-      <Button 
-        icon 
-        negative 
-        labelPosition="left" 
+      <Button
+        icon
+        negative
+        labelPosition="left"
         onClick={() => props.fref.remove()}
       >
         <Icon name="trash" />
-          Delete
+        Delete
       </Button>
     </Segment>
+  );
+}
+
+function CaucusNowSpeaking(props: { data: CaucusData, fref: firebase.database.Reference }) {
+  return (
+    <div>
+      <Header as="h3" attached="top">Now Speaking</Header>
+      <Segment attached>
+        <SpeakerEvent data={props.data.speaking} fref={props.fref.child('speaking')} />
+      </Segment>
+    </div>
+  );
+}
+
+function CaucusNextSpeaking(props: { data: CaucusData, fref: firebase.database.Reference }) {
+  const nextSpeaker = () => {
+    const nowRef = props.fref.child('speaking');
+    const nextRef = props.fref.child('queue').limitToFirst(1).ref;
+    const historyRef = props.fref.child('history');
+
+    // Move the person currently speaking into history...
+    nowRef.once('value', (nowEvent) => {
+      if (nowEvent) {
+        historyRef.push().set(nowEvent.val());
+        nowRef.set(null);
+      } // do nothing if no-one is currently speaking
+    });
+
+    // ...and transfer the person next person next to speak into the "Speaking" zone
+    nextRef.once('child_added', (nextEvent) => {
+      if (nextEvent) {
+        nowRef.set(nextEvent.val());
+        nextRef.set(null);
+      }
+    });
+  };
+
+  return (
+    <div>
+      <Header as="h3" attached="top">Queue</Header>
+      <Segment attached>
+        <SpeakerEvents data={props.data.queue} fref={props.fref.child('queue')} />
+      </Segment>
+      <Segment attached="bottom">
+        <Button
+          icon
+          primary
+          labelPosition="left"
+          onClick={nextSpeaker}
+        >
+          <Icon name="arrow up" />
+          Next
+        </Button>
+        <Button
+          icon
+          negative
+          labelPosition="left"
+          onClick={() => props.fref.child('queue').remove()}
+        >
+          <Icon name="refresh" />
+          Clear
+        </Button>
+      </Segment>
+    </div>
   );
 }
 
@@ -142,30 +215,9 @@ function SpeakerEvents(props: { data?: Map<string, SpeakerEvent>, fref: firebase
   );
 }
 
-function CaucusView(props: 
+function CaucusView(props:
   { data?: CaucusData, members?: Map<string, MemberData>, fref: firebase.database.Reference }) {
 
-  const nextSpeaker = () => {
-    const nowRef = props.fref.child('speaking');
-    const nextRef = props.fref.child('queue').limitToFirst(1).ref;
-    const historyRef = props.fref.child('history');
-
-    // Move the person currently speaking into history...
-    nowRef.once('value', (nowEvent) => {
-      if (nowEvent) {
-        historyRef.push().set(nowEvent.val());
-        nowRef.set(null);
-      } // do nothing if no-one is currently speaking
-    });
-
-    // ...and transfer the person next person next to speak into the "Speaking" zone
-    nextRef.once('child_added', (nextEvent) => {
-      if (nextEvent) {
-        nowRef.set(nextEvent.val());
-        nextRef.set(null);
-      }
-    });
-  };
 
   // FIXME: BIG OL' HACK
   const members = props.members ? props.members : {} as Map<string, MemberData>;
@@ -175,22 +227,17 @@ function CaucusView(props:
     <div>
       <CaucusHeader data={props.data} fref={props.fref} />
       <CaucusMeta data={props.data} fref={props.fref} />
+      <CaucusNowSpeaking data={props.data} fref={props.fref} />
+      <CaucusNextSpeaking data={props.data} fref={props.fref} />
+      <Timer name="Caucus Timer" fref={props.fref.child('caucusTimer')} />
+      <Timer name="Speaker Timer" fref={props.fref.child('speakerTimer')} />
       <Segment attached="bottom">
-        <h4>Now Speaking</h4>
-        <SpeakerEvent data={props.data.speaking} fref={props.fref.child('speaking')} />
-        <button onClick={nextSpeaker} >Next Speaker</button>
-        <h4>Queue</h4>
-        <SpeakerEvents data={props.data.queue} fref={props.fref.child('queue')} />
         <Dropdown
           placeholder="Select Country"
           search
           selection
           options={COUNTRY_OPTIONS.filter(x => membersCountrySet.has(x.text))}
         />
-        <h4>History</h4>
-        <SpeakerEvents data={props.data.history} fref={props.fref.child('history')} />
-        <Timer name="Caucus Timer" fref={props.fref.child('caucusTimer')} />
-        <Timer name="Speaker Timer" fref={props.fref.child('speakerTimer')} />
       </Segment>
     </div>
   ) : (
