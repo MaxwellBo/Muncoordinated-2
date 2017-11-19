@@ -5,7 +5,7 @@ import { RouteComponentProps } from 'react-router';
 import { MemberID, MemberData } from './Member';
 import { CommitteeID, CommitteeData } from './Committee';
 import * as Utils from './utils';
-import { Segment, Loader, Dimmer, Header, Dropdown, Input, Button, Icon } from 'semantic-ui-react';
+import { Segment, Loader, Dimmer, Header, Dropdown, Input, Button, Icon, Grid } from 'semantic-ui-react';
 import { COUNTRY_OPTIONS, CountryOption } from './common';
 
 interface URLParameters {
@@ -59,8 +59,8 @@ const DEFAULT_SPEAKER_EVENT = {
 };
 
 export const DEFAULT_CAUCUS: CaucusData = {
-  name: 'Default caucus name',
-  topic: 'Default caucus topic',
+  name: 'Genearal Speaker\'s List',
+  topic: '',
   status: CaucusStatus.Open,
   speakerTimer: { remaining: 60, elapsed: 0, ticking: false },
   caucusTimer: { remaining: 60 * 10, elapsed: 0, ticking: false },
@@ -82,10 +82,10 @@ function CaucusHeader(props: { data: CaucusData, fref: firebase.database.Referen
   ];
 
   return (
-    <div>
+    <Segment>
       <Input
         label={<Dropdown value={props.data.status} options={CAUCUS_STATUS_OPTIONS} onChange={statusHandler} />}
-        labelPosition="right" 
+        labelPosition="right"
         value={props.data.name}
         onChange={propertyHandler('name')}
         attatched="top"
@@ -100,7 +100,7 @@ function CaucusHeader(props: { data: CaucusData, fref: firebase.database.Referen
         fluid
         placeholder="Caucus Topic"
       />
-    </div>
+    </Segment>
   );
 }
 
@@ -128,7 +128,7 @@ function CaucusNowSpeaking(props: { data: CaucusData, fref: firebase.database.Re
   return (
     <div>
       <Header as="h3" attached="top">Now Speaking</Header>
-      <Segment attached>
+      <Segment attached="bottom">
         <SpeakerEvent data={props.data.speaking} fref={props.fref.child('speaking')} />
       </Segment>
     </div>
@@ -196,7 +196,8 @@ function CaucusNextSpeaking(props: { data: CaucusData, fref: firebase.database.R
   );
 }
 
-function CaucusQueuer(props: {data: CaucusData, members: Map<string, MemberData>, fref: firebase.database.Reference} ) {
+function CaucusQueuer(props:
+  { data: CaucusData, members: Map<string, MemberData>, fref: firebase.database.Reference }) {
   const membersCountrySet = new Set(Utils.objectToList(props.members).map(x => x.name));
   const stanceHandler = (stance: Stance) => () => {
     const newEvent: SpeakerEvent = {
@@ -212,7 +213,7 @@ function CaucusQueuer(props: {data: CaucusData, members: Map<string, MemberData>
     <div>
       <Header as="h3" attached="top">Queue</Header>
       <Segment attached>
-        <Dropdown 
+        <Dropdown
           search
           selection
           options={COUNTRY_OPTIONS.filter(x => membersCountrySet.has(x.text))}
@@ -269,15 +270,31 @@ function CaucusView(props:
   const members = props.members ? props.members : {} as Map<string, MemberData>;
 
   return props.data ? (
-    <div>
-      <CaucusHeader data={props.data} fref={props.fref} />
-      <CaucusNowSpeaking data={props.data} fref={props.fref} />
-      <CaucusNextSpeaking data={props.data} fref={props.fref} />
-      <CaucusQueuer data={props.data} members={members} fref={props.fref} />
-      <Timer name="Speaker Timer" fref={props.fref.child('speakerTimer')} />
-      <Timer name="Caucus Timer" fref={props.fref.child('caucusTimer')} />
-      <CaucusMeta data={props.data} fref={props.fref} />
-    </div>
+    <Grid columns="equal">
+      <Grid.Row>
+        <Grid.Column>
+          <CaucusHeader data={props.data} fref={props.fref} />
+        </Grid.Column>
+      </Grid.Row>
+      <Grid.Row>
+        <Grid.Column>
+          <CaucusNowSpeaking data={props.data} fref={props.fref} />
+          <CaucusNextSpeaking data={props.data} fref={props.fref} />
+          <CaucusQueuer data={props.data} members={members} fref={props.fref} />
+        </Grid.Column>
+        <Grid.Column>
+          <Timer name="Speaker Timer" fref={props.fref.child('speakerTimer')} />
+          <Timer name="Caucus Timer" fref={props.fref.child('caucusTimer')} />
+        </Grid.Column>
+      </Grid.Row>
+      <Grid.Row>
+
+        <Grid.Column>
+          <CaucusMeta data={props.data} fref={props.fref} />
+
+        </Grid.Column>
+      </Grid.Row>
+    </Grid >
   ) : (
       <Loader>Loading</Loader>
     );

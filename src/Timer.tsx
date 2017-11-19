@@ -153,7 +153,7 @@ export class Timer extends React.Component<Props, State> {
     return (
       <div>
         <Header as="h3" attached="top">{this.props.name}</Header>
-        <Segment attached textAlign="center" >
+        <Segment attached="bottom" textAlign="center" >
           <Button 
             active={this.state.timer.ticking}
             negative={this.state.timer.remaining < 0}

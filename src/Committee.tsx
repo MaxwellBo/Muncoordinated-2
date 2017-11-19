@@ -49,7 +49,13 @@ function CommitteeMeta(props: { data: CommitteeData, fref: firebase.database.Ref
         fluid
         placeholder="Committee Name"
       />
-      <Input value={props.data.topic} onChange={makeHandler('topic')} attached="bottom" fluid placeholder="Topic" />
+      <Input 
+        value={props.data.topic} 
+        onChange={makeHandler('topic')} 
+        attached="bottom" 
+        fluid 
+        placeholder="Committee Topic" 
+      />
     </Segment>
   );
 }
@@ -92,8 +98,7 @@ export default class Committee extends React.Component<Props, State> {
   pushCaucus = () => {
     const newCaucus = {
       ...DEFAULT_CAUCUS,
-      name: this.state.newCaucusName,
-      topic: this.state.newCaucusTopic
+      name: 'Default',
     };
 
     this.state.fref.child('caucuses').push().set(newCaucus);
