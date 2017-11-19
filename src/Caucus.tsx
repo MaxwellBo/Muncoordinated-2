@@ -112,9 +112,6 @@ function CaucusMeta(props: { data: CaucusData, fref: firebase.database.Reference
   // TODO: Make status either a dropdown or a checkbox / on/off slider
   return (
     <Segment attached>
-      <h3>Topic</h3>
-      <h3>Status</h3>
-      <p>{props.data.status}</p>
       <Button
         icon
         negative
@@ -267,12 +264,12 @@ function CaucusView(props:
   return props.data ? (
     <div>
       <CaucusHeader data={props.data} fref={props.fref} />
-      <CaucusMeta data={props.data} fref={props.fref} />
       <CaucusNowSpeaking data={props.data} fref={props.fref} />
       <CaucusNextSpeaking data={props.data} fref={props.fref} />
       <CaucusQueuer data={props.data} members={members} fref={props.fref} />
       <Timer name="Caucus Timer" fref={props.fref.child('caucusTimer')} />
       <Timer name="Speaker Timer" fref={props.fref.child('speakerTimer')} />
+      <CaucusMeta data={props.data} fref={props.fref} />
     </div>
   ) : (
       <Dimmer active>
