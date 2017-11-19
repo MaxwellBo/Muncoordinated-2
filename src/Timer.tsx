@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as firebase from 'firebase';
-import { Checkbox, Segment, Header, Statistic, Button, Input, Select } from 'semantic-ui-react';
+import { Checkbox, Segment, Header, Statistic, Button, Input, Select, Divider } from 'semantic-ui-react';
 
 interface Props { 
   name: string;
@@ -64,7 +64,7 @@ export class Timer extends React.Component<Props, State> {
     const newTimer = {
       elapsed: this.state.timer.elapsed,
       remaining: this.state.timer.remaining,
-      ticking: data.checked
+      ticking: !this.state.timer.ticking
     };
 
     this.props.fref.set(newTimer);
@@ -129,11 +129,21 @@ export class Timer extends React.Component<Props, State> {
     return (
       <div>
         <Header as="h3" attached="top">{this.props.name}</Header>
-        <Segment attached >
-          <Statistic>
+        <Segment attached textAlign="center" >
+          <Button 
+            active={this.state.timer.ticking}
+            negative={this.state.timer.remaining < 0}
+            size="massive"
+            onClick={this.toggleHandler}
+          >
+            {this.state.timer.remaining}
+          </Button>
+
+          {/* <Statistic>
             <Statistic.Value>{this.state.timer.remaining}</Statistic.Value>
           </Statistic>
-          <Checkbox toggle checked={this.state.timer.ticking} onChange={this.toggleHandler} />
+          <Checkbox toggle checked={this.state.timer.ticking} onChange={this.toggleHandler} /> */}
+          <Divider />
           <Input
             value={this.state.durationField}
             placeholder="Duration"
