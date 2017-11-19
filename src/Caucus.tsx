@@ -196,39 +196,6 @@ function CaucusNextSpeaking(props: { data: CaucusData, fref: firebase.database.R
   );
 }
 
-function CaucusQueuer(props:
-  { data: CaucusData, members: Map<string, MemberData>, fref: firebase.database.Reference }) {
-  const membersCountrySet = new Set(Utils.objectToList(props.members).map(x => x.name));
-  const stanceHandler = (stance: Stance) => () => {
-    const newEvent: SpeakerEvent = {
-      who: 'Australia',
-      stance: stance,
-      duration: 60
-    };
-
-    props.fref.child('queue').push().set(newEvent);
-  };
-
-  return (
-    <div>
-      <Header as="h3" attached="top">Queue</Header>
-      <Segment attached>
-        <Dropdown
-          search
-          selection
-          options={COUNTRY_OPTIONS.filter(x => membersCountrySet.has(x.text))}
-        />
-        <Button.Group size="large">
-          <Button onClick={stanceHandler(Stance.For)}>For</Button>
-          <Button.Or />
-          <Button onClick={stanceHandler(Stance.Neutral)}>Neutral</Button>
-          <Button.Or />
-          <Button onClick={stanceHandler(Stance.Against)}>Against</Button>
-        </Button.Group>
-      </Segment>
-    </div>
-  );
-}
 
 const SpeakerEvent = (props: { data?: SpeakerEvent, fref: firebase.database.Reference }) => {
   const makeHandler = (field: string) => (e: React.FormEvent<HTMLInputElement>) =>
@@ -264,49 +231,97 @@ function SpeakerEvents(props: { data?: Map<string, SpeakerEvent>, fref: firebase
   );
 }
 
-function CaucusView(props:
-  { data?: CaucusData, members?: Map<string, MemberData>, fref: firebase.database.Reference }) {
-
-  const members = props.members ? props.members : {} as Map<string, MemberData>;
-
-  return props.data ? (
-    <Grid columns="equal">
-      <Grid.Row>
-        <Grid.Column>
-          <CaucusHeader data={props.data} fref={props.fref} />
-        </Grid.Column>
-      </Grid.Row>
-      <Grid.Row>
-        <Grid.Column>
-          <CaucusNowSpeaking data={props.data} fref={props.fref} />
-          <CaucusNextSpeaking data={props.data} fref={props.fref} />
-          <CaucusQueuer data={props.data} members={members} fref={props.fref} />
-        </Grid.Column>
-        <Grid.Column>
-          <Timer name="Speaker Timer" fref={props.fref.child('speakerTimer')} />
-          <Timer name="Caucus Timer" fref={props.fref.child('caucusTimer')} />
-        </Grid.Column>
-      </Grid.Row>
-      <Grid.Row>
-
-        <Grid.Column>
-          <CaucusMeta data={props.data} fref={props.fref} />
-
-        </Grid.Column>
-      </Grid.Row>
-    </Grid >
-  ) : (
-      <Loader>Loading</Loader>
-    );
-}
-
 export class Caucus extends React.Component<Props, State> {
+  constructor(props: Props) {
+    super(props);
+
+    this.state = {
+      queueCountry: COUNTRY_OPTIONS[0]
+    };
+  }
+
+  CaucusQueuer = (props:
+    { data: CaucusData, members: Map<string, MemberData>, fref: firebase.database.Reference }) => {
+    const membersCountrySet = new Set(Utils.objectToList(props.members).map(x => x.name));
+    const stanceHandler = (stance: Stance) => () => {
+      const newEvent: SpeakerEvent = {
+        who: this.state.queueCountry.text,
+        stance: stance,
+        duration: 60
+      };
+
+      props.fref.child('queue').push().set(newEvent);
+    };
+
+    const countryHandler = (event: any, data: any) => {
+      this.setState({ queueCountry: COUNTRY_OPTIONS.filter(c => c.value === data.value)[0] });
+    };
+
+    return (
+      <div>
+        <Header as="h3" attached="top">Queue</Header>
+        <Segment attached>
+          <Dropdown
+            value={this.state.queueCountry.value}
+            search
+            selection
+            onChange={countryHandler}
+            options={COUNTRY_OPTIONS.filter(x => membersCountrySet.has(x.text))}
+          />
+          <Button.Group size="large">
+            <Button onClick={stanceHandler(Stance.For)}>For</Button>
+            <Button.Or />
+            <Button onClick={stanceHandler(Stance.Neutral)}>Neutral</Button>
+            <Button.Or />
+            <Button onClick={stanceHandler(Stance.Against)}>Against</Button>
+          </Button.Group>
+        </Segment>
+      </div>
+    );
+  }
+
+  CaucusView = (props:
+    { data?: CaucusData, members?: Map<string, MemberData>, fref: firebase.database.Reference }) => {
+
+    const members = props.members ? props.members : {} as Map<string, MemberData>;
+
+    return props.data ? (
+      <Grid columns="equal">
+        <Grid.Row>
+          <Grid.Column>
+            <CaucusHeader data={props.data} fref={props.fref} />
+          </Grid.Column>
+        </Grid.Row>
+        <Grid.Row>
+          <Grid.Column>
+            <CaucusNowSpeaking data={props.data} fref={props.fref} />
+            <CaucusNextSpeaking data={props.data} fref={props.fref} />
+            <this.CaucusQueuer data={props.data} members={members} fref={props.fref} />
+          </Grid.Column>
+          <Grid.Column>
+            <Timer name="Speaker Timer" fref={props.fref.child('speakerTimer')} />
+            <Timer name="Caucus Timer" fref={props.fref.child('caucusTimer')} />
+          </Grid.Column>
+        </Grid.Row>
+        <Grid.Row>
+
+          <Grid.Column>
+            <CaucusMeta data={props.data} fref={props.fref} />
+
+          </Grid.Column>
+        </Grid.Row>
+      </Grid >
+    ) : (
+        <Loader>Loading</Loader>
+      );
+  }
+
   render() {
     const caucusID: CaucusID = this.props.match.params.caucusID;
     const caucuses = this.props.committee.caucuses ? this.props.committee.caucuses : {} as Map<string, CaucusData>;
 
     return (
-      <CaucusView
+      <this.CaucusView
         data={caucuses[caucusID]}
         members={this.props.committee.members}
         fref={this.props.fref.child('caucuses').child(caucusID)}

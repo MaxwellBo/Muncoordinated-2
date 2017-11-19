@@ -174,7 +174,7 @@ export default class CommitteeAdmin extends React.Component<Props, State> {
       )
     );
 
-    const nameHandler = (event: any, data: any) => {
+    const countryHandler = (event: any, data: any) => {
       // FIXME: Probably a hack but it's the best I can do lmao 
       this.setState({ newCountry: COUNTRY_OPTIONS.filter(c => c.value === data.value)[0] });
     };
@@ -215,7 +215,7 @@ export default class CommitteeAdmin extends React.Component<Props, State> {
                 search
                 selection
                 options={COUNTRY_OPTIONS}
-                onChange={nameHandler}
+                onChange={countryHandler}
                 value={this.state.newCountry.value}
               />
             </Table.HeaderCell>
