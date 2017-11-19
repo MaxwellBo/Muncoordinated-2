@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as firebase from 'firebase';
-import { Checkbox, Segment, Header, Statistic, Button, Input, Select, Divider } from 'semantic-ui-react';
+import { Checkbox, Segment, Header, Statistic, Button, Input, Select, Divider, Progress } from 'semantic-ui-react';
 
 interface Props { 
   name: string;
@@ -143,12 +143,16 @@ export class Timer extends React.Component<Props, State> {
       this.setState({ durationField: e.currentTarget.value} );
 
     const remaining = this.state.timer.remaining;
+    const elapsed = this.state.timer.elapsed;
 
     const sign = (remaining < 0 ? '-' : '');
     const minutes = Math.floor(Math.abs(remaining / 60)).toString();
     const seconds = padStart(Math.abs(remaining % 60).toString(), 2, '0');
 
     const formatted = sign + minutes + ':' + seconds;
+
+    // For use with `indicating` on `Progress`
+    const percentage = (remaining / (remaining + elapsed)) * 100;
 
     return (
       <div>
@@ -162,6 +166,8 @@ export class Timer extends React.Component<Props, State> {
           >
             {formatted}
           </Button>
+
+          <Progress percent={percentage} active={false} />
 
           {/* <Statistic>
             <Statistic.Value>{this.state.timer.remaining}</Statistic.Value>
