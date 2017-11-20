@@ -9,6 +9,17 @@ interface State {
 interface Props { 
 }
 
+const firebaseConfig = {
+  apiKey: 'AIzaSyA9EuEf7m3YOTBhBNhoe7DcOIZJP2toL6w',
+  authDomain: 'muncoordinated.firebaseapp.com',
+  databaseURL: 'https://muncoordinated.firebaseio.com',
+  projectId: 'muncoordinated',
+  storageBucket: 'muncoordinated.appspot.com',
+  messagingSenderId: '308589918735'
+};
+
+firebase.initializeApp(firebaseConfig);
+
 const authUi = new firebaseui.auth.AuthUI(firebase.auth());
 firebase.auth().onAuthStateChanged(authStateChangedCallback);
 
