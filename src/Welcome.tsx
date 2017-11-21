@@ -1,9 +1,16 @@
 import * as React from 'react';
+import { RouteComponentProps } from 'react-router';
 import { Link } from 'react-router-dom';
 import * as firebase from 'firebase';
 import { CommitteeData, CommitteeID } from './Committee';
+import { Segment, Button, Divider } from 'semantic-ui-react';
+import { user } from './Auth';
 
-interface Props { }
+interface URLParameters {
+}
+
+interface Props extends RouteComponentProps<URLParameters> {
+}
 
 interface State {
   committees: Map<String, CommitteeData>;
@@ -54,10 +61,11 @@ export default class Welcome extends React.Component<Props, State> {
     );
 
     return (
-      <div>
-        <h3>Welcome!</h3>
-        {items}
-      </div>
+      <Segment padded>
+        <Button primary fluid onClick={() => this.props.history.push(`/login`)}>Login</Button>
+        <Divider horizontal>Or</Divider>
+        <Button secondary fluid disabled={!user}>Create Committee</Button>
+      </Segment>
     );
   }
 }

@@ -23,7 +23,7 @@ firebase.initializeApp(firebaseConfig);
 const authUi = new firebaseui.auth.AuthUI(firebase.auth());
 firebase.auth().onAuthStateChanged(authStateChangedCallback);
 
-var user: firebase.User | null = null;
+export var user: firebase.User | null = null;
 
 function authStateChangedCallback(u: firebase.User) {
   user = u;
@@ -39,7 +39,8 @@ export default class Login extends React.Component<Props, State> {
       signInSuccessUrl: '/',
       signInOptions: [
         firebase.auth.EmailAuthProvider.PROVIDER_ID,
-        firebase.auth.PhoneAuthProvider.PROVIDER_ID
+        firebase.auth.PhoneAuthProvider.PROVIDER_ID,
+        firebase.auth.GoogleAuthProvider.PROVIDER_ID
       ],
       tosUrl: '/tos`'
     };
