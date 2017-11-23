@@ -1399,6 +1399,10 @@ detect-port-alt@1.1.3:
     address "^1.0.1"
     debug "^2.6.0"
 
+dialog-polyfill@^0.4.7:
+  version "0.4.9"
+  resolved "https://registry.yarnpkg.com/dialog-polyfill/-/dialog-polyfill-0.4.9.tgz#c690b3727c3d82e0f947bd5b910b32af8a2ef57d"
+
 diff@^3.2.0:
   version "3.3.1"
   resolved "https://registry.yarnpkg.com/diff/-/diff-3.3.1.tgz#aa8567a6eed03c531fc89d3f711cd0e5259dec75"
@@ -1963,10 +1967,11 @@ firebase@^4.4.0:
     promise-polyfill "^6.0.2"
     xmlhttprequest "^1.8.0"
 
-firebaseui@^2.4.1:
-  version "2.4.1"
-  resolved "https://registry.yarnpkg.com/firebaseui/-/firebaseui-2.4.1.tgz#5e4a9a8a70921431eae01a9c8832a57e50c2911b"
+firebaseui@2.5.1:
+  version "2.5.1"
+  resolved "https://registry.yarnpkg.com/firebaseui/-/firebaseui-2.5.1.tgz#98a89bddd1cbf11c01069e7e4278ecc3cca1e2fe"
   dependencies:
+    dialog-polyfill "^0.4.7"
     firebase "^4.3.1"
 
 flatten@^1.0.2:

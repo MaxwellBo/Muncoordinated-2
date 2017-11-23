@@ -20,8 +20,6 @@ interface Props extends RouteComponentProps<URLParameters> {
 interface State {
   committee: CommitteeData;
   fref: firebase.database.Reference;
-  newCaucusName: CaucusData['name'];
-  newCaucusTopic: CaucusData['topic'];
 }
 
 export type CommitteeID = string;
@@ -78,8 +76,6 @@ export default class Committee extends React.Component<Props, State> {
     this.state = {
       committee: defaultCommittee,
       fref: firebase.database().ref('commitees').child(committeeID),
-      newCaucusName: DEFAULT_CAUCUS.name,
-      newCaucusTopic: DEFAULT_CAUCUS.topic
     };
   }
 
@@ -102,8 +98,6 @@ export default class Committee extends React.Component<Props, State> {
     };
 
     this.state.fref.child('caucuses').push().set(newCaucus);
-
-    this.setState({ newCaucusName: '', newCaucusTopic: '' });
   }
 
   render() {
@@ -122,28 +116,6 @@ export default class Committee extends React.Component<Props, State> {
           {props.data.name}
         </Menu.Item>
         // onClick={() => this.state.fref.child('caucuses').child(props.id).remove()
-      );
-    };
-
-    const NewCaucusForm = () => {
-      const nameHandler = (e: React.FormEvent<HTMLInputElement>) =>
-        this.setState({ newCaucusName: e.currentTarget.value });
-
-      const topicHandler = (e: React.FormEvent<HTMLInputElement>) =>
-        this.setState({ newCaucusTopic: e.currentTarget.value });
-
-      return (
-        <form onSubmit={this.pushCaucus}>
-          <label>
-            Name:
-          <input type="text" value={this.state.newCaucusName} onChange={nameHandler} />
-          </label>
-          <label>
-            Topic:
-          <input type="text" value={this.state.newCaucusTopic} onChange={topicHandler} />
-          </label>
-          <input type="submit" value="Submit" />
-        </form>
       );
     };
 

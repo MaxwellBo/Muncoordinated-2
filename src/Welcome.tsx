@@ -3,7 +3,7 @@ import { RouteComponentProps } from 'react-router';
 import { Link } from 'react-router-dom';
 import * as firebase from 'firebase';
 import { CommitteeData, CommitteeID } from './Committee';
-import { Segment, Button, Divider } from 'semantic-ui-react';
+import { Segment, Button, Divider, Form } from 'semantic-ui-react';
 import { user } from './Auth';
 
 interface URLParameters {
@@ -14,6 +14,9 @@ interface Props extends RouteComponentProps<URLParameters> {
 
 interface State {
   committees: Map<String, CommitteeData>;
+  name: string;
+  topic: string;
+  chairperson: string;
 }
 
 function CommitteeItem(props: { id: CommitteeID, data: CommitteeData } ) {
@@ -39,7 +42,10 @@ export default class Welcome extends React.Component<Props, State> {
     super(props);
 
     this.state = {
-      committees : {} as Map<String, CommitteeData>
+      committees : {} as Map<String, CommitteeData>,
+      name: '',
+      topic: '',
+      chairperson: ''
     };
   }
 
@@ -55,6 +61,24 @@ export default class Welcome extends React.Component<Props, State> {
     this.committeesRef.off();
   }
 
+  NewCommitteeForm = () => {
+    const submitHandler = (event: any, data: any) => {
+      console.debug(data);
+    }
+
+    return (
+      <Form onSubmit={submitHandler}>
+        <Form.Group widths="equal">
+          <Form.Input label="Name" name="name" placeholder="Committee name" />
+          <Form.Input label="Topic" name="topic" placeholder="Committee topic" />
+          <Form.Input label="Chairperson" name="chairperson" placeholder="Name of chairperson" />
+        </Form.Group>
+        <Form.Button secondary fluid disabled={!user}>Create Committee</Form.Button>
+        {/* <Form.Button>Submit</Form.Button> */}
+      </Form>
+    );
+  }
+
   render() {
     const items = Object.keys(this.state.committees).map(key => 
       <CommitteeItem key={key} id={key} data={this.state.committees[key]} />
@@ -63,8 +87,8 @@ export default class Welcome extends React.Component<Props, State> {
     return (
       <Segment padded>
         <Button primary fluid onClick={() => this.props.history.push(`/login`)}>Login</Button>
-        <Divider horizontal>Or</Divider>
-        <Button secondary fluid disabled={!user}>Create Committee</Button>
+        <Divider horizontal>And</Divider>
+        <this.NewCommitteeForm />
       </Segment>
     );
   }

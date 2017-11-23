@@ -36,7 +36,8 @@ export default class Login extends React.Component<Props, State> {
 
   componentDidMount() {
     var uiConfig = {
-      signInSuccessUrl: '/',
+      signInSuccessUrl: '/adfsad',
+      signInFlow: 'popup' as 'popup',
       signInOptions: [
         firebase.auth.EmailAuthProvider.PROVIDER_ID,
         firebase.auth.PhoneAuthProvider.PROVIDER_ID,
