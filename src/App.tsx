@@ -20,7 +20,7 @@ class App extends React.Component {
   render() {
 
     return (
-      <Container style={{ padding: '5em 0em' }}>
+      <Container style={{ padding: '1em 0em' }}>
         <Route exact={true} path="/" component={Welcome} />
         <Route path="/committees/:committeeID" component={Committee} />
         <Footer />
