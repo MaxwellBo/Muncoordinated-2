@@ -4,7 +4,8 @@ import { Link } from 'react-router-dom';
 import * as firebase from 'firebase';
 import { CommitteeData, CommitteeID } from './Committee';
 import { Segment, Button, Divider, Form } from 'semantic-ui-react';
-import { user } from './Auth';
+import Login from './Auth'; // side-effects: triggers firebase setup, don't reorder
+import { user } from './Auth'; // side-effects: triggers firebase setup, don't reorder
 
 interface URLParameters {
 }
@@ -86,7 +87,7 @@ export default class Welcome extends React.Component<Props, State> {
 
     return (
       <Segment padded>
-        <Button primary fluid onClick={() => this.props.history.push(`/login`)}>Login</Button>
+        <Login />
         <Divider horizontal>And</Divider>
         <this.NewCommitteeForm />
       </Segment>

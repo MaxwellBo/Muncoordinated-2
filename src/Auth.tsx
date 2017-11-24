@@ -1,12 +1,16 @@
 import * as React from 'react';
 import * as firebase from 'firebase';
-import * as firebaseui from 'firebaseui';
+import { Card, Button, Form, Message } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 import 'firebaseui/dist/firebaseui.css';
+import { error } from 'util';
 
-interface State { 
+interface State {
+  email: string;
+  password: string;
+  error?: Error;
 }
-interface Props { 
+interface Props {
 }
 
 const firebaseConfig = {
@@ -20,61 +24,100 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 
-const authUi = new firebaseui.auth.AuthUI(firebase.auth());
-firebase.auth().onAuthStateChanged(authStateChangedCallback);
+firebase.auth().onAuthStateChanged(authStateChangedCallback, err => { console.debug(err); });
 
 export var user: firebase.User | null = null;
 
-function authStateChangedCallback(u: firebase.User) {
+function authStateChangedCallback(u: firebase.User | null) {
   user = u;
 }
 
 export default class Login extends React.Component<Props, State> {
-  componentWillUnmount() {
-    authUi.reset();
-  }
-
-  componentDidMount() {
-    var uiConfig = {
-      signInSuccessUrl: '/adfsad',
-      signInFlow: 'popup' as 'popup',
-      signInOptions: [
-        firebase.auth.EmailAuthProvider.PROVIDER_ID,
-        firebase.auth.PhoneAuthProvider.PROVIDER_ID,
-        firebase.auth.GoogleAuthProvider.PROVIDER_ID
-      ],
-      tosUrl: '/tos`'
+  constructor(props: Props) {
+    super(props);
+    this.state = {
+      email: '',
+      password: ''
     };
-
-    if (!user) {
-      authUi.start('#Login-firebaseui-auth-container', uiConfig);
-    }
   }
 
   render() {
     if (user) {
-      // authUi.reset(); // You might need to do this
+      const logOutHandler = () => {
+        firebase.auth().signOut().then(() => {
+          user = null;
+        }).catch(err => {
+          this.setState({ error: err });
+        });
+      };
+
       return (
-        <section className="section">
-          <div className="container">
-            <div className="centered-container centered">
-              <p>
-                You're already logged in!
-                <div className="download-button">
-                  <Link to="/app/view"><button className="button is-primary">Go to app</button></Link>
-                </div>
-              </p>
+        <Card centered>
+          <Card.Content>
+            <Card.Header>
+              {user.email}
+            </Card.Header>
+            <Card.Meta>
+              Logged in
+          </Card.Meta>
+          </Card.Content>
+          <Card.Content extra>
+            <div className="ui two buttons">
+              <Button basic color="red" onClick={logOutHandler}>Log out</Button>
             </div>
-          </div>
-        </section>
+          </Card.Content>
+        </Card>
       );
     } else {
+      // authUi.reset(); // You might need to do this
+      const loginHandler = () => {
+        firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password).catch(err => {
+          this.setState({ error: err });
+        });
+      };
+
+      const createHandler = () => {
+        firebase.auth().createUserWithEmailAndPassword(this.state.email, this.state.password).catch(err => {
+          this.setState({ error: err });
+        });
+      };
+
+      const emailHandler = (e: React.FormEvent<HTMLInputElement>) =>
+        this.setState({ email: e.currentTarget.value });
+
+      const passwordHandler = (e: React.FormEvent<HTMLInputElement>) =>
+        this.setState({ password: e.currentTarget.value });
+
       return (
-        <section className="section">
-          <div className="container">
-            <div id="Login-firebaseui-auth-container" />
-          </div>
-        </section>
+        <Form error={!!this.state.error} success={!!user}>
+          <Form.Input 
+            label="Email" 
+            placeholder="joe@schmoe.com" 
+            value={this.state.email} 
+            onChange={emailHandler}
+          />
+          <Form.Input
+            label="Password"
+            type="password"
+            placeholder="correct horse battery staple"
+            value={this.state.password}
+            onChange={passwordHandler}
+          />
+          <Message
+            success
+            header="Account created"
+            content="Your account was successfully created"
+          />
+          <Message
+            error
+            header={this.state.error ? this.state.error.name : ''}
+            content={this.state.error ? this.state.error.message : ''}
+          />
+          <Button.Group>
+            <Button primary fluid onClick={loginHandler}>Login</Button>
+            <Button secondary fluid onClick={createHandler}>Create</Button>
+          </Button.Group>
+        </Form>
       );
     }
   }
