@@ -2,7 +2,6 @@ import * as React from 'react';
 import * as firebase from 'firebase';
 import { Card, Button, Form, Message } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
-import 'firebaseui/dist/firebaseui.css';
 import { error } from 'util';
 
 interface State {

@@ -4,7 +4,6 @@ import { Route } from 'react-router-dom';
 import { Button, Container, Header, Message } from 'semantic-ui-react';
 import './App.css';
 
-import Login from './Auth'; // side-effects: triggers firebase setup, don't reorder
 import Welcome from './Welcome';
 import Committee from './Committee';
 
