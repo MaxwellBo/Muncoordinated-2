@@ -23,6 +23,8 @@ interface Props extends RouteComponentProps<URLParameters> {
 
 interface State {
   queueCountry: CountryOption;
+  speakerTimer: TimerData;
+  caucusTimer: TimerData;
 }
 
 export type CaucusID = string;
@@ -37,17 +39,6 @@ enum Stance {
   Neutral = 'Neutral',
   Against = 'Against'
 }
-
-const StanceIcon = (props: { stance: Stance }) => {
-  switch (props.stance) {
-    case Stance.For:
-      return <Icon name="thumbs outline up" />;
-    case Stance.Against:
-      return <Icon name="thumbs outline down" />;
-    default:
-      return <Icon name="hand outline right" />;
-  }
-};
 
 export interface CaucusData {
   name: string;
@@ -70,6 +61,17 @@ const DEFAULT_SPEAKER_EVENT = {
   who: '',
   stance: Stance.Neutral,
   duration: 0
+};
+
+const StanceIcon = (props: { stance: Stance }) => {
+  switch (props.stance) {
+    case Stance.For:
+      return <Icon name="thumbs outline up" />;
+    case Stance.Against:
+      return <Icon name="thumbs outline down" />;
+    default:
+      return <Icon name="hand outline right" />;
+  }
 };
 
 export const DEFAULT_CAUCUS: CaucusData = {
@@ -151,76 +153,52 @@ function CaucusNowSpeaking(props: { data: CaucusData, fref: firebase.database.Re
   );
 }
 
-function runLifecycle(history: firebase.database.Reference, speaking: firebase.database.Reference,
-                      queueHead: firebase.database.Reference, timer: firebase.database.Reference, yielding?: boolean) {
-
-  timer.once('value', (timerData) => {
-    if (timerData) {
-      // Move the person currently speaking into history...
-      speaking.once('value', (nowEvent) => {
-        if (nowEvent) {
-          history.push().set({ ...nowEvent.val(), duration: timerData.val().elapsed });
-          speaking.set(null);
-        } // do nothing if no-one is currently speaking
-      });
-    }
-  });
-  
-  // ...and transfer the person next to speak into the "Speaking" zone
-  queueHead.once('child_added', (nextEvent) => {
-    if (nextEvent) {
-      speaking.set(nextEvent.val());
-
-      timer.update({
-        elapsed: 0,
-        remaining: nextEvent.val().duration, // load the appropriate time 
-        ticking: false // and stop it
-      });
-
-      queueHead.set(null);
-    }
-  });
+interface Lifecycle {
+  history: firebase.database.Reference;
+  speakingData?: SpeakerEvent;
+  speaking: firebase.database.Reference;
+  timerData: TimerData; 
+  timer: firebase.database.Reference;
+  yielding: boolean;
+  queueHeadData?: SpeakerEvent; 
+  queueHead?: firebase.database.Reference;
 }
 
-function CaucusNextSpeaking(props: { data: CaucusData, fref: firebase.database.Reference }) {
-  const nextSpeaker = () => {
-    const speakingRef = props.fref.child('speaking');
-    const queueHeadRef = props.fref.child('queue').limitToFirst(1).ref;
-    const historyRef = props.fref.child('history');
-    const speakerTimerRef = props.fref.child('speakerTimer');
+function runLifecycle(lifecycle: Lifecycle) {
 
-    runLifecycle(historyRef, speakingRef, queueHeadRef, speakerTimerRef, true);
-  };
+  const { history, speakingData, speaking, timerData, timer, yielding, queueHeadData, queueHead } = lifecycle;
 
-  return (
-    <div>
-      <Header as="h3" attached="top">Next Speaking</Header>
-      <Segment attached>
-        <SpeakerEvents data={props.data.queue} fref={props.fref.child('queue')} />
-      </Segment>
-      <Segment attached="bottom">
-        <Button
-          icon
-          primary
-          labelPosition="left"
-          onClick={nextSpeaker}
-        >
-          <Icon name="arrow up" />
-          Next
-        </Button>
-        <Button
-          icon
-          negative
-          labelPosition="left"
-          onClick={() => props.fref.child('queue').remove()}
-        >
-          <Icon name="refresh" />
-          Clear
-        </Button>
-      </Segment>
-    </div>
-  );
+  let additionalYieldTime = 0;
+
+  // Move the person currently speaking into history...
+  if (speakingData) {
+    history.push().set({ ...speakingData, duration: timerData.elapsed });
+    speaking.set(null);
+
+    if (yielding) {
+      additionalYieldTime = speakingData.duration;
+    }
+
+    timer.update({
+      elapsed: 0,
+      remaining: 60,
+      ticking: false // and stop it
+    });
+  } // do nothing if no-one is currently speaking
+
+  if (queueHead && queueHeadData) {
+    speaking.set(queueHeadData);
+
+    timer.update({
+      elapsed: 0,
+      remaining: queueHeadData.duration + additionalYieldTime, // load the appropriate time 
+      ticking: false // and stop it
+    });
+
+    queueHead.set(null);
+  }
 }
+
 
 const SpeakerEvent = (props: { data?: SpeakerEvent, fref: firebase.database.Reference }) => {
   const makeHandler = (field: string) => (e: React.FormEvent<HTMLInputElement>) =>
@@ -270,7 +248,9 @@ export class Caucus extends React.Component<Props, State> {
     super(props);
 
     this.state = {
-      queueCountry: COUNTRY_OPTIONS[0]
+      queueCountry: COUNTRY_OPTIONS[0],
+      caucusTimer: DEFAULT_CAUCUS.caucusTimer,
+      speakerTimer: DEFAULT_CAUCUS.speakerTimer
     };
   }
 
@@ -314,6 +294,64 @@ export class Caucus extends React.Component<Props, State> {
     );
   }
 
+  CaucusNextSpeaking = (props: { data: CaucusData, fref: firebase.database.Reference }) => {
+    const nextSpeaker = () => {
+
+      let queue = props.data.queue ? props.data.queue : {};
+
+      const queueHeadKey = Object.keys(queue)[0];
+
+      let queueHeadDetails = {};
+
+      if (queueHeadKey) {
+        queueHeadDetails = { 
+          queueHeadData: queue[queueHeadKey],
+          queueHead: props.fref.child('queue').child(queueHeadKey)
+        };
+      }
+
+      const lifecycle: Lifecycle = {
+        history: props.fref.child('history'),
+        speakingData: props.data.speaking,
+        speaking: props.fref.child('speaking'),
+        timerData: this.state.speakerTimer,
+        timer: props.fref.child('speakerTimer'),
+        yielding: false,
+      };
+      
+      runLifecycle({ ...lifecycle, ...queueHeadDetails });
+    };
+
+    return (
+      <div>
+        <Header as="h3" attached="top">Next Speaking</Header>
+        <Segment attached>
+          <SpeakerEvents data={props.data.queue} fref={props.fref.child('queue')} />
+        </Segment>
+        <Segment attached="bottom">
+          <Button
+            icon
+            primary
+            labelPosition="left"
+            onClick={nextSpeaker}
+          >
+            <Icon name="arrow up" />
+            Next
+          </Button>
+          <Button
+            icon
+            negative
+            labelPosition="left"
+            onClick={() => props.fref.child('queue').remove()}
+          >
+            <Icon name="refresh" />
+            Clear
+          </Button>
+        </Segment>
+      </div>
+    );
+  }
+
   CaucusView = (props:
     {
       caucusID: CaucusID, data?: CaucusData, members?: Map<string, MemberData>,
@@ -332,12 +370,24 @@ export class Caucus extends React.Component<Props, State> {
         <Grid.Row>
           <Grid.Column>
             <CaucusNowSpeaking data={props.data} fref={props.fref} />
-            <CaucusNextSpeaking data={props.data} fref={props.fref} />
+            <this.CaucusNextSpeaking data={props.data} fref={props.fref} />
             <this.CaucusQueuer data={props.data} members={members} fref={props.fref} />
           </Grid.Column>
           <Grid.Column>
-            <Timer name="Speaker Timer" fref={props.fref.child('speakerTimer')} key={props.caucusID + 'speakerTimer'} />
-            <Timer name="Caucus Timer" fref={props.fref.child('caucusTimer')} key={props.caucusID + 'caucusTimer'} />
+            <Timer 
+              value={this.state.speakerTimer}
+              name="Speaker Timer" 
+              fref={props.fref.child('speakerTimer')} 
+              key={props.caucusID + 'speakerTimer'}
+              onChange={(timer) => this.setState( { speakerTimer: timer })}
+            />
+            <Timer 
+              value={this.state.caucusTimer}
+              name="Caucus Timer" 
+              fref={props.fref.child('caucusTimer')} 
+              key={props.caucusID + 'caucusTimer'} 
+              onChange={(timer) => this.setState( { caucusTimer: timer })}
+            />
           </Grid.Column>
         </Grid.Row>
         <Grid.Row>

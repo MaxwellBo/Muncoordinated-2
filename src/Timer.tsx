@@ -4,7 +4,9 @@ import { Checkbox, Segment, Header, Statistic, Button, Input, Select, Divider, P
 
 interface Props { 
   name: string;
+  value: TimerData;
   fref: firebase.database.Reference;
+  onChange: (timer: TimerData) => any;
 }
 
 enum Unit {
@@ -18,7 +20,6 @@ const UNIT_OPTIONS = [
 ];
 
 interface State {
-  timer: TimerData;
   timerId: any | null;
   unit: Unit;
   durationField: string;
@@ -57,7 +58,6 @@ export class Timer extends React.Component<Props, State> {
     super(props);
 
     this.state = {
-      timer: DEFAULT_TIMER,
       timerId: null,
       unit: Unit.Seconds,
       durationField: '60'
@@ -65,22 +65,22 @@ export class Timer extends React.Component<Props, State> {
   }
 
   tick = () => {
-    if (this.state.timer.ticking) {
+    if (this.props.value.ticking) {
       const newTimer = {
-        elapsed: this.state.timer.elapsed + 1,
-        remaining: this.state.timer.remaining - 1,
-        ticking: this.state.timer.ticking
+        elapsed: this.props.value.elapsed + 1,
+        remaining: this.props.value.remaining - 1,
+        ticking: this.props.value.ticking
       };
 
-      this.setState({ timer: newTimer });
+      this.props.onChange(newTimer);
     }
   }
 
   toggleHandler = (event: any, data: any) => {
     const newTimer = {
-      elapsed: this.state.timer.elapsed,
-      remaining: this.state.timer.remaining,
-      ticking: !this.state.timer.ticking
+      elapsed: this.props.value.elapsed,
+      remaining: this.props.value.remaining,
+      ticking: !this.props.value.ticking
     };
 
     this.props.fref.set(newTimer);
@@ -89,7 +89,7 @@ export class Timer extends React.Component<Props, State> {
   componentDidMount() {
     this.props.fref.on('value', (timer) => {
       if (timer) {
-        this.setState({ timer: timer.val() });
+        this.props.onChange(timer.val());
       }
     });
 
@@ -142,8 +142,8 @@ export class Timer extends React.Component<Props, State> {
     const durationHandler = (e: React.FormEvent<HTMLInputElement>) =>
       this.setState({ durationField: e.currentTarget.value} );
 
-    const remaining = this.state.timer.remaining;
-    const elapsed = this.state.timer.elapsed;
+    const remaining = this.props.value.remaining;
+    const elapsed = this.props.value.elapsed;
 
     const sign = (remaining < 0 ? '-' : '');
     const minutes = Math.floor(Math.abs(remaining / 60)).toString();
@@ -159,8 +159,8 @@ export class Timer extends React.Component<Props, State> {
         <Header as="h3" attached="top">{this.props.name}</Header>
         <Segment attached="bottom" textAlign="center" >
           <Button 
-            active={this.state.timer.ticking}
-            negative={this.state.timer.remaining < 0}
+            active={this.props.value.ticking}
+            negative={this.props.value.remaining < 0}
             size="massive"
             onClick={this.toggleHandler}
           >
@@ -170,9 +170,9 @@ export class Timer extends React.Component<Props, State> {
           <Progress percent={percentage} active={false} />
 
           {/* <Statistic>
-            <Statistic.Value>{this.state.timer.remaining}</Statistic.Value>
+            <Statistic.Value>{this.props.value.remaining}</Statistic.Value>
           </Statistic>
-          <Checkbox toggle checked={this.state.timer.ticking} onChange={this.toggleHandler} /> */}
+          <Checkbox toggle checked={this.props.value.ticking} onChange={this.toggleHandler} /> */}
           <Divider />
           <Input
             value={this.state.durationField}
