@@ -162,7 +162,7 @@ function runLifecycle(lifecycle: Lifecycle) {
     speaking.set(null);
 
     if (yielding) {
-      additionalYieldTime = speakingData.duration;
+      additionalYieldTime = timerData.remaining;
     }
 
     timer.update({
