@@ -12,6 +12,7 @@ interface State {
   creating: boolean;
 }
 interface Props {
+  onAuth: (user: firebase.User | null) => any;
 }
 
 const firebaseConfig = {
@@ -46,6 +47,7 @@ export default class Login extends React.Component<Props, State> {
   authStateChangedCallback = (u: firebase.User | null) => {
     user = u;
     this.setState({ loggingIn: false, creating: false });
+    this.props.onAuth(u);
   }
 
   render() {

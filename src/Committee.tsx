@@ -58,23 +58,23 @@ function CommitteeMeta(props: { data: CommitteeData, fref: firebase.database.Ref
   );
 }
 
+export const DEFAULT_COMMITTEE: CommitteeData = {
+  name: '',
+  chair: '',
+  topic: '',
+  members: {} as Map<MemberID, MemberData>,
+  caucuses: {} as Map<CaucusID, CaucusData>,
+  resolutions: {} as Map<ResolutionID, ResolutionData>
+};
+
 export default class Committee extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
 
-    const defaultCommittee: CommitteeData = {
-      name: '',
-      chair: '',
-      topic: '',
-      members: {} as Map<MemberID, MemberData>,
-      caucuses: {} as Map<CaucusID, CaucusData>,
-      resolutions: {} as Map<ResolutionID, ResolutionData>
-    };
-
     const committeeID: CommitteeID = this.props.match.params.committeeID;
 
     this.state = {
-      committee: defaultCommittee,
+      committee: DEFAULT_COMMITTEE,
       fref: firebase.database().ref('commitees').child(committeeID),
     };
   }
