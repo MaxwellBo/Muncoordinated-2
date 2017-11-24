@@ -3,7 +3,7 @@ import { RouteComponentProps } from 'react-router';
 import { Link } from 'react-router-dom';
 import * as firebase from 'firebase';
 import { CommitteeData, CommitteeID, DEFAULT_COMMITTEE } from './Committee';
-import { Segment, Button, Divider, Form } from 'semantic-ui-react';
+import { Segment, Button, Divider, Form, Grid, Header } from 'semantic-ui-react';
 import Login from './Auth'; // side-effects: triggers firebase setup, don't reorder
 
 interface URLParameters {
@@ -20,7 +20,7 @@ interface State {
   user: firebase.User | null;
 }
 
-function CommitteeItem(props: { id: CommitteeID, data: CommitteeData } ) {
+function CommitteeItem(props: { id: CommitteeID, data: CommitteeData }) {
   // XXX: Might want to share code with CaucusItem?
   return (
     <div style={{ border: 'solid' }}>
@@ -43,7 +43,7 @@ export default class Welcome extends React.Component<Props, State> {
     super(props);
 
     this.state = {
-      committees : {} as Map<string, CommitteeData>,
+      committees: {} as Map<string, CommitteeData>,
       name: '',
       topic: '',
       chairperson: '',
@@ -81,19 +81,19 @@ export default class Welcome extends React.Component<Props, State> {
       }
     };
 
-    const handleChange = (event: any, data: any) => 
+    const handleChange = (event: any, data: any) =>
       this.setState({ [data.name]: data.value });
 
     return (
       <Form onSubmit={submitHandler}>
         <Form.Group widths="equal">
           <Form.Input label="Name" name="name" placeholder="Committee name" onChange={handleChange} />
-          <Form.Input label="Topic" name="topic" placeholder="Committee topic"onChange={handleChange} />
-          <Form.Input 
-            label="Chairperson" 
-            name="chairperson" 
-            placeholder="Name of chairperson" 
-            onChange={handleChange} 
+          <Form.Input label="Topic" name="topic" placeholder="Committee topic" onChange={handleChange} />
+          <Form.Input
+            label="Chairpeople"
+            name="chairperson"
+            placeholder="Name(s) of chairperson or chairpeople"
+            onChange={handleChange}
           />
         </Form.Group>
         <Form.Button secondary fluid disabled={!this.state.user}>Create Committee</Form.Button>
@@ -104,11 +104,20 @@ export default class Welcome extends React.Component<Props, State> {
   render() {
 
     return (
-      <Segment padded>
-        <Login onAuth={(user) => this.setState({ user: user})} />
-        <Divider horizontal>And</Divider>
-        <this.NewCommitteeForm />
-      </Segment>
+      <Grid
+        style={{ height: '100%' }}
+      >
+        <Grid.Column>
+          <Header as="h1" dividing>
+          Muncoordinated
+          </Header>
+          <Segment>
+            <Login onAuth={(user) => this.setState({ user: user })} />
+            <Divider horizontal>And</Divider>
+            <this.NewCommitteeForm />
+          </Segment>
+        </Grid.Column>
+      </Grid>
     );
   }
 }

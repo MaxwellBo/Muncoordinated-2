@@ -71,7 +71,7 @@ export default class Login extends React.Component<Props, State> {
           </Card.Meta>
           </Card.Content>
           <Card.Content extra key="extra">
-            <Button basic color="red" onClick={logOutHandler}>Log out</Button>
+            <Button basic color="red" fluid onClick={logOutHandler}>Logout</Button>
           </Card.Content>
         </Card>
       );
@@ -135,7 +135,7 @@ export default class Login extends React.Component<Props, State> {
           />
           <Button.Group>
             <Button primary fluid onClick={loginHandler} loading={this.state.loggingIn} >Login</Button>
-            <Button secondary fluid onClick={createHandler} loading={this.state.creating} >Create</Button>
+            <Button secondary fluid onClick={createHandler} loading={this.state.creating} >Sign-Up</Button>
           </Button.Group>
         </Form>
       );
