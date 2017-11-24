@@ -28,6 +28,7 @@ export interface CommitteeData {
   name: string;
   chair: string;
   topic: string;
+  creatorUid: firebase.UserInfo['uid'];
   members?: Map<MemberID, MemberData>;
   caucuses?: Map<CaucusID, CaucusData>;
   resolutions?: Map<ResolutionID, ResolutionData>;
@@ -62,6 +63,7 @@ export const DEFAULT_COMMITTEE: CommitteeData = {
   name: '',
   chair: '',
   topic: '',
+  creatorUid: '',
   members: {} as Map<MemberID, MemberData>,
   caucuses: {} as Map<CaucusID, CaucusData>,
   resolutions: {} as Map<ResolutionID, ResolutionData>

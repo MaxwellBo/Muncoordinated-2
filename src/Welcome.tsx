@@ -13,7 +13,7 @@ interface Props extends RouteComponentProps<URLParameters> {
 }
 
 interface State {
-  committees: Map<String, CommitteeData>;
+  committees: Map<string, CommitteeData>;
   name: string;
   topic: string;
   chairperson: string;
@@ -43,7 +43,7 @@ export default class Welcome extends React.Component<Props, State> {
     super(props);
 
     this.state = {
-      committees : {} as Map<String, CommitteeData>,
+      committees : {} as Map<string, CommitteeData>,
       name: '',
       topic: '',
       chairperson: '',
@@ -71,6 +71,7 @@ export default class Welcome extends React.Component<Props, State> {
           name: this.state.name,
           topic: this.state.topic,
           chair: this.state.chairperson,
+          creatorUid: this.state.user.uid
         };
 
         const newCommitteeRef = this.committeesRef.push();
@@ -101,9 +102,6 @@ export default class Welcome extends React.Component<Props, State> {
   }
 
   render() {
-    const items = Object.keys(this.state.committees).map(key => 
-      <CommitteeItem key={key} id={key} data={this.state.committees[key]} />
-    );
 
     return (
       <Segment padded>
