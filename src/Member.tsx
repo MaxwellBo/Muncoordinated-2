@@ -50,6 +50,7 @@ const DEFAULT_MEMBER = {
   present: true,
   rank: Rank.Standard,
   voting: true,
+  flag: 'fm' // Federated States of Micronesia
 };
 
 export default class Member extends React.Component<Props, State> {

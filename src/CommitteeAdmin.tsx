@@ -13,6 +13,7 @@ interface Props {
 
 interface State {
   newCountry: CountryOption;
+  newOptions: CountryOption[];
   newMemberRank: Rank;
   newMemberVoting: MemberData['voting'];
   newMemberPresent: MemberData['present'];
@@ -142,6 +143,7 @@ export default class CommitteeAdmin extends React.Component<Props, State> {
 
     this.state = {
       newCountry: COUNTRY_OPTIONS[0],
+      newOptions: [],
       newMemberRank: Rank.Standard,
       newMemberVoting: true,
       newMemberPresent: true
@@ -175,8 +177,8 @@ export default class CommitteeAdmin extends React.Component<Props, State> {
     );
 
     const countryHandler = (event: any, data: any) => {
-      // FIXME: Probably a hack but it's the best I can do lmao 
-      this.setState({ newCountry: COUNTRY_OPTIONS.filter(c => c.value === data.value)[0] });
+      this.setState({ 
+        newCountry: [...this.state.newOptions, ...COUNTRY_OPTIONS].filter(c => c.value === data.value)[0] });
     };
 
     const presentHandler = (event: any, data: any) => {
@@ -189,6 +191,13 @@ export default class CommitteeAdmin extends React.Component<Props, State> {
 
     const rankHandler = (event: any, data: any) => {
       this.setState({ newMemberRank: data.value });
+    };
+
+    const additionHandler = (event: any, data: any) => {
+      // FSM looks sorta like the UN flag
+      const newOption: CountryOption = { key: data.value, text: data.value, value: data.value, flag: 'fm' };
+
+      this.setState({ newCountry: newOption, newOptions: [ newOption, ...this.state.newOptions] });
     };
 
     return (
@@ -214,7 +223,9 @@ export default class CommitteeAdmin extends React.Component<Props, State> {
                 placeholder="Select Country"
                 search
                 selection
-                options={COUNTRY_OPTIONS}
+                allowAdditions
+                options={[...this.state.newOptions, ...COUNTRY_OPTIONS]}
+                onAddItem={additionHandler}
                 onChange={countryHandler}
                 value={this.state.newCountry.value}
               />
