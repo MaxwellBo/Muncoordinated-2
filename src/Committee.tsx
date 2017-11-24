@@ -131,9 +131,11 @@ export default class Committee extends React.Component<Props, State> {
             active={false}
             onClick={() => this.props.history.push(`/committees/${committeeID}/admin`)}
           >
+          <Icon name="setting" />
             Admin
           </Menu.Item>
           <Menu.Item>
+            <Icon name="users" />
             Caucuses
             <Menu.Menu>
               {caucusItems}
