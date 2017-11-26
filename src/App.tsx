@@ -22,8 +22,8 @@ class App extends React.Component {
 
     return (
       <Container style={{ padding: '1em 0em' }}>
-        <ModalLogin />
-        <Route exact={true} path="/" component={Welcome} />
+        <Route exact={true} path="/onboard" component={Welcome} />
+        <Route path="/committees" component={ModalLogin} />
         <Route path="/committees/:committeeID" component={Committee} />
         <Footer />
       </Container>
