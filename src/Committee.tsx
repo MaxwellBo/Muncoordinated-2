@@ -77,7 +77,7 @@ export default class Committee extends React.Component<Props, State> {
 
     this.state = {
       committee: DEFAULT_COMMITTEE,
-      fref: firebase.database().ref('commitees').child(committeeID),
+      fref: firebase.database().ref('committees').child(committeeID),
     };
   }
 

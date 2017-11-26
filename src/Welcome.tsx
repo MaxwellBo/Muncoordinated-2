@@ -36,8 +36,7 @@ function CommitteeItem(props: { id: CommitteeID, data: CommitteeData }) {
 }
 
 export default class Welcome extends React.Component<Props, State> {
-  // TODO: Rename database field `commitees` to `committees`
-  committeesRef = firebase.database().ref('commitees');
+  committeesRef = firebase.database().ref('committees');
 
   constructor(props: Props) {
     super(props);
