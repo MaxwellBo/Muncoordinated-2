@@ -4,6 +4,7 @@ import { Timer, TimerData, DEFAULT_TIMER } from './Timer';
 import { RouteComponentProps } from 'react-router';
 import { MemberID, MemberData, parseCountryOption, parseFlagName } from './Member';
 import { CommitteeID, CommitteeData } from './Committee';
+import CaucusQueuer from './CaucusQueuer';
 import * as Utils from './utils';
 import {
   Segment, Loader, Dimmer, Header, Dropdown, Input, Button, Icon, Grid, Feed, Flag,
@@ -22,7 +23,6 @@ interface Props extends RouteComponentProps<URLParameters> {
 }
 
 interface State {
-  queueCountry: CountryOption;
   speakerTimer: TimerData;
   caucusTimer: TimerData;
 }
@@ -34,7 +34,7 @@ enum CaucusStatus {
   Closed = 'Closed'
 }
 
-enum Stance {
+export enum Stance {
   For = 'For',
   Neutral = 'Neutral',
   Against = 'Against'
@@ -193,52 +193,9 @@ export class Caucus extends React.Component<Props, State> {
     super(props);
 
     this.state = {
-      queueCountry: COUNTRY_OPTIONS[0],
       caucusTimer: DEFAULT_CAUCUS.caucusTimer,
       speakerTimer: DEFAULT_CAUCUS.speakerTimer
     };
-  }
-
-  CaucusQueuer = (props:
-    { data: CaucusData, members: Map<string, MemberData>, fref: firebase.database.Reference }) => {
-    const stanceHandler = (stance: Stance) => () => {
-      const newEvent: SpeakerEvent = {
-        who: this.state.queueCountry.text,
-        stance: stance,
-        duration: 60
-      };
-
-      props.fref.child('queue').push().set(newEvent);
-    };
-
-    const countryOptions: CountryOption[] = 
-      Utils.objectToList(props.members).map(x => parseCountryOption(x.name));
-
-    const countryHandler = (event: any, data: any) => {
-      this.setState({ queueCountry: countryOptions.filter(c => c.value === data.value)[0] });
-    };
-
-    return (
-      <div>
-        <Header as="h3" attached="top">Queue</Header>
-        <Segment attached>
-          <Dropdown
-            value={this.state.queueCountry.value}
-            search
-            selection
-            onChange={countryHandler}
-            options={countryOptions}
-          />
-          <Button.Group size="large">
-            <Button onClick={stanceHandler(Stance.For)}>For</Button>
-            <Button.Or />
-            <Button onClick={stanceHandler(Stance.Neutral)}>Neutral</Button>
-            <Button.Or />
-            <Button onClick={stanceHandler(Stance.Against)}>Against</Button>
-          </Button.Group>
-        </Segment>
-      </div>
-    );
   }
 
   SpeakerEvent = (local: { 
@@ -414,7 +371,7 @@ export class Caucus extends React.Component<Props, State> {
           <Grid.Column>
             <this.CaucusNowSpeaking data={props.data} fref={props.fref} />
             <this.CaucusNextSpeaking data={props.data} fref={props.fref} />
-            <this.CaucusQueuer data={props.data} members={members} fref={props.fref} />
+            <CaucusQueuer data={props.data} members={members} fref={props.fref} />
           </Grid.Column>
           <Grid.Column>
             <Timer

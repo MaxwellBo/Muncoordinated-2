@@ -8,7 +8,7 @@ interface Props {
   onChange: (timer: TimerData) => any;
 }
 
-enum Unit {
+export enum Unit {
   Minutes = 'min',
   Seconds = 'sec'
 }
@@ -21,7 +21,7 @@ const UNIT_OPTIONS = [
 interface State {
   timer: TimerData;
   timerId: any | null;
-  unit: Unit;
+  unitDropdown: Unit;
   durationField: string;
 }
 
@@ -53,6 +53,31 @@ function padStart(xs: string, targetLength: number, padString?: string) {
   }
 }
 
+export function TimeSetter(props: {
+  unitValue: Unit,
+  durationValue: string,
+  onUnitChange: (event: any, data: any) => any,
+  onDurationChange: (event: React.FormEvent<HTMLInputElement>) => any,
+  onSet?: () => any
+}) {
+
+  return (
+    <Input
+      value={props.durationValue}
+      placeholder="Duration"
+      onChange={props.onDurationChange}
+      action
+      fluid
+    >
+      <input />
+      {/* <Button icon="minus" onClick={this.decrement} />
+      <Button icon="plus"  onClick={this.increment} /> */}
+      <Select value={props.unitValue} options={UNIT_OPTIONS} compact button onChange={props.onUnitChange} />
+      {props.onSet && (<Button onClick={props.onSet}>Set</Button>)}
+    </Input>
+  );
+}
+
 export class Timer extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
@@ -60,7 +85,7 @@ export class Timer extends React.Component<Props, State> {
     this.state = {
       timer: DEFAULT_TIMER,
       timerId: null,
-      unit: Unit.Seconds,
+      unitDropdown: Unit.Seconds,
       durationField: '60'
     };
   }
@@ -121,7 +146,7 @@ export class Timer extends React.Component<Props, State> {
     if (duration) {
       const newTimer = {
         elapsed: 0,
-        remaining: this.state.unit === Unit.Minutes ? duration * 60 : duration,
+        remaining: this.state.unitDropdown === Unit.Minutes ? duration * 60 : duration,
         ticking: false
       };
 
@@ -139,7 +164,7 @@ export class Timer extends React.Component<Props, State> {
 
   render() {
     const unitHandler = (event: any, data: any) => {
-      this.setState({ unit: data.value });
+      this.setState({ unitDropdown: data.value });
     };
 
     const durationHandler = (e: React.FormEvent<HTMLInputElement>) =>
@@ -177,19 +202,13 @@ export class Timer extends React.Component<Props, State> {
           </Statistic>
           <Checkbox toggle checked={this.state.timer.ticking} onChange={this.toggleHandler} /> */}
           <Divider />
-          <Input
-            value={this.state.durationField}
-            placeholder="Duration"
-            onChange={durationHandler}
-            action
-            fluid
-          >
-            <input />
-            {/* <Button icon="minus" onClick={this.decrement} />
-            <Button icon="plus"  onClick={this.increment} /> */}
-            <Select value={this.state.unit} options={UNIT_OPTIONS} compact button onChange={unitHandler} />
-            <Button onClick={this.set}>Set</Button>
-          </Input>
+          <TimeSetter
+            unitValue={this.state.unitDropdown}
+            durationValue={this.state.durationField}
+            onDurationChange={durationHandler}
+            onUnitChange={unitHandler}
+            onSet={this.set}
+          />
         </Segment>
       </div>
     );
