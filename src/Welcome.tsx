@@ -111,7 +111,7 @@ export default class Welcome extends React.Component<Props, State> {
           Muncoordinated
           </Header>
           <Segment>
-            <Login onAuth={(user) => this.setState({ user: user })} />
+            <Login onAuth={(user) => this.setState({ user: user })} allowSignup={true}/>
             <Divider horizontal>And</Divider>
             <this.NewCommitteeForm />
           </Segment>

@@ -13,6 +13,7 @@ interface State {
 }
 interface Props {
   onAuth: (user: firebase.User | null) => any;
+  allowSignup: boolean;
 }
 
 const firebaseConfig = {
@@ -40,7 +41,7 @@ export const ModalLogin = () => {
     >
       <Modal.Header>Login</Modal.Header>
       <Modal.Content image>
-        <Login onAuth={() => { return null; }} />
+        <Login onAuth={() => { return null; }} allowSignup={false}/>
       </Modal.Content>
     </Modal>
   );
@@ -153,7 +154,9 @@ export default class Login extends React.Component<Props, State> {
           />
           <Button.Group>
             <Button primary fluid onClick={loginHandler} loading={this.state.loggingIn} >Login</Button>
-            <Button secondary fluid onClick={createHandler} loading={this.state.creating} >Sign-Up</Button>
+            {this.props.allowSignup && 
+              (<Button secondary fluid onClick={createHandler} loading={this.state.creating} >Sign-Up</Button>)
+            }
           </Button.Group>
         </Form>
       );
