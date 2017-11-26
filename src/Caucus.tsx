@@ -418,14 +418,12 @@ export class Caucus extends React.Component<Props, State> {
           </Grid.Column>
           <Grid.Column>
             <Timer
-              value={this.state.speakerTimer}
               name="Speaker Timer"
               fref={props.fref.child('speakerTimer')}
               key={props.caucusID + 'speakerTimer'}
               onChange={(timer) => this.setState({ speakerTimer: timer })}
             />
             <Timer
-              value={this.state.caucusTimer}
               name="Caucus Timer"
               fref={props.fref.child('caucusTimer')}
               key={props.caucusID + 'caucusTimer'}
