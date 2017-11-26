@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as firebase from 'firebase';
 import { Timer, TimerData, DEFAULT_TIMER } from './Timer';
 import { RouteComponentProps } from 'react-router';
-import { MemberID, MemberData } from './Member';
+import { MemberID, MemberData, parseCountryOption } from './Member';
 import { CommitteeID, CommitteeData } from './Committee';
 import * as Utils from './utils';
 import {
@@ -201,7 +201,6 @@ export class Caucus extends React.Component<Props, State> {
 
   CaucusQueuer = (props:
     { data: CaucusData, members: Map<string, MemberData>, fref: firebase.database.Reference }) => {
-    const membersCountrySet = new Set(Utils.objectToList(props.members).map(x => x.name));
     const stanceHandler = (stance: Stance) => () => {
       const newEvent: SpeakerEvent = {
         who: this.state.queueCountry.text,
@@ -212,8 +211,11 @@ export class Caucus extends React.Component<Props, State> {
       props.fref.child('queue').push().set(newEvent);
     };
 
+    const countryOptions: CountryOption[] = 
+      Utils.objectToList(props.members).map(x => parseCountryOption(x.name));
+
     const countryHandler = (event: any, data: any) => {
-      this.setState({ queueCountry: COUNTRY_OPTIONS.filter(c => c.value === data.value)[0] });
+      this.setState({ queueCountry: countryOptions.filter(c => c.value === data.value)[0] });
     };
 
     return (
@@ -225,7 +227,7 @@ export class Caucus extends React.Component<Props, State> {
             search
             selection
             onChange={countryHandler}
-            options={COUNTRY_OPTIONS.filter(x => membersCountrySet.has(x.text))}
+            options={countryOptions}
           />
           <Button.Group size="large">
             <Button onClick={stanceHandler(Stance.For)}>For</Button>

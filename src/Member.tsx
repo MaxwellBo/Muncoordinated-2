@@ -1,6 +1,7 @@
 import * as React from 'react';
 import * as firebase from 'firebase';
 import { Label, Icon, Flag } from 'semantic-ui-react';
+import { COUNTRY_OPTIONS } from './common';
 
 interface Props { 
   fref: firebase.database.Reference;
@@ -24,6 +25,24 @@ export interface MemberData {
   present: boolean;
   rank: Rank;
   voting: boolean;
+}
+
+const FLAG_NAME_SET = new Set(COUNTRY_OPTIONS.map(x => x.text));
+
+export function parseFlagName(name: string) {
+  if (FLAG_NAME_SET.has(name)) {
+    return name.toLowerCase();
+  } else {
+    return 'fm';
+  }
+}
+
+export function parseCountryOption(name: string) {
+  if (FLAG_NAME_SET.has(name)) {
+    return COUNTRY_OPTIONS.filter(c => c.text === name)[0];
+  } else {
+    return { key: name, value: name, flag: 'fm', text: name };
+  }
 }
 
 export const MemberView = (props: { data: MemberData, fref: firebase.database.Reference }) => {

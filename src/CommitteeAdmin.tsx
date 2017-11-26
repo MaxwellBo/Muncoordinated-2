@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as firebase from 'firebase';
 import { CommitteeData, CommitteeID } from './Committee';
-import { MemberView, MemberData, MemberID, Rank } from './Member';
+import { MemberView, MemberData, MemberID, Rank, parseFlagName } from './Member';
 import * as Utils from './utils';
 import { Dropdown, Segment, Header, Flag, Table, List, Button, Checkbox, Icon } from 'semantic-ui-react';
 import { COUNTRY_OPTIONS, CountryOption } from './common';
@@ -103,7 +103,7 @@ function MemberItem(props: { data: MemberData, fref: firebase.database.Reference
   return (
     <Table.Row>
       <Table.Cell>
-        <Flag name={props.data.name.toLowerCase() as any} />
+        <Flag name={parseFlagName(props.data.name) as any} />
         {props.data.name}
       </Table.Cell>
       <Table.Cell>
