@@ -4,7 +4,7 @@ import { MemberData, parseCountryOption } from './Member';
 import { CaucusData, SpeakerEvent, Stance } from './Caucus';
 import * as Utils from './utils';
 import { COUNTRY_OPTIONS, CountryOption } from './common';
-import { Header, Segment, Dropdown, Button } from 'semantic-ui-react';
+import { Header, Segment, Dropdown, Button, Form } from 'semantic-ui-react';
 import { TimeSetter, Unit } from './Timer';
 
 interface Props {
@@ -33,7 +33,6 @@ export default class CaucusQueuer extends React.Component<Props, State> {
 
   render() {
     const stanceHandler = (stance: Stance) => () => {
-
       const duration = Number(this.state.durationField);
 
       if (duration) {
@@ -64,27 +63,29 @@ export default class CaucusQueuer extends React.Component<Props, State> {
     return (
       <div>
         <Header as="h3" attached="top">Queue</Header>
-        <Segment attached>
-          <Dropdown
-            value={this.state.queueCountry.value}
-            search
-            selection
-            onChange={countryHandler}
-            options={countryOptions}
-          />
-          <TimeSetter
-            unitValue={this.state.unitDropdown}
-            durationValue={this.state.durationField}
-            onDurationChange={durationHandler}
-            onUnitChange={unitHandler}
-          />
-          <Button.Group size="large">
-            <Button onClick={stanceHandler(Stance.For)}>For</Button>
-            <Button.Or />
-            <Button onClick={stanceHandler(Stance.Neutral)}>Neutral</Button>
-            <Button.Or />
-            <Button onClick={stanceHandler(Stance.Against)}>Against</Button>
-          </Button.Group>
+        <Segment attached textAlign="center">
+          <Form>
+            <Form.Dropdown
+              value={this.state.queueCountry.value}
+              search
+              selection
+              onChange={countryHandler}
+              options={countryOptions}
+            />
+            <TimeSetter
+              unitValue={this.state.unitDropdown}
+              durationValue={this.state.durationField}
+              onDurationChange={durationHandler}
+              onUnitChange={unitHandler}
+            />
+            <Button.Group size="large">
+              <Button onClick={stanceHandler(Stance.For)}>For</Button>
+              <Button.Or />
+              <Button onClick={stanceHandler(Stance.Neutral)}>Neutral</Button>
+              <Button.Or />
+              <Button onClick={stanceHandler(Stance.Against)}>Against</Button>
+            </Button.Group>
+          </Form>
         </Segment>
       </div>
     );

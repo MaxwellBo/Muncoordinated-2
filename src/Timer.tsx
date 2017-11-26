@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as firebase from 'firebase';
-import { Checkbox, Segment, Header, Statistic, Button, Input, Select, Divider, Progress } from 'semantic-ui-react';
+import { Form, Checkbox, Segment, Header, Statistic, Button, Input, Select, Divider, Progress } from 'semantic-ui-react';
 
 interface Props {
   name: string;
@@ -62,7 +62,7 @@ export function TimeSetter(props: {
 }) {
 
   return (
-    <Input
+    <Form.Input
       value={props.durationValue}
       placeholder="Duration"
       onChange={props.onDurationChange}
@@ -74,7 +74,7 @@ export function TimeSetter(props: {
       <Button icon="plus"  onClick={this.increment} /> */}
       <Select value={props.unitValue} options={UNIT_OPTIONS} compact button onChange={props.onUnitChange} />
       {props.onSet && (<Button onClick={props.onSet}>Set</Button>)}
-    </Input>
+    </Form.Input>
   );
 }
 
@@ -202,13 +202,15 @@ export class Timer extends React.Component<Props, State> {
           </Statistic>
           <Checkbox toggle checked={this.state.timer.ticking} onChange={this.toggleHandler} /> */}
           <Divider />
-          <TimeSetter
-            unitValue={this.state.unitDropdown}
-            durationValue={this.state.durationField}
-            onDurationChange={durationHandler}
-            onUnitChange={unitHandler}
-            onSet={this.set}
-          />
+          <Form>
+            <TimeSetter
+              unitValue={this.state.unitDropdown}
+              durationValue={this.state.durationField}
+              onDurationChange={durationHandler}
+              onUnitChange={unitHandler}
+              onSet={this.set}
+            />
+          </Form>
         </Segment>
       </div>
     );
