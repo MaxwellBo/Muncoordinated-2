@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as firebase from 'firebase';
 import { Timer, TimerData, DEFAULT_TIMER } from './Timer';
 import { RouteComponentProps } from 'react-router';
-import { MemberID, MemberData, parseCountryOption } from './Member';
+import { MemberID, MemberData, parseCountryOption, parseFlagName } from './Member';
 import { CommitteeID, CommitteeData } from './Committee';
 import * as Utils from './utils';
 import {
@@ -277,7 +277,7 @@ export class Caucus extends React.Component<Props, State> {
         <Feed.Content>
           <Feed.Summary>
             <Feed.User>
-              <Flag name={local.data.who.toLowerCase() as any} />
+              <Flag name={parseFlagName(local.data.who) as any} />
               {local.data.who}
             </Feed.User>
             <Feed.Date>{local.data.duration.toString() + ' seconds'}</Feed.Date>
