@@ -182,6 +182,7 @@ export class Timer extends React.Component<Props, State> {
             placeholder="Duration"
             onChange={durationHandler}
             action
+            fluid
           >
             <input />
             {/* <Button icon="minus" onClick={this.decrement} />
