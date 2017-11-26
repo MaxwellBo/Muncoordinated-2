@@ -4,6 +4,7 @@ import { Route } from 'react-router-dom';
 import { Button, Container, Header, Message } from 'semantic-ui-react';
 import './App.css';
 
+import { ModalLogin } from './Auth';
 import Welcome from './Welcome';
 import Committee from './Committee';
 
@@ -21,6 +22,7 @@ class App extends React.Component {
 
     return (
       <Container style={{ padding: '1em 0em' }}>
+        <ModalLogin />
         <Route exact={true} path="/" component={Welcome} />
         <Route path="/committees/:committeeID" component={Committee} />
         <Footer />

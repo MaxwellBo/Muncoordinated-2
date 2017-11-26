@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as firebase from 'firebase';
-import { Card, Button, Form, Message } from 'semantic-ui-react';
+import { Card, Button, Form, Message, Modal, Header, Icon } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 import { error } from 'util';
 
@@ -28,14 +28,32 @@ firebase.initializeApp(firebaseConfig);
 
 export var user: firebase.User | null = null;
 
+export const ModalLogin = () => {
+
+  const text = user ? user.email : 'Login';
+
+  return (
+    <Modal 
+      trigger={<Button content={text} basic size="small"><Icon name="lock" />{text}</Button>}
+      dimmer
+      size="large"
+    >
+      <Modal.Header>Login</Modal.Header>
+      <Modal.Content image>
+        <Login onAuth={() => { return null; }} />
+      </Modal.Content>
+    </Modal>
+  );
+};
+
 export default class Login extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
 
     firebase.auth().onAuthStateChanged(
-      this.authStateChangedCallback, 
+      this.authStateChangedCallback,
     );
-    
+
     this.state = {
       email: '',
       password: '',
@@ -78,20 +96,20 @@ export default class Login extends React.Component<Props, State> {
     } else {
       // authUi.reset(); // You might need to do this
       const loginHandler = () => {
-        this.setState( { loggingIn: true });
+        this.setState({ loggingIn: true });
 
         firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password).then(() => {
-          this.setState( { loggingIn: false });
+          this.setState({ loggingIn: false });
         }).catch(err => {
           this.setState({ loggingIn: false, error: err });
         });
       };
 
       const createHandler = () => {
-        this.setState( { creating: true });
+        this.setState({ creating: true });
 
         firebase.auth().createUserWithEmailAndPassword(this.state.email, this.state.password).then(() => {
-          this.setState( { creating: false });
+          this.setState({ creating: false });
         }).catch(err => {
           this.setState({ creating: false, error: err });
         });
@@ -109,10 +127,10 @@ export default class Login extends React.Component<Props, State> {
 
       return (
         <Form error={!!this.state.error} success={!!user}>
-          <Form.Input 
-            label="Email" 
-            placeholder="joe@schmoe.com" 
-            value={this.state.email} 
+          <Form.Input
+            label="Email"
+            placeholder="joe@schmoe.com"
+            value={this.state.email}
             onChange={emailHandler}
           />
           <Form.Input
