@@ -128,6 +128,7 @@ function CaucusMeta(props: { data: CaucusData, fref: firebase.database.Reference
   return (
     <Segment attached>
       <Button
+        basic
         icon
         negative
         labelPosition="left"
@@ -328,23 +329,21 @@ export class Caucus extends React.Component<Props, State> {
         <Segment attached>
           <this.SpeakerEvents data={props.data.queue} fref={props.fref.child('queue')} speaking={props.data.speaking} />
         </Segment>
-        <Segment attached="bottom">
+        <Segment attached="bottom" textAlign="center">
           <Button
-            icon
+            basic
             primary
-            labelPosition="left"
             onClick={nextSpeaker}
           >
-            <Icon name="arrow up" />
+            {/* <Icon name="arrow up" /> */}
             Next
           </Button>
           <Button
-            icon
+            basic
             negative
-            labelPosition="left"
             onClick={() => props.fref.child('queue').remove()}
           >
-            <Icon name="refresh" />
+            {/* <Icon name="refresh" /> */}
             Clear
           </Button>
         </Segment>
