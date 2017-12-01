@@ -7,8 +7,8 @@ import { CommitteeID, CommitteeData } from './Committee';
 import CaucusQueuer from './CaucusQueuer';
 import * as Utils from './utils';
 import {
-  Segment, Loader, Dimmer, Header, Dropdown, Input, Button, Icon, Grid, Feed, Flag,
-  Label
+  Segment, Loader, Dimmer, Header, Dropdown, TextArea, Input, Button, Icon, Grid, Feed, Flag,
+  Label, Form
 } from 'semantic-ui-react';
 import { COUNTRY_OPTIONS, CountryOption } from './common';
 
@@ -92,6 +92,10 @@ function CaucusHeader(props: { data: CaucusData, fref: firebase.database.Referen
     props.fref.child('status').set(data.value);
   };
 
+  const topicHandler = (event: any, data: any) => {
+    props.fref.child('topic').set(data.value);
+  }; 
+
   const CAUCUS_STATUS_OPTIONS = [
     { key: CaucusStatus.Open, text: CaucusStatus.Open, value: CaucusStatus.Open },
     { key: CaucusStatus.Closed, text: CaucusStatus.Closed, value: CaucusStatus.Closed },
@@ -109,13 +113,17 @@ function CaucusHeader(props: { data: CaucusData, fref: firebase.database.Referen
         fluid
         placeholder="Caucus Name"
       />
-      <Input
-        value={props.data.topic}
-        onChange={propertyHandler('topic')}
-        attatched="top"
-        fluid
-        placeholder="Caucus Topic"
-      />
+      <Form>
+        <TextArea
+          value={props.data.topic}
+          autoHeight
+          onChange={topicHandler}
+          attatched="top"
+          fluid
+          rows={1}
+          placeholder="Caucus Topic"
+        />
+      </Form>
     </Segment>
   );
 }
