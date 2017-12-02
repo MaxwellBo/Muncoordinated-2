@@ -29,17 +29,18 @@ const RANK_OPTIONS = [
 function CommitteeStats(props: { data: CommitteeData }) {
   const membersMap = props.data.members ? props.data.members : {} as Map<string, MemberData>;
   const members: MemberData[] = Utils.objectToList(membersMap);
+  const present = members.filter(x => x.present);
 
-  const delegates: number = members.length;
-  const present: number = members.filter(x => x.present).length;
+  const delegatesNo: number = members.length;
+  const presentNo: number = present.length;
 
   const canVote = (x: MemberData) => (x.rank === Rank.Veto || x.rank === Rank.Standard) && x.voting;
-  const voting: number = members.filter(canVote).length;
+  const votingNo: number = present.filter(canVote).length;
 
-  const quorum: number = Math.ceil(delegates * 0.5);
-  const hasQuorum: boolean = present >= quorum;
-  const draftResolution: number = Math.ceil(voting * 0.25);
-  const amendment: number = Math.ceil(voting * 0.1);
+  const quorum: number = Math.ceil(delegatesNo * 0.5);
+  const hasQuorum: boolean = presentNo >= quorum;
+  const draftResolution: number = Math.ceil(votingNo * 0.25);
+  const amendment: number = Math.ceil(votingNo * 0.1);
 
   return (
     <Table definition>
@@ -55,17 +56,17 @@ function CommitteeStats(props: { data: CommitteeData }) {
       <Table.Body>
         <Table.Row>
           <Table.Cell>Total</Table.Cell>
-          <Table.Cell>{delegates.toString()}</Table.Cell>
+          <Table.Cell>{delegatesNo.toString()}</Table.Cell>
           <Table.Cell>Delegates in committee</Table.Cell>
         </Table.Row>
         <Table.Row>
           <Table.Cell>Present</Table.Cell>
-          <Table.Cell>{present.toString()}</Table.Cell>
+          <Table.Cell>{presentNo.toString()}</Table.Cell>
           <Table.Cell>Delegates in attendance</Table.Cell>
         </Table.Row>
         <Table.Row>
           <Table.Cell>Voting</Table.Cell>
-          <Table.Cell>{voting.toString()}</Table.Cell>
+          <Table.Cell>{votingNo.toString()}</Table.Cell>
           <Table.Cell>Delegates with voting rights</Table.Cell>
         </Table.Row>
         <Table.Row>
@@ -116,10 +117,19 @@ function MemberItem(props: { data: MemberData, fref: firebase.database.Reference
         />
       </Table.Cell>
       <Table.Cell collapsing>
-        <Checkbox toggle checked={props.data.present} onChange={propertyHandler('present')} />
+        <Checkbox 
+          toggle 
+          checked={props.data.present} 
+          onChange={propertyHandler('present')} 
+        />
       </Table.Cell>
       <Table.Cell collapsing>
-        <Checkbox toggle checked={props.data.voting} onChange={propertyHandler('voting')} />
+        <Checkbox 
+          toggle 
+          checked={props.data.present && props.data.voting} 
+          onChange={propertyHandler('voting')} 
+          disabled={!props.data.present}
+        />
       </Table.Cell>
       <Table.Cell>
         <Button
