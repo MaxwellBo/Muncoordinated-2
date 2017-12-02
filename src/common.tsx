@@ -125,7 +125,7 @@ export const COUNTRY_OPTIONS: CountryOption[] = [
   { key: 'ec', value: 'ec', flag: 'ec', text: 'Ecuador' },
   { key: 'eg', value: 'eg', flag: 'eg', text: 'Egypt' },
   { key: 'sv', value: 'sv', flag: 'sv', text: 'El Salvador' },
-  { key: 'gb', value: 'gb', flag: 'gb', text: 'England' },
+  { key: 'gb', value: 'gb', flag: 'gb', text: 'United Kingdom' },
   { key: 'gq', value: 'gq', flag: 'gq', text: 'Equatorial Guinea' },
   { key: 'er', value: 'er', flag: 'er', text: 'Eritrea' },
   { key: 'ee', value: 'ee', flag: 'ee', text: 'Estonia' },
