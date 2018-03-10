@@ -52,7 +52,7 @@ export interface CaucusData {
 }
 
 export interface SpeakerEvent {
-  who: MemberID;
+  who: string; // FIXME: @mbo you dumb fuck, this was meant to be MemberID, not their fucking name
   stance: Stance;
   duration: number;
 }

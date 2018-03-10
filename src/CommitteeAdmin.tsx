@@ -175,7 +175,7 @@ export default class CommitteeAdmin extends React.Component<Props, State> {
 
   CommitteeMembers = (props: { data: CommitteeData, fref: firebase.database.Reference }) => {
 
-    const members = this.props.committee.members ? this.props.committee.members : {};
+    const members = this.props.committee.members || {};
     const memberItems = Object.keys(members).map(key =>
       (
         <MemberItem

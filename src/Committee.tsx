@@ -7,9 +7,10 @@ import { Caucus, CaucusData, CaucusID, DEFAULT_CAUCUS } from './Caucus';
 import { ResolutionData, ResolutionID } from './Resolution';
 import CommitteeAdmin from './CommitteeAdmin';
 import { Dropdown, Icon, Input, Menu, Sticky, Grid, Segment } from 'semantic-ui-react';
+import Stats from './Stats';
 
 // FIXME: This is repeatedly declared in every file where URLParameters are needed
-interface URLParameters {
+export interface URLParameters {
   committeeID: CommitteeID;
   caucusID: CaucusID;
 }
@@ -133,8 +134,16 @@ export default class Committee extends React.Component<Props, State> {
             active={false}
             onClick={() => this.props.history.push(`/committees/${committeeID}/admin`)}
           >
-          <Icon name="setting" />
+            <Icon name="setting" />
             Admin
+          </Menu.Item>
+          <Menu.Item
+            name="stats"
+            active={false}
+            onClick={() => this.props.history.push(`/committees/${committeeID}/stats`)}
+          >
+            <Icon name="bar chart" />
+            Stats
           </Menu.Item>
           <Menu.Item>
             <Icon name="users" />
@@ -170,6 +179,7 @@ export default class Committee extends React.Component<Props, State> {
           </Grid.Column>
           <Grid.Column stretched width={12}>
             <Route exact={true} path="/committees/:committeeID/admin" render={Admin} />
+            <Route exact={true} path="/committees/:committeeID/stats" component={Stats} />
             <Route path="/committees/:committeeID/caucuses/:caucusID" render={CaucusComponent} />
           </Grid.Column>
         </Grid>

@@ -8,7 +8,7 @@ import { ModalLogin } from './Auth';
 import Welcome from './Welcome';
 import Committee from './Committee';
 
-const Footer = () => {
+export const Footer = () => {
   return (
     <Message compact size="mini">
       Made with 💖 by <a href="https://github.com/MaxwellBo">Max Bo</a>
