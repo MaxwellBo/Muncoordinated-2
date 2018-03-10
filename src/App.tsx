@@ -15,7 +15,7 @@ export const Footer = () => {
     </Message>);
 };
 
-class Connection extends React.Component<{}, { connected: boolean, fref: firebase.database.Reference }> {
+class ConnectionStatus extends React.Component<{}, { connected: boolean, fref: firebase.database.Reference }> {
   constructor(props: {}) {
     super(props);
 
@@ -55,7 +55,7 @@ class App extends React.Component {
 
     return (
       <Container style={{ padding: '1em 0em' }}>
-        <Connection />
+        <ConnectionStatus />
         <Route exact={true} path="/onboard" component={Welcome} />
         <Route path="/committees" component={ModalLogin} />
         <Route path="/committees/:committeeID" component={Committee} />
