@@ -111,6 +111,7 @@ function MemberItem(props: { data: MemberData, fref: firebase.database.Reference
         <Dropdown
           search
           selection
+          fluid
           options={RANK_OPTIONS}
           onChange={rankHandler}
           value={props.data.rank}
@@ -201,6 +202,7 @@ export default class CommitteeAdmin extends React.Component<Props, State> {
             placeholder="Select Country"
             search
             selection
+            fluid
             allowAdditions
             options={[...this.state.newOptions, ...COUNTRY_OPTIONS]}
             onAddItem={additionHandler}
@@ -212,6 +214,7 @@ export default class CommitteeAdmin extends React.Component<Props, State> {
           <Dropdown
             search
             selection
+            fluid
             options={RANK_OPTIONS}
             onChange={rankHandler}
             value={this.state.newMemberRank}
@@ -260,13 +263,14 @@ export default class CommitteeAdmin extends React.Component<Props, State> {
           </Table.Row>
         </Table.Header>
 
+        <Table.Header fullWidth>
+          {this.renderAdder()}
+        </Table.Header>
+
         <Table.Body>
-          {memberItems}
+          {memberItems.reverse()}
         </Table.Body>
 
-        <Table.Footer fullWidth>
-          {this.renderAdder()}
-        </Table.Footer>
       </Table>
     );
   }
