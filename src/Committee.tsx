@@ -107,7 +107,7 @@ export default class Committee extends React.Component<Props, State> {
     const committeeID: CommitteeID = this.props.match.params.committeeID;
     const caucusID: CommitteeID = this.props.match.params.committeeID;
 
-    const caucuses = this.state.committee.caucuses ? this.state.committee.caucuses : {} as Map<string, CaucusData>;
+    const caucuses = this.state.committee.caucuses || {} as Map<CaucusID, CaucusData>;
 
     const CaucusItem = (props: { id: CaucusID, data: CaucusData }) => {
       return (
@@ -123,7 +123,9 @@ export default class Committee extends React.Component<Props, State> {
     };
 
     const Nav = () => {
-      const caucusItems = Object.keys(caucuses).map(key =>
+      const caucusItems = Object.keys(caucuses).filter(key =>
+        !caucuses[key].deleted
+      ).map(key =>
         <CaucusItem key={key} id={key} data={caucuses[key]} />
       );
 

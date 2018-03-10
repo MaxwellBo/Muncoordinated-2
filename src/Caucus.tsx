@@ -8,7 +8,7 @@ import CaucusQueuer from './CaucusQueuer';
 import * as Utils from './utils';
 import {
   Segment, Loader, Dimmer, Header, Dropdown, TextArea, Input, Button, Icon, Grid, Feed, Flag,
-  Label, Form
+  Label, Form, Message
 } from 'semantic-ui-react';
 import { COUNTRY_OPTIONS, CountryOption } from './common';
 
@@ -49,6 +49,7 @@ export interface CaucusData {
   speaking?: SpeakerEvent;
   queue?: Map<string, SpeakerEvent>;
   history?: Map<string, SpeakerEvent>;
+  deleted?: boolean; // FIXME: Needs migration to default false
 }
 
 export interface SpeakerEvent {
@@ -140,7 +141,7 @@ function CaucusMeta(props: { data: CaucusData, fref: firebase.database.Reference
         icon
         negative
         labelPosition="left"
-        onClick={() => props.fref.remove()}
+        onClick={() => props.fref.child('deleted').set(true)}
       >
         <Icon name="trash" />
         Delete
@@ -361,11 +362,11 @@ export class Caucus extends React.Component<Props, State> {
 
   CaucusView = (props:
     {
-      caucusID: CaucusID, data?: CaucusData, members?: Map<string, MemberData>,
+      caucusID: CaucusID, 
+      data: CaucusData, 
+      members: Map<MemberID, MemberData>,
       fref: firebase.database.Reference
     }) => {
-
-    const members = props.members ? props.members : {} as Map<string, MemberData>;
 
     return props.data ? (
       <Grid columns="equal">
@@ -378,7 +379,7 @@ export class Caucus extends React.Component<Props, State> {
           <Grid.Column>
             <this.CaucusNowSpeaking data={props.data} fref={props.fref} />
             <this.CaucusNextSpeaking data={props.data} fref={props.fref} />
-            <CaucusQueuer data={props.data} members={members} fref={props.fref} />
+            <CaucusQueuer data={props.data} members={props.members} fref={props.fref} />
           </Grid.Column>
           <Grid.Column>
             <Timer
@@ -410,15 +411,31 @@ export class Caucus extends React.Component<Props, State> {
 
   render() {
     const caucusID: CaucusID = this.props.match.params.caucusID;
-    const caucuses = this.props.committee.caucuses ? this.props.committee.caucuses : {} as Map<string, CaucusData>;
+    const caucuses = this.props.committee.caucuses || {} as Map<CaucusID, CaucusData>;
+    const caucus = caucuses[caucusID];
 
-    return (
-      <this.CaucusView
-        caucusID={caucusID}
-        data={caucuses[caucusID]}
-        members={this.props.committee.members}
-        fref={this.props.fref.child('caucuses').child(caucusID)}
-      />
-    );
+    if (caucus) {
+
+      const members = this.props.committee.members || {} as Map<MemberID, MemberData>;
+
+      if (!caucus.deleted) {
+        return (
+          <this.CaucusView
+            caucusID={caucusID}
+            data={caucus}
+            members={members}
+            fref={this.props.fref.child('caucuses').child(caucusID)}
+          />
+        );
+      } else {
+        return (
+          <Message negative compact>
+            <Message.Header>Caucus deleted</Message.Header>
+          </Message>
+        );
+      }
+    } else {
+      return <Loader>Loading</Loader>;
+    }
   }
 }
