@@ -173,19 +173,7 @@ export default class CommitteeAdmin extends React.Component<Props, State> {
     this.props.fref.child('members').push().set(newMember);
   }
 
-  CommitteeMembers = (props: { data: CommitteeData, fref: firebase.database.Reference }) => {
-
-    const members = this.props.committee.members || {};
-    const memberItems = Object.keys(members).map(key =>
-      (
-        <MemberItem
-          key={key}
-          data={members[key]}
-          fref={props.fref.child('members').child(key)}
-        />
-      )
-    );
-
+  renderAdder() {
     const countryHandler = (event: any, data: any) => {
       this.setState({ 
         newCountry: [...this.state.newOptions, ...COUNTRY_OPTIONS].filter(c => c.value === data.value)[0] });
@@ -211,6 +199,64 @@ export default class CommitteeAdmin extends React.Component<Props, State> {
     };
 
     return (
+      <Table.Row>
+        <Table.HeaderCell>
+          <Dropdown
+            placeholder="Select Country"
+            search
+            selection
+            allowAdditions
+            options={[...this.state.newOptions, ...COUNTRY_OPTIONS]}
+            onAddItem={additionHandler}
+            onChange={countryHandler}
+            value={this.state.newCountry.value}
+          />
+        </Table.HeaderCell>
+        <Table.HeaderCell>
+          <Dropdown
+            search
+            selection
+            options={RANK_OPTIONS}
+            onChange={rankHandler}
+            value={this.state.newMemberRank}
+          />
+        </Table.HeaderCell>
+        <Table.HeaderCell collapsing >
+          <Checkbox toggle checked={this.state.newMemberPresent} onChange={presentHandler} />
+        </Table.HeaderCell>
+        <Table.HeaderCell collapsing >
+          <Checkbox toggle checked={this.state.newMemberVoting} onChange={votingHandler} />
+        </Table.HeaderCell>
+        <Table.HeaderCell>
+          <Button 
+            icon
+            labelPosition="left" 
+            fluid
+            primary 
+            size="small" 
+            onClick={this.pushMember} 
+          >
+            <Icon name="user" /> Add
+          </Button>
+        </Table.HeaderCell>
+      </Table.Row>
+    );
+  }
+
+  CommitteeMembers = (props: { data: CommitteeData, fref: firebase.database.Reference }) => {
+
+    const members = this.props.committee.members || {};
+    const memberItems = Object.keys(members).map(key =>
+      (
+        <MemberItem
+          key={key}
+          data={members[key]}
+          fref={props.fref.child('members').child(key)}
+        />
+      )
+    );
+
+    return (
       <Table compact celled definition>
         <Table.Header>
           <Table.Row>
@@ -227,47 +273,6 @@ export default class CommitteeAdmin extends React.Component<Props, State> {
         </Table.Body>
 
         <Table.Footer fullWidth>
-          <Table.Row>
-            <Table.HeaderCell>
-              <Dropdown
-                placeholder="Select Country"
-                search
-                selection
-                allowAdditions
-                options={[...this.state.newOptions, ...COUNTRY_OPTIONS]}
-                onAddItem={additionHandler}
-                onChange={countryHandler}
-                value={this.state.newCountry.value}
-              />
-            </Table.HeaderCell>
-            <Table.HeaderCell>
-              <Dropdown
-                search
-                selection
-                options={RANK_OPTIONS}
-                onChange={rankHandler}
-                value={this.state.newMemberRank}
-              />
-            </Table.HeaderCell>
-            <Table.HeaderCell collapsing >
-              <Checkbox toggle checked={this.state.newMemberPresent} onChange={presentHandler} />
-            </Table.HeaderCell>
-            <Table.HeaderCell collapsing >
-              <Checkbox toggle checked={this.state.newMemberVoting} onChange={votingHandler} />
-            </Table.HeaderCell>
-            <Table.HeaderCell>
-              <Button 
-                icon
-                labelPosition="left" 
-                fluid
-                primary 
-                size="small" 
-                onClick={this.pushMember} 
-              >
-                <Icon name="user" /> Add
-              </Button>
-            </Table.HeaderCell>
-          </Table.Row>
         </Table.Footer>
       </Table>
     );
