@@ -131,17 +131,13 @@ function MemberItem(props: { data: MemberData, fref: firebase.database.Reference
           disabled={!props.data.present}
         />
       </Table.Cell>
-      <Table.Cell>
+      <Table.Cell collapsing>
         <Button
-          icon
-          labelPosition="left" 
-          fluid
+          icon="trash"
           negative
-          size="small"
+          basic
           onClick={() => props.fref.remove()}
-        >
-          <Icon name="trash" /> Delete
-        </Button>
+        />
       </Table.Cell>
     </Table.Row>
   );
@@ -228,16 +224,12 @@ export default class CommitteeAdmin extends React.Component<Props, State> {
           <Checkbox toggle checked={this.state.newMemberVoting} onChange={votingHandler} />
         </Table.HeaderCell>
         <Table.HeaderCell>
-          <Button 
-            icon
-            labelPosition="left" 
-            fluid
-            primary 
-            size="small" 
-            onClick={this.pushMember} 
-          >
-            <Icon name="user" /> Add
-          </Button>
+          <Button
+            icon="plus"
+            primary
+            basic
+            onClick={this.pushMember}
+          />
         </Table.HeaderCell>
       </Table.Row>
     );
@@ -273,6 +265,7 @@ export default class CommitteeAdmin extends React.Component<Props, State> {
         </Table.Body>
 
         <Table.Footer fullWidth>
+          {this.renderAdder()}
         </Table.Footer>
       </Table>
     );
@@ -281,10 +274,7 @@ export default class CommitteeAdmin extends React.Component<Props, State> {
   render() {
     return (
       <div>
-        <Header as="h2" attached="top">Admin</Header>
-        <Segment attached >
-          <this.CommitteeMembers data={this.props.committee} fref={this.props.fref} />
-        </Segment>
+        <this.CommitteeMembers data={this.props.committee} fref={this.props.fref} />
         <Header as="h2" attached="top">Stats</Header>
         <Segment attached >
           <CommitteeStats data={this.props.committee} />
