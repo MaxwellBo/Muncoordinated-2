@@ -8,6 +8,7 @@ import { ResolutionData, ResolutionID } from './Resolution';
 import CommitteeAdmin from './CommitteeAdmin';
 import { Dropdown, Icon, Input, Menu, Sticky, Grid, Segment } from 'semantic-ui-react';
 import Stats from './Stats';
+import { MotionID, MotionData } from './Motions';
 
 // FIXME: This is repeatedly declared in every file where URLParameters are needed
 export interface URLParameters {
@@ -33,6 +34,7 @@ export interface CommitteeData {
   members?: Map<MemberID, MemberData>;
   caucuses?: Map<CaucusID, CaucusData>;
   resolutions?: Map<ResolutionID, ResolutionData>;
+  motions?: Map<MotionID, MotionData>;
 }
 
 function CommitteeMeta(props: { data: CommitteeData, fref: firebase.database.Reference; }) {

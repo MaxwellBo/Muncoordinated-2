@@ -4,13 +4,7 @@ import { CommitteeData, URLParameters } from './Committee';
 import { RouteComponentProps } from 'react-router';
 import { Loader } from 'semantic-ui-react';
 
-interface Props extends RouteComponentProps<URLParameters> {
-}
-
-interface State {
-  committee?: CommitteeData;
-  fref: firebase.database.Reference;
-}
+export type MotionID = string;
 
 enum MotionType {
   UnmoderatedCaucus = 'Unmoderated Caucus',
@@ -20,6 +14,23 @@ enum MotionType {
   ReopenDebate = 'Reopen Debate',
   CloseDebate = 'Close Debate',
   IntroduceResolution = 'Introduce Resolution'
+}
+
+export interface MotionData {
+  proposal: string;
+  proposer: string;
+  speakerTime: number;
+  caucusTimer: number;
+  type: MotionType;
+}
+
+interface Props extends RouteComponentProps<URLParameters> {
+}
+
+interface State {
+  committee?: CommitteeData;
+  newMotion: MotionData;
+  fref: firebase.database.Reference;
 }
 
 const MOTION_TYPE_OPTIONS = [
@@ -32,13 +43,13 @@ const MOTION_TYPE_OPTIONS = [
   { key: MotionType.IntroduceResolution, value: MotionType.IntroduceResolution, text: MotionType.IntroduceResolution },
 ];
 
-interface Motion {
-  proposal: string;
-  proposer: string;
-  speakerTime: number;
-  caucusTimer: number;
-  type: MotionType;
-}
+const DEFAULT_MOTION: MotionData = {
+  proposal: '',
+  proposer: '',
+  speakerTime: 600,
+  caucusTimer: 60,
+  type: MotionType.ModeratedCaucus
+};
 
 export default class Motions extends React.Component<Props, State> {
   constructor(props: Props) {
@@ -47,7 +58,8 @@ export default class Motions extends React.Component<Props, State> {
     const { match } = props;
 
     this.state = {
-      fref: firebase.database().ref('committees').child(match.params.committeeID)
+      fref: firebase.database().ref('committees').child(match.params.committeeID),
+      newMotion: DEFAULT_MOTION
     };
   }
 
@@ -65,8 +77,8 @@ export default class Motions extends React.Component<Props, State> {
 
   renderMotions(committee: CommitteeData) {
     return (
-      
-    )
+      <p>Go</p>
+    );
   }
 
   render() {
