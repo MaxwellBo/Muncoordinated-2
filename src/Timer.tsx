@@ -1,6 +1,7 @@
 import * as React from 'react';
 import * as firebase from 'firebase';
-import { Form, Checkbox, Segment, Header, Statistic, Button, Input, Select, Divider, Progress } from 'semantic-ui-react';
+import { Form, Checkbox, Segment, Header, Statistic, Button, Input, Select, 
+  Divider, Progress } from 'semantic-ui-react';
 
 interface Props {
   name: string;

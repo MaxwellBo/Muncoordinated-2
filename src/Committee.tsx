@@ -9,6 +9,8 @@ import CommitteeAdmin from './CommitteeAdmin';
 import { Dropdown, Icon, Input, Menu, Sticky, Grid, Segment } from 'semantic-ui-react';
 import Stats from './Stats';
 import { MotionID, MotionData } from './Motions';
+import { TimerData, DEFAULT_TIMER } from './Timer';
+import { Unmod } from './Unmod';
 
 // FIXME: This is repeatedly declared in every file where URLParameters are needed
 export interface URLParameters {
@@ -35,6 +37,7 @@ export interface CommitteeData {
   caucuses?: Map<CaucusID, CaucusData>;
   resolutions?: Map<ResolutionID, ResolutionData>;
   motions?: Map<MotionID, MotionData>;
+  timer: TimerData;
 }
 
 function CommitteeMeta(props: { data: CommitteeData, fref: firebase.database.Reference; }) {
@@ -69,7 +72,8 @@ export const DEFAULT_COMMITTEE: CommitteeData = {
   creatorUid: '',
   members: {} as Map<MemberID, MemberData>,
   caucuses: {} as Map<CaucusID, CaucusData>,
-  resolutions: {} as Map<ResolutionID, ResolutionData>
+  resolutions: {} as Map<ResolutionID, ResolutionData>,
+  timer: DEFAULT_TIMER
 };
 
 export default class Committee extends React.Component<Props, State> {
@@ -149,6 +153,14 @@ export default class Committee extends React.Component<Props, State> {
             <Icon name="bar chart" />
             Stats
           </Menu.Item>
+          <Menu.Item
+            name="unmod"
+            active={false}
+            onClick={() => this.props.history.push(`/committees/${committeeID}/unmod`)}
+          >
+            <Icon name="discussions" />
+            Unmod
+          </Menu.Item>
           <Menu.Item>
             <Icon name="users" />
             Caucuses
@@ -184,6 +196,7 @@ export default class Committee extends React.Component<Props, State> {
           <Grid.Column stretched width={12}>
             <Route exact={true} path="/committees/:committeeID/admin" render={Admin} />
             <Route exact={true} path="/committees/:committeeID/stats" component={Stats} />
+            <Route exact={true} path="/committees/:committeeID/unmod" component={Unmod} />
             <Route path="/committees/:committeeID/caucuses/:caucusID" render={CaucusComponent} />
           </Grid.Column>
         </Grid>
