@@ -30,17 +30,17 @@ function CommitteeStats(props: { data: CommitteeData }) {
   const membersMap = props.data.members ? props.data.members : {} as Map<string, MemberData>;
   const members: MemberData[] = Utils.objectToList(membersMap);
   const present = members.filter(x => x.present);
+  const canVote = (x: MemberData) => (x.rank === Rank.Veto || x.rank === Rank.Standard);
 
-  const delegatesNo: number = members.length;
-  const presentNo: number = present.length;
-
-  const canVote = (x: MemberData) => (x.rank === Rank.Veto || x.rank === Rank.Standard) && x.voting;
-  const votingNo: number = present.filter(canVote).length;
-
-  const quorum: number = Math.ceil(delegatesNo * 0.5);
-  const hasQuorum: boolean = presentNo >= quorum;
+  const delegatesNo: number     = members.length;
+  const presentNo: number       = present.length;
+  const votingNo: number        = present.filter(canVote).length;
+  const quorum: number          = Math.ceil(delegatesNo * 0.5);
+  const procedural: number      = Math.ceil(presentNo * 0.5);
+  const operative: number       = Math.ceil(votingNo * 0.5);
+  const hasQuorum: boolean      = presentNo >= quorum;
   const draftResolution: number = Math.ceil(votingNo * 0.25);
-  const amendment: number = Math.ceil(votingNo * 0.1);
+  const amendment: number       = Math.ceil(votingNo * 0.1);
 
   return (
     <Table definition>
@@ -65,9 +65,9 @@ function CommitteeStats(props: { data: CommitteeData }) {
           <Table.Cell>Delegates in attendance</Table.Cell>
         </Table.Row>
         <Table.Row>
-          <Table.Cell>Voting</Table.Cell>
+          <Table.Cell>Have voting rights</Table.Cell>
           <Table.Cell>{votingNo.toString()}</Table.Cell>
-          <Table.Cell>Delegates with voting rights</Table.Cell>
+          <Table.Cell>Present delegates with voting rights</Table.Cell>
         </Table.Row>
         <Table.Row>
           <Table.Cell error={!hasQuorum}>Debate</Table.Cell>
@@ -76,16 +76,28 @@ function CommitteeStats(props: { data: CommitteeData }) {
           <Table.Cell error={!hasQuorum}>50% of total</Table.Cell>
         </Table.Row>
         <Table.Row>
+          <Table.Cell>Procedural threshold</Table.Cell>
+          <Table.Cell>{procedural.toString()}</Table.Cell>
+          <Table.Cell>Required votes for procedural matters</Table.Cell>
+          <Table.Cell>50% of delegates in attendence</Table.Cell>
+        </Table.Row>
+        <Table.Row>
+          <Table.Cell>Operative threshold</Table.Cell>
+          <Table.Cell>{procedural.toString()}</Table.Cell>
+          <Table.Cell>Required votes for operative matters, such as amendments and resolutions</Table.Cell>
+          <Table.Cell>50% of present delegates with voting rights</Table.Cell>
+        </Table.Row>
+        <Table.Row>
           <Table.Cell>Draft resolution</Table.Cell>
           <Table.Cell>{draftResolution.toString()}</Table.Cell>
           <Table.Cell>Delegates needed to table a draft resolution</Table.Cell>
-          <Table.Cell>25% of voting</Table.Cell>
+          <Table.Cell>25% of present delegates with voting rights</Table.Cell>
         </Table.Row>
         <Table.Row>
           <Table.Cell>Amendment</Table.Cell>
           <Table.Cell>{amendment.toString()}</Table.Cell>
           <Table.Cell>Delegates needed to table an amendment</Table.Cell>
-          <Table.Cell>10% of voting</Table.Cell>
+          <Table.Cell>10% of present delegates with voting rights</Table.Cell>
         </Table.Row>
       </Table.Body>
     </Table>
