@@ -11,7 +11,7 @@ import Committee from './Committee';
 export const Footer = () => {
   return (
     <Message compact size="mini">
-      Made with 💖 by <a href="https://github.com/MaxwellBo">Max Bo</a>
+      Made with 😡 by <a href="https://github.com/MaxwellBo">Max Bo</a>
     </Message>);
 };
 
