@@ -297,12 +297,8 @@ class CaucusNextSpeaking extends React.Component<CaucusNextSpeakingProps, {}> {
   }
 
   handleKeyDown = (ev: KeyboardEvent) => {
-    switch (ev.keyCode) {
-      case 78: // N
-        this.nextSpeaker();
-        break;
-      default:
-        break;
+    if (ev.keyCode === 78 && ev.altKey) {
+      this.nextSpeaker();
     }
   }
 

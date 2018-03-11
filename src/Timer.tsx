@@ -116,7 +116,7 @@ export class Timer extends React.Component<Props, State> {
   }
 
   handleKeyDown = (ev: KeyboardEvent) => {
-    if (this.props.toggleKeyCode === ev.keyCode) {
+    if (this.props.toggleKeyCode === ev.keyCode && ev.altKey) {
       this.toggleHandler(null, null);
     }
   }
