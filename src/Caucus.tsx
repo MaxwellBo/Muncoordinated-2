@@ -29,7 +29,7 @@ interface CaucusState {
 
 export type CaucusID = string;
 
-enum CaucusStatus {
+export enum CaucusStatus {
   Open = 'Open',
   Closed = 'Closed'
 }

@@ -3,7 +3,7 @@ import * as firebase from 'firebase';
 import { RouteComponentProps } from 'react-router';
 import { Route, Link } from 'react-router-dom';
 import { MemberData, MemberID } from './Member';
-import { Caucus, CaucusData, CaucusID, DEFAULT_CAUCUS } from './Caucus';
+import { Caucus, CaucusData, CaucusID, DEFAULT_CAUCUS, CaucusStatus } from './Caucus';
 import { ResolutionData, ResolutionID } from './Resolution';
 import CommitteeAdmin from './CommitteeAdmin';
 import { Dropdown, Icon, Input, Menu, Sticky, Grid, Segment } from 'semantic-ui-react';
@@ -131,7 +131,7 @@ export default class Committee extends React.Component<Props, State> {
 
     const Nav = () => {
       const caucusItems = Object.keys(caucuses).filter(key =>
-        !caucuses[key].deleted
+        caucuses[key].status === CaucusStatus.Open.toString() && !caucuses[key].deleted
       ).map(key =>
         <CaucusItem key={key} id={key} data={caucuses[key]} />
       );
