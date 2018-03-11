@@ -17,12 +17,12 @@ interface URLParameters {
   committeeID: CommitteeID;
 }
 
-interface Props extends RouteComponentProps<URLParameters> {
+interface CaucusProps extends RouteComponentProps<URLParameters> {
   committee: CommitteeData;
   fref: firebase.database.Reference;
 }
 
-interface State {
+interface CaucusState {
   speakerTimer: TimerData;
   caucusTimer: TimerData;
 }
@@ -150,6 +150,92 @@ function CaucusMeta(props: { data: CaucusData, fref: firebase.database.Reference
   );
 }
 
+function SpeakerEvents(props: {
+  data?: Map<string, SpeakerEvent>,
+  fref: firebase.database.Reference,
+  speaking?: SpeakerEvent,
+  speakerTimer: TimerData
+}) {
+  const events = props.data ? props.data : {};
+
+  const eventItems = Object.keys(events).map(key =>
+    (
+      <SpeakerEvent
+        key={key}
+        data={events[key]}
+        fref={props.fref.child(key)}
+        speaking={props.speaking}
+        speakerTimer={props.speakerTimer}
+      />
+    )
+  );
+
+  return (
+    <Feed size="large">
+      {eventItems}
+    </Feed>
+  );
+}
+
+function SpeakerEvent(local: { 
+  data?: SpeakerEvent, 
+  speaking?: SpeakerEvent,
+  fref: firebase.database.Reference, 
+  speakerTimer: TimerData
+}) {
+  const yieldHandler = () => {
+    const queueHeadDetails = {
+      queueHeadData: local.data,
+      queueHead: local.fref
+    };
+
+    // HACK
+    // HERE BE DRAGONS
+    // The only reason I'm doing this is because I honestly couldn't give a shit about propogating
+    // the caucusRef all the way down. Furthermore, the only time this should ever be called is when the 
+    // SpeakerEvent is in the "queue" zone, meaning we'll pop up into the "caucus" field.
+    const caucusRef = (local.fref.parent as firebase.database.Reference).parent as firebase.database.Reference;
+
+    const lifecycle: Lifecycle = {
+      history: caucusRef.child('history'),
+      speaking: caucusRef.child('speaking'),
+      speakingData: local.speaking,
+      timerData: local.speakerTimer,
+      timer: caucusRef.child('speakerTimer'),
+      yielding: true,
+    };
+
+    runLifecycle({ ...lifecycle, ...queueHeadDetails });
+  };
+
+  return local.data ? (
+    <Feed.Event>
+      {/* <Feed.Label image='/assets/images/avatar/small/helen.jpg' /> */}
+      <Feed.Content>
+        <Feed.Summary>
+          <Feed.User>
+            <Flag name={parseFlagName(local.data.who) as any} />
+            {local.data.who}
+          </Feed.User>
+          <Feed.Date>{local.data.duration.toString() + ' seconds'}</Feed.Date>
+        </Feed.Summary>
+        <Feed.Meta>
+          <Feed.Like>
+            <StanceIcon stance={local.data.stance} />
+            {local.data.stance}
+          </Feed.Like>
+          <Label size="mini" as="a" onClick={() => local.fref.remove()}>
+            Remove
+          </Label>
+          {local.speaking && (<Label size="mini" as="a" onClick={yieldHandler}>
+            Yield
+          </Label>)}
+        </Feed.Meta>
+      </Feed.Content>
+    </Feed.Event>
+  ) : <Feed.Event />;
+}
+
 interface Lifecycle {
   history: firebase.database.Reference;
   speakingData?: SpeakerEvent;
@@ -198,145 +284,79 @@ function runLifecycle(lifecycle: Lifecycle) {
   }
 }
 
-export class Caucus extends React.Component<Props, State> {
-  constructor(props: Props) {
+interface CaucusNextSpeakingProps {
+  data: CaucusData;
+  speakerTimer: TimerData;
+  fref: firebase.database.Reference;
+}
+
+class CaucusNextSpeaking extends React.Component<CaucusNextSpeakingProps, {}> {
+
+  constructor(props: CaucusNextSpeakingProps) {
     super(props);
-
-    this.state = {
-      caucusTimer: DEFAULT_CAUCUS.caucusTimer,
-      speakerTimer: DEFAULT_CAUCUS.speakerTimer
-    };
   }
 
-  SpeakerEvent = (local: { 
-    data?: SpeakerEvent, 
-    speaking?: SpeakerEvent,
-    fref: firebase.database.Reference, 
-  }) => {
-    const yieldHandler = () => {
-      const queueHeadDetails = {
-        queueHeadData: local.data,
-        queueHead: local.fref
+  handleKeyDown = (ev: KeyboardEvent) => {
+    switch (ev.keyCode) {
+      case 78: // N
+        this.nextSpeaker();
+        break;
+      default:
+        break;
+    }
+  }
+
+  componentDidMount() {
+    const { handleKeyDown } = this;
+    document.addEventListener<'keydown'>('keydown', handleKeyDown);
+  }
+
+  componentWillUnmount() {
+    const { handleKeyDown } = this;
+    document.removeEventListener('keydown', handleKeyDown);
+  }
+
+  nextSpeaker = () => {
+    const { props } = this;
+
+    let queue = props.data.queue ? props.data.queue : {};
+
+    const queueHeadKey = Object.keys(queue)[0];
+
+    let queueHeadDetails = {};
+
+    if (queueHeadKey) {
+      queueHeadDetails = {
+        queueHeadData: queue[queueHeadKey],
+        queueHead: props.fref.child('queue').child(queueHeadKey)
       };
+    }
 
-      // HACK
-      // HERE BE DRAGONS
-      // The only reason I'm doing this is because I honestly couldn't give a shit about propogating
-      // the caucusRef all the way down. Furthermore, the only time this should ever be called is when the 
-      // SpeakerEvent is in the "queue" zone, meaning we'll pop up into the "caucus" field.
-      const caucusRef = (local.fref.parent as firebase.database.Reference).parent as firebase.database.Reference;
-
-      const lifecycle: Lifecycle = {
-        history: caucusRef.child('history'),
-        speaking: caucusRef.child('speaking'),
-        speakingData: local.speaking,
-        timerData: this.state.speakerTimer,
-        timer: caucusRef.child('speakerTimer'),
-        yielding: true,
-      };
-
-      runLifecycle({ ...lifecycle, ...queueHeadDetails });
+    const lifecycle: Lifecycle = {
+      history: props.fref.child('history'),
+      speakingData: props.data.speaking,
+      speaking: props.fref.child('speaking'),
+      timerData: props.speakerTimer,
+      timer: props.fref.child('speakerTimer'),
+      yielding: false,
     };
 
-    return local.data ? (
-      <Feed.Event>
-        {/* <Feed.Label image='/assets/images/avatar/small/helen.jpg' /> */}
-        <Feed.Content>
-          <Feed.Summary>
-            <Feed.User>
-              <Flag name={parseFlagName(local.data.who) as any} />
-              {local.data.who}
-            </Feed.User>
-            <Feed.Date>{local.data.duration.toString() + ' seconds'}</Feed.Date>
-          </Feed.Summary>
-          <Feed.Meta>
-            <Feed.Like>
-              <StanceIcon stance={local.data.stance} />
-              {local.data.stance}
-            </Feed.Like>
-            <Label size="mini" as="a" onClick={() => local.fref.remove()}>
-              Remove
-            </Label>
-            {local.speaking && (<Label size="mini" as="a" onClick={yieldHandler}>
-              Yield
-            </Label>)}
-          </Feed.Meta>
-        </Feed.Content>
-      </Feed.Event>
-    ) : <Feed.Event />;
+    runLifecycle({ ...lifecycle, ...queueHeadDetails });
   }
 
-  SpeakerEvents = (props: {
-    data?: Map<string, SpeakerEvent>,
-    fref: firebase.database.Reference,
-    speaking?: SpeakerEvent
-  }) => {
-    const events = props.data ? props.data : {};
-
-    const eventItems = Object.keys(events).map(key =>
-      (
-      <this.SpeakerEvent 
-        key={key} 
-        data={events[key]} 
-        fref={props.fref.child(key)} 
-        speaking={props.speaking}
-      />
-      )
-    );
-
-    return (
-      <Feed size="large">
-        {eventItems}
-      </Feed>
-    );
-  }
-
-  CaucusNowSpeaking = (props: { data: CaucusData, fref: firebase.database.Reference }) => {
-    return (
-      <div>
-        <Header as="h3" attached="top">Now Speaking</Header>
-        <Segment attached="bottom">
-          <Feed size="large">
-            <this.SpeakerEvent data={props.data.speaking} fref={props.fref.child('speaking')} />
-          </Feed>
-        </Segment>
-      </div>
-    );
-  }
-
-  CaucusNextSpeaking = (props: { data: CaucusData, fref: firebase.database.Reference }) => {
-    const nextSpeaker = () => {
-
-      let queue = props.data.queue ? props.data.queue : {};
-
-      const queueHeadKey = Object.keys(queue)[0];
-
-      let queueHeadDetails = {};
-
-      if (queueHeadKey) {
-        queueHeadDetails = {
-          queueHeadData: queue[queueHeadKey],
-          queueHead: props.fref.child('queue').child(queueHeadKey)
-        };
-      }
-
-      const lifecycle: Lifecycle = {
-        history: props.fref.child('history'),
-        speakingData: props.data.speaking,
-        speaking: props.fref.child('speaking'),
-        timerData: this.state.speakerTimer,
-        timer: props.fref.child('speakerTimer'),
-        yielding: false,
-      };
-
-      runLifecycle({ ...lifecycle, ...queueHeadDetails });
-    };
+  render() {
+    const { nextSpeaker, props } = this;
 
     return (
       <div>
         <Header as="h3" attached="top">Next Speaking</Header>
         <Segment attached>
-          <this.SpeakerEvents data={props.data.queue} fref={props.fref.child('queue')} speaking={props.data.speaking} />
+          <SpeakerEvents 
+            data={props.data.queue} 
+            fref={props.fref.child('queue')} 
+            speaking={props.data.speaking} 
+            speakerTimer={props.speakerTimer} 
+          />
         </Segment>
         <Segment attached="bottom" textAlign="center">
           <Button
@@ -359,6 +379,32 @@ export class Caucus extends React.Component<Props, State> {
       </div>
     );
   }
+}
+
+export class Caucus extends React.Component<CaucusProps, CaucusState> {
+  constructor(props: CaucusProps) {
+    super(props);
+
+    this.state = {
+      caucusTimer: DEFAULT_CAUCUS.caucusTimer,
+      speakerTimer: DEFAULT_CAUCUS.speakerTimer
+    };
+  }
+
+  CaucusNowSpeaking = (props: { data: CaucusData, fref: firebase.database.Reference }) => {
+    const { speakerTimer } = this.state;
+
+    return (
+      <div>
+        <Header as="h3" attached="top">Now Speaking</Header>
+        <Segment attached="bottom">
+          <Feed size="large">
+            <SpeakerEvent data={props.data.speaking} fref={props.fref.child('speaking')} speakerTimer={speakerTimer}/>
+          </Feed>
+        </Segment>
+      </div>
+    );
+  }
 
   CaucusView = (props:
     {
@@ -367,6 +413,8 @@ export class Caucus extends React.Component<Props, State> {
       members: Map<MemberID, MemberData>,
       fref: firebase.database.Reference
     }) => {
+
+    const { speakerTimer } = this.state;
 
     return props.data ? (
       <Grid columns="equal">
@@ -378,7 +426,7 @@ export class Caucus extends React.Component<Props, State> {
         <Grid.Row>
           <Grid.Column>
             <this.CaucusNowSpeaking data={props.data} fref={props.fref} />
-            <this.CaucusNextSpeaking data={props.data} fref={props.fref} />
+            <CaucusNextSpeaking data={props.data} fref={props.fref} speakerTimer={speakerTimer} />
             <CaucusQueuer data={props.data} members={props.members} fref={props.fref} />
           </Grid.Column>
           <Grid.Column>
@@ -387,12 +435,14 @@ export class Caucus extends React.Component<Props, State> {
               fref={props.fref.child('speakerTimer')}
               key={props.caucusID + 'speakerTimer'}
               onChange={(timer) => this.setState({ speakerTimer: timer })}
+              toggleKeyCode={83} // S
             />
             <Timer
               name="Caucus Timer"
               fref={props.fref.child('caucusTimer')}
               key={props.caucusID + 'caucusTimer'}
               onChange={(timer) => this.setState({ caucusTimer: timer })}
+              toggleKeyCode={67} // C
             />
           </Grid.Column>
         </Grid.Row>
