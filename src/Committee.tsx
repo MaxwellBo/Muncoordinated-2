@@ -176,7 +176,7 @@ export default class Committee extends React.Component<Props, State> {
           <Menu.Item
             name="help"
             active={false}
-            onClick={() => this.props.history.push(`/committees/${committeeID}/unmod`)}
+            onClick={() => this.props.history.push(`/committees/${committeeID}/help`)}
           >
             <Icon name="help" />
             Help
