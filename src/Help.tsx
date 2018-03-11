@@ -10,17 +10,26 @@ export default class Help extends React.Component<{}, {}> {
           <List>
             <List.Item>
               <Button size="mini">
+                Alt
+              </Button>
+              <Button size="mini">
                 N
               </Button>
               Next Speaker
             </List.Item>
             <List.Item>
               <Button size="mini">
+                Alt
+              </Button>
+              <Button size="mini">
                 S
               </Button>
               Toggle Speaker Timer
             </List.Item>
             <List.Item>
+              <Button size="mini">
+                Alt
+              </Button>
               <Button size="mini">
                 C
               </Button>
