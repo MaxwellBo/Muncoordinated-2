@@ -11,6 +11,7 @@ import Stats from './Stats';
 import { MotionID, MotionData } from './Motions';
 import { TimerData, DEFAULT_TIMER } from './Timer';
 import { Unmod } from './Unmod';
+import Help from './Help';
 
 // FIXME: This is repeatedly declared in every file where URLParameters are needed
 export interface URLParameters {
@@ -172,6 +173,14 @@ export default class Committee extends React.Component<Props, State> {
               </Menu.Item>
             </Menu.Menu>
           </Menu.Item>
+          <Menu.Item
+            name="help"
+            active={false}
+            onClick={() => this.props.history.push(`/committees/${committeeID}/unmod`)}
+          >
+            <Icon name="help" />
+            Help
+          </Menu.Item>
         </Menu>
       );
     };
@@ -197,6 +206,7 @@ export default class Committee extends React.Component<Props, State> {
             <Route exact={true} path="/committees/:committeeID/admin" render={Admin} />
             <Route exact={true} path="/committees/:committeeID/stats" component={Stats} />
             <Route exact={true} path="/committees/:committeeID/unmod" component={Unmod} />
+            <Route exact={true} path="/committees/:committeeID/help" component={Help} />
             <Route path="/committees/:committeeID/caucuses/:caucusID" render={CaucusComponent} />
           </Grid.Column>
         </Grid>
