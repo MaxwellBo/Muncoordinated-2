@@ -3,13 +3,18 @@ import * as firebase from 'firebase';
 import { RouteComponentProps } from 'react-router';
 import { Route, Link } from 'react-router-dom';
 import { MemberData, MemberID } from './Member';
-import { Caucus, CaucusData, CaucusID, DEFAULT_CAUCUS } from './Caucus';
+import { Caucus, CaucusData, CaucusID, DEFAULT_CAUCUS, CaucusStatus } from './Caucus';
 import { ResolutionData, ResolutionID } from './Resolution';
 import CommitteeAdmin from './CommitteeAdmin';
 import { Dropdown, Icon, Input, Menu, Sticky, Grid, Segment } from 'semantic-ui-react';
+import Stats from './Stats';
+import { MotionID, MotionData } from './Motions';
+import { TimerData, DEFAULT_TIMER } from './Timer';
+import { Unmod } from './Unmod';
+import Help from './Help';
 
 // FIXME: This is repeatedly declared in every file where URLParameters are needed
-interface URLParameters {
+export interface URLParameters {
   committeeID: CommitteeID;
   caucusID: CaucusID;
 }
@@ -32,6 +37,8 @@ export interface CommitteeData {
   members?: Map<MemberID, MemberData>;
   caucuses?: Map<CaucusID, CaucusData>;
   resolutions?: Map<ResolutionID, ResolutionData>;
+  motions?: Map<MotionID, MotionData>;
+  timer: TimerData;
 }
 
 function CommitteeMeta(props: { data: CommitteeData, fref: firebase.database.Reference; }) {
@@ -66,7 +73,8 @@ export const DEFAULT_COMMITTEE: CommitteeData = {
   creatorUid: '',
   members: {} as Map<MemberID, MemberData>,
   caucuses: {} as Map<CaucusID, CaucusData>,
-  resolutions: {} as Map<ResolutionID, ResolutionData>
+  resolutions: {} as Map<ResolutionID, ResolutionData>,
+  timer: DEFAULT_TIMER
 };
 
 export default class Committee extends React.Component<Props, State> {
@@ -106,7 +114,7 @@ export default class Committee extends React.Component<Props, State> {
     const committeeID: CommitteeID = this.props.match.params.committeeID;
     const caucusID: CommitteeID = this.props.match.params.committeeID;
 
-    const caucuses = this.state.committee.caucuses ? this.state.committee.caucuses : {} as Map<string, CaucusData>;
+    const caucuses = this.state.committee.caucuses || {} as Map<CaucusID, CaucusData>;
 
     const CaucusItem = (props: { id: CaucusID, data: CaucusData }) => {
       return (
@@ -122,7 +130,9 @@ export default class Committee extends React.Component<Props, State> {
     };
 
     const Nav = () => {
-      const caucusItems = Object.keys(caucuses).map(key =>
+      const caucusItems = Object.keys(caucuses).filter(key =>
+        caucuses[key].status === CaucusStatus.Open.toString() && !caucuses[key].deleted
+      ).map(key =>
         <CaucusItem key={key} id={key} data={caucuses[key]} />
       );
 
@@ -133,8 +143,24 @@ export default class Committee extends React.Component<Props, State> {
             active={false}
             onClick={() => this.props.history.push(`/committees/${committeeID}/admin`)}
           >
-          <Icon name="setting" />
+            <Icon name="setting" />
             Admin
+          </Menu.Item>
+          <Menu.Item
+            name="stats"
+            active={false}
+            onClick={() => this.props.history.push(`/committees/${committeeID}/stats`)}
+          >
+            <Icon name="bar chart" />
+            Stats
+          </Menu.Item>
+          <Menu.Item
+            name="unmod"
+            active={false}
+            onClick={() => this.props.history.push(`/committees/${committeeID}/unmod`)}
+          >
+            <Icon name="discussions" />
+            Unmod
           </Menu.Item>
           <Menu.Item>
             <Icon name="users" />
@@ -146,6 +172,14 @@ export default class Committee extends React.Component<Props, State> {
                 New Caucus
               </Menu.Item>
             </Menu.Menu>
+          </Menu.Item>
+          <Menu.Item
+            name="help"
+            active={false}
+            onClick={() => this.props.history.push(`/committees/${committeeID}/help`)}
+          >
+            <Icon name="help" />
+            Help
           </Menu.Item>
         </Menu>
       );
@@ -170,6 +204,9 @@ export default class Committee extends React.Component<Props, State> {
           </Grid.Column>
           <Grid.Column stretched width={12}>
             <Route exact={true} path="/committees/:committeeID/admin" render={Admin} />
+            <Route exact={true} path="/committees/:committeeID/stats" component={Stats} />
+            <Route exact={true} path="/committees/:committeeID/unmod" component={Unmod} />
+            <Route exact={true} path="/committees/:committeeID/help" component={Help} />
             <Route path="/committees/:committeeID/caucuses/:caucusID" render={CaucusComponent} />
           </Grid.Column>
         </Grid>

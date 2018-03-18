@@ -30,17 +30,17 @@ function CommitteeStats(props: { data: CommitteeData }) {
   const membersMap = props.data.members ? props.data.members : {} as Map<string, MemberData>;
   const members: MemberData[] = Utils.objectToList(membersMap);
   const present = members.filter(x => x.present);
+  const canVote = (x: MemberData) => (x.rank === Rank.Veto || x.rank === Rank.Standard);
 
-  const delegatesNo: number = members.length;
-  const presentNo: number = present.length;
-
-  const canVote = (x: MemberData) => (x.rank === Rank.Veto || x.rank === Rank.Standard) && x.voting;
-  const votingNo: number = present.filter(canVote).length;
-
-  const quorum: number = Math.ceil(delegatesNo * 0.5);
-  const hasQuorum: boolean = presentNo >= quorum;
+  const delegatesNo: number     = members.length;
+  const presentNo: number       = present.length;
+  const votingNo: number        = present.filter(canVote).length;
+  const quorum: number          = Math.ceil(delegatesNo * 0.5);
+  const procedural: number      = Math.ceil(presentNo * 0.5);
+  const operative: number       = Math.ceil(votingNo * 0.5);
+  const hasQuorum: boolean      = presentNo >= quorum;
   const draftResolution: number = Math.ceil(votingNo * 0.25);
-  const amendment: number = Math.ceil(votingNo * 0.1);
+  const amendment: number       = Math.ceil(votingNo * 0.1);
 
   return (
     <Table definition>
@@ -65,9 +65,9 @@ function CommitteeStats(props: { data: CommitteeData }) {
           <Table.Cell>Delegates in attendance</Table.Cell>
         </Table.Row>
         <Table.Row>
-          <Table.Cell>Voting</Table.Cell>
+          <Table.Cell>Have voting rights</Table.Cell>
           <Table.Cell>{votingNo.toString()}</Table.Cell>
-          <Table.Cell>Delegates with voting rights</Table.Cell>
+          <Table.Cell>Present delegates with voting rights</Table.Cell>
         </Table.Row>
         <Table.Row>
           <Table.Cell error={!hasQuorum}>Debate</Table.Cell>
@@ -76,16 +76,28 @@ function CommitteeStats(props: { data: CommitteeData }) {
           <Table.Cell error={!hasQuorum}>50% of total</Table.Cell>
         </Table.Row>
         <Table.Row>
+          <Table.Cell>Procedural threshold</Table.Cell>
+          <Table.Cell>{procedural.toString()}</Table.Cell>
+          <Table.Cell>Required votes for procedural matters</Table.Cell>
+          <Table.Cell>50% of delegates in attendence</Table.Cell>
+        </Table.Row>
+        <Table.Row>
+          <Table.Cell>Operative threshold</Table.Cell>
+          <Table.Cell>{procedural.toString()}</Table.Cell>
+          <Table.Cell>Required votes for operative matters, such as amendments and resolutions</Table.Cell>
+          <Table.Cell>50% of present delegates with voting rights</Table.Cell>
+        </Table.Row>
+        <Table.Row>
           <Table.Cell>Draft resolution</Table.Cell>
           <Table.Cell>{draftResolution.toString()}</Table.Cell>
           <Table.Cell>Delegates needed to table a draft resolution</Table.Cell>
-          <Table.Cell>25% of voting</Table.Cell>
+          <Table.Cell>25% of present delegates with voting rights</Table.Cell>
         </Table.Row>
         <Table.Row>
           <Table.Cell>Amendment</Table.Cell>
           <Table.Cell>{amendment.toString()}</Table.Cell>
           <Table.Cell>Delegates needed to table an amendment</Table.Cell>
-          <Table.Cell>10% of voting</Table.Cell>
+          <Table.Cell>10% of present delegates with voting rights</Table.Cell>
         </Table.Row>
       </Table.Body>
     </Table>
@@ -111,6 +123,7 @@ function MemberItem(props: { data: MemberData, fref: firebase.database.Reference
         <Dropdown
           search
           selection
+          fluid
           options={RANK_OPTIONS}
           onChange={rankHandler}
           value={props.data.rank}
@@ -131,17 +144,13 @@ function MemberItem(props: { data: MemberData, fref: firebase.database.Reference
           disabled={!props.data.present}
         />
       </Table.Cell>
-      <Table.Cell>
+      <Table.Cell collapsing>
         <Button
-          icon
-          labelPosition="left" 
-          fluid
+          icon="trash"
           negative
-          size="small"
+          basic
           onClick={() => props.fref.remove()}
-        >
-          <Icon name="trash" /> Delete
-        </Button>
+        />
       </Table.Cell>
     </Table.Row>
   );
@@ -173,19 +182,7 @@ export default class CommitteeAdmin extends React.Component<Props, State> {
     this.props.fref.child('members').push().set(newMember);
   }
 
-  CommitteeMembers = (props: { data: CommitteeData, fref: firebase.database.Reference }) => {
-
-    const members = this.props.committee.members ? this.props.committee.members : {};
-    const memberItems = Object.keys(members).map(key =>
-      (
-        <MemberItem
-          key={key}
-          data={members[key]}
-          fref={props.fref.child('members').child(key)}
-        />
-      )
-    );
-
+  renderAdder() {
     const countryHandler = (event: any, data: any) => {
       this.setState({ 
         newCountry: [...this.state.newOptions, ...COUNTRY_OPTIONS].filter(c => c.value === data.value)[0] });
@@ -211,6 +208,62 @@ export default class CommitteeAdmin extends React.Component<Props, State> {
     };
 
     return (
+      <Table.Row>
+        <Table.HeaderCell>
+          <Dropdown
+            placeholder="Select Country"
+            search
+            selection
+            fluid
+            allowAdditions
+            options={[...this.state.newOptions, ...COUNTRY_OPTIONS]}
+            onAddItem={additionHandler}
+            onChange={countryHandler}
+            value={this.state.newCountry.value}
+          />
+        </Table.HeaderCell>
+        <Table.HeaderCell>
+          <Dropdown
+            search
+            selection
+            fluid
+            options={RANK_OPTIONS}
+            onChange={rankHandler}
+            value={this.state.newMemberRank}
+          />
+        </Table.HeaderCell>
+        <Table.HeaderCell collapsing >
+          <Checkbox toggle checked={this.state.newMemberPresent} onChange={presentHandler} />
+        </Table.HeaderCell>
+        <Table.HeaderCell collapsing >
+          <Checkbox toggle checked={this.state.newMemberVoting} onChange={votingHandler} />
+        </Table.HeaderCell>
+        <Table.HeaderCell>
+          <Button
+            icon="plus"
+            primary
+            basic
+            onClick={this.pushMember}
+          />
+        </Table.HeaderCell>
+      </Table.Row>
+    );
+  }
+
+  CommitteeMembers = (props: { data: CommitteeData, fref: firebase.database.Reference }) => {
+
+    const members = this.props.committee.members || {};
+    const memberItems = Object.keys(members).map(key =>
+      (
+        <MemberItem
+          key={key}
+          data={members[key]}
+          fref={props.fref.child('members').child(key)}
+        />
+      )
+    );
+
+    return (
       <Table compact celled definition>
         <Table.Header>
           <Table.Row>
@@ -222,53 +275,14 @@ export default class CommitteeAdmin extends React.Component<Props, State> {
           </Table.Row>
         </Table.Header>
 
+        <Table.Header fullWidth>
+          {this.renderAdder()}
+        </Table.Header>
+
         <Table.Body>
-          {memberItems}
+          {memberItems.reverse()}
         </Table.Body>
 
-        <Table.Footer fullWidth>
-          <Table.Row>
-            <Table.HeaderCell>
-              <Dropdown
-                placeholder="Select Country"
-                search
-                selection
-                allowAdditions
-                options={[...this.state.newOptions, ...COUNTRY_OPTIONS]}
-                onAddItem={additionHandler}
-                onChange={countryHandler}
-                value={this.state.newCountry.value}
-              />
-            </Table.HeaderCell>
-            <Table.HeaderCell>
-              <Dropdown
-                search
-                selection
-                options={RANK_OPTIONS}
-                onChange={rankHandler}
-                value={this.state.newMemberRank}
-              />
-            </Table.HeaderCell>
-            <Table.HeaderCell collapsing >
-              <Checkbox toggle checked={this.state.newMemberPresent} onChange={presentHandler} />
-            </Table.HeaderCell>
-            <Table.HeaderCell collapsing >
-              <Checkbox toggle checked={this.state.newMemberVoting} onChange={votingHandler} />
-            </Table.HeaderCell>
-            <Table.HeaderCell>
-              <Button 
-                icon
-                labelPosition="left" 
-                fluid
-                primary 
-                size="small" 
-                onClick={this.pushMember} 
-              >
-                <Icon name="user" /> Add
-              </Button>
-            </Table.HeaderCell>
-          </Table.Row>
-        </Table.Footer>
       </Table>
     );
   }
@@ -276,10 +290,7 @@ export default class CommitteeAdmin extends React.Component<Props, State> {
   render() {
     return (
       <div>
-        <Header as="h2" attached="top">Admin</Header>
-        <Segment attached >
-          <this.CommitteeMembers data={this.props.committee} fref={this.props.fref} />
-        </Segment>
+        <this.CommitteeMembers data={this.props.committee} fref={this.props.fref} />
         <Header as="h2" attached="top">Stats</Header>
         <Segment attached >
           <CommitteeStats data={this.props.committee} />

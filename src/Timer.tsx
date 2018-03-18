@@ -1,11 +1,13 @@
 import * as React from 'react';
 import * as firebase from 'firebase';
-import { Form, Checkbox, Segment, Header, Statistic, Button, Input, Select, Divider, Progress } from 'semantic-ui-react';
+import { Form, Checkbox, Segment, Header, Statistic, Button, Input, Select, 
+  Divider, Progress } from 'semantic-ui-react';
 
 interface Props {
   name: string;
   fref: firebase.database.Reference;
   onChange: (timer: TimerData) => any;
+  toggleKeyCode?: number;
 }
 
 export enum Unit {
@@ -113,6 +115,12 @@ export class Timer extends React.Component<Props, State> {
     this.props.fref.set(newTimer);
   }
 
+  handleKeyDown = (ev: KeyboardEvent) => {
+    if (this.props.toggleKeyCode === ev.keyCode && ev.altKey) {
+      this.toggleHandler(null, null);
+    }
+  }
+
   componentDidMount() {
     this.props.fref.on('value', (timer) => {
       if (timer) {
@@ -122,6 +130,9 @@ export class Timer extends React.Component<Props, State> {
     });
 
     this.setState({ timerId: setInterval(this.tick, 1000) });
+
+    const { handleKeyDown } = this;
+    document.addEventListener<'keydown'>('keydown', handleKeyDown);
   }
 
   componentWillUnmount() {
@@ -130,6 +141,9 @@ export class Timer extends React.Component<Props, State> {
     if (this.state.timerId) {
       clearInterval(this.state.timerId);
     }
+
+    const { handleKeyDown } = this;
+    document.removeEventListener('keydown', handleKeyDown);
   }
 
   increment = () => {

@@ -29,7 +29,7 @@ export interface MemberData {
 
 const FLAG_NAME_SET = new Set(COUNTRY_OPTIONS.map(x => x.text));
 
-export function parseFlagName(name: string) {
+export function parseFlagName(name: string): string {
   if (FLAG_NAME_SET.has(name)) {
     return name.toLowerCase();
   } else {
