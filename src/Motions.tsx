@@ -63,6 +63,17 @@ const hasSpeakers = (motionType: MotionType): boolean => {
   }
 }
 
+const hasDetail = (motionType: MotionType): boolean => {
+  switch (motionType) {
+    case MotionType.OpenModeratedCaucus:
+    case MotionType.IntroduceDraftResolution:
+    case MotionType.IntroduceAmendment:
+      return true
+    default:
+      return false 
+  }
+}
+
 const hasDuration = (motionType: MotionType): boolean => {
   switch (motionType) {
     case MotionType.ExtendUnmoderatedCaucus:
@@ -152,13 +163,13 @@ export default class Motions extends React.Component<Props, State> {
     const { proposal, type, caucusUnit, caucusDuration, speakerUnit, speakerDuration } = motionData;
 
     return (
-      <Segment>
-        <Input 
+      <Segment key={id}>
+        { hasDetail(type) && <Input 
           value={proposal}
           onChange={fieldHandler<MotionData>(motionFref, 'proposal')} 
           fluid 
-          placeholder="Proposal" 
-        />
+          placeholder="Detail" 
+        /> }
         <Dropdown
           placeholder="Select type"
           search
@@ -194,7 +205,7 @@ export default class Motions extends React.Component<Props, State> {
     const { renderMotion } = this;
     const { committeeFref } = this.state;
 
-    const sorted = Object.keys(motions).sort((a, b) => {
+    return Object.keys(motions).sort((a, b) => {
       // don't like non-descriptive variable names? suck it
       const ca = disruptiveness(motions[a]);
       const cb = disruptiveness(motions[b])
@@ -219,7 +230,7 @@ export default class Motions extends React.Component<Props, State> {
       } else {
         return 1;
       }
-    }).map(key => {
+    }).reverse().map(key => {
       return renderMotion(key, motions[key], committeeFref.child('motions').child(key));
     });
   }
