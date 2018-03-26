@@ -3,7 +3,7 @@ import * as firebase from 'firebase';
 import { CommitteeData, CommitteeID } from './Committee';
 import { MemberView, MemberData, MemberID, Rank, parseFlagName } from './Member';
 import * as Utils from './utils';
-import { Dropdown, Segment, Header, Flag, Table, List, Button, Checkbox, Icon } from 'semantic-ui-react';
+import { Dropdown, Segment, Header, Flag, Table, List, Button, Checkbox, Icon, CheckboxProps, DropdownProps } from 'semantic-ui-react';
 import { COUNTRY_OPTIONS, CountryOption } from './common';
 
 interface Props {
@@ -183,21 +183,21 @@ export default class CommitteeAdmin extends React.Component<Props, State> {
   }
 
   renderAdder() {
-    const countryHandler = (event: any, data: any) => {
+    const countryHandler = (event: React.SyntheticEvent<HTMLElement>, data: DropdownProps) => {
       this.setState({ 
         newCountry: [...this.state.newOptions, ...COUNTRY_OPTIONS].filter(c => c.value === data.value)[0] });
     };
 
-    const presentHandler = (event: any, data: any) => {
-      this.setState({ newMemberPresent: data.checked });
+    const presentHandler = (event: React.FormEvent<HTMLInputElement>, data: CheckboxProps) => {
+      this.setState({ newMemberPresent: data.checked || false });
     };
 
-    const votingHandler = (event: any, data: any) => {
-      this.setState({ newMemberVoting: data.checked });
+    const votingHandler = (event: React.FormEvent<HTMLInputElement>, data: CheckboxProps) => {
+      this.setState({ newMemberVoting: data.checked || false });
     };
 
-    const rankHandler = (event: any, data: any) => {
-      this.setState({ newMemberRank: data.value });
+    const rankHandler = (event: React.SyntheticEvent<HTMLElement>, data: DropdownProps) => {
+      this.setState({ newMemberRank: data.value as Rank || Rank.Standard });
     };
 
     const additionHandler = (event: any, data: any) => {

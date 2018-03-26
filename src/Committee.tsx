@@ -6,12 +6,14 @@ import { MemberData, MemberID } from './Member';
 import { Caucus, CaucusData, CaucusID, DEFAULT_CAUCUS, CaucusStatus } from './Caucus';
 import { ResolutionData, ResolutionID } from './Resolution';
 import CommitteeAdmin from './CommitteeAdmin';
-import { Dropdown, Icon, Input, Menu, Sticky, Grid, Segment } from 'semantic-ui-react';
+import { Dropdown, Icon, Input, Menu, Sticky, Grid, Segment, SemanticICONS } from 'semantic-ui-react';
 import Stats from './Stats';
 import { MotionID, MotionData } from './Motions';
 import { TimerData, DEFAULT_TIMER } from './Timer';
 import { Unmod } from './Unmod';
 import Help from './Help';
+import Motions from './Motions';
+import { fieldHandler } from './handlers';
 
 // FIXME: This is repeatedly declared in every file where URLParameters are needed
 export interface URLParameters {
@@ -42,14 +44,11 @@ export interface CommitteeData {
 }
 
 function CommitteeMeta(props: { data: CommitteeData, fref: firebase.database.Reference; }) {
-  const makeHandler = (field: string) => (e: React.FormEvent<HTMLInputElement>) =>
-    props.fref.child(field).set(e.currentTarget.value);
-
   return (
     <Segment>
       <Input
         value={props.data.name}
-        onChange={makeHandler('name')}
+        onChange={fieldHandler(props.fref, 'name')}
         attached="top"
         size="massive"
         fluid
@@ -57,7 +56,7 @@ function CommitteeMeta(props: { data: CommitteeData, fref: firebase.database.Ref
       />
       <Input 
         value={props.data.topic} 
-        onChange={makeHandler('topic')} 
+        onChange={fieldHandler(props.fref, 'topic')} 
         attached="bottom" 
         fluid 
         placeholder="Committee Topic" 
@@ -110,7 +109,24 @@ export default class Committee extends React.Component<Props, State> {
     this.state.fref.child('caucuses').push().set(newCaucus);
   }
 
+  makeMenuItem = (name: string, icon: SemanticICONS) => {
+    const committeeID: CommitteeID = this.props.match.params.committeeID;
+    const caucusID: CommitteeID = this.props.match.params.committeeID;
+
+    return (
+      <Menu.Item
+        name={name.toLowerCase()}
+        active={false}
+        onClick={() => this.props.history.push(`/committees/${committeeID}/${name.toLowerCase()}`)}
+      >
+        <Icon name={icon} />
+        {name}
+      </Menu.Item>
+    )
+  }
+
   render() {
+    const { makeMenuItem } = this;
     const committeeID: CommitteeID = this.props.match.params.committeeID;
     const caucusID: CommitteeID = this.props.match.params.committeeID;
 
@@ -138,30 +154,12 @@ export default class Committee extends React.Component<Props, State> {
 
       return (
         <Menu fluid vertical size="massive">
-          <Menu.Item
-            name="admin"
-            active={false}
-            onClick={() => this.props.history.push(`/committees/${committeeID}/admin`)}
-          >
-            <Icon name="setting" />
-            Admin
-          </Menu.Item>
-          <Menu.Item
-            name="stats"
-            active={false}
-            onClick={() => this.props.history.push(`/committees/${committeeID}/stats`)}
-          >
-            <Icon name="bar chart" />
-            Stats
-          </Menu.Item>
-          <Menu.Item
-            name="unmod"
-            active={false}
-            onClick={() => this.props.history.push(`/committees/${committeeID}/unmod`)}
-          >
-            <Icon name="discussions" />
-            Unmod
-          </Menu.Item>
+          { makeMenuItem('Admin', 'setting') }
+          { makeMenuItem('Stats', 'bar chart') }
+          { makeMenuItem('Unmod', 'discussions') }
+          { makeMenuItem('Motions', 'sort numeric ascending') }
+          {/* { makeMenuItem('Voting', 'thumbs up') } */}
+          {/* { makeMenuItem('Amendments', 'edit') } */}
           <Menu.Item>
             <Icon name="users" />
             Caucuses
@@ -173,14 +171,7 @@ export default class Committee extends React.Component<Props, State> {
               </Menu.Item>
             </Menu.Menu>
           </Menu.Item>
-          <Menu.Item
-            name="help"
-            active={false}
-            onClick={() => this.props.history.push(`/committees/${committeeID}/help`)}
-          >
-            <Icon name="help" />
-            Help
-          </Menu.Item>
+          { makeMenuItem('Help', 'help') }
         </Menu>
       );
     };
@@ -206,6 +197,7 @@ export default class Committee extends React.Component<Props, State> {
             <Route exact={true} path="/committees/:committeeID/admin" render={Admin} />
             <Route exact={true} path="/committees/:committeeID/stats" component={Stats} />
             <Route exact={true} path="/committees/:committeeID/unmod" component={Unmod} />
+            <Route exact={true} path="/committees/:committeeID/motions" component={Motions} />
             <Route exact={true} path="/committees/:committeeID/help" component={Help} />
             <Route path="/committees/:committeeID/caucuses/:caucusID" render={CaucusComponent} />
           </Grid.Column>

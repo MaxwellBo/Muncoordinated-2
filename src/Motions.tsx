@@ -2,7 +2,9 @@ import * as React from 'react';
 import * as firebase from 'firebase';
 import { CommitteeData, URLParameters } from './Committee';
 import { RouteComponentProps } from 'react-router';
-import { Loader } from 'semantic-ui-react';
+import { Loader, Segment, Input, Dropdown, Button } from 'semantic-ui-react';
+import { fieldHandler, dropdownHandler } from './handlers';
+import { makeDropdownOption } from './utils';
 
 export type MotionID = string;
 
@@ -30,18 +32,18 @@ interface Props extends RouteComponentProps<URLParameters> {
 interface State {
   committee?: CommitteeData;
   newMotion: MotionData;
-  fref: firebase.database.Reference;
+  committeeFref: firebase.database.Reference;
 }
 
 const MOTION_TYPE_OPTIONS = [
-  { key: MotionType.UnmoderatedCaucus, value: MotionType.UnmoderatedCaucus, text: MotionType.UnmoderatedCaucus },
-  { key: MotionType.ModeratedCaucus, value: MotionType.ModeratedCaucus, text: MotionType.ModeratedCaucus },
-  { key: MotionType.OpenDebate, value: MotionType.OpenDebate, text: MotionType.OpenDebate },
-  { key: MotionType.SuspendDebate, value: MotionType.SuspendDebate, text: MotionType.SuspendDebate },
-  { key: MotionType.ReopenDebate, value: MotionType.ReopenDebate, text: MotionType.ReopenDebate },
-  { key: MotionType.CloseDebate, value: MotionType.CloseDebate, text: MotionType.CloseDebate },
-  { key: MotionType.IntroduceResolution, value: MotionType.IntroduceResolution, text: MotionType.IntroduceResolution },
-];
+  MotionType.UnmoderatedCaucus,
+  MotionType.ModeratedCaucus,
+  MotionType.OpenDebate,
+  MotionType.SuspendDebate,
+  MotionType.ReopenDebate,
+  MotionType.CloseDebate,
+  MotionType.IntroduceResolution,
+].map(makeDropdownOption);
 
 const DEFAULT_MOTION: MotionData = {
   proposal: '',
@@ -58,13 +60,13 @@ export default class Motions extends React.Component<Props, State> {
     const { match } = props;
 
     this.state = {
-      fref: firebase.database().ref('committees').child(match.params.committeeID),
+      committeeFref: firebase.database().ref('committees').child(match.params.committeeID),
       newMotion: DEFAULT_MOTION
     };
   }
 
   componentDidMount() {
-    this.state.fref.on('value', (committee) => {
+    this.state.committeeFref.on('value', (committee) => {
       if (committee) {
         this.setState({ committee: committee.val() });
       }
@@ -72,12 +74,63 @@ export default class Motions extends React.Component<Props, State> {
   }
 
   componentWillUnmount() {
-    this.state.fref.off();
+    this.state.committeeFref.off();
   }
 
-  renderMotions(committee: CommitteeData) {
+  handlePushMotion = (): void => {
+    this.state.committeeFref.child('motions').push().set(DEFAULT_MOTION);
+  }
+
+  renderMotion = (id: MotionID, motionData: MotionData, motionFref: firebase.database.Reference) => {
+    const { proposal, type } = motionData;
+
     return (
-      <p>Go</p>
+      <Segment>
+        <Input 
+          value={proposal}
+          onChange={fieldHandler(motionFref, 'proposal')} 
+          fluid 
+          placeholder="Proposal" 
+        />
+        <Dropdown
+          placeholder="Select type"
+          search
+          selection
+          fluid
+          options={MOTION_TYPE_OPTIONS}
+          onChange={dropdownHandler(motionFref, 'type')}
+          value={type}
+        />
+      </Segment>
+    );
+  }
+
+  renderMotions = (motions: Map<MotionID, MotionData>) => {
+    const { renderMotion } = this;
+    const { committeeFref } = this.state;
+
+    return Object.keys(motions).map(key => {
+      renderMotion(key, motions[key], committeeFref.child('motions').child(key));
+    });
+  }
+
+  renderTab = (committee: CommitteeData) => {
+    const { renderMotions } = this;
+    const { handlePushMotion } = this;
+
+    const motions = committee.motions || {} as Map<MotionID, MotionData>;
+
+    return (
+      <div>
+        {renderMotions(motions)}
+        <Button
+          icon="plus"
+          primary
+          fluid
+          basic
+          onClick={handlePushMotion}
+        />
+      </div>
     );
   }
 
@@ -85,7 +138,7 @@ export default class Motions extends React.Component<Props, State> {
     const { committee } = this.state;
 
     if (committee) {
-      return this.renderMotions(committee);
+      return this.renderTab(committee);
     } else {
       return <Loader>Loading</Loader>;
     }

@@ -11,6 +11,8 @@ import {
   Label, Form, Message
 } from 'semantic-ui-react';
 import { COUNTRY_OPTIONS, CountryOption } from './common';
+import { textAreaHandler, dropdownHandler, fieldHandler } from './handlers';
+import { makeDropdownOption } from './utils';
 
 interface URLParameters {
   caucusID: CaucusID;
@@ -86,29 +88,26 @@ export const DEFAULT_CAUCUS: CaucusData = {
 };
 
 function CaucusHeader(props: { data: CaucusData, fref: firebase.database.Reference }) {
-  const propertyHandler = (field: string) => (e: React.FormEvent<HTMLInputElement>) =>
-    props.fref.child(field).set(e.currentTarget.value);
-
-  const statusHandler = (event: any, data: any) => {
-    props.fref.child('status').set(data.value);
-  };
-
-  const topicHandler = (event: any, data: any) => {
-    props.fref.child('topic').set(data.value);
-  }; 
-
   const CAUCUS_STATUS_OPTIONS = [
-    { key: CaucusStatus.Open, text: CaucusStatus.Open, value: CaucusStatus.Open },
-    { key: CaucusStatus.Closed, text: CaucusStatus.Closed, value: CaucusStatus.Closed },
-  ];
+    CaucusStatus.Open,
+    CaucusStatus.Closed
+  ].map(makeDropdownOption);
+
+  const statusDropdown = (
+    <Dropdown 
+      value={props.data.status} 
+      options={CAUCUS_STATUS_OPTIONS} 
+      onChange={dropdownHandler(props.fref, 'status')} 
+    /> 
+  )
 
   return (
     <Segment>
       <Input
-        label={<Dropdown value={props.data.status} options={CAUCUS_STATUS_OPTIONS} onChange={statusHandler} />}
+        label={statusDropdown}
         labelPosition="right"
         value={props.data.name}
-        onChange={propertyHandler('name')}
+        onChange={fieldHandler(props.fref, 'name')}
         attatched="top"
         size="massive"
         fluid
@@ -118,7 +117,7 @@ function CaucusHeader(props: { data: CaucusData, fref: firebase.database.Referen
         <TextArea
           value={props.data.topic}
           autoHeight
-          onChange={topicHandler}
+          onChange={textAreaHandler(props.fref, 'topic')}
           attatched="top"
           fluid
           rows={1}
@@ -130,9 +129,6 @@ function CaucusHeader(props: { data: CaucusData, fref: firebase.database.Referen
 }
 
 function CaucusMeta(props: { data: CaucusData, fref: firebase.database.Reference }) {
-  const makeHandler = (field: string) => (e: React.FormEvent<HTMLInputElement>) =>
-    props.fref.child(field).set(e.currentTarget.value);
-
   // TODO: Make status either a dropdown or a checkbox / on/off slider
   return (
     <Segment attached>

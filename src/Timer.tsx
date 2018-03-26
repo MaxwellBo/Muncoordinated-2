@@ -1,7 +1,8 @@
 import * as React from 'react';
 import * as firebase from 'firebase';
 import { Form, Checkbox, Segment, Header, Statistic, Button, Input, Select, 
-  Divider, Progress } from 'semantic-ui-react';
+  Divider, Progress, DropdownProps } from 'semantic-ui-react';
+import { makeDropdownOption } from "./utils";
 
 interface Props {
   name: string;
@@ -15,10 +16,10 @@ export enum Unit {
   Seconds = 'sec'
 }
 
-const UNIT_OPTIONS = [
-  { key: Unit.Seconds, text: Unit.Seconds, value: Unit.Seconds },
-  { key: Unit.Minutes, text: Unit.Minutes, value: Unit.Minutes }
-];
+export const UNIT_OPTIONS = [
+  Unit.Seconds,
+  Unit.Minutes
+].map(makeDropdownOption);
 
 interface State {
   timer: TimerData;
@@ -58,9 +59,9 @@ function padStart(xs: string, targetLength: number, padString?: string) {
 export function TimeSetter(props: {
   unitValue: Unit,
   durationValue: string,
-  onUnitChange: (event: any, data: any) => any,
-  onDurationChange: (event: React.FormEvent<HTMLInputElement>) => any,
-  onSet?: () => any
+  onUnitChange: (event: React.SyntheticEvent<HTMLElement>, data: DropdownProps) => void,
+  onDurationChange: (event: React.FormEvent<HTMLInputElement>) => void,
+  onSet?: () => void
 }) {
 
   return (
@@ -74,7 +75,13 @@ export function TimeSetter(props: {
       <input />
       {/* <Button icon="minus" onClick={this.decrement} />
       <Button icon="plus"  onClick={this.increment} /> */}
-      <Select value={props.unitValue} options={UNIT_OPTIONS} compact button onChange={props.onUnitChange} />
+      <Select 
+        value={props.unitValue} 
+        options={UNIT_OPTIONS} 
+        compact 
+        button 
+        onChange={props.onUnitChange} 
+      />
       {props.onSet && (<Button onClick={props.onSet}>Set</Button>)}
     </Form.Input>
   );
