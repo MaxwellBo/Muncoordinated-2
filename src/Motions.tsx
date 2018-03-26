@@ -159,6 +159,10 @@ export default class Motions extends React.Component<Props, State> {
     this.state.committeeFref.child('motions').push().set(DEFAULT_MOTION);
   }
 
+  handleClearMotions = (): void => {
+    this.state.committeeFref.child('motions').set({})
+  }
+
   renderMotion = (id: MotionID, motionData: MotionData, motionFref: firebase.database.Reference) => {
     const { proposal, type, caucusUnit, caucusDuration, speakerUnit, speakerDuration } = motionData;
 
@@ -237,7 +241,7 @@ export default class Motions extends React.Component<Props, State> {
 
   renderTab = (committee: CommitteeData) => {
     const { renderMotions } = this;
-    const { handlePushMotion } = this;
+    const { handlePushMotion, handleClearMotions } = this;
 
     const motions = committee.motions || {} as Map<MotionID, MotionData>;
 
@@ -249,6 +253,13 @@ export default class Motions extends React.Component<Props, State> {
           fluid
           basic
           onClick={handlePushMotion}
+        />
+        <Button
+          icon="clear"
+          negative
+          fluid
+          basic
+          onClick={handleClearMotions}
         />
         { renderMotions(motions) }
       </div>
