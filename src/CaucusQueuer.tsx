@@ -5,7 +5,7 @@ import { CaucusData, SpeakerEvent, Stance } from './Caucus';
 import * as Utils from './utils';
 import { COUNTRY_OPTIONS, CountryOption } from './common';
 import { Header, Segment, Dropdown, Button, Form } from 'semantic-ui-react';
-import { TimeSetter, Unit } from './Timer';
+import { TimerSetter, Unit } from "./TimerSetter";
 
 interface Props {
   data: CaucusData;
@@ -72,7 +72,7 @@ export default class CaucusQueuer extends React.Component<Props, State> {
               onChange={countryHandler}
               options={countryOptions}
             />
-            <TimeSetter
+            <TimerSetter
               unitValue={this.state.unitDropdown}
               durationValue={this.state.durationField}
               onDurationChange={durationHandler}

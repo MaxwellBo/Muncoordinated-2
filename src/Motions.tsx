@@ -3,26 +3,85 @@ import * as firebase from 'firebase';
 import { CommitteeData, URLParameters } from './Committee';
 import { RouteComponentProps } from 'react-router';
 import { Loader, Segment, Input, Dropdown, Button } from 'semantic-ui-react';
-import { fieldHandler, dropdownHandler } from './handlers';
+import { fieldHandler, dropdownHandler, numberFieldHandler } from './handlers';
 import { makeDropdownOption } from './utils';
+import { TimerSetter, Unit } from "./TimerSetter";
 
 export type MotionID = string;
 
 enum MotionType {
-  UnmoderatedCaucus = 'Unmoderated Caucus',
-  ModeratedCaucus = 'Moderated Caucus',
+  OpenUnmoderatedCaucus = 'Open Unmoderated Caucus',
+  OpenModeratedCaucus = 'Open Moderated Caucus',
+  ExtendUnmoderatedCaucus = 'Extend Unmoderated Caucus',
+  ExtendModeratedCaucus = 'Extend Moderated Caucus',
+  CloseModeratedCaucus = 'Close Moderated Caucus',
+  IntroduceDraftResolution = 'Introduce Draft Resolution',
+  IntroduceAmendment = 'Introduce Draft Resolution',
+  SuspendDraftResolutionSpeakersList = 'Suspend Draft Resolution Speakers List',
   OpenDebate = 'Open Debate',
-  SuspendDebate = 'Open Debate',
-  ReopenDebate = 'Reopen Debate',
+  SuspendDebate = 'Suspend Debate',
+  ResumeDebate = 'Resume Debate',
   CloseDebate = 'Close Debate',
-  IntroduceResolution = 'Introduce Resolution'
+  ReorderDraftResolutions = 'Reorder Draft Resolutions'
+}
+
+const disruptiveness = (motionType: MotionType): number => {
+  switch (motionType) {
+    case MotionType.ExtendUnmoderatedCaucus:
+      return 1
+    case MotionType.ExtendModeratedCaucus:
+    case MotionType.CloseModeratedCaucus:
+      return 2
+    case MotionType.OpenUnmoderatedCaucus:
+      return 4
+    case MotionType.OpenModeratedCaucus:
+      return 5
+    case MotionType.IntroduceDraftResolution:
+      return 6
+    case MotionType.IntroduceAmendment:
+      return 7
+    case MotionType.SuspendDraftResolutionSpeakersList:
+      return 8
+    case MotionType.OpenDebate:
+    case MotionType.SuspendDebate:
+    case MotionType.ResumeDebate:
+    case MotionType.CloseDebate:
+      return 9
+    case MotionType.ReorderDraftResolutions:
+      return 10
+    default:
+      return 69
+  }
+}
+
+const hasSpeakers = (motionType: MotionType): boolean => {
+  switch (motionType) {
+    case MotionType.OpenModeratedCaucus:
+      return true
+    default:
+      return false 
+  }
+}
+
+const hasDuration = (motionType: MotionType): boolean => {
+  switch (motionType) {
+    case MotionType.ExtendUnmoderatedCaucus:
+    case MotionType.ExtendModeratedCaucus:
+    case MotionType.OpenModeratedCaucus:
+    case MotionType.OpenUnmoderatedCaucus:
+      return true
+    default:
+      return false 
+  }
 }
 
 export interface MotionData {
   proposal: string;
   proposer: string;
-  speakerTime: number;
-  caucusTimer: number;
+  speakerDuration: number;
+  speakerUnit: Unit;
+  caucusDuration: number;
+  caucusUnit: Unit;
   type: MotionType;
 }
 
@@ -36,21 +95,29 @@ interface State {
 }
 
 const MOTION_TYPE_OPTIONS = [
-  MotionType.UnmoderatedCaucus,
-  MotionType.ModeratedCaucus,
+  MotionType.OpenUnmoderatedCaucus,
+  MotionType.OpenModeratedCaucus,
+  MotionType.ExtendUnmoderatedCaucus,
+  MotionType.ExtendModeratedCaucus,
+  MotionType.CloseModeratedCaucus,
+  MotionType.IntroduceDraftResolution,
+  MotionType.IntroduceAmendment,
+  MotionType.SuspendDraftResolutionSpeakersList,
   MotionType.OpenDebate,
   MotionType.SuspendDebate,
-  MotionType.ReopenDebate,
+  MotionType.ResumeDebate,
   MotionType.CloseDebate,
-  MotionType.IntroduceResolution,
+  MotionType.ReorderDraftResolutions,
 ].map(makeDropdownOption);
 
 const DEFAULT_MOTION: MotionData = {
   proposal: '',
   proposer: '',
-  speakerTime: 600,
-  caucusTimer: 60,
-  type: MotionType.ModeratedCaucus
+  speakerDuration: 60,
+  speakerUnit: Unit.Seconds,
+  caucusDuration: 15,
+  caucusUnit: Unit.Minutes,
+  type: MotionType.OpenModeratedCaucus
 };
 
 export default class Motions extends React.Component<Props, State> {
@@ -82,13 +149,13 @@ export default class Motions extends React.Component<Props, State> {
   }
 
   renderMotion = (id: MotionID, motionData: MotionData, motionFref: firebase.database.Reference) => {
-    const { proposal, type } = motionData;
+    const { proposal, type, caucusUnit, caucusDuration, speakerUnit, speakerDuration } = motionData;
 
     return (
       <Segment>
         <Input 
           value={proposal}
-          onChange={fieldHandler(motionFref, 'proposal')} 
+          onChange={fieldHandler<MotionData>(motionFref, 'proposal')} 
           fluid 
           placeholder="Proposal" 
         />
@@ -98,8 +165,26 @@ export default class Motions extends React.Component<Props, State> {
           selection
           fluid
           options={MOTION_TYPE_OPTIONS}
-          onChange={dropdownHandler(motionFref, 'type')}
+          onChange={dropdownHandler<MotionData>(motionFref, 'type')}
           value={type}
+        />
+        { hasSpeakers(type) && <TimerSetter
+          unitValue={speakerUnit}
+          durationValue={speakerDuration.toString()}
+          onUnitChange={dropdownHandler<MotionData>(motionFref, 'speakerUnit')}
+          onDurationChange={numberFieldHandler<MotionData>(motionFref, 'speakerDuration')}
+        /> }
+        { hasDuration(type) && <TimerSetter
+          unitValue={caucusUnit}
+          durationValue={caucusDuration.toString()}
+          onUnitChange={dropdownHandler<MotionData>(motionFref, 'caucusUnit')}
+          onDurationChange={numberFieldHandler<MotionData>(motionFref, 'caucusDuration')}
+        /> }
+        <Button
+          icon="trash"
+          negative
+          basic
+          onClick={() => motionFref.remove()}
         />
       </Segment>
     );
@@ -109,8 +194,33 @@ export default class Motions extends React.Component<Props, State> {
     const { renderMotion } = this;
     const { committeeFref } = this.state;
 
-    return Object.keys(motions).map(key => {
-      renderMotion(key, motions[key], committeeFref.child('motions').child(key));
+    const sorted = Object.keys(motions).sort((a, b) => {
+      // don't like non-descriptive variable names? suck it
+      const ca = disruptiveness(motions[a]);
+      const cb = disruptiveness(motions[b])
+
+      if (ca < cb) {
+        return -1; // reversed
+      } else if (ca === cb) {
+        const ma: MotionData = motions[a]
+        const mb: MotionData = motions[b]
+
+        const sa = ma.caucusDuration * (ma.caucusUnit === Unit.Minutes ? 60 : 1)
+        const sb = mb.caucusDuration * (mb.caucusUnit === Unit.Minutes ? 60 : 1)
+
+        // FIXME: Could be replaced by some sort of comapre function that I know exists
+        if (sa < sb) {
+          return -1
+        } else if (sa === sb) {
+          return 0
+        } else {
+          return 1
+        }
+      } else {
+        return 1;
+      }
+    }).map(key => {
+      return renderMotion(key, motions[key], committeeFref.child('motions').child(key));
     });
   }
 
@@ -122,7 +232,6 @@ export default class Motions extends React.Component<Props, State> {
 
     return (
       <div>
-        {renderMotions(motions)}
         <Button
           icon="plus"
           primary
@@ -130,6 +239,7 @@ export default class Motions extends React.Component<Props, State> {
           basic
           onClick={handlePushMotion}
         />
+        { renderMotions(motions) }
       </div>
     );
   }

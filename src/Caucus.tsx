@@ -97,7 +97,7 @@ function CaucusHeader(props: { data: CaucusData, fref: firebase.database.Referen
     <Dropdown 
       value={props.data.status} 
       options={CAUCUS_STATUS_OPTIONS} 
-      onChange={dropdownHandler(props.fref, 'status')} 
+      onChange={dropdownHandler<CaucusData>(props.fref, 'status')} 
     /> 
   )
 
@@ -107,7 +107,7 @@ function CaucusHeader(props: { data: CaucusData, fref: firebase.database.Referen
         label={statusDropdown}
         labelPosition="right"
         value={props.data.name}
-        onChange={fieldHandler(props.fref, 'name')}
+        onChange={fieldHandler<CaucusData>(props.fref, 'name')}
         attatched="top"
         size="massive"
         fluid
@@ -117,7 +117,7 @@ function CaucusHeader(props: { data: CaucusData, fref: firebase.database.Referen
         <TextArea
           value={props.data.topic}
           autoHeight
-          onChange={textAreaHandler(props.fref, 'topic')}
+          onChange={textAreaHandler<CaucusData>(props.fref, 'topic')}
           attatched="top"
           fluid
           rows={1}
