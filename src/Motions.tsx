@@ -4,8 +4,10 @@ import { CommitteeData, URLParameters } from './Committee';
 import { RouteComponentProps } from 'react-router';
 import { Loader, Segment, Input, Dropdown, Button } from 'semantic-ui-react';
 import { fieldHandler, dropdownHandler, numberFieldHandler } from './handlers';
-import { makeDropdownOption } from './utils';
+import { makeDropdownOption, objectToList } from './utils';
 import { TimerSetter, Unit } from "./TimerSetter";
+import { parseCountryOption, MemberID, MemberData } from "./Member";
+import { CountryOption } from "./common";
 
 export type MotionID = string;
 
@@ -155,6 +157,17 @@ export default class Motions extends React.Component<Props, State> {
     this.state.committeeFref.off();
   }
 
+  recoverCountryOptions = (): CountryOption[] => {
+    const { committee } = this.state
+
+    if (committee) {
+      return objectToList(committee.members || {} as Map<MemberID, MemberData>)
+        .map(x => parseCountryOption(x.name))
+    }
+
+    return []
+  }
+
   handlePushMotion = (): void => {
     this.state.committeeFref.child('motions').push().set(DEFAULT_MOTION);
   }
@@ -164,7 +177,9 @@ export default class Motions extends React.Component<Props, State> {
   }
 
   renderMotion = (id: MotionID, motionData: MotionData, motionFref: firebase.database.Reference) => {
-    const { proposal, type, caucusUnit, caucusDuration, speakerUnit, speakerDuration } = motionData;
+    const { recoverCountryOptions } = this;
+    const { proposer, proposal, type, caucusUnit, caucusDuration, speakerUnit, 
+      speakerDuration } = motionData;
 
     return (
       <Segment key={id}>
@@ -195,6 +210,13 @@ export default class Motions extends React.Component<Props, State> {
           onUnitChange={dropdownHandler<MotionData>(motionFref, 'caucusUnit')}
           onDurationChange={numberFieldHandler<MotionData>(motionFref, 'caucusDuration')}
         /> }
+        <Dropdown
+          value={proposer}
+          search
+          selection
+          onChange={dropdownHandler<MotionData>(motionFref, 'proposer')}
+          options={recoverCountryOptions()}
+        />
         <Button
           icon="trash"
           negative
@@ -255,7 +277,7 @@ export default class Motions extends React.Component<Props, State> {
           onClick={handlePushMotion}
         />
         <Button
-          icon="clear"
+          icon="erase"
           negative
           fluid
           basic
