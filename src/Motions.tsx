@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as firebase from 'firebase';
 import { CommitteeData, URLParameters } from './Committee';
 import { RouteComponentProps } from 'react-router';
-import { Loader, Segment, Input, Dropdown, Button } from 'semantic-ui-react';
+import { Loader, Segment, Input, Dropdown, Button, Card, Form } from 'semantic-ui-react';
 import { fieldHandler, dropdownHandler, numberFieldHandler } from './handlers';
 import { makeDropdownOption, objectToList } from './utils';
 import { TimerSetter, Unit } from "./TimerSetter";
@@ -18,7 +18,7 @@ enum MotionType {
   ExtendModeratedCaucus = 'Extend Moderated Caucus',
   CloseModeratedCaucus = 'Close Moderated Caucus',
   IntroduceDraftResolution = 'Introduce Draft Resolution',
-  IntroduceAmendment = 'Introduce Draft Resolution',
+  IntroduceAmendment = 'Introduce Amendment',
   SuspendDraftResolutionSpeakersList = 'Suspend Draft Resolution Speakers List',
   OpenDebate = 'Open Debate',
   SuspendDebate = 'Suspend Debate',
@@ -130,7 +130,7 @@ const DEFAULT_MOTION: MotionData = {
   speakerUnit: Unit.Seconds,
   caucusDuration: 15,
   caucusUnit: Unit.Minutes,
-  type: MotionType.OpenModeratedCaucus
+  type: MotionType.OpenUnmoderatedCaucus // this will force it to the top of the list
 };
 
 export default class Motions extends React.Component<Props, State> {
@@ -181,49 +181,86 @@ export default class Motions extends React.Component<Props, State> {
     const { proposer, proposal, type, caucusUnit, caucusDuration, speakerUnit, 
       speakerDuration } = motionData;
 
-    return (
-      <Segment key={id}>
-        { hasDetail(type) && <Input 
+    const description = (
+      <Card.Description>
+        <Input 
           value={proposal}
           onChange={fieldHandler<MotionData>(motionFref, 'proposal')} 
           fluid 
-          placeholder="Detail" 
-        /> }
-        <Dropdown
-          placeholder="Select type"
-          search
-          selection
-          fluid
-          options={MOTION_TYPE_OPTIONS}
-          onChange={dropdownHandler<MotionData>(motionFref, 'type')}
-          value={type}
-        />
-        { hasSpeakers(type) && <TimerSetter
-          unitValue={speakerUnit}
-          durationValue={speakerDuration.toString()}
-          onUnitChange={dropdownHandler<MotionData>(motionFref, 'speakerUnit')}
-          onDurationChange={numberFieldHandler<MotionData>(motionFref, 'speakerDuration')}
-        /> }
-        { hasDuration(type) && <TimerSetter
-          unitValue={caucusUnit}
-          durationValue={caucusDuration.toString()}
-          onUnitChange={dropdownHandler<MotionData>(motionFref, 'caucusUnit')}
-          onDurationChange={numberFieldHandler<MotionData>(motionFref, 'caucusDuration')}
-        /> }
-        <Dropdown
-          value={proposer}
-          search
-          selection
-          onChange={dropdownHandler<MotionData>(motionFref, 'proposer')}
-          options={recoverCountryOptions()}
-        />
-        <Button
-          icon="trash"
-          negative
-          basic
-          onClick={() => motionFref.remove()}
-        />
-      </Segment>
+        /> 
+      </Card.Description>
+    )
+
+    const speakerSetter = (
+      <TimerSetter
+        unitValue={speakerUnit}
+        durationValue={speakerDuration.toString()}
+        onUnitChange={dropdownHandler<MotionData>(motionFref, 'speakerUnit')}
+        onDurationChange={numberFieldHandler<MotionData>(motionFref, 'speakerDuration')}
+        label={"Speaker"}
+      />
+    )
+
+    const durationSetter = (
+      <TimerSetter
+        unitValue={caucusUnit}
+        durationValue={caucusDuration.toString()}
+        onUnitChange={dropdownHandler<MotionData>(motionFref, 'caucusUnit')}
+        onDurationChange={numberFieldHandler<MotionData>(motionFref, 'caucusDuration')}
+        label={"Duration"}
+      />
+    )
+
+    const extra = (
+      <Card.Content extra>
+        <Form>
+          <Form.Group widths='equal'>
+            { hasDuration(type) && durationSetter }
+            { hasSpeakers(type) && speakerSetter }
+          </Form.Group>
+        </Form>
+      </Card.Content>
+    )
+
+    return (
+      <Card 
+        key={id}
+      >
+        <Card.Content>
+          <Card.Header>
+            <Dropdown
+              placeholder="Select type"
+              search
+              selection
+              fluid
+              options={MOTION_TYPE_OPTIONS}
+              onChange={dropdownHandler<MotionData>(motionFref, 'type')}
+              value={type}
+            />
+            { hasDetail(type) && description }
+          </Card.Header>
+          <Card.Meta>
+            <Form.Dropdown
+              value={proposer}
+              search
+              selection
+              fluid
+              onChange={dropdownHandler<MotionData>(motionFref, 'proposer')}
+              options={recoverCountryOptions()}
+              label="Proposer"
+            />
+            {/* <Button
+              icon="trash"
+              floated="right"
+              negative
+              basic
+              size="mini"
+              onClick={() => motionFref.remove()}
+            /> */}
+          </Card.Meta>
+        </Card.Content>
+        { (hasSpeakers(type) || hasDuration(type)) && extra }
+      </Card>
     );
   }
 
@@ -267,23 +304,28 @@ export default class Motions extends React.Component<Props, State> {
 
     const motions = committee.motions || {} as Map<MotionID, MotionData>;
 
+    const adder = (
+      <Card>
+        <Card.Content>
+          <Button
+            icon="plus"
+            primary
+            fluid
+            basic
+            onClick={handlePushMotion}
+          />
+        </Card.Content>
+      </Card>
+    )
+
     return (
       <div>
-        <Button
-          icon="plus"
-          primary
-          fluid
-          basic
-          onClick={handlePushMotion}
-        />
-        <Button
-          icon="erase"
-          negative
-          fluid
-          basic
-          onClick={handleClearMotions}
-        />
-        { renderMotions(motions) }
+        <Card.Group
+          itemsPerRow={1} 
+        >
+          { adder }
+          { renderMotions(motions) }
+        </Card.Group>
       </div>
     );
   }

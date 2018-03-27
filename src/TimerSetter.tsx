@@ -1,6 +1,6 @@
-import { makeDropdownOption } from "./utils";
-import { Form, DropdownProps, Select, Button } from "semantic-ui-react";
-import * as React from "react";
+import { makeDropdownOption } from './utils';
+import { Form, DropdownProps, Select, Button } from 'semantic-ui-react';
+import * as React from 'react';
 
 export enum Unit {
   Minutes = 'min',
@@ -13,11 +13,12 @@ export const UNIT_OPTIONS = [
 ].map(makeDropdownOption);
 
 interface Props {
-  unitValue: Unit
-  durationValue: string
-  onUnitChange: (event: React.SyntheticEvent<HTMLElement>, data: DropdownProps) => void
-  onDurationChange: (event: React.FormEvent<HTMLInputElement>) => void
-  onSet?: () => void
+  unitValue: Unit;
+  durationValue: string;
+  onUnitChange: (event: React.SyntheticEvent<HTMLElement>, data: DropdownProps) => void;
+  onDurationChange: (event: React.FormEvent<HTMLInputElement>) => void;
+  onSet?: () => void;
+  label?: string;
 }
 
 export class TimerSetter extends React.Component<Props, {}> {
@@ -31,6 +32,7 @@ export class TimerSetter extends React.Component<Props, {}> {
         onChange={props.onDurationChange}
         action
         fluid
+        label={props.label}
       >
         <input />
         {/* <Button icon="minus" onClick={this.decrement} />
