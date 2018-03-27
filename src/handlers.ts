@@ -13,6 +13,8 @@ export function numberFieldHandler<T>
   return (e: React.FormEvent<HTMLInputElement>) => {
     if (Number(e.currentTarget.value)) {
       fref.child(field).set(e.currentTarget.value);
+    } else {
+      fref.child(field).set(0);
     }
   }
 }

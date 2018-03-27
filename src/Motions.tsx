@@ -270,30 +270,30 @@ export default class Motions extends React.Component<Props, State> {
 
     return Object.keys(motions).sort((a, b) => {
       // don't like non-descriptive variable names? suck it
-      const ca = disruptiveness(motions[a]);
-      const cb = disruptiveness(motions[b])
+      const ma: MotionData = motions[a]
+      const mb: MotionData = motions[b]
+      const ca = disruptiveness(ma.type);
+      const cb = disruptiveness(ma.type);
 
       if (ca < cb) {
         return -1; // reversed
       } else if (ca === cb) {
-        const ma: MotionData = motions[a]
-        const mb: MotionData = motions[b]
 
         const sa = ma.caucusDuration * (ma.caucusUnit === Unit.Minutes ? 60 : 1)
         const sb = mb.caucusDuration * (mb.caucusUnit === Unit.Minutes ? 60 : 1)
 
         // FIXME: Could be replaced by some sort of comapre function that I know exists
         if (sa < sb) {
-          return -1
+          return 1
         } else if (sa === sb) {
           return 0
         } else {
-          return 1
+          return -1
         }
       } else {
         return 1;
       }
-    }).reverse().map(key => {
+    }).map(key => {
       return renderMotion(key, motions[key], committeeFref.child('motions').child(key));
     });
   }
