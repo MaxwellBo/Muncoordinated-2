@@ -56,6 +56,13 @@ const disruptiveness = (motionType: MotionType): number => {
   }
 }
 
+const approvable = (motionType: MotionType): boolean => {
+  switch (motionType) {
+    default:
+      return false 
+  }
+}
+
 const hasSpeakers = (motionType: MotionType): boolean => {
   switch (motionType) {
     case MotionType.OpenModeratedCaucus:
@@ -176,8 +183,11 @@ export default class Motions extends React.Component<Props, State> {
     this.state.committeeFref.child('motions').set({})
   }
 
+  handleApproveMotion = (motionData: MotionData): void => {
+  }
+
   renderMotion = (id: MotionID, motionData: MotionData, motionFref: firebase.database.Reference) => {
-    const { recoverCountryOptions } = this;
+    const { recoverCountryOptions, handleApproveMotion } = this;
     const { proposer, proposal, type, caucusUnit, caucusDuration, speakerUnit, 
       speakerDuration } = motionData;
 
@@ -249,17 +259,30 @@ export default class Motions extends React.Component<Props, State> {
               options={recoverCountryOptions()}
               label="Proposer"
             />
-            {/* <Button
-              icon="trash"
-              floated="right"
-              negative
-              basic
-              size="mini"
-              onClick={() => motionFref.remove()}
-            /> */}
           </Card.Meta>
         </Card.Content>
         { (hasSpeakers(type) || hasDuration(type)) && extra }
+        <Card.Content extra>
+          <Button.Group fluid>
+            <Button 
+              icon="trash" 
+              basic 
+              negative
+              onClick={() => motionFref.remove()}
+            >
+              Delete
+            </Button>
+            { approvable(type) && <Button.Or /> }
+            { approvable(type) && <Button 
+              icon="checkmark" 
+              basic 
+              positive
+              onClick={() => handleApproveMotion(motionData)}
+            >
+              Approve
+            </Button> }
+          </Button.Group>
+        </Card.Content>
       </Card>
     );
   }
