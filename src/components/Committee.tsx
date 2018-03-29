@@ -13,7 +13,7 @@ import { TimerData, DEFAULT_TIMER } from './Timer';
 import { Unmod } from './Unmod';
 import Help from './Help';
 import Motions from './Motions';
-import { fieldHandler } from './handlers';
+import { fieldHandler } from '../actions/handlers';
 
 // FIXME: This is repeatedly declared in every file where URLParameters are needed
 export interface URLParameters {

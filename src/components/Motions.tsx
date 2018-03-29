@@ -3,11 +3,11 @@ import * as firebase from 'firebase';
 import { CommitteeData, URLParameters } from './Committee';
 import { RouteComponentProps } from 'react-router';
 import { Loader, Segment, Input, Dropdown, Button, Card, Form } from 'semantic-ui-react';
-import { fieldHandler, dropdownHandler, numberFieldHandler } from './handlers';
-import { makeDropdownOption, objectToList } from './utils';
+import { fieldHandler, dropdownHandler, numberFieldHandler } from '../actions/handlers';
+import { makeDropdownOption, objectToList } from '../utils';
 import { TimerSetter, Unit } from './TimerSetter';
 import { parseCountryOption, MemberID, MemberData } from './Member';
-import { CountryOption } from './common';
+import { CountryOption } from '../constants';
 
 export type MotionID = string;
 

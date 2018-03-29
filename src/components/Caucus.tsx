@@ -5,14 +5,14 @@ import { RouteComponentProps } from 'react-router';
 import { MemberID, MemberData, parseCountryOption, parseFlagName } from './Member';
 import { CommitteeID, CommitteeData } from './Committee';
 import CaucusQueuer from './CaucusQueuer';
-import * as Utils from './utils';
+import * as Utils from '../utils';
 import {
   Segment, Loader, Dimmer, Header, Dropdown, TextArea, Input, Button, Icon, Grid, Feed, Flag,
   Label, Form, Message
 } from 'semantic-ui-react';
-import { COUNTRY_OPTIONS, CountryOption } from './common';
-import { textAreaHandler, dropdownHandler, fieldHandler } from './handlers';
-import { makeDropdownOption } from './utils';
+import { COUNTRY_OPTIONS, CountryOption } from '../constants';
+import { textAreaHandler, dropdownHandler, fieldHandler } from '../actions/handlers';
+import { makeDropdownOption } from '../utils';
 
 interface URLParameters {
   caucusID: CaucusID;

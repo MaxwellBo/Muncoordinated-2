@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as firebase from 'firebase';
 import { Label, Icon, Flag } from 'semantic-ui-react';
-import { COUNTRY_OPTIONS } from './common';
+import { COUNTRY_OPTIONS } from '../constants';
 
 interface Props { 
   fref: firebase.database.Reference;

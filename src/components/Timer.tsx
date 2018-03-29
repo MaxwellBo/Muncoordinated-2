@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as firebase from 'firebase';
 import { Form, Checkbox, Segment, Header, Statistic, Button, Input, Select, 
   Divider, Progress, DropdownProps } from 'semantic-ui-react';
-import { makeDropdownOption } from './utils';
+import { makeDropdownOption } from '../utils';
 import { Unit, TimerSetter } from './TimerSetter';
 
 interface Props {

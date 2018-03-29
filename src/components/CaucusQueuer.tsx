@@ -2,8 +2,8 @@ import * as React from 'react';
 import * as firebase from 'firebase';
 import { MemberData, parseCountryOption } from './Member';
 import { CaucusData, SpeakerEvent, Stance } from './Caucus';
-import * as Utils from './utils';
-import { COUNTRY_OPTIONS, CountryOption } from './common';
+import * as Utils from '../utils';
+import { COUNTRY_OPTIONS, CountryOption } from '../constants';
 import { Header, Segment, Dropdown, Button, Form } from 'semantic-ui-react';
 import { TimerSetter, Unit } from './TimerSetter';
 

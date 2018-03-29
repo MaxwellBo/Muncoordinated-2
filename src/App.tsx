@@ -4,9 +4,9 @@ import { Route } from 'react-router-dom';
 import { Button, Container, Header, Message, Icon } from 'semantic-ui-react';
 import './App.css';
 
-import { ModalLogin } from './Auth';
-import Welcome from './Welcome';
-import Committee from './Committee';
+import { ModalLogin } from './components//Auth';
+import Welcome from './components/Welcome';
+import Committee from './components/Committee';
 
 export const Footer = () => {
   return (
