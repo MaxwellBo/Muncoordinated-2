@@ -5,7 +5,7 @@ import { CaucusData, SpeakerEvent, Stance } from './Caucus';
 import * as Utils from './utils';
 import { COUNTRY_OPTIONS, CountryOption } from './common';
 import { Header, Segment, Dropdown, Button, Form } from 'semantic-ui-react';
-import { TimerSetter, Unit } from "./TimerSetter";
+import { TimerSetter, Unit } from './TimerSetter';
 
 interface Props {
   data: CaucusData;

@@ -16,7 +16,7 @@ export function numberFieldHandler<T>
     } else {
       fref.child(field).set(0);
     }
-  }
+  };
 }
 
 export function textAreaHandler<T>

@@ -29,24 +29,6 @@ firebase.initializeApp(firebaseConfig);
 
 export var user: firebase.User | null = null;
 
-export const ModalLogin = () => {
-
-  const text = user ? user.email : 'Login';
-
-  return (
-    <Modal 
-      trigger={<Button content={text} basic size="small"><Icon name="lock" />{text}</Button>}
-      dimmer
-      size="large"
-    >
-      <Modal.Header>Login</Modal.Header>
-      <Modal.Content image>
-        <Login onAuth={() => { return null; }} allowSignup={false}/>
-      </Modal.Content>
-    </Modal>
-  );
-};
-
 export default class Login extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
@@ -163,3 +145,21 @@ export default class Login extends React.Component<Props, State> {
     }
   }
 }
+
+export const ModalLogin = () => {
+
+  const text = user ? user.email : 'Login';
+
+  return (
+    <Modal 
+      trigger={<Button content={text} basic size="small"><Icon name="lock" />{text}</Button>}
+      dimmer
+      size="large"
+    >
+      <Modal.Header>Login</Modal.Header>
+      <Modal.Content image>
+        <Login onAuth={() => { return null; }} allowSignup={false}/>
+      </Modal.Content>
+    </Modal>
+  );
+};

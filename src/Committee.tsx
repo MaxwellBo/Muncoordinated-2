@@ -122,7 +122,7 @@ export default class Committee extends React.Component<Props, State> {
         <Icon name={icon} />
         {name}
       </Menu.Item>
-    )
+    );
   }
 
   render() {
@@ -154,10 +154,10 @@ export default class Committee extends React.Component<Props, State> {
 
       return (
         <Menu fluid vertical size="massive">
-          { makeMenuItem('Admin', 'setting') }
-          { makeMenuItem('Stats', 'bar chart') }
-          { makeMenuItem('Unmod', 'discussions') }
-          { makeMenuItem('Motions', 'sort numeric ascending') }
+          {makeMenuItem('Admin', 'setting')}
+          {makeMenuItem('Stats', 'bar chart')}
+          {makeMenuItem('Unmod', 'discussions')}
+          {makeMenuItem('Motions', 'sort numeric ascending')}
           {/* { makeMenuItem('Voting', 'thumbs up') } */}
           {/* { makeMenuItem('Amendments', 'edit') } */}
           <Menu.Item>
@@ -171,7 +171,7 @@ export default class Committee extends React.Component<Props, State> {
               </Menu.Item>
             </Menu.Menu>
           </Menu.Item>
-          { makeMenuItem('Help', 'help') }
+          {makeMenuItem('Help', 'help')}
         </Menu>
       );
     };

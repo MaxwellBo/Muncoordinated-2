@@ -5,9 +5,9 @@ import { RouteComponentProps } from 'react-router';
 import { Loader, Segment, Input, Dropdown, Button, Card, Form } from 'semantic-ui-react';
 import { fieldHandler, dropdownHandler, numberFieldHandler } from './handlers';
 import { makeDropdownOption, objectToList } from './utils';
-import { TimerSetter, Unit } from "./TimerSetter";
-import { parseCountryOption, MemberID, MemberData } from "./Member";
-import { CountryOption } from "./common";
+import { TimerSetter, Unit } from './TimerSetter';
+import { parseCountryOption, MemberID, MemberData } from './Member';
+import { CountryOption } from './common';
 
 export type MotionID = string;
 
@@ -30,58 +30,58 @@ enum MotionType {
 const disruptiveness = (motionType: MotionType): number => {
   switch (motionType) {
     case MotionType.ExtendUnmoderatedCaucus:
-      return 1
+      return 1;
     case MotionType.ExtendModeratedCaucus:
     case MotionType.CloseModeratedCaucus:
-      return 2
+      return 2;
     case MotionType.OpenUnmoderatedCaucus:
-      return 4
+      return 4;
     case MotionType.OpenModeratedCaucus:
-      return 5
+      return 5;
     case MotionType.IntroduceDraftResolution:
-      return 6
+      return 6;
     case MotionType.IntroduceAmendment:
-      return 7
+      return 7;
     case MotionType.SuspendDraftResolutionSpeakersList:
-      return 8
+      return 8;
     case MotionType.OpenDebate:
     case MotionType.SuspendDebate:
     case MotionType.ResumeDebate:
     case MotionType.CloseDebate:
-      return 9
+      return 9;
     case MotionType.ReorderDraftResolutions:
-      return 10
+      return 10;
     default:
-      return 69
+      return 69;
   }
-}
+};
 
 const approvable = (motionType: MotionType): boolean => {
   switch (motionType) {
     default:
-      return false 
+      return false ;
   }
-}
+};
 
 const hasSpeakers = (motionType: MotionType): boolean => {
   switch (motionType) {
     case MotionType.OpenModeratedCaucus:
-      return true
+      return true;
     default:
-      return false 
+      return false;
   }
-}
+};
 
 const hasDetail = (motionType: MotionType): boolean => {
   switch (motionType) {
     case MotionType.OpenModeratedCaucus:
     case MotionType.IntroduceDraftResolution:
     case MotionType.IntroduceAmendment:
-      return true
+      return true;
     default:
-      return false 
+      return false;
   }
-}
+};
 
 const hasDuration = (motionType: MotionType): boolean => {
   switch (motionType) {
@@ -89,11 +89,11 @@ const hasDuration = (motionType: MotionType): boolean => {
     case MotionType.ExtendModeratedCaucus:
     case MotionType.OpenModeratedCaucus:
     case MotionType.OpenUnmoderatedCaucus:
-      return true
+      return true;
     default:
-      return false 
+      return false;
   }
-}
+};
 
 export interface MotionData {
   proposal: string;
@@ -165,14 +165,14 @@ export default class Motions extends React.Component<Props, State> {
   }
 
   recoverCountryOptions = (): CountryOption[] => {
-    const { committee } = this.state
+    const { committee } = this.state;
 
     if (committee) {
       return objectToList(committee.members || {} as Map<MemberID, MemberData>)
-        .map(x => parseCountryOption(x.name))
+        .map(x => parseCountryOption(x.name));
     }
 
-    return []
+    return [];
   }
 
   handlePushMotion = (): void => {
@@ -180,10 +180,10 @@ export default class Motions extends React.Component<Props, State> {
   }
 
   handleClearMotions = (): void => {
-    this.state.committeeFref.child('motions').set({})
+    this.state.committeeFref.child('motions').set({});
   }
 
-  handleApproveMotion = (motionData: MotionData): void => {
+  handleApproveMotion = (motionData: MotionData): void => { 
   }
 
   renderMotion = (id: MotionID, motionData: MotionData, motionFref: firebase.database.Reference) => {
@@ -199,7 +199,7 @@ export default class Motions extends React.Component<Props, State> {
           fluid 
         /> 
       </Card.Description>
-    )
+    );
 
     const speakerSetter = (
       <TimerSetter
@@ -207,9 +207,9 @@ export default class Motions extends React.Component<Props, State> {
         durationValue={speakerDuration.toString()}
         onUnitChange={dropdownHandler<MotionData>(motionFref, 'speakerUnit')}
         onDurationChange={numberFieldHandler<MotionData>(motionFref, 'speakerDuration')}
-        label={"Speaker"}
+        label={'Speaker'}
       />
-    )
+    );
 
     const durationSetter = (
       <TimerSetter
@@ -217,20 +217,20 @@ export default class Motions extends React.Component<Props, State> {
         durationValue={caucusDuration.toString()}
         onUnitChange={dropdownHandler<MotionData>(motionFref, 'caucusUnit')}
         onDurationChange={numberFieldHandler<MotionData>(motionFref, 'caucusDuration')}
-        label={"Duration"}
+        label={'Duration'}
       />
-    )
+    );
 
     const extra = (
       <Card.Content extra>
         <Form>
-          <Form.Group widths='equal'>
-            { hasDuration(type) && durationSetter }
-            { hasSpeakers(type) && speakerSetter }
+          <Form.Group widths="equal">
+            {hasDuration(type) && durationSetter}
+            {hasSpeakers(type) && speakerSetter}
           </Form.Group>
         </Form>
       </Card.Content>
-    )
+    );
 
     return (
       <Card 
@@ -247,7 +247,7 @@ export default class Motions extends React.Component<Props, State> {
               onChange={dropdownHandler<MotionData>(motionFref, 'type')}
               value={type}
             />
-            { hasDetail(type) && description }
+            {hasDetail(type) && description}
           </Card.Header>
           <Card.Meta>
             <Form.Dropdown
@@ -261,7 +261,7 @@ export default class Motions extends React.Component<Props, State> {
             />
           </Card.Meta>
         </Card.Content>
-        { (hasSpeakers(type) || hasDuration(type)) && extra }
+        {(hasSpeakers(type) || hasDuration(type)) && extra}
         <Card.Content extra>
           <Button.Group fluid>
             <Button 
@@ -272,15 +272,15 @@ export default class Motions extends React.Component<Props, State> {
             >
               Delete
             </Button>
-            { approvable(type) && <Button.Or /> }
-            { approvable(type) && <Button 
+            {approvable(type) && <Button.Or />}
+            {approvable(type) && <Button 
               icon="checkmark" 
               basic 
               positive
               onClick={() => handleApproveMotion(motionData)}
             >
               Approve
-            </Button> }
+            </Button>}
           </Button.Group>
         </Card.Content>
       </Card>
@@ -293,8 +293,8 @@ export default class Motions extends React.Component<Props, State> {
 
     return Object.keys(motions).sort((a, b) => {
       // don't like non-descriptive variable names? suck it
-      const ma: MotionData = motions[a]
-      const mb: MotionData = motions[b]
+      const ma: MotionData = motions[a];
+      const mb: MotionData = motions[b];
       const ca = disruptiveness(ma.type);
       const cb = disruptiveness(ma.type);
 
@@ -302,16 +302,16 @@ export default class Motions extends React.Component<Props, State> {
         return -1; // reversed
       } else if (ca === cb) {
 
-        const sa = ma.caucusDuration * (ma.caucusUnit === Unit.Minutes ? 60 : 1)
-        const sb = mb.caucusDuration * (mb.caucusUnit === Unit.Minutes ? 60 : 1)
+        const sa = ma.caucusDuration * (ma.caucusUnit === Unit.Minutes ? 60 : 1);
+        const sb = mb.caucusDuration * (mb.caucusUnit === Unit.Minutes ? 60 : 1);
 
         // FIXME: Could be replaced by some sort of comapre function that I know exists
         if (sa < sb) {
-          return 1
+          return 1;
         } else if (sa === sb) {
-          return 0
+          return 0;
         } else {
-          return -1
+          return -1;
         }
       } else {
         return 1;
@@ -339,15 +339,15 @@ export default class Motions extends React.Component<Props, State> {
           />
         </Card.Content>
       </Card>
-    )
+    );
 
     return (
       <div>
         <Card.Group
           itemsPerRow={1} 
         >
-          { adder }
-          { renderMotions(motions) }
+          {adder}
+          {renderMotions(motions)}
         </Card.Group>
       </div>
     );

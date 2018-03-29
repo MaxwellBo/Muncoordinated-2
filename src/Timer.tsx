@@ -2,8 +2,8 @@ import * as React from 'react';
 import * as firebase from 'firebase';
 import { Form, Checkbox, Segment, Header, Statistic, Button, Input, Select, 
   Divider, Progress, DropdownProps } from 'semantic-ui-react';
-import { makeDropdownOption } from "./utils";
-import { Unit, TimerSetter } from "./TimerSetter";
+import { makeDropdownOption } from './utils';
+import { Unit, TimerSetter } from './TimerSetter';
 
 interface Props {
   name: string;
@@ -33,6 +33,7 @@ export const DEFAULT_TIMER = {
 
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/padStart
 function padStart(xs: string, targetLength: number, padString?: string) {
+  // tslint:disable-next-line
   targetLength = targetLength >> 0; // floor if number or convert non-number to 0;
   padString = String(padString || ' ');
   if (xs.length > targetLength) {

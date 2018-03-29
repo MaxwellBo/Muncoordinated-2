@@ -3,7 +3,8 @@ import * as firebase from 'firebase';
 import { CommitteeData, CommitteeID } from './Committee';
 import { MemberView, MemberData, MemberID, Rank, parseFlagName } from './Member';
 import * as Utils from './utils';
-import { Dropdown, Segment, Header, Flag, Table, List, Button, Checkbox, Icon, CheckboxProps, DropdownProps } from 'semantic-ui-react';
+import { Dropdown, Segment, Header, Flag, Table, List, Button, Checkbox, Icon, 
+  CheckboxProps, DropdownProps } from 'semantic-ui-react';
 import { COUNTRY_OPTIONS, CountryOption } from './common';
 
 interface Props {

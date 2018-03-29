@@ -99,7 +99,7 @@ function CaucusHeader(props: { data: CaucusData, fref: firebase.database.Referen
       options={CAUCUS_STATUS_OPTIONS} 
       onChange={dropdownHandler<CaucusData>(props.fref, 'status')} 
     /> 
-  )
+  );
 
   return (
     <Segment>
