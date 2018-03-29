@@ -13,7 +13,7 @@ interface Props {
 }
 
 interface State {
-  timer: TimerData;
+  timer?: TimerData;
   timerId: any | null;
   unitDropdown: Unit;
   durationField: string;
@@ -53,7 +53,6 @@ export class Timer extends React.Component<Props, State> {
     super(props);
 
     this.state = {
-      timer: DEFAULT_TIMER,
       timerId: null,
       unitDropdown: Unit.Seconds,
       durationField: '60'
@@ -61,11 +60,13 @@ export class Timer extends React.Component<Props, State> {
   }
 
   tick = () => {
-    if (this.state.timer.ticking) {
+    const timer = this.state.timer;
+
+    if (timer && timer.ticking) {
       const newTimer = {
-        elapsed: this.state.timer.elapsed + 1,
-        remaining: this.state.timer.remaining - 1,
-        ticking: this.state.timer.ticking
+        elapsed: timer.elapsed + 1,
+        remaining: timer.remaining - 1,
+        ticking: timer.ticking
       };
 
       this.setState({ timer: newTimer });
@@ -74,18 +75,22 @@ export class Timer extends React.Component<Props, State> {
   }
 
   toggleHandler = (event: any, data: any) => {
-    const newTimer = {
-      elapsed: this.state.timer.elapsed,
-      remaining: this.state.timer.remaining,
-      ticking: !this.state.timer.ticking
-    };
+    const timer = this.state.timer;
 
-    this.props.fref.set(newTimer);
+    if (timer) {
+      const newTimer = {
+        elapsed: timer.elapsed,
+        remaining: timer.remaining,
+        ticking: !timer.ticking
+      };
+
+      this.props.fref.set(newTimer);
+    }
   }
 
   handleKeyDown = (ev: KeyboardEvent) => {
     if (this.props.toggleKeyCode === ev.keyCode && ev.altKey) {
-      this.toggleHandler(null, null);
+      this.toggleHandler({}, {});
     }
   }
 
@@ -144,16 +149,19 @@ export class Timer extends React.Component<Props, State> {
     }
   }
 
+  unitHandler = (event: React.SyntheticEvent<HTMLElement>, data: DropdownProps) => {
+    this.setState({ unitDropdown: data.value as Unit || Unit.Seconds });
+  }
+
+  durationHandler = (e: React.FormEvent<HTMLInputElement>) =>
+    this.setState({ durationField: e.currentTarget.value })
+
   render() {
-    const unitHandler = (event: React.SyntheticEvent<HTMLElement>, data: DropdownProps) => {
-      this.setState({ unitDropdown: data.value as Unit || Unit.Seconds });
-    };
+    const { unitHandler, durationHandler, toggleHandler } = this;
+    const timer = this.state.timer;
 
-    const durationHandler = (e: React.FormEvent<HTMLInputElement>) =>
-      this.setState({ durationField: e.currentTarget.value });
-
-    const remaining = this.state.timer.remaining;
-    const elapsed = this.state.timer.elapsed;
+    const remaining = timer ? timer.remaining : DEFAULT_TIMER.remaining;
+    const elapsed = timer ? timer.elapsed : DEFAULT_TIMER.elapsed;
 
     const sign = (remaining < 0 ? '-' : '');
     const minutes = Math.floor(Math.abs(remaining / 60)).toString();
@@ -169,10 +177,11 @@ export class Timer extends React.Component<Props, State> {
         <Header as="h3" attached="top">{this.props.name}</Header>
         <Segment attached="bottom" textAlign="center" >
           <Button
-            active={this.state.timer.ticking}
-            negative={this.state.timer.remaining < 0}
+            loading={!timer}
+            active={timer ? timer.ticking : false}
+            negative={timer ? timer.remaining < 0 : false}
             size="massive"
-            onClick={this.toggleHandler}
+            onClick={toggleHandler}
           >
             {formatted}
           </Button>
