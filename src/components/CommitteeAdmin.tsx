@@ -32,16 +32,17 @@ function CommitteeStats(props: { data: CommitteeData }) {
   const members: MemberData[] = Utils.objectToList(membersMap);
   const present = members.filter(x => x.present);
   const canVote = (x: MemberData) => (x.rank === Rank.Veto || x.rank === Rank.Standard);
+  const nonObserver = (x: MemberData) => (x.rank !== Rank.Observer);
 
   const delegatesNo: number     = members.length;
   const presentNo: number       = present.length;
-  const votingNo: number        = present.filter(canVote).length;
-  const quorum: number          = Math.ceil(delegatesNo * 0.5);
+  const canVoteNo: number       = present.filter(canVote).length;
+  const quorum: number          = Math.ceil(members.filter(nonObserver).length * 0.25);
   const procedural: number      = Math.ceil(presentNo * 0.5);
-  const operative: number       = Math.ceil(votingNo * 0.5);
+  const operative: number       = Math.ceil(canVoteNo * 0.5);
   const hasQuorum: boolean      = presentNo >= quorum;
-  const draftResolution: number = Math.ceil(votingNo * 0.25);
-  const amendment: number       = Math.ceil(votingNo * 0.1);
+  const draftResolution: number = Math.ceil(canVoteNo * 0.25);
+  const amendment: number       = Math.ceil(canVoteNo * 0.1);
 
   return (
     <Table definition>
@@ -67,14 +68,14 @@ function CommitteeStats(props: { data: CommitteeData }) {
         </Table.Row>
         <Table.Row>
           <Table.Cell>Have voting rights</Table.Cell>
-          <Table.Cell>{votingNo.toString()}</Table.Cell>
+          <Table.Cell>{canVoteNo.toString()}</Table.Cell>
           <Table.Cell>Present delegates with voting rights</Table.Cell>
         </Table.Row>
         <Table.Row>
           <Table.Cell error={!hasQuorum}>Debate</Table.Cell>
           <Table.Cell error={!hasQuorum}>{quorum.toString()}</Table.Cell>
           <Table.Cell error={!hasQuorum}>Delegates needed for debate</Table.Cell>
-          <Table.Cell error={!hasQuorum}>50% of total</Table.Cell>
+          <Table.Cell error={!hasQuorum}>25% of non-observer members</Table.Cell>
         </Table.Row>
         <Table.Row>
           <Table.Cell>Procedural threshold</Table.Cell>
