@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as firebase from 'firebase';
-import { CommitteeData, URLParameters } from './Committee';
+import { CommitteeData, URLParameters, CommitteeID } from './Committee';
 import { RouteComponentProps } from 'react-router';
 import { Loader, Segment, Input, Dropdown, Button, Card, Form } from 'semantic-ui-react';
 import { fieldHandler, dropdownHandler, numberFieldHandler } from '../actions/handlers';
@@ -8,6 +8,8 @@ import { makeDropdownOption, objectToList } from '../utils';
 import { TimerSetter, Unit } from './TimerSetter';
 import { parseCountryOption, MemberID, MemberData } from './Member';
 import { CountryOption } from '../constants';
+import { DEFAULT_CAUCUS, CaucusData } from './Caucus';
+import { postCaucus } from '../actions/caucusActions';
 
 export type MotionID = string;
 
@@ -58,8 +60,10 @@ const disruptiveness = (motionType: MotionType): number => {
 
 const approvable = (motionType: MotionType): boolean => {
   switch (motionType) {
+    case MotionType.OpenModeratedCaucus:
+      return true;
     default:
-      return false ;
+      return false;
   }
 };
 
@@ -183,7 +187,29 @@ export default class Motions extends React.Component<Props, State> {
     this.state.committeeFref.child('motions').set({});
   }
 
-  handleApproveMotion = (motionData: MotionData): void => { 
+  handleApproveMotion = (motionData: MotionData): void => {
+    const committeeID: CommitteeID = this.props.match.params.committeeID;
+
+    const { proposal, speakerDuration, speakerUnit, 
+      caucusDuration, caucusUnit } = motionData;
+
+    if (motionData.type === MotionType.OpenModeratedCaucus) {
+
+      const newCaucus: CaucusData = {
+        ...DEFAULT_CAUCUS,
+        name: motionData.proposal,
+        speakerTimer: {
+          ...DEFAULT_CAUCUS.speakerTimer,
+          remaining: speakerDuration * (speakerUnit === Unit.Minutes ? 60 : 1)
+        },
+        caucusTimer: {
+          ...DEFAULT_CAUCUS.caucusTimer,
+          remaining: caucusDuration * (caucusUnit === Unit.Minutes ? 60 : 1)
+        }
+      };
+
+      postCaucus(committeeID, newCaucus);
+    }
   }
 
   renderMotion = (id: MotionID, motionData: MotionData, motionFref: firebase.database.Reference) => {

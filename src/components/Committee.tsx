@@ -14,6 +14,7 @@ import { Unmod } from './Unmod';
 import Help from './Help';
 import Motions from './Motions';
 import { fieldHandler } from '../actions/handlers';
+import { postCaucus } from '../actions/caucusActions';
 
 // FIXME: This is repeatedly declared in every file where URLParameters are needed
 export interface URLParameters {
@@ -101,17 +102,19 @@ export default class Committee extends React.Component<Props, State> {
   }
 
   pushCaucus = () => {
+    const committeeID: CommitteeID = this.props.match.params.committeeID;
+
     const newCaucus = {
       ...DEFAULT_CAUCUS,
       name: 'Default',
     };
 
-    this.state.fref.child('caucuses').push().set(newCaucus);
+    postCaucus(committeeID, newCaucus);
   }
 
   makeMenuItem = (name: string, icon: SemanticICONS) => {
     const committeeID: CommitteeID = this.props.match.params.committeeID;
-    const caucusID: CommitteeID = this.props.match.params.committeeID;
+    const caucusID: CaucusID = this.props.match.params.committeeID;
 
     return (
       <Menu.Item
