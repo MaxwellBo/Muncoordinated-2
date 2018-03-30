@@ -94,13 +94,15 @@ export class Timer extends React.Component<Props, State> {
     }
   }
 
+  firebaseCallback = (timer: firebase.database.DataSnapshot | null) => {
+    if (timer) {
+      this.setState({ timer: timer.val() });
+      this.props.onChange(timer.val());
+    }
+  }
+
   componentDidMount() {
-    this.props.fref.on('value', (timer) => {
-      if (timer) {
-        this.setState({ timer: timer.val() });
-        this.props.onChange(timer.val());
-      }
-    });
+    this.props.fref.on('value', this.firebaseCallback);
 
     this.setState({ timerId: setInterval(this.tick, 1000) });
 
@@ -109,7 +111,7 @@ export class Timer extends React.Component<Props, State> {
   }
 
   componentWillUnmount() {
-    this.props.fref.off();
+    this.props.fref.off('value', this.firebaseCallback);
 
     if (this.state.timerId) {
       clearInterval(this.state.timerId);

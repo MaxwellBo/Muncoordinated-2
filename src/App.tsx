@@ -25,16 +25,18 @@ class ConnectionStatus extends React.Component<{}, { connected: boolean, fref: f
     };
   }
 
+  firebaseCallback = (status: firebase.database.DataSnapshot | null) => {
+    if (status) {
+      this.setState({ connected: status.val() });
+    }
+  }
+
   componentDidMount() {
-    this.state.fref.on('value', (status) => {
-      if (status) {
-        this.setState({ connected: status.val() });
-      }
-    });
+    this.state.fref.on('value', this.firebaseCallback);
   }
 
   componentWillUnmount() {
-    this.state.fref.off();
+    this.state.fref.off('value', this.firebaseCallback);
   }
 
   render() {

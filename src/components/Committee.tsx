@@ -27,7 +27,7 @@ interface Props extends RouteComponentProps<URLParameters> {
 
 interface State {
   committee: CommitteeData;
-  fref: firebase.database.Reference;
+  committeeFref: firebase.database.Reference;
 }
 
 export type CommitteeID = string;
@@ -85,20 +85,22 @@ export default class Committee extends React.Component<Props, State> {
 
     this.state = {
       committee: DEFAULT_COMMITTEE,
-      fref: firebase.database().ref('committees').child(committeeID),
+      committeeFref: firebase.database().ref('committees').child(committeeID),
     };
   }
 
+  firebaseCallback = (committee: firebase.database.DataSnapshot | null) => {
+    if (committee) {
+      this.setState({ committee: committee.val() });
+    }
+  }
+
   componentDidMount() {
-    this.state.fref.on('value', (committee) => {
-      if (committee) {
-        this.setState({ committee: committee.val() });
-      }
-    });
+    this.state.committeeFref.on('value', this.firebaseCallback);
   }
 
   componentWillUnmount() {
-    this.state.fref.off();
+    this.state.committeeFref.off('value', this.firebaseCallback);
   }
 
   pushCaucus = () => {
@@ -182,16 +184,16 @@ export default class Committee extends React.Component<Props, State> {
     const CaucusComponent = (props: RouteComponentProps<URLParameters>) => (
       <Caucus
         committee={this.state.committee}
-        fref={this.state.fref}
+        fref={this.state.committeeFref}
         {...props}
       />
     );
 
-    const Admin = () => <CommitteeAdmin committee={this.state.committee} fref={this.state.fref} />;
+    const Admin = () => <CommitteeAdmin committee={this.state.committee} fref={this.state.committeeFref} />;
 
     return (
       <div>
-        <CommitteeMeta data={this.state.committee} fref={this.state.fref} />
+        <CommitteeMeta data={this.state.committee} fref={this.state.committeeFref} />
         <Grid>
           <Grid.Column width={4}>
             <Nav />

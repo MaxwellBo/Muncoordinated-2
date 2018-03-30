@@ -159,16 +159,18 @@ export default class Motions extends React.Component<Props, State> {
     };
   }
 
+  firebaseCallback = (committee: firebase.database.DataSnapshot | null) => {
+    if (committee) {
+      this.setState({ committee: committee.val() });
+    }
+  }
+
   componentDidMount() {
-    this.state.committeeFref.on('value', (committee) => {
-      if (committee) {
-        this.setState({ committee: committee.val() });
-      }
-    });
+    this.state.committeeFref.on('value', this.firebaseCallback);
   }
 
   componentWillUnmount() {
-    this.state.committeeFref.off();
+    this.state.committeeFref.off('value', this.firebaseCallback);
   }
 
   recoverCountryOptions = (): CountryOption[] => {

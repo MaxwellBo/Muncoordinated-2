@@ -11,7 +11,7 @@ interface Props extends RouteComponentProps<URLParameters> {
 
 interface State {
   committee?: CommitteeData;
-  fref: firebase.database.Reference;
+  committeeFref: firebase.database.Reference;
 }
 
 export default class Stats extends React.Component<Props, State> {
@@ -21,20 +21,25 @@ export default class Stats extends React.Component<Props, State> {
     const { match } = props;
 
     this.state = {
-      fref: firebase.database().ref('committees').child(match.params.committeeID)
+      committeeFref: firebase
+        .database()
+        .ref('committees')
+        .child(match.params.committeeID)
     };
   }
 
+  firebaseCallback = (committee: firebase.database.DataSnapshot | null) => {
+    if (committee) {
+      this.setState({ committee: committee.val() });
+    }
+  }
+
   componentDidMount() {
-    this.state.fref.on('value', (committee) => {
-      if (committee) {
-        this.setState({ committee: committee.val() });
-      }
-    });
+    this.state.committeeFref.on('value', this.firebaseCallback);
   }
 
   componentWillUnmount() {
-    this.state.fref.off();
+    this.state.committeeFref.off('value', this.firebaseCallback);
   }
 
   timesSpokenInCommitee(committee: CommitteeData, memberID: MemberID, member: MemberData) {

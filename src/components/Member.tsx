@@ -71,29 +71,3 @@ const DEFAULT_MEMBER = {
   voting: true,
   flag: 'fm' // Federated States of Micronesia
 };
-
-export default class Member extends React.Component<Props, State> {
-  constructor(props: Props) {
-    super(props);
-
-    this.state = { 
-      member: DEFAULT_MEMBER,
-    };
-  }
-
-  componentDidMount() {
-    this.props.fref.on('value', (member) => {
-      if (member) {
-        this.setState({ member: member.val() });
-      }
-    });
-  }
-
-  componentWillUnmount() {
-    this.props.fref.off();
-  }
-
-  render() {
-    return <MemberView data={this.state.member} fref={this.props.fref} />;
-  }
-}
