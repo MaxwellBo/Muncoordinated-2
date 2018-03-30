@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as firebase from 'firebase';
-import { CommitteeData, URLParameters, CommitteeID } from './Committee';
+import { CommitteeData, URLParameters, CommitteeID, DEFAULT_COMMITTEE } from './Committee';
 import { RouteComponentProps } from 'react-router';
 import { Loader, Segment, Input, Dropdown, Button, Card, Form } from 'semantic-ui-react';
 import { fieldHandler, dropdownHandler, numberFieldHandler } from '../actions/handlers';
@@ -10,6 +10,8 @@ import { parseCountryOption, MemberID, MemberData } from './Member';
 import { CountryOption } from '../constants';
 import { DEFAULT_CAUCUS, CaucusData } from './Caucus';
 import { postCaucus } from '../actions/caucusActions';
+import { TimerData } from './Timer';
+import { putUnmodTimer } from '../actions/committeeActions';
 
 export type MotionID = string;
 
@@ -61,6 +63,7 @@ const disruptiveness = (motionType: MotionType): number => {
 const approvable = (motionType: MotionType): boolean => {
   switch (motionType) {
     case MotionType.OpenModeratedCaucus:
+    case MotionType.OpenUnmoderatedCaucus:
       return true;
     default:
       return false;
@@ -208,7 +211,22 @@ export default class Motions extends React.Component<Props, State> {
         }
       };
 
-      postCaucus(committeeID, newCaucus);
+      const ref = postCaucus(committeeID, newCaucus);
+
+      this.props.history
+        .push(`/committees/${committeeID}/caucuses/${ref.key}`);
+
+    } else if (motionData.type === MotionType.OpenUnmoderatedCaucus) {
+
+      const newTimer: TimerData = {
+        ...DEFAULT_COMMITTEE.timer,
+        remaining: caucusDuration * (caucusUnit === Unit.Minutes ? 60 : 1) 
+      };
+
+      putUnmodTimer(committeeID, newTimer);
+
+      this.props.history
+        .push(`/committees/${committeeID}/unmod`);
     }
   }
 
@@ -305,7 +323,7 @@ export default class Motions extends React.Component<Props, State> {
               positive
               onClick={() => handleApproveMotion(motionData)}
             >
-              Approve
+              Provision
             </Button>}
           </Button.Group>
         </Card.Content>
