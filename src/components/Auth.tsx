@@ -12,7 +12,7 @@ interface State {
   creating: boolean;
 }
 interface Props {
-  onAuth: (user: firebase.User | null) => any;
+  onAuth: (user: firebase.User | null) => void;
   allowSignup: boolean;
 }
 
@@ -51,115 +51,159 @@ export default class Login extends React.Component<Props, State> {
     this.props.onAuth(u);
   }
 
+  logOutHandler = () => {
+    firebase.auth().signOut().then(() => {
+      user = null;
+    }).catch(err => {
+      this.setState({ error: err });
+    });
+  }
+
+  loginHandler = () => {
+    const { email, password } = this.state;
+
+    this.setState({ loggingIn: true });
+
+    firebase.auth().signInWithEmailAndPassword(email, password).then(() => {
+      this.setState({ loggingIn: false });
+    }).catch(err => {
+      this.setState({ loggingIn: false, error: err });
+    });
+  };
+
+  createHandler = () => {
+    const { email, password } = this.state;
+    this.setState({ creating: true });
+
+    firebase.auth().createUserWithEmailAndPassword(email, password).then(() => {
+      this.setState({ creating: false });
+    }).catch(err => {
+      this.setState({ creating: false, error: err });
+    });
+  }
+
+  handleDismiss = () => {
+    this.setState({ error: undefined });
+  }
+
+  emailHandler = (e: React.FormEvent<HTMLInputElement>) =>
+    this.setState({ email: e.currentTarget.value })
+
+  passwordHandler = (e: React.FormEvent<HTMLInputElement>) =>
+    this.setState({ password: e.currentTarget.value })
+
+  renderLoggedIn = (u: firebase.User) => {
+    const { logOutHandler } = this;
+
+    return (
+      <Card centered>
+        <Card.Content key="main">
+          <Card.Header>
+            {u.email}
+          </Card.Header>
+          <Card.Meta>
+            Logged in
+          </Card.Meta>
+        </Card.Content>
+        <Card.Content extra key="extra">
+          <Button basic color="red" fluid onClick={logOutHandler}>Logout</Button>
+        </Card.Content>
+      </Card>
+    );
+  }
+
+  renderLogin = () => {
+    const { emailHandler, passwordHandler, handleDismiss, createHandler, loginHandler } = this;
+    const { loggingIn, creating } = this.state;
+    const { allowSignup } = this.props;
+    
+    return (
+      <Form error={!!this.state.error} success={!!user}>
+        <Form.Input
+          label="Email"
+          placeholder="joe@schmoe.com"
+          value={this.state.email}
+          onChange={emailHandler}
+        />
+        <Form.Input
+          label="Password"
+          type="password"
+          placeholder="correct horse battery staple"
+          value={this.state.password}
+          onChange={passwordHandler}
+        />
+        <Message
+          success
+          header="Account created"
+          content="Your account was successfully created"
+        />
+        <Message
+          error
+          header={this.state.error ? this.state.error.name : ''}
+          content={this.state.error ? this.state.error.message : ''}
+          onDismiss={handleDismiss}
+        />
+        <Button.Group>
+          <Button primary fluid onClick={loginHandler} loading={loggingIn} >Login</Button>
+          {allowSignup && 
+            (<Button secondary fluid onClick={createHandler} loading={creating} >Sign-Up</Button>)
+          }
+        </Button.Group>
+      </Form>
+    );
+  }
+
   render() {
     if (user) {
-      const logOutHandler = () => {
-        firebase.auth().signOut().then(() => {
-          user = null;
-        }).catch(err => {
-          this.setState({ error: err });
-        });
-      };
-
-      return (
-        <Card centered>
-          <Card.Content key="main">
-            <Card.Header>
-              {user.email}
-            </Card.Header>
-            <Card.Meta>
-              Logged in
-          </Card.Meta>
-          </Card.Content>
-          <Card.Content extra key="extra">
-            <Button basic color="red" fluid onClick={logOutHandler}>Logout</Button>
-          </Card.Content>
-        </Card>
-      );
+      return this.renderLoggedIn(user);
     } else {
-      // authUi.reset(); // You might need to do this
-      const loginHandler = () => {
-        this.setState({ loggingIn: true });
-
-        firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password).then(() => {
-          this.setState({ loggingIn: false });
-        }).catch(err => {
-          this.setState({ loggingIn: false, error: err });
-        });
-      };
-
-      const createHandler = () => {
-        this.setState({ creating: true });
-
-        firebase.auth().createUserWithEmailAndPassword(this.state.email, this.state.password).then(() => {
-          this.setState({ creating: false });
-        }).catch(err => {
-          this.setState({ creating: false, error: err });
-        });
-      };
-
-      const handleDismiss = () => {
-        this.setState({ error: undefined });
-      };
-
-      const emailHandler = (e: React.FormEvent<HTMLInputElement>) =>
-        this.setState({ email: e.currentTarget.value });
-
-      const passwordHandler = (e: React.FormEvent<HTMLInputElement>) =>
-        this.setState({ password: e.currentTarget.value });
-
-      return (
-        <Form error={!!this.state.error} success={!!user}>
-          <Form.Input
-            label="Email"
-            placeholder="joe@schmoe.com"
-            value={this.state.email}
-            onChange={emailHandler}
-          />
-          <Form.Input
-            label="Password"
-            type="password"
-            placeholder="correct horse battery staple"
-            value={this.state.password}
-            onChange={passwordHandler}
-          />
-          <Message
-            success
-            header="Account created"
-            content="Your account was successfully created"
-          />
-          <Message
-            error
-            header={this.state.error ? this.state.error.name : ''}
-            content={this.state.error ? this.state.error.message : ''}
-            onDismiss={handleDismiss}
-          />
-          <Button.Group>
-            <Button primary fluid onClick={loginHandler} loading={this.state.loggingIn} >Login</Button>
-            {this.props.allowSignup && 
-              (<Button secondary fluid onClick={createHandler} loading={this.state.creating} >Sign-Up</Button>)
-            }
-          </Button.Group>
-        </Form>
-      );
-    }
+      return this.renderLogin();
+   }
   }
 }
 
-export const ModalLogin = () => {
+export class ModalLogin extends React.Component<{}, { haveUser: boolean }> {
+  constructor(props: {}) {
+    super(props);
 
-  const text = user ? user.email : 'Login';
+    this.state = {
+      haveUser: !!user
+    };
+  }
 
-  return (
-    <Modal 
-      trigger={<Button content={text} basic size="small"><Icon name="lock" />{text}</Button>}
-      dimmer
-      size="large"
-    >
-      <Modal.Header>Login</Modal.Header>
-      <Modal.Content image>
-        <Login onAuth={() => { return null; }} allowSignup={false}/>
-      </Modal.Content>
-    </Modal>
-  );
-};
+  onAuthHandler = () => {
+    this.setState({ haveUser: true });
+  }
+  
+  componentDidMount() {
+    this.setState({ haveUser: !!user });
+  }
+
+  renderModalTrigger() {
+    const { haveUser } = this.state;
+
+    const text = haveUser ? user!.email : 'Login';
+
+    return (
+      <Button content={text} basic size="small">
+        <Icon name="lock" />
+        {text}
+      </Button>
+    );
+  }
+
+  render() {
+    return (
+      <Modal 
+        trigger={this.renderModalTrigger()}
+        dimmer
+        size="large"
+      >
+        <Modal.Header>Login</Modal.Header>
+        <Modal.Content image>
+          <Login onAuth={this.onAuthHandler} allowSignup={false}/>
+        </Modal.Content>
+      </Modal>
+    );
+  }
+}
