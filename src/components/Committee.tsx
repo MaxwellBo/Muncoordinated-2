@@ -16,12 +16,13 @@ import Motions from './Motions';
 import { fieldHandler } from '../actions/handlers';
 import { postCaucus, postResolution } from '../actions/caucusActions';
 import { URLParameters } from '../types';
+import { Loading } from './Loading';
 
 interface Props extends RouteComponentProps<URLParameters> {
 }
 
 interface State {
-  committee: CommitteeData;
+  committee?: CommitteeData;
   committeeFref: firebase.database.Reference;
 }
 
@@ -39,11 +40,14 @@ export interface CommitteeData {
   timer: TimerData;
 }
 
-function CommitteeMeta(props: { data: CommitteeData, fref: firebase.database.Reference; }) {
+function CommitteeMeta(props: { data?: CommitteeData, fref: firebase.database.Reference; }) {
+  const { data } = props;
+
   return (
     <Segment>
       <Input
-        value={props.data.name}
+        value={data ? data.name : ''}
+        loading={!data}
         onChange={fieldHandler<CommitteeData>(props.fref, 'name')}
         attached="top"
         size="massive"
@@ -51,7 +55,8 @@ function CommitteeMeta(props: { data: CommitteeData, fref: firebase.database.Ref
         placeholder="Committee Name"
       />
       <Input 
-        value={props.data.topic} 
+        value={data ? data.topic : ''} 
+        loading={!data}
         onChange={fieldHandler<CommitteeData>(props.fref, 'topic')} 
         attached="bottom" 
         fluid 
@@ -79,7 +84,6 @@ export default class Committee extends React.Component<Props, State> {
     const committeeID: CommitteeID = this.props.match.params.committeeID;
 
     this.state = {
-      committee: DEFAULT_COMMITTEE,
       committeeFref: firebase.database().ref('committees').child(committeeID),
     };
   }
@@ -160,73 +164,84 @@ export default class Committee extends React.Component<Props, State> {
     );
   }
 
-  render() {
+  renderNav = () => {
     const { makeMenuItem, makeSubmenuItem } = this;
-    const caucuses = this.state.committee.caucuses || {} as Map<CaucusID, CaucusData>;
-    const resolutions = this.state.committee.resolutions || {} as Map<ResolutionID, ResolutionData>;
+    const { committee } = this.state;
 
-    const CaucusItem = (props: { id: CaucusID, data: CaucusData }) => {
+    const caucuses = committee ? committee.caucuses : undefined;
+    const resolutions = committee ? committee.resolutions : undefined;
 
-    };
+    const caucusItems = Object.keys(caucuses || {}).filter(key =>
+      caucuses![key].status === CaucusStatus.Open.toString() && !caucuses![key].deleted
+    ).map(key =>
+      makeSubmenuItem(key, caucuses![key].name, 'caucuses')
+    );
 
-    const Nav = () => {
-      const caucusItems = Object.keys(caucuses).filter(key =>
-        caucuses[key].status === CaucusStatus.Open.toString() && !caucuses[key].deleted
-      ).map(key =>
-        makeSubmenuItem(key, caucuses[key].name, 'caucuses')
-      );
+    const resolutionItems = Object.keys(resolutions || {}).map(key =>
+      makeSubmenuItem(key, resolutions![key].name, 'resolutions')
+    );
 
-      const resolutionItems = Object.keys(resolutions).map(key =>
-        makeSubmenuItem(key, resolutions[key].name, 'resolutions')
-      );
-
-      return (
-        <Menu fluid vertical size="massive">
-          {makeMenuItem('Admin', 'setting')}
-          {makeMenuItem('Motions', 'sort numeric ascending')}
-          {makeMenuItem('Unmod', 'discussions')}
-          <Menu.Item>
-            <Icon name="users" />
-            Caucuses
+    return (
+      <Menu fluid vertical size="massive">
+        {makeMenuItem('Admin', 'setting')}
+        {makeMenuItem('Motions', 'sort numeric ascending')}
+        {makeMenuItem('Unmod', 'discussions')}
+        <Menu.Item>
+          <Icon name="users" />
+          Caucuses
             <Menu.Menu>
-              {caucusItems}
-              <Menu.Item name="New Caucus" onClick={this.pushCaucus}>
-                <Icon name="add" />
-              </Menu.Item>
-            </Menu.Menu>
-          </Menu.Item>
-          <Menu.Item>
-            <Icon name="ordered list" />
-            Resolutions
+            {!caucuses && <Loading />}
+            {caucusItems}
+            <Menu.Item name="New Caucus" onClick={this.pushCaucus}>
+              <Icon name="add" />
+            </Menu.Item>
+          </Menu.Menu>
+        </Menu.Item>
+        <Menu.Item>
+          <Icon name="ordered list" />
+          Resolutions
             <Menu.Menu>
-              {resolutionItems}
-              <Menu.Item name="New Resolution" onClick={this.pushResolution}>
-                <Icon name="add" />
-              </Menu.Item>
-            </Menu.Menu>
-          </Menu.Item>
-          {makeMenuItem('Stats', 'bar chart')}
-          {makeMenuItem('Help', 'help')}
-        </Menu>
-      );
-    };
+            {!resolutions && <Loading />}
+            {resolutionItems}
+            <Menu.Item name="New Resolution" onClick={this.pushResolution}>
+              <Icon name="add" />
+            </Menu.Item>
+          </Menu.Menu>
+        </Menu.Item>
+        {makeMenuItem('Stats', 'bar chart')}
+        {makeMenuItem('Help', 'help')}
+      </Menu>
+    );
+  }
 
-    const CaucusComponent = (props: RouteComponentProps<URLParameters>) => (
+  Admin = () => {
+    return (
+      <CommitteeAdmin
+        committee={this.state.committee || DEFAULT_COMMITTEE}
+        fref={this.state.committeeFref}
+      />
+    );
+  }
+
+  CaucusComponent = (props: RouteComponentProps<URLParameters>) => {
+    return (
       <Caucus
-        committee={this.state.committee}
+        committee={this.state.committee || DEFAULT_COMMITTEE}
         fref={this.state.committeeFref}
         {...props}
       />
     );
-
-    const Admin = () => <CommitteeAdmin committee={this.state.committee} fref={this.state.committeeFref} />;
+  }
+    
+  render() {
+    const { renderNav, Admin, CaucusComponent } = this;
 
     return (
       <div>
         <CommitteeMeta data={this.state.committee} fref={this.state.committeeFref} />
         <Grid>
           <Grid.Column width={4}>
-            <Nav />
+            {renderNav()}
           </Grid.Column>
           <Grid.Column stretched width={12}>
             <Route exact={true} path="/committees/:committeeID/admin" render={Admin} />

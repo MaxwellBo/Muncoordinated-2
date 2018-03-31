@@ -5,7 +5,7 @@ export class Loading extends React.PureComponent<{}, {}> {
   render() {
     return (
       <Dimmer active inverted>
-        <Loader inverted indeterminate size="large">Loading</Loader>
+        <Loader inverted size="large" />
       </Dimmer>
     );
   }
