@@ -63,6 +63,11 @@ const DEFAULT_SPEAKER_EVENT = {
   duration: 0
 };
 
+const CAUCUS_STATUS_OPTIONS = [
+  CaucusStatus.Open,
+  CaucusStatus.Closed
+].map(makeDropdownOption);
+
 const StanceIcon = (props: { stance: Stance }) => {
   switch (props.stance) {
     case Stance.For:
@@ -85,11 +90,6 @@ export const DEFAULT_CAUCUS: CaucusData = {
 };
 
 function CaucusHeader(props: { data: CaucusData, fref: firebase.database.Reference }) {
-  const CAUCUS_STATUS_OPTIONS = [
-    CaucusStatus.Open,
-    CaucusStatus.Closed
-  ].map(makeDropdownOption);
-
   const statusDropdown = (
     <Dropdown 
       value={props.data.status} 
@@ -99,6 +99,7 @@ function CaucusHeader(props: { data: CaucusData, fref: firebase.database.Referen
   );
 
   return (
+    // TODO: Loading spinners
     <Segment>
       <Input
         label={statusDropdown}

@@ -2,13 +2,13 @@ import * as React from 'react';
 import * as firebase from 'firebase';
 import { MemberID, parseCountryOption, MemberData } from './Member';
 import { AmendmentID, AmendmentData, DEFAULT_AMENDMENT } from './Amendment';
-import { Card, Button, Form, Dimmer } from 'semantic-ui-react';
+import { Card, Button, Form, Dimmer, Dropdown, Segment, Input } from 'semantic-ui-react';
 import { CommitteeData } from './Committee';
 import { CaucusID } from './Caucus';
 import { RouteComponentProps } from 'react-router';
 import { URLParameters } from '../types';
-import { dropdownHandler } from '../actions/handlers';
-import { objectToList } from '../utils';
+import { dropdownHandler, fieldHandler } from '../actions/handlers';
+import { objectToList, makeDropdownOption } from '../utils';
 import { CountryOption } from '../constants';
 import { Loading } from './Loading';
 
@@ -25,6 +25,12 @@ export enum ResolutionStatus {
   Ongoing = 'Ongoing',
   Failed = 'Failed'
 }
+
+const RESOLUTION_STATUS_OPTIONS = [
+  ResolutionStatus.Ongoing,
+  ResolutionStatus.Passed,
+  ResolutionStatus.Failed
+].map(makeDropdownOption);
 
 export type ResolutionID = string;
 
@@ -66,7 +72,7 @@ export default class Resolution extends React.Component<Props, State> {
     const { match } = props;
 
     this.state = {
-      committeeFref: firebase.database().ref('resolution').child(match.params.committeeID)
+      committeeFref: firebase.database().ref('committees').child(match.params.committeeID)
     };
   }
 
@@ -136,6 +142,33 @@ export default class Resolution extends React.Component<Props, State> {
     );
   }
 
+  renderHeader = (resolution?: ResolutionData) => {
+    const resolutionFref = this.recoverResolutionRef();
+
+    const statusDropdown = (
+      <Dropdown 
+        value={resolution ? resolution.status : ResolutionStatus.Ongoing} 
+        options={RESOLUTION_STATUS_OPTIONS} 
+        onChange={dropdownHandler<ResolutionData>(resolutionFref, 'status')} 
+      /> 
+    );
+
+    return (
+        <Segment loading={!resolution}>
+          <Input
+            label={statusDropdown}
+            labelPosition="right"
+            value={name}
+            onChange={fieldHandler<ResolutionData>(resolutionFref, 'name')}
+            attatched="top"
+            size="massive"
+            fluid
+            placeholder="Resolution Name"
+          />
+        </Segment>
+    );
+  }
+
   renderAmendments = (amendments: Map<AmendmentID, AmendmentData>) => {
     const { renderAmendment, recoverResolutionRef } = this;
 
@@ -146,10 +179,10 @@ export default class Resolution extends React.Component<Props, State> {
     });
   }
 
-  renderResolution = (resolution: ResolutionData) => {
+  renderAmendmentsGroup = (resolution?: ResolutionData) => {
     const { renderAmendments, handlePushAmendment } = this;
 
-    const amendments = resolution.amendments || {} as Map<AmendmentID, AmendmentData>;
+    const amendments = resolution ? resolution.amendments : undefined;
 
     const adder = (
       <Card>
@@ -170,8 +203,19 @@ export default class Resolution extends React.Component<Props, State> {
         itemsPerRow={1} 
       >
         {adder}
-        {renderAmendments(amendments)}
+        {renderAmendments(amendments || {} as Map<string, AmendmentData>)}
       </Card.Group>
+    );
+  }
+
+  renderResolution = (resolution?: ResolutionData) => {
+    const { renderHeader, renderAmendmentsGroup  } = this;
+
+    return (
+      <div>
+        {renderHeader(resolution)}
+        {renderAmendmentsGroup(resolution)}
+      </div>
     );
   }
 
@@ -182,10 +226,6 @@ export default class Resolution extends React.Component<Props, State> {
     const resolutions = committee ? committee.resolutions : {};
     const resolution = (resolutions || {})[resolutionID];
 
-    if (resolution) {
-      return this.renderResolution(resolution);
-    } else {
-      return <Loading />;
-    }
+    return this.renderResolution(resolution);
   }
 }

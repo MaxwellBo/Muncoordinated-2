@@ -190,7 +190,7 @@ export default class Committee extends React.Component<Props, State> {
           <Icon name="users" />
           Caucuses
             <Menu.Menu>
-            {!caucuses && <Loading />}
+            {!committee && <Loading />}
             {caucusItems}
             <Menu.Item name="New Caucus" onClick={this.pushCaucus}>
               <Icon name="add" />
@@ -201,7 +201,7 @@ export default class Committee extends React.Component<Props, State> {
           <Icon name="ordered list" />
           Resolutions
             <Menu.Menu>
-            {!resolutions && <Loading />}
+            {!committee && <Loading />}
             {resolutionItems}
             <Menu.Item name="New Resolution" onClick={this.pushResolution}>
               <Icon name="add" />
