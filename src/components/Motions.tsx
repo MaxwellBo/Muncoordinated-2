@@ -3,17 +3,18 @@ import * as firebase from 'firebase';
 import { CommitteeData, CommitteeID, DEFAULT_COMMITTEE } from './Committee';
 import { RouteComponentProps } from 'react-router';
 import { Segment, Input, Dropdown, Button, Card, Form } from 'semantic-ui-react';
-import { fieldHandler, dropdownHandler, validatedNumberFieldHandler } from '../actions/handlers';
+import { fieldHandler, dropdownHandler, validatedNumberFieldHandler, countryDropdownHandler } from '../actions/handlers';
 import { makeDropdownOption, objectToList } from '../utils';
 import { TimerSetter, Unit } from './TimerSetter';
-import { parseCountryOption, MemberID, MemberData } from './Member';
+import { nameToCountryOption, MemberID, MemberData } from './Member';
 import { CountryOption, COUNTRY_OPTIONS } from '../constants';
 import { DEFAULT_CAUCUS, CaucusData, Stance } from './Caucus';
-import { postCaucus } from '../actions/caucusActions';
+import { postCaucus, postResolution } from '../actions/caucusActions';
 import { TimerData } from './Timer';
 import { putUnmodTimer } from '../actions/committeeActions';
 import { URLParameters } from '../types';
 import { Loading } from './Loading';
+import { ResolutionData, DEFAULT_RESOLUTION } from './Resolution';
 
 export type MotionID = string;
 
@@ -66,6 +67,7 @@ const approvable = (motionType: MotionType): boolean => {
   switch (motionType) {
     case MotionType.OpenModeratedCaucus:
     case MotionType.OpenUnmoderatedCaucus:
+    case MotionType.IntroduceDraftResolution:
       return true;
     default:
       return false;
@@ -189,7 +191,7 @@ export default class Motions extends React.Component<Props, State> {
 
     if (committee) {
       return objectToList(committee.members || {} as Map<MemberID, MemberData>)
-        .map(x => parseCountryOption(x.name));
+        .map(x => nameToCountryOption(x.name));
     }
 
     return [];
@@ -207,7 +209,7 @@ export default class Motions extends React.Component<Props, State> {
     const committeeID: CommitteeID = this.props.match.params.committeeID;
 
     const { proposal, proposer, speakerDuration, speakerUnit, 
-      caucusDuration, caucusUnit } = motionData;
+      caucusDuration, caucusUnit, seconder } = motionData;
 
     if (motionData.type === MotionType.OpenModeratedCaucus && speakerDuration && caucusDuration) {
 
@@ -250,6 +252,19 @@ export default class Motions extends React.Component<Props, State> {
 
       this.props.history
         .push(`/committees/${committeeID}/unmod`);
+    } else if (motionData.type === MotionType.IntroduceDraftResolution) {
+
+      const newResolution: ResolutionData = {
+        ...DEFAULT_RESOLUTION,
+        name: motionData.proposal,
+        proposer: proposer,
+        seconder: seconder
+      };
+
+      const ref = postResolution(committeeID, newResolution);
+
+      this.props.history
+        .push(`/committees/${committeeID}/resolutions/${ref.key}`);
     }
   }
 
@@ -299,15 +314,17 @@ export default class Motions extends React.Component<Props, State> {
       </Card.Content>
     );
 
+    const countryOptions = recoverCountryOptions();
+
     const proposerTree = (
       <Form.Dropdown
         key="proposer"
-        value={proposer}
+        value={nameToCountryOption(proposer).key}
         search
         selection
         fluid
-        onChange={dropdownHandler<MotionData>(motionFref, 'proposer')}
-        options={recoverCountryOptions()}
+        onChange={countryDropdownHandler<MotionData>(motionFref, 'proposer', countryOptions)}
+        options={countryOptions}
         label="Proposer"
       />
     );
@@ -315,12 +332,12 @@ export default class Motions extends React.Component<Props, State> {
     const seconderTree = (
       <Form.Dropdown
         key="seconder"
-        value={seconder}
+        value={nameToCountryOption(seconder).key}
         search
         selection
         fluid
-        onChange={dropdownHandler<MotionData>(motionFref, 'seconder')}
-        options={recoverCountryOptions()}
+        onChange={countryDropdownHandler<MotionData>(motionFref, 'seconder', countryOptions)}
+        options={countryOptions}
         label="Seconder"
       />
     );

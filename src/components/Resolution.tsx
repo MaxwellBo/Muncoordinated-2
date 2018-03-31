@@ -1,13 +1,13 @@
 import * as React from 'react';
 import * as firebase from 'firebase';
-import { MemberID, parseCountryOption, MemberData } from './Member';
+import { MemberID, nameToCountryOption, MemberData } from './Member';
 import { AmendmentID, AmendmentData, DEFAULT_AMENDMENT, AMENDMENT_STATUS_OPTIONS } from './Amendment';
 import { Card, Button, Form, Dimmer, Dropdown, Segment, Input, TextArea } from 'semantic-ui-react';
 import { CommitteeData } from './Committee';
 import { CaucusID } from './Caucus';
 import { RouteComponentProps } from 'react-router';
 import { URLParameters } from '../types';
-import { dropdownHandler, fieldHandler, textAreaHandler } from '../actions/handlers';
+import { dropdownHandler, fieldHandler, textAreaHandler, countryDropdownHandler } from '../actions/handlers';
 import { objectToList, makeDropdownOption } from '../utils';
 import { CountryOption } from '../constants';
 import { Loading } from './Loading';
@@ -56,7 +56,8 @@ export const DEFAULT_VOTES: VotingResults = {
   against: {} as Map<string, MemberID>
 };
 
-export const DEFAULT_RESOLUTION = {
+export const DEFAULT_RESOLUTION: ResolutionData = {
+  name: '',
   proposer: '',
   seconder: '',
   status: ResolutionStatus.Ongoing,
@@ -104,7 +105,7 @@ export default class Resolution extends React.Component<Props, State> {
 
     if (committee) {
       return objectToList(committee.members || {} as Map<MemberID, MemberData>)
-        .map(x => parseCountryOption(x.name));
+        .map(x => nameToCountryOption(x.name));
     }
 
     return [];
@@ -137,6 +138,21 @@ export default class Resolution extends React.Component<Props, State> {
       /> 
     );
 
+    const countryOptions = recoverCountryOptions();
+
+    const amendment = (
+      <Form.Dropdown
+        key="proposer"
+        value={nameToCountryOption(proposer).key}
+        search
+        selection
+        fluid
+        onChange={countryDropdownHandler<AmendmentData>(amendmentFref, 'proposer', countryOptions)}
+        options={countryOptions}
+        label="Proposer"
+      />
+    );
+
     return (
       <Card 
         key={id}
@@ -156,15 +172,7 @@ export default class Resolution extends React.Component<Props, State> {
             {textArea}
           </Form>
           <Card.Meta>
-            <Form.Dropdown
-              value={proposer}
-              search
-              selection
-              fluid
-              onChange={dropdownHandler<AmendmentData>(amendmentFref, 'proposer')}
-              options={recoverCountryOptions()}
-              label="Proposer"
-            />
+            {amendment}
           </Card.Meta>
         </Card.Content>
       </Card>
@@ -183,6 +191,34 @@ export default class Resolution extends React.Component<Props, State> {
       /> 
     );
 
+    const countryOptions = recoverCountryOptions();
+
+    const proposerTree = (
+      <Form.Dropdown
+        key="proposer"
+        value={nameToCountryOption(resolution ? resolution.proposer : '').key}
+        search
+        selection
+        fluid
+        onChange={countryDropdownHandler<ResolutionData>(resolutionFref, 'proposer', countryOptions)}
+        options={countryOptions}
+        label="Proposer"
+      />
+    );
+
+    const seconderTree = (
+      <Form.Dropdown
+        key="seconder"
+        value={nameToCountryOption(resolution ? resolution.seconder : '').key}
+        search
+        selection
+        fluid
+        onChange={countryDropdownHandler<ResolutionData>(resolutionFref, 'seconder', countryOptions)}
+        options={countryOptions}
+        label="Seconder"
+      />
+    );
+
     return (
         <Segment loading={!resolution}>
           <Input
@@ -197,24 +233,8 @@ export default class Resolution extends React.Component<Props, State> {
           />
         <Form>
           <Form.Group widths="equal">
-            <Form.Dropdown
-              value={resolution ? resolution.proposer : ''}
-              search
-              selection
-              fluid
-              onChange={dropdownHandler<ResolutionData>(resolutionFref, 'proposer')}
-              options={recoverCountryOptions()}
-              label="Proposer"
-            />
-            <Form.Dropdown
-              value={resolution ? resolution.seconder : ''}
-              search
-              selection
-              fluid
-              onChange={dropdownHandler<ResolutionData>(resolutionFref, 'seconder')}
-              options={recoverCountryOptions()}
-              label="Seconder"
-            />
+            {proposerTree}
+            {seconderTree}
           </Form.Group>
         </Form>
       </Segment>

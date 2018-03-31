@@ -1,4 +1,5 @@
 import { TextAreaProps, DropdownProps } from 'semantic-ui-react';
+import { CountryOption } from '../constants';
 
 // Ideally we'd be able to give this a type parameter to constrain the field
 export function fieldHandler<T>
@@ -30,4 +31,10 @@ export function dropdownHandler<T>
   (fref: firebase.database.Reference, field: keyof T) {
   return (event: React.SyntheticEvent<HTMLElement>, data: DropdownProps) =>
     fref.child(field).set(data.value);
+}
+
+export function countryDropdownHandler<T>
+  (fref: firebase.database.Reference, field: keyof T, countryOptions: CountryOption[]) {
+  return (event: React.SyntheticEvent<HTMLElement>, data: DropdownProps) =>
+    fref.child(field).set(countryOptions.filter(c => c.value === data.value)[0].text);
 }

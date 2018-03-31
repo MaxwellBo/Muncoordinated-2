@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as firebase from 'firebase';
-import { MemberData, parseCountryOption } from './Member';
+import { MemberData, nameToCountryOption } from './Member';
 import { CaucusData, SpeakerEvent, Stance } from './Caucus';
 import * as Utils from '../utils';
 import { COUNTRY_OPTIONS, CountryOption } from '../constants';
@@ -46,7 +46,7 @@ export default class CaucusQueuer extends React.Component<Props, State> {
   }
 
   recoverCountryOptions = (): CountryOption[] => {
-    return Utils.objectToList(this.props.members).map(x => parseCountryOption(x.name))
+    return Utils.objectToList(this.props.members).map(x => nameToCountryOption(x.name));
   }
 
   countryHandler = (event: React.SyntheticEvent<HTMLElement>, data: DropdownProps): void => {

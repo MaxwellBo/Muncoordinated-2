@@ -37,7 +37,7 @@ export function parseFlagName(name: string): string {
   }
 }
 
-export function parseCountryOption(name: string) {
+export function nameToCountryOption(name: string) {
   if (FLAG_NAME_SET.has(name)) {
     return COUNTRY_OPTIONS.filter(c => c.text === name)[0];
   } else {

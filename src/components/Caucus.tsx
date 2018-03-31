@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as firebase from 'firebase';
 import { Timer, TimerData, DEFAULT_TIMER } from './Timer';
 import { RouteComponentProps } from 'react-router';
-import { MemberID, MemberData, parseCountryOption, parseFlagName } from './Member';
+import { MemberID, MemberData, nameToCountryOption, parseFlagName } from './Member';
 import { CommitteeID, CommitteeData } from './Committee';
 import CaucusQueuer from './CaucusQueuer';
 import * as Utils from '../utils';
