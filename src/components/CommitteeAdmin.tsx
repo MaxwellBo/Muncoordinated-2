@@ -7,6 +7,9 @@ import { Dropdown, Segment, Header, Flag, Table, List, Button, Checkbox, Icon,
   CheckboxProps, DropdownProps } from 'semantic-ui-react';
 import { COUNTRY_OPTIONS, CountryOption } from '../constants';
 
+export const canVote = (x: MemberData) => (x.rank === Rank.Veto || x.rank === Rank.Standard);
+export const nonObserver = (x: MemberData) => (x.rank !== Rank.Observer);
+
 interface Props {
   committee: CommitteeData;
   fref: firebase.database.Reference;
@@ -31,8 +34,6 @@ function CommitteeStats(props: { data: CommitteeData }) {
   const membersMap = props.data.members ? props.data.members : {} as Map<string, MemberData>;
   const members: MemberData[] = Utils.objectToList(membersMap);
   const present = members.filter(x => x.present);
-  const canVote = (x: MemberData) => (x.rank === Rank.Veto || x.rank === Rank.Standard);
-  const nonObserver = (x: MemberData) => (x.rank !== Rank.Observer);
 
   const delegatesNo: number     = members.length;
   const presentNo: number       = present.length;

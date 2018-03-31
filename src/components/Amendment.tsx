@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as firebase from 'firebase';
-import { ResolutionStatus, VotingResults, DEFAULT_VOTES } from './Resolution';
+import { ResolutionStatus } from './Resolution';
 import { CaucusID } from './Caucus';
 import { MemberID } from './Member';
 import { makeDropdownOption } from '../utils';

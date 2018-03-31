@@ -3,7 +3,8 @@ import * as firebase from 'firebase';
 import { CommitteeData, CommitteeID, DEFAULT_COMMITTEE } from './Committee';
 import { RouteComponentProps } from 'react-router';
 import { Segment, Input, Dropdown, Button, Card, Form } from 'semantic-ui-react';
-import { fieldHandler, dropdownHandler, validatedNumberFieldHandler, countryDropdownHandler } from '../actions/handlers';
+import { fieldHandler, dropdownHandler, validatedNumberFieldHandler, 
+  countryDropdownHandler } from '../actions/handlers';
 import { makeDropdownOption, objectToList } from '../utils';
 import { TimerSetter, Unit } from './TimerSetter';
 import { nameToCountryOption, MemberID, MemberData } from './Member';

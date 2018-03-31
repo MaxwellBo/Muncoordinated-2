@@ -2,7 +2,8 @@ import * as React from 'react';
 import * as firebase from 'firebase';
 import { MemberID, nameToCountryOption, MemberData } from './Member';
 import { AmendmentID, AmendmentData, DEFAULT_AMENDMENT, AMENDMENT_STATUS_OPTIONS } from './Amendment';
-import { Card, Button, Form, Dimmer, Dropdown, Segment, Input, TextArea } from 'semantic-ui-react';
+import { Card, Button, Form, Dimmer, Dropdown, Segment, Input, TextArea, 
+  List, Label, SemanticICONS } from 'semantic-ui-react';
 import { CommitteeData } from './Committee';
 import { CaucusID } from './Caucus';
 import { RouteComponentProps } from 'react-router';
@@ -11,6 +12,8 @@ import { dropdownHandler, fieldHandler, textAreaHandler, countryDropdownHandler 
 import { objectToList, makeDropdownOption } from '../utils';
 import { CountryOption } from '../constants';
 import { Loading } from './Loading';
+import { canVote } from './CommitteeAdmin';
+import { voteOnResolution } from '../actions/resolutionActions';
 
 interface Props extends RouteComponentProps<URLParameters> {
 }
@@ -41,20 +44,16 @@ export interface ResolutionData {
   status: ResolutionStatus;
   caucus?: CaucusID;
   amendments?: Map<AmendmentID, AmendmentData>;
-  votes: VotingResults;
+  votes?: Votes;
 }
 
-export interface VotingResults {
-  for: Map<string, MemberID>;
-  abstaining: Map<string, MemberID>;
-  against: Map<string, MemberID>;
+export enum Vote {
+  For = 'For',
+  Abstaining = 'Abstaining',
+  Against = 'Against'
 }
 
-export const DEFAULT_VOTES: VotingResults = {
-  for: {} as Map<string, MemberID>,
-  abstaining: {} as Map<string, MemberID>,
-  against: {} as Map<string, MemberID>
-};
+type Votes = Map<string, Vote>;
 
 export const DEFAULT_RESOLUTION: ResolutionData = {
   name: '',
@@ -63,7 +62,7 @@ export const DEFAULT_RESOLUTION: ResolutionData = {
   status: ResolutionStatus.Ongoing,
   caucus: '',
   amendments: {} as Map<AmendmentID, AmendmentData>,
-  votes: DEFAULT_VOTES
+  votes: {} as Votes
 };
 
 export default class Resolution extends React.Component<Props, State> {
@@ -179,6 +178,86 @@ export default class Resolution extends React.Component<Props, State> {
     );
   }
 
+  cycleVote = (memberID: MemberID, currentVote?: Vote) => {
+    const { resolutionID, committeeID } = this.props.match.params;
+
+    // leave this be in the case of undefined and Against
+    let newVote: Vote = Vote.For;
+
+    if (currentVote === Vote.For) {
+      newVote = Vote.Abstaining;
+    } else if (currentVote === Vote.Abstaining) {
+      newVote = Vote.Against;
+    }
+    
+    voteOnResolution(committeeID, resolutionID, memberID, newVote)
+  }
+
+  renderVotingMember = (key: MemberID, member: MemberData, vote?: Vote) => {
+    const { cycleVote } = this;
+
+    let color: 'green' | 'yellow' | 'red' | undefined;
+    let icon: SemanticICONS = 'question circle';
+
+    if (vote === Vote.For) {
+      color = 'green';
+      icon = 'plus';
+    } else if (vote === Vote.Abstaining) {
+      color = 'yellow';
+      icon = 'minus';
+    } else if (vote === Vote.Against) {
+      color = 'red';
+      icon = 'remove';
+    }
+
+    const button = (
+      <Button
+        color={color}
+        icon={icon}
+        onClick={() => cycleVote(key, vote)}
+      />
+    );
+
+    return (
+      <List.Item key={key}>
+        {button}
+        <List.Content>
+          {member.name}
+        </List.Content>
+      </List.Item>
+    );
+  }
+
+  renderVotingMembers = (members: Map<string, MemberData>, votes: Votes) => {
+    const { renderVotingMember } = this;
+
+    // TODO: Sort by name
+    return Object.keys(members).filter(
+      key => canVote(members[key])
+    ).map(key => {
+      return renderVotingMember(key, members[key], votes[key]);
+    });
+  }
+
+  renderVoting = (resolution?: ResolutionData) => {
+    const { renderVotingMembers } = this;
+    const { committee } = this.state;
+
+    const members = committee ? committee.members : undefined;
+    const votes = resolution ? resolution.votes : undefined;
+
+    return (
+      <List
+        divided
+        verticalAlign="middle"
+      >
+        {renderVotingMembers(
+          members || {} as Map<string, MemberData>,
+          votes || {} as Votes)}
+      </List>
+    );
+  }
+
   renderHeader = (resolution?: ResolutionData) => {
     const resolutionFref = this.recoverResolutionRef();
     const { recoverCountryOptions } = this;
@@ -281,12 +360,13 @@ export default class Resolution extends React.Component<Props, State> {
   }
 
   renderResolution = (resolution?: ResolutionData) => {
-    const { renderHeader, renderAmendmentsGroup  } = this;
+    const { renderHeader, renderAmendmentsGroup, renderVoting } = this;
 
     return (
       <div>
         {renderHeader(resolution)}
         {renderAmendmentsGroup(resolution)}
+        {renderVoting(resolution)}
       </div>
     );
   }
