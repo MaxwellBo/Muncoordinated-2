@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as firebase from 'firebase';
-import { CommitteeData, URLParameters, CommitteeID, DEFAULT_COMMITTEE } from './Committee';
+import { CommitteeData, CommitteeID, DEFAULT_COMMITTEE } from './Committee';
 import { RouteComponentProps } from 'react-router';
 import { Loader, Segment, Input, Dropdown, Button, Card, Form } from 'semantic-ui-react';
 import { fieldHandler, dropdownHandler, validatedNumberFieldHandler } from '../actions/handlers';
@@ -12,6 +12,7 @@ import { DEFAULT_CAUCUS, CaucusData, Stance } from './Caucus';
 import { postCaucus } from '../actions/caucusActions';
 import { TimerData } from './Timer';
 import { putUnmodTimer } from '../actions/committeeActions';
+import { URLParameters } from '../types';
 
 export type MotionID = string;
 

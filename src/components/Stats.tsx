@@ -1,10 +1,11 @@
 import * as React from 'react';
 import * as firebase from 'firebase';
-import Committee, { CommitteeData, URLParameters } from './Committee';
+import Committee, { CommitteeData } from './Committee';
 import { RouteComponentProps } from 'react-router';
 import { Table, Loader, Flag  } from 'semantic-ui-react';
 import { MemberData, MemberID, parseFlagName } from './Member';
 import { CaucusID, CaucusData, SpeakerEvent } from './Caucus';
+import { URLParameters } from '../types';
 
 interface Props extends RouteComponentProps<URLParameters> {
 }

@@ -15,12 +15,7 @@ import Help from './Help';
 import Motions from './Motions';
 import { fieldHandler } from '../actions/handlers';
 import { postCaucus } from '../actions/caucusActions';
-
-// FIXME: This is repeatedly declared in every file where URLParameters are needed
-export interface URLParameters {
-  committeeID: CommitteeID;
-  caucusID: CaucusID;
-}
+import { URLParameters } from '../types';
 
 interface Props extends RouteComponentProps<URLParameters> {
 }

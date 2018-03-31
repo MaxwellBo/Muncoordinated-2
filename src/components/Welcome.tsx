@@ -5,9 +5,7 @@ import * as firebase from 'firebase';
 import { CommitteeData, CommitteeID, DEFAULT_COMMITTEE } from './Committee';
 import { Segment, Button, Divider, Form, Grid, Header } from 'semantic-ui-react';
 import Login from './Auth'; // side-effects: triggers firebase setup, don't reorder
-
-interface URLParameters {
-}
+import { URLParameters } from '../types';
 
 interface Props extends RouteComponentProps<URLParameters> {
 }

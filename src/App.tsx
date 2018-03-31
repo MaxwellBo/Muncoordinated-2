@@ -6,7 +6,8 @@ import './App.css';
 
 import { ModalLogin } from './components//Auth';
 import Welcome from './components/Welcome';
-import Committee from './components/Committee';
+import Committee, { CommitteeID } from './components/Committee';
+import { CaucusID } from './components/Caucus';
 
 export const Footer = () => {
   return (

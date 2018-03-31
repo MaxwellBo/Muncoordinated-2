@@ -1,8 +1,9 @@
 import * as React from 'react';
 import * as firebase from 'firebase';
-import { CommitteeData, URLParameters } from './Committee';
+import { CommitteeData } from './Committee';
 import { RouteComponentProps } from 'react-router';
 import { TimerData, Timer } from './Timer';
+import { URLParameters } from '../types';
 
 interface Props extends RouteComponentProps<URLParameters> {
 }

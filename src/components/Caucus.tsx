@@ -13,11 +13,7 @@ import {
 import { COUNTRY_OPTIONS, CountryOption } from '../constants';
 import { textAreaHandler, dropdownHandler, fieldHandler } from '../actions/handlers';
 import { makeDropdownOption } from '../utils';
-
-interface URLParameters {
-  caucusID: CaucusID;
-  committeeID: CommitteeID;
-}
+import { URLParameters } from '../types';
 
 interface CaucusProps extends RouteComponentProps<URLParameters> {
   committee: CommitteeData;
