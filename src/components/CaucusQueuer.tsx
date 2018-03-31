@@ -4,7 +4,7 @@ import { MemberData, parseCountryOption } from './Member';
 import { CaucusData, SpeakerEvent, Stance } from './Caucus';
 import * as Utils from '../utils';
 import { COUNTRY_OPTIONS, CountryOption } from '../constants';
-import { Header, Segment, Dropdown, Button, Form } from 'semantic-ui-react';
+import { Header, Segment, Dropdown, Button, Form, DropdownProps } from 'semantic-ui-react';
 import { TimerSetter, Unit } from './TimerSetter';
 
 interface Props {
@@ -31,31 +31,38 @@ export default class CaucusQueuer extends React.Component<Props, State> {
 
   }
 
+  stanceHandler = (stance: Stance) => () => {
+    const duration = Number(this.state.durationField);
+
+    if (duration) {
+      const newEvent: SpeakerEvent = {
+        who: this.state.queueCountry.text,
+        stance: stance,
+        duration: this.state.unitDropdown === Unit.Minutes ? duration * 60 : duration,
+      };
+
+      this.props.fref.child('queue').push().set(newEvent);
+    }
+  }
+
+  retrieveCountryOptions = (): CountryOption[] => {
+    return Utils.objectToList(this.props.members).map(x => parseCountryOption(x.name))
+  }
+
+  countryHandler = (event: React.SyntheticEvent<HTMLElement>, data: DropdownProps): void => {
+    const countryOptions = this.retrieveCountryOptions()
+
+    this.setState({ queueCountry: countryOptions.filter(c => c.value === data.value)[0] });
+  }
+
+  unitHandler = (event: React.SyntheticEvent<HTMLElement>, data: DropdownProps): void => {
+    this.setState({ unitDropdown: data.value as Unit });
+  }
+
   render() {
-    const stanceHandler = (stance: Stance) => () => {
-      const duration = Number(this.state.durationField);
+    const { stanceHandler, countryHandler, unitHandler } = this;
 
-      if (duration) {
-        const newEvent: SpeakerEvent = {
-          who: this.state.queueCountry.text,
-          stance: stance,
-          duration: this.state.unitDropdown === Unit.Minutes ? duration * 60 : duration,
-        };
-
-        this.props.fref.child('queue').push().set(newEvent);
-      }
-    };
-
-    const countryOptions: CountryOption[] =
-      Utils.objectToList(this.props.members).map(x => parseCountryOption(x.name));
-
-    const countryHandler = (event: any, data: any) => {
-      this.setState({ queueCountry: countryOptions.filter(c => c.value === data.value)[0] });
-    };
-
-    const unitHandler = (event: any, data: any) => {
-      this.setState({ unitDropdown: data.value });
-    };
+    const countryOptions = this.retrieveCountryOptions();
 
     const durationHandler = (e: React.FormEvent<HTMLInputElement>) =>
       this.setState({ durationField: e.currentTarget.value });

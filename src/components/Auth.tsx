@@ -162,27 +162,12 @@ export default class Login extends React.Component<Props, State> {
   }
 }
 
-export class ModalLogin extends React.Component<{}, { haveUser: boolean }> {
-  constructor(props: {}) {
-    super(props);
-
-    this.state = {
-      haveUser: !!user
-    };
-  }
-
+export class ModalLogin extends React.Component<{}, {}> {
   onAuthHandler = () => {
-    this.setState({ haveUser: true });
-  }
-  
-  componentDidMount() {
-    this.setState({ haveUser: !!user });
   }
 
   renderModalTrigger() {
-    const { haveUser } = this.state;
-
-    const text = haveUser ? user!.email : 'Login';
+    const text = user ? user.email : 'Login';
 
     return (
       <Button content={text} basic size="small">
