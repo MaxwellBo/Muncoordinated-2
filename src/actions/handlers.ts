@@ -7,14 +7,15 @@ export function fieldHandler<T>
     fref.child(field).set(e.currentTarget.value);
 }
 
-// oof owie my defensive programming
-export function numberFieldHandler<T>
+export function validatedNumberFieldHandler<T>
   (fref: firebase.database.Reference, field: keyof T) {
   return (e: React.FormEvent<HTMLInputElement>) => {
-    if (Number(e.currentTarget.value)) {
-      fref.child(field).set(e.currentTarget.value);
+    const n: number = Number(e.currentTarget.value);
+
+    if (n) {
+      fref.child(field).set(n);
     } else {
-      fref.child(field).set(0);
+      fref.child(field).set({});
     }
   };
 }

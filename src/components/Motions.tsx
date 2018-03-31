@@ -3,7 +3,7 @@ import * as firebase from 'firebase';
 import { CommitteeData, URLParameters, CommitteeID, DEFAULT_COMMITTEE } from './Committee';
 import { RouteComponentProps } from 'react-router';
 import { Loader, Segment, Input, Dropdown, Button, Card, Form } from 'semantic-ui-react';
-import { fieldHandler, dropdownHandler, numberFieldHandler } from '../actions/handlers';
+import { fieldHandler, dropdownHandler, validatedNumberFieldHandler } from '../actions/handlers';
 import { makeDropdownOption, objectToList } from '../utils';
 import { TimerSetter, Unit } from './TimerSetter';
 import { parseCountryOption, MemberID, MemberData } from './Member';
@@ -105,9 +105,9 @@ const hasDuration = (motionType: MotionType): boolean => {
 export interface MotionData {
   proposal: string;
   proposer: string;
-  speakerDuration: number;
+  speakerDuration?: number;
   speakerUnit: Unit;
-  caucusDuration: number;
+  caucusDuration?: number;
   caucusUnit: Unit;
   type: MotionType;
 }
@@ -198,7 +198,7 @@ export default class Motions extends React.Component<Props, State> {
     const { proposal, speakerDuration, speakerUnit, 
       caucusDuration, caucusUnit } = motionData;
 
-    if (motionData.type === MotionType.OpenModeratedCaucus) {
+    if (motionData.type === MotionType.OpenModeratedCaucus && speakerDuration && caucusDuration) {
 
       const newCaucus: CaucusData = {
         ...DEFAULT_CAUCUS,
@@ -218,7 +218,7 @@ export default class Motions extends React.Component<Props, State> {
       this.props.history
         .push(`/committees/${committeeID}/caucuses/${ref.key}`);
 
-    } else if (motionData.type === MotionType.OpenUnmoderatedCaucus) {
+    } else if (motionData.type === MotionType.OpenUnmoderatedCaucus && caucusDuration) {
 
       const newTimer: TimerData = {
         ...DEFAULT_COMMITTEE.timer,
@@ -250,9 +250,9 @@ export default class Motions extends React.Component<Props, State> {
     const speakerSetter = (
       <TimerSetter
         unitValue={speakerUnit}
-        durationValue={speakerDuration.toString()}
+        durationValue={speakerDuration ? speakerDuration.toString() : undefined}
         onUnitChange={dropdownHandler<MotionData>(motionFref, 'speakerUnit')}
-        onDurationChange={numberFieldHandler<MotionData>(motionFref, 'speakerDuration')}
+        onDurationChange={validatedNumberFieldHandler<MotionData>(motionFref, 'speakerDuration')}
         label={'Speaker'}
       />
     );
@@ -260,9 +260,9 @@ export default class Motions extends React.Component<Props, State> {
     const durationSetter = (
       <TimerSetter
         unitValue={caucusUnit}
-        durationValue={caucusDuration.toString()}
+        durationValue={caucusDuration ? caucusDuration.toString() : undefined}
         onUnitChange={dropdownHandler<MotionData>(motionFref, 'caucusUnit')}
-        onDurationChange={numberFieldHandler<MotionData>(motionFref, 'caucusDuration')}
+        onDurationChange={validatedNumberFieldHandler<MotionData>(motionFref, 'caucusDuration')}
         label={'Duration'}
       />
     );
@@ -348,8 +348,8 @@ export default class Motions extends React.Component<Props, State> {
         return -1; 
       } else if (ca === cb) {
 
-        const sa = ma.caucusDuration * (ma.caucusUnit === Unit.Minutes ? 60 : 1);
-        const sb = mb.caucusDuration * (mb.caucusUnit === Unit.Minutes ? 60 : 1);
+        const sa = (ma.caucusDuration || 0) * (ma.caucusUnit === Unit.Minutes ? 60 : 1);
+        const sb = (mb.caucusDuration || 0) * (mb.caucusUnit === Unit.Minutes ? 60 : 1);
 
         // FIXME: Could be replaced by some sort of comapre function that I know exists
         if (sa < sb) {

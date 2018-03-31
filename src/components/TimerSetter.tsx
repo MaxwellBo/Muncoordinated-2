@@ -14,7 +14,7 @@ export const UNIT_OPTIONS = [
 
 interface Props {
   unitValue: Unit;
-  durationValue: string;
+  durationValue?: string;
   onUnitChange: (event: React.SyntheticEvent<HTMLElement>, data: DropdownProps) => void;
   onDurationChange: (event: React.FormEvent<HTMLInputElement>) => void;
   onSet?: () => void;
@@ -27,11 +27,12 @@ export class TimerSetter extends React.Component<Props, {}> {
 
     return (
       <Form.Input
-        value={props.durationValue}
+        value={props.durationValue || ''}
         placeholder="Duration"
         onChange={props.onDurationChange}
         action
         fluid
+        error={!props.durationValue}
         label={props.label}
       >
         <input />
