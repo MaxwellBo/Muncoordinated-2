@@ -2,10 +2,11 @@ import * as React from 'react';
 import * as firebase from 'firebase';
 import Committee, { CommitteeData } from './Committee';
 import { RouteComponentProps } from 'react-router';
-import { Table, Loader, Flag  } from 'semantic-ui-react';
+import { Table, Flag  } from 'semantic-ui-react';
 import { MemberData, MemberID, parseFlagName } from './Member';
 import { CaucusID, CaucusData, SpeakerEvent } from './Caucus';
 import { URLParameters } from '../types';
+import { Loading } from './Loading';
 
 interface Props extends RouteComponentProps<URLParameters> {
 }
@@ -121,7 +122,7 @@ export default class Stats extends React.Component<Props, State> {
     if (committee) {
       return this.renderCommittee(committee);
     } else {
-      return <Loader>Loading</Loader>;
+      return <Loading />;
     }
   }
 }  

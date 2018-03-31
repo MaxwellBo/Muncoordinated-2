@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as firebase from 'firebase';
 import { CommitteeData, CommitteeID, DEFAULT_COMMITTEE } from './Committee';
 import { RouteComponentProps } from 'react-router';
-import { Loader, Segment, Input, Dropdown, Button, Card, Form } from 'semantic-ui-react';
+import { Segment, Input, Dropdown, Button, Card, Form } from 'semantic-ui-react';
 import { fieldHandler, dropdownHandler, validatedNumberFieldHandler } from '../actions/handlers';
 import { makeDropdownOption, objectToList } from '../utils';
 import { TimerSetter, Unit } from './TimerSetter';
@@ -13,6 +13,7 @@ import { postCaucus } from '../actions/caucusActions';
 import { TimerData } from './Timer';
 import { putUnmodTimer } from '../actions/committeeActions';
 import { URLParameters } from '../types';
+import { Loading } from './Loading';
 
 export type MotionID = string;
 
@@ -118,7 +119,6 @@ interface Props extends RouteComponentProps<URLParameters> {
 
 interface State {
   committee?: CommitteeData;
-  newMotion: MotionData;
   committeeFref: firebase.database.Reference;
 }
 
@@ -155,8 +155,7 @@ export default class Motions extends React.Component<Props, State> {
     const { match } = props;
 
     this.state = {
-      committeeFref: firebase.database().ref('committees').child(match.params.committeeID),
-      newMotion: DEFAULT_MOTION
+      committeeFref: firebase.database().ref('committees').child(match.params.committeeID)
     };
   }
 
@@ -322,7 +321,6 @@ export default class Motions extends React.Component<Props, State> {
         <Card.Content extra>
           <Button.Group fluid>
             <Button 
-              icon="trash" 
               basic 
               negative
               onClick={() => motionFref.remove()}
@@ -331,7 +329,6 @@ export default class Motions extends React.Component<Props, State> {
             </Button>
             {approvable(type) && <Button.Or />}
             {approvable(type) && <Button 
-              icon="checkmark" 
               basic 
               positive
               onClick={() => handleApproveMotion(motionData)}
@@ -379,8 +376,7 @@ export default class Motions extends React.Component<Props, State> {
   }
 
   renderTab = (committee: CommitteeData) => {
-    const { renderMotions } = this;
-    const { handlePushMotion, handleClearMotions } = this;
+    const { renderMotions, handlePushMotion } = this;
 
     const motions = committee.motions || {} as Map<MotionID, MotionData>;
 
@@ -399,14 +395,12 @@ export default class Motions extends React.Component<Props, State> {
     );
 
     return (
-      <div>
-        <Card.Group
-          itemsPerRow={1} 
-        >
-          {adder}
-          {renderMotions(motions)}
-        </Card.Group>
-      </div>
+      <Card.Group
+        itemsPerRow={1} 
+      >
+        {adder}
+        {renderMotions(motions)}
+      </Card.Group>
     );
   }
 
@@ -416,7 +410,7 @@ export default class Motions extends React.Component<Props, State> {
     if (committee) {
       return this.renderTab(committee);
     } else {
-      return <Loader>Loading</Loader>;
+      return <Loading />;
     }
   }
 }

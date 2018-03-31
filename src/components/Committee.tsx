@@ -4,7 +4,7 @@ import { RouteComponentProps } from 'react-router';
 import { Route, Link } from 'react-router-dom';
 import { MemberData, MemberID } from './Member';
 import { Caucus, CaucusData, CaucusID, DEFAULT_CAUCUS, CaucusStatus } from './Caucus';
-import { ResolutionData, ResolutionID } from './Resolution';
+import Resolution, { ResolutionData, ResolutionID, DEFAULT_RESOLUTION } from './Resolution';
 import CommitteeAdmin from './CommitteeAdmin';
 import { Dropdown, Icon, Input, Menu, Sticky, Grid, Segment, SemanticICONS } from 'semantic-ui-react';
 import Stats from './Stats';
@@ -14,7 +14,7 @@ import { Unmod } from './Unmod';
 import Help from './Help';
 import Motions from './Motions';
 import { fieldHandler } from '../actions/handlers';
-import { postCaucus } from '../actions/caucusActions';
+import { postCaucus, postResolution } from '../actions/caucusActions';
 import { URLParameters } from '../types';
 
 interface Props extends RouteComponentProps<URLParameters> {
@@ -101,12 +101,23 @@ export default class Committee extends React.Component<Props, State> {
   pushCaucus = () => {
     const committeeID: CommitteeID = this.props.match.params.committeeID;
 
-    const newCaucus = {
+    const newCaucus: CaucusData = {
       ...DEFAULT_CAUCUS,
       name: 'untitled caucus',
     };
 
     postCaucus(committeeID, newCaucus);
+  }
+
+  pushResolution = () => {
+    const committeeID: CommitteeID = this.props.match.params.committeeID;
+
+    const newResolution: ResolutionData = {
+      ...DEFAULT_RESOLUTION,
+      name: 'untitled resolution',
+    };
+
+    postResolution(committeeID, newResolution);
   }
 
   makeMenuItem = (name: string, icon: SemanticICONS) => {
@@ -115,6 +126,7 @@ export default class Committee extends React.Component<Props, State> {
 
     return (
       <Menu.Item
+        key={name}
         name={name.toLowerCase()}
         active={false}
         onClick={() => this.props.history.push(`/committees/${committeeID}/${name.toLowerCase()}`)}
@@ -125,41 +137,54 @@ export default class Committee extends React.Component<Props, State> {
     );
   }
 
-  render() {
-    const { makeMenuItem } = this;
-    const committeeID: CommitteeID = this.props.match.params.committeeID;
-    const caucusID: CommitteeID = this.props.match.params.committeeID;
+  makeSubmenuItem = (id: string, name: string, type: 'caucuses' | 'resolutions') => {
+    const { committeeID, caucusID, resolutionID } = this.props.match.params;
 
+    let active = false;
+
+    if (type === 'caucuses') {
+      active = (id === caucusID);
+    } else if (type === 'resolutions') {
+      active = (id === resolutionID);
+    }
+
+    return (
+      <Menu.Item
+        key={id}
+        name={name}
+        active={active}
+        onClick={() => this.props.history.push(`/committees/${committeeID}/${type}/${id}`)}
+      >
+        {name}
+      </Menu.Item>
+    );
+  }
+
+  render() {
+    const { makeMenuItem, makeSubmenuItem } = this;
     const caucuses = this.state.committee.caucuses || {} as Map<CaucusID, CaucusData>;
+    const resolutions = this.state.committee.resolutions || {} as Map<ResolutionID, ResolutionData>;
 
     const CaucusItem = (props: { id: CaucusID, data: CaucusData }) => {
-      return (
-        <Menu.Item
-          name={props.data.name}
-          active={props.id === caucusID}
-          onClick={() => this.props.history.push(`/committees/${committeeID}/caucuses/${props.id}`)}
-        >
-          {props.data.name}
-        </Menu.Item>
-        // onClick={() => this.state.fref.child('caucuses').child(props.id).remove()
-      );
+
     };
 
     const Nav = () => {
       const caucusItems = Object.keys(caucuses).filter(key =>
         caucuses[key].status === CaucusStatus.Open.toString() && !caucuses[key].deleted
       ).map(key =>
-        <CaucusItem key={key} id={key} data={caucuses[key]} />
+        makeSubmenuItem(key, caucuses[key].name, 'caucuses')
+      );
+
+      const resolutionItems = Object.keys(resolutions).map(key =>
+        makeSubmenuItem(key, resolutions[key].name, 'resolutions')
       );
 
       return (
         <Menu fluid vertical size="massive">
           {makeMenuItem('Admin', 'setting')}
-          {makeMenuItem('Stats', 'bar chart')}
-          {makeMenuItem('Unmod', 'discussions')}
           {makeMenuItem('Motions', 'sort numeric ascending')}
-          {/* { makeMenuItem('Voting', 'thumbs up') } */}
-          {/* { makeMenuItem('Amendments', 'edit') } */}
+          {makeMenuItem('Unmod', 'discussions')}
           <Menu.Item>
             <Icon name="users" />
             Caucuses
@@ -167,10 +192,20 @@ export default class Committee extends React.Component<Props, State> {
               {caucusItems}
               <Menu.Item name="New Caucus" onClick={this.pushCaucus}>
                 <Icon name="add" />
-                New Caucus
               </Menu.Item>
             </Menu.Menu>
           </Menu.Item>
+          <Menu.Item>
+            <Icon name="ordered list" />
+            Resolutions
+            <Menu.Menu>
+              {resolutionItems}
+              <Menu.Item name="New Resolution" onClick={this.pushResolution}>
+                <Icon name="add" />
+              </Menu.Item>
+            </Menu.Menu>
+          </Menu.Item>
+          {makeMenuItem('Stats', 'bar chart')}
           {makeMenuItem('Help', 'help')}
         </Menu>
       );
@@ -200,6 +235,7 @@ export default class Committee extends React.Component<Props, State> {
             <Route exact={true} path="/committees/:committeeID/motions" component={Motions} />
             <Route exact={true} path="/committees/:committeeID/help" component={Help} />
             <Route path="/committees/:committeeID/caucuses/:caucusID" render={CaucusComponent} />
+            <Route path="/committees/:committeeID/resolutions/:resolutionID" component={Resolution} />
           </Grid.Column>
         </Grid>
       </div>

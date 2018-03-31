@@ -1,14 +1,23 @@
 import * as React from 'react';
 import * as firebase from 'firebase';
-import { MemberID } from './Member';
-import { AmendmentID, AmendmentData } from './Amendment';
+import { MemberID, parseCountryOption, MemberData } from './Member';
+import { AmendmentID, AmendmentData, DEFAULT_AMENDMENT } from './Amendment';
+import { Card, Button, Form, Dimmer } from 'semantic-ui-react';
+import { CommitteeData } from './Committee';
+import { CaucusID } from './Caucus';
+import { RouteComponentProps } from 'react-router';
+import { URLParameters } from '../types';
+import { dropdownHandler } from '../actions/handlers';
+import { objectToList } from '../utils';
+import { CountryOption } from '../constants';
+import { Loading } from './Loading';
 
-interface Props { 
-  fref: firebase.database.Reference;
+interface Props extends RouteComponentProps<URLParameters> {
 }
 
 interface State {
-  resolution: ResolutionData;
+  committeeFref: firebase.database.Reference;
+  committee?: CommitteeData;
 }
 
 export enum ResolutionStatus {
@@ -20,11 +29,12 @@ export enum ResolutionStatus {
 export type ResolutionID = string;
 
 export interface ResolutionData {
+  name: string;
   proposer: MemberID;
   seconder: MemberID;
   status: ResolutionStatus;
-  caucus: string;
-  amendments: Map<AmendmentID, AmendmentData>;
+  caucus?: CaucusID;
+  amendments?: Map<AmendmentID, AmendmentData>;
   votes: VotingResults;
 }
 
@@ -34,47 +44,148 @@ export interface VotingResults {
   against: Map<string, MemberID>;
 }
 
-export const DEFAULT_VOTES = {
+export const DEFAULT_VOTES: VotingResults = {
   for: {} as Map<string, MemberID>,
   abstaining: {} as Map<string, MemberID>,
   against: {} as Map<string, MemberID>
+};
+
+export const DEFAULT_RESOLUTION = {
+  proposer: '',
+  seconder: '',
+  status: ResolutionStatus.Ongoing,
+  caucus: '',
+  amendments: {} as Map<AmendmentID, AmendmentData>,
+  votes: DEFAULT_VOTES
 };
 
 export default class Resolution extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
 
-    const defaultResolution = {
-      proposer: '',
-      seconder: '',
-      status: ResolutionStatus.Ongoing,
-      caucus: '',
-      amendments: {} as Map<AmendmentID, AmendmentData>,
-      votes: DEFAULT_VOTES
-    };
+    const { match } = props;
 
     this.state = {
-      resolution: defaultResolution,
+      committeeFref: firebase.database().ref('resolution').child(match.params.committeeID)
     };
+  }
+
+  firebaseCallback = (committee: firebase.database.DataSnapshot | null) => {
+    if (committee) {
+      this.setState({ committee: committee.val() });
+    }
   }
 
   componentDidMount() {
-    this.props.fref.on('value', (resolution) => {
-      if (resolution) {
-        this.setState({ resolution: resolution.val() });
-      }
-    });
+    this.state.committeeFref.on('value', this.firebaseCallback);
   }
 
   componentWillUnmount() {
-    this.props.fref.off();
+    this.state.committeeFref.off('value', this.firebaseCallback);
+  }
+
+  recoverResolutionRef = () => {
+    const resolutionID: ResolutionID = this.props.match.params.resolutionID;
+
+    return this.state.committeeFref
+      .child('resolutions')
+      .child(resolutionID);
+  }
+
+  // DUPE
+  recoverCountryOptions = (): CountryOption[] => {
+    const { committee } = this.state;
+
+    if (committee) {
+      return objectToList(committee.members || {} as Map<MemberID, MemberData>)
+        .map(x => parseCountryOption(x.name));
+    }
+
+    return [];
+  }
+
+  handlePushAmendment = (): void => {
+    this.recoverResolutionRef().child('amendments').push().set(DEFAULT_AMENDMENT);
+  }
+
+  renderAmendment = (id: AmendmentID, amendmentData: AmendmentData, amendmentFref: firebase.database.Reference) => {
+    const { recoverCountryOptions } = this;
+    const { proposer } = amendmentData;
+
+    return (
+      <Card 
+        key={id}
+      >
+        <Card.Content>
+          <Card.Header>
+            HMM
+          </Card.Header>
+          <Card.Meta>
+            <Form.Dropdown
+              value={proposer}
+              search
+              selection
+              fluid
+              onChange={dropdownHandler<AmendmentData>(amendmentFref, 'proposer')}
+              options={recoverCountryOptions()}
+              label="Proposer"
+            />
+          </Card.Meta>
+        </Card.Content>
+      </Card>
+    );
+  }
+
+  renderAmendments = (amendments: Map<AmendmentID, AmendmentData>) => {
+    const { renderAmendment, recoverResolutionRef } = this;
+
+    const resolutionRef = recoverResolutionRef();
+
+    return Object.keys(amendments).map(key => {
+      return renderAmendment(key, amendments[key], resolutionRef.child(key));
+    });
+  }
+
+  renderResolution = (resolution: ResolutionData) => {
+    const { renderAmendments, handlePushAmendment } = this;
+
+    const amendments = resolution.amendments || {} as Map<AmendmentID, AmendmentData>;
+
+    const adder = (
+      <Card>
+        <Card.Content>
+          <Button
+            icon="plus"
+            primary
+            fluid
+            basic
+            onClick={handlePushAmendment}
+          />
+        </Card.Content>
+      </Card>
+    );
+
+    return (
+      <Card.Group
+        itemsPerRow={1} 
+      >
+        {adder}
+        {renderAmendments(amendments)}
+      </Card.Group>
+    );
   }
 
   render() {
-    return (
-      <div>
-        <p>Resolution</p>
-      </div>
-    );
+    const { committee } = this.state;
+    const resolutionID: ResolutionID = this.props.match.params.resolutionID;
+
+    const resolutions = committee ? committee.resolutions : {};
+    const resolution = (resolutions || {})[resolutionID];
+
+    if (resolution) {
+      return this.renderResolution(resolution);
+    } else {
+      return <Loading />;
+    }
   }
 }

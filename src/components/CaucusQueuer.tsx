@@ -45,12 +45,12 @@ export default class CaucusQueuer extends React.Component<Props, State> {
     }
   }
 
-  retrieveCountryOptions = (): CountryOption[] => {
+  recoverCountryOptions = (): CountryOption[] => {
     return Utils.objectToList(this.props.members).map(x => parseCountryOption(x.name))
   }
 
   countryHandler = (event: React.SyntheticEvent<HTMLElement>, data: DropdownProps): void => {
-    const countryOptions = this.retrieveCountryOptions()
+    const countryOptions = this.recoverCountryOptions();
 
     this.setState({ queueCountry: countryOptions.filter(c => c.value === data.value)[0] });
   }
@@ -62,7 +62,7 @@ export default class CaucusQueuer extends React.Component<Props, State> {
   render() {
     const { stanceHandler, countryHandler, unitHandler } = this;
 
-    const countryOptions = this.retrieveCountryOptions();
+    const countryOptions = this.recoverCountryOptions();
 
     const durationHandler = (e: React.FormEvent<HTMLInputElement>) =>
       this.setState({ durationField: e.currentTarget.value });

@@ -7,13 +7,14 @@ import { CommitteeID, CommitteeData } from './Committee';
 import CaucusQueuer from './CaucusQueuer';
 import * as Utils from '../utils';
 import {
-  Segment, Loader, Dimmer, Header, Dropdown, TextArea, Input, Button, Icon, Grid, Feed, Flag,
+  Segment, Dimmer, Header, Dropdown, TextArea, Input, Button, Icon, Grid, Feed, Flag,
   Label, Form, Message
 } from 'semantic-ui-react';
 import { COUNTRY_OPTIONS, CountryOption } from '../constants';
 import { textAreaHandler, dropdownHandler, fieldHandler } from '../actions/handlers';
 import { makeDropdownOption } from '../utils';
 import { URLParameters } from '../types';
+import { Loading } from './Loading';
 
 interface CaucusProps extends RouteComponentProps<URLParameters> {
   committee: CommitteeData;
@@ -443,7 +444,7 @@ export class Caucus extends React.Component<CaucusProps, CaucusState> {
         </Grid.Row>
       </Grid >
     ) : (
-        <Loader>Loading</Loader>
+        <Loading />
       );
   }
 
@@ -473,7 +474,7 @@ export class Caucus extends React.Component<CaucusProps, CaucusState> {
         );
       }
     } else {
-      return <Loader>Loading</Loader>;
+      return <Loading />;
     }
   }
 }
