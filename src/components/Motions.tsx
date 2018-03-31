@@ -342,10 +342,10 @@ export default class Motions extends React.Component<Props, State> {
       const ma: MotionData = motions[a];
       const mb: MotionData = motions[b];
       const ca = disruptiveness(ma.type);
-      const cb = disruptiveness(ma.type);
+      const cb = disruptiveness(mb.type);
 
       if (ca < cb) {
-        return -1; // reversed
+        return -1; 
       } else if (ca === cb) {
 
         const sa = ma.caucusDuration * (ma.caucusUnit === Unit.Minutes ? 60 : 1);
