@@ -103,7 +103,7 @@ export default class Committee extends React.Component<Props, State> {
 
     const newCaucus = {
       ...DEFAULT_CAUCUS,
-      name: 'Default',
+      name: 'untitled caucus',
     };
 
     postCaucus(committeeID, newCaucus);
