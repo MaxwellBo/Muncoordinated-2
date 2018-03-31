@@ -1,13 +1,13 @@
 import * as React from 'react';
 import * as firebase from 'firebase';
 import { MemberID, parseCountryOption, MemberData } from './Member';
-import { AmendmentID, AmendmentData, DEFAULT_AMENDMENT } from './Amendment';
-import { Card, Button, Form, Dimmer, Dropdown, Segment, Input } from 'semantic-ui-react';
+import { AmendmentID, AmendmentData, DEFAULT_AMENDMENT, AMENDMENT_STATUS_OPTIONS } from './Amendment';
+import { Card, Button, Form, Dimmer, Dropdown, Segment, Input, TextArea } from 'semantic-ui-react';
 import { CommitteeData } from './Committee';
 import { CaucusID } from './Caucus';
 import { RouteComponentProps } from 'react-router';
 import { URLParameters } from '../types';
-import { dropdownHandler, fieldHandler } from '../actions/handlers';
+import { dropdownHandler, fieldHandler, textAreaHandler } from '../actions/handlers';
 import { objectToList, makeDropdownOption } from '../utils';
 import { CountryOption } from '../constants';
 import { Loading } from './Loading';
@@ -116,7 +116,26 @@ export default class Resolution extends React.Component<Props, State> {
 
   renderAmendment = (id: AmendmentID, amendmentData: AmendmentData, amendmentFref: firebase.database.Reference) => {
     const { recoverCountryOptions } = this;
-    const { proposer } = amendmentData;
+    const { proposer, text, status } = amendmentData;
+
+    const textArea = (
+      <TextArea
+        value={text}
+        autoHeight
+        onChange={textAreaHandler<AmendmentData>(amendmentFref, 'text')}
+        fluid
+        rows={1}
+        placeholder="Text"
+      />
+    );
+
+    const statusDropdown = (
+      <Dropdown 
+        value={status} 
+        options={AMENDMENT_STATUS_OPTIONS} 
+        onChange={dropdownHandler<AmendmentData>(amendmentFref, 'status')} 
+      /> 
+    );
 
     return (
       <Card 
@@ -124,8 +143,18 @@ export default class Resolution extends React.Component<Props, State> {
       >
         <Card.Content>
           <Card.Header>
-            HMM
+            {statusDropdown}
+            <Button
+              floated="right"
+              icon="trash"
+              negative
+              basic
+              onClick={() => amendmentFref.remove()}
+            />
           </Card.Header>
+          <Form>
+            {textArea}
+          </Form>
           <Card.Meta>
             <Form.Dropdown
               value={proposer}
@@ -175,7 +204,7 @@ export default class Resolution extends React.Component<Props, State> {
     const resolutionRef = recoverResolutionRef();
 
     return Object.keys(amendments).map(key => {
-      return renderAmendment(key, amendments[key], resolutionRef.child(key));
+      return renderAmendment(key, amendments[key], resolutionRef.child('amendments').child(key));
     });
   }
 
