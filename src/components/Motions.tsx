@@ -7,8 +7,8 @@ import { fieldHandler, dropdownHandler, validatedNumberFieldHandler } from '../a
 import { makeDropdownOption, objectToList } from '../utils';
 import { TimerSetter, Unit } from './TimerSetter';
 import { parseCountryOption, MemberID, MemberData } from './Member';
-import { CountryOption } from '../constants';
-import { DEFAULT_CAUCUS, CaucusData } from './Caucus';
+import { CountryOption, COUNTRY_OPTIONS } from '../constants';
+import { DEFAULT_CAUCUS, CaucusData, Stance } from './Caucus';
 import { postCaucus } from '../actions/caucusActions';
 import { TimerData } from './Timer';
 import { putUnmodTimer } from '../actions/committeeActions';
@@ -195,21 +195,29 @@ export default class Motions extends React.Component<Props, State> {
   handleApproveMotion = (motionData: MotionData): void => {
     const committeeID: CommitteeID = this.props.match.params.committeeID;
 
-    const { proposal, speakerDuration, speakerUnit, 
+    const { proposal, proposer, speakerDuration, speakerUnit, 
       caucusDuration, caucusUnit } = motionData;
 
     if (motionData.type === MotionType.OpenModeratedCaucus && speakerDuration && caucusDuration) {
+
+      const speakerSeconds = speakerDuration * (speakerUnit === Unit.Minutes ? 60 : 1);
+      const caucusSeconds = caucusDuration * (caucusUnit === Unit.Minutes ? 60 : 1);
 
       const newCaucus: CaucusData = {
         ...DEFAULT_CAUCUS,
         name: motionData.proposal,
         speakerTimer: {
           ...DEFAULT_CAUCUS.speakerTimer,
-          remaining: speakerDuration * (speakerUnit === Unit.Minutes ? 60 : 1)
+          remaining: speakerSeconds
         },
         caucusTimer: {
           ...DEFAULT_CAUCUS.caucusTimer,
-          remaining: caucusDuration * (caucusUnit === Unit.Minutes ? 60 : 1)
+          remaining: caucusSeconds
+        },
+        speaking: {
+          who: COUNTRY_OPTIONS.filter(c => c.key === proposer)[0].text,
+          stance: Stance.For,
+          duration: speakerSeconds
         }
       };
 
@@ -220,9 +228,11 @@ export default class Motions extends React.Component<Props, State> {
 
     } else if (motionData.type === MotionType.OpenUnmoderatedCaucus && caucusDuration) {
 
+      const caucusSeconds = caucusDuration * (caucusUnit === Unit.Minutes ? 60 : 1);
+
       const newTimer: TimerData = {
         ...DEFAULT_COMMITTEE.timer,
-        remaining: caucusDuration * (caucusUnit === Unit.Minutes ? 60 : 1) 
+        remaining: caucusSeconds
       };
 
       putUnmodTimer(committeeID, newTimer);
