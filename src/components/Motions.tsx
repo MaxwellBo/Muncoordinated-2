@@ -429,12 +429,14 @@ export default class Motions extends React.Component<Props, State> {
     );
 
     return (
-      <Card.Group
-        itemsPerRow={1} 
-      >
-        {adder}
-        {renderMotions(motions)}
-      </Card.Group>
+      <div>
+        <Card.Group
+          itemsPerRow={1} 
+        >
+          {adder}
+          {renderMotions(motions)}
+        </Card.Group>
+      </div>
     );
   }
 
