@@ -173,6 +173,7 @@ export default class Resolution extends React.Component<Props, State> {
 
   renderHeader = (resolution?: ResolutionData) => {
     const resolutionFref = this.recoverResolutionRef();
+    const { recoverCountryOptions } = this;
 
     const statusDropdown = (
       <Dropdown 
@@ -185,16 +186,38 @@ export default class Resolution extends React.Component<Props, State> {
     return (
         <Segment loading={!resolution}>
           <Input
+            value={resolution ? resolution.name : ''}
             label={statusDropdown}
             labelPosition="right"
-            value={name}
             onChange={fieldHandler<ResolutionData>(resolutionFref, 'name')}
             attatched="top"
             size="massive"
             fluid
             placeholder="Resolution Name"
           />
-        </Segment>
+        <Form>
+          <Form.Group widths="equal">
+            <Form.Dropdown
+              value={resolution ? resolution.proposer : ''}
+              search
+              selection
+              fluid
+              onChange={dropdownHandler<ResolutionData>(resolutionFref, 'proposer')}
+              options={recoverCountryOptions()}
+              label="Proposer"
+            />
+            <Form.Dropdown
+              value={resolution ? resolution.seconder : ''}
+              search
+              selection
+              fluid
+              onChange={dropdownHandler<ResolutionData>(resolutionFref, 'seconder')}
+              options={recoverCountryOptions()}
+              label="Seconder"
+            />
+          </Form.Group>
+        </Form>
+      </Segment>
     );
   }
 

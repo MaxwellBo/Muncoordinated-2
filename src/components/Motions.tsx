@@ -81,6 +81,15 @@ const hasSpeakers = (motionType: MotionType): boolean => {
   }
 };
 
+const hasSeconder = (motionType: MotionType): boolean => {
+  switch (motionType) {
+    case MotionType.IntroduceDraftResolution:
+      return true;
+    default:
+      return false;
+  }
+};
+
 const hasDetail = (motionType: MotionType): boolean => {
   switch (motionType) {
     case MotionType.OpenModeratedCaucus:
@@ -107,6 +116,7 @@ const hasDuration = (motionType: MotionType): boolean => {
 export interface MotionData {
   proposal: string;
   proposer: string;
+  seconder: string;
   speakerDuration?: number;
   speakerUnit: Unit;
   caucusDuration?: number;
@@ -141,6 +151,7 @@ const MOTION_TYPE_OPTIONS = [
 const DEFAULT_MOTION: MotionData = {
   proposal: '',
   proposer: '',
+  seconder: '',
   speakerDuration: 60,
   speakerUnit: Unit.Seconds,
   caucusDuration: 15,
@@ -245,7 +256,7 @@ export default class Motions extends React.Component<Props, State> {
   renderMotion = (id: MotionID, motionData: MotionData, motionFref: firebase.database.Reference) => {
     const { recoverCountryOptions, handleApproveMotion } = this;
     const { proposer, proposal, type, caucusUnit, caucusDuration, speakerUnit, 
-      speakerDuration } = motionData;
+      speakerDuration, seconder } = motionData;
 
     const description = (
       <Card.Description>
@@ -288,6 +299,32 @@ export default class Motions extends React.Component<Props, State> {
       </Card.Content>
     );
 
+    const proposerTree = (
+      <Form.Dropdown
+        key="proposer"
+        value={proposer}
+        search
+        selection
+        fluid
+        onChange={dropdownHandler<MotionData>(motionFref, 'proposer')}
+        options={recoverCountryOptions()}
+        label="Proposer"
+      />
+    );
+
+    const seconderTree = (
+      <Form.Dropdown
+        key="seconder"
+        value={seconder}
+        search
+        selection
+        fluid
+        onChange={dropdownHandler<MotionData>(motionFref, 'seconder')}
+        options={recoverCountryOptions()}
+        label="Seconder"
+      />
+    );
+
     return (
       <Card 
         key={id}
@@ -306,15 +343,12 @@ export default class Motions extends React.Component<Props, State> {
             {hasDetail(type) && description}
           </Card.Header>
           <Card.Meta>
-            <Form.Dropdown
-              value={proposer}
-              search
-              selection
-              fluid
-              onChange={dropdownHandler<MotionData>(motionFref, 'proposer')}
-              options={recoverCountryOptions()}
-              label="Proposer"
-            />
+            <Form fluid>
+              <Form.Group fluid widths="equal">
+                {proposerTree}
+                {hasSeconder(type) && seconderTree}
+              </Form.Group>
+            </Form>
           </Card.Meta>
         </Card.Content>
         {(hasSpeakers(type) || hasDuration(type)) && extra}
