@@ -189,16 +189,16 @@ export default class Resolution extends React.Component<Props, State> {
 
     const countryOptions = recoverCountryOptions();
 
-    const amendment = (
+    const proposerDropdown = (
       <Form.Dropdown
         key="proposer"
         value={nameToCountryOption(proposer).key}
         search
         selection
         fluid
+        placeholder="Proposer"
         onChange={countryDropdownHandler<AmendmentData>(amendmentFref, 'proposer', countryOptions)}
         options={countryOptions}
-        label="Proposer"
       />
     );
 
@@ -228,7 +228,7 @@ export default class Resolution extends React.Component<Props, State> {
             {textArea}
           </Form>
           <Card.Meta>
-            {amendment}
+            {proposerDropdown}
           </Card.Meta>
         </Card.Content>
       </Card>
