@@ -4,7 +4,7 @@ import * as _ from 'lodash';
 import { MemberID, nameToCountryOption, MemberData, Rank } from './Member';
 import { AmendmentID, AmendmentData, DEFAULT_AMENDMENT, AMENDMENT_STATUS_OPTIONS } from './Amendment';
 import { Card, Button, Form, Dimmer, Dropdown, Segment, Input, TextArea, 
-  List, Label, SemanticICONS, Icon, ListContent, Tab, Grid } from 'semantic-ui-react';
+  List, Label, SemanticICONS, Icon, ListContent, Tab, Grid, SemanticCOLORS } from 'semantic-ui-react';
 import { CommitteeData } from './Committee';
 import { CaucusID } from './Caucus';
 import { RouteComponentProps } from 'react-router';
@@ -259,8 +259,33 @@ export default class Resolution extends React.Component<Props, State> {
       .value();
   }
 
+  renderCount = (key: string, color: SemanticCOLORS, icon: SemanticICONS, count: number) => {
+    return (
+      <Grid.Column key={key}>
+        {/* <Button
+          key={'icon' + key}
+          color={color}
+          icon
+        >
+          <Icon 
+            name={icon}
+            color={color === 'yellow' ? 'black' : undefined}
+          />
+        </Button> */}
+        <Button
+          key={'count' + key}
+          color={color}
+          icon
+          fluid
+        >
+          {key.toUpperCase()}: {count}
+        </Button>
+      </Grid.Column>
+    );
+  }
+
   renderVoting = (resolution?: ResolutionData) => {
-    const { renderVotingMembers } = this;
+    const { renderVotingMembers, renderCount } = this;
     const { committee } = this.state;
 
     const members = committee ? committee.members : undefined;
@@ -270,6 +295,12 @@ export default class Resolution extends React.Component<Props, State> {
       members || {} as Map<string, MemberData>,
       votes || {} as Votes
     );
+
+    const votesValues: Vote[] = _.values(votes || {});
+
+    const fors = votesValues.filter(v => v === Vote.For).length;
+    const abstains = votesValues.filter(v => v === Vote.Abstaining).length;
+    const againsts = votesValues.filter(v => v === Vote.Against).length;
 
     const COLUMNS = 3;
     const ROWS = Math.ceil(votingMembers.length / COLUMNS);
@@ -288,6 +319,11 @@ export default class Resolution extends React.Component<Props, State> {
       <Segment inverted>
         <Grid columns="equal">
           {columns}
+        </Grid>
+        <Grid columns="equal">
+          {renderCount('yes', 'green', 'plus', fors)}
+          {renderCount('no', 'red', 'minus', againsts)}
+          {renderCount('abstaining', 'yellow', 'minus', abstains)}
         </Grid>
       </Segment>
     );
