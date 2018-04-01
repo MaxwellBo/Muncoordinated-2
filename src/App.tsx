@@ -1,8 +1,9 @@
 import * as React from 'react';
 import * as firebase from 'firebase';
 import { Route } from 'react-router-dom';
-import { Button, Container, Header, Message, Icon } from 'semantic-ui-react';
+import { Button, Container, Header, Message } from 'semantic-ui-react';
 import './App.css';
+import { ConnectionStatus } from './components/ConnectionStatus';
 
 import { ModalLogin } from './components//Auth';
 import Welcome from './components/Welcome';
@@ -15,43 +16,6 @@ export const Footer = () => {
       Made with 😡 by <a href="https://github.com/MaxwellBo">Max Bo</a>
     </Message>);
 };
-
-class ConnectionStatus extends React.Component<{}, { connected: boolean, fref: firebase.database.Reference }> {
-  constructor(props: {}) {
-    super(props);
-
-    this.state = {
-      connected: false,
-      fref: firebase.database().ref('.info/connected')
-    };
-  }
-
-  firebaseCallback = (status: firebase.database.DataSnapshot | null) => {
-    if (status) {
-      this.setState({ connected: status.val() });
-    }
-  }
-
-  componentDidMount() {
-    this.state.fref.on('value', this.firebaseCallback);
-  }
-
-  componentWillUnmount() {
-    this.state.fref.off('value', this.firebaseCallback);
-  }
-
-  render() {
-    return !this.state.connected ? (
-      <Message icon negative>
-        <Icon name="warning sign" />
-        <Message.Content>
-          <Message.Header>Connection Lost</Message.Header>
-          Refresh the page, as local changes will no longer be committed to the server.
-        </Message.Content>
-      </Message>
-    ) : <div />;
-  }
-}
 
 class App extends React.Component {
   render() {
