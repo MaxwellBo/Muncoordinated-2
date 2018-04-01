@@ -1,10 +1,10 @@
 import * as React from 'react';
 import * as firebase from 'firebase';
 import * as _ from 'lodash';
-import { MemberID, nameToCountryOption, MemberData } from './Member';
+import { MemberID, nameToCountryOption, MemberData, Rank } from './Member';
 import { AmendmentID, AmendmentData, DEFAULT_AMENDMENT, AMENDMENT_STATUS_OPTIONS } from './Amendment';
 import { Card, Button, Form, Dimmer, Dropdown, Segment, Input, TextArea, 
-  List, Label, SemanticICONS } from 'semantic-ui-react';
+  List, Label, SemanticICONS, Icon, ListContent } from 'semantic-ui-react';
 import { CommitteeData } from './Committee';
 import { CaucusID } from './Caucus';
 import { RouteComponentProps } from 'react-router';
@@ -202,7 +202,7 @@ export default class Resolution extends React.Component<Props, State> {
     const { cycleVote } = this;
 
     let color: 'green' | 'yellow' | 'red' | undefined;
-    let icon: SemanticICONS = 'question circle';
+    let icon: SemanticICONS = 'question';
 
     if (vote === Vote.For) {
       color = 'green';
@@ -217,17 +217,32 @@ export default class Resolution extends React.Component<Props, State> {
 
     const button = (
       <Button
+        floated="left"
         color={color}
-        icon={icon}
+        icon
         onClick={() => cycleVote(key, member, vote)}
-      />
+      >
+        <Icon 
+          name={icon}
+          color={color === 'yellow' ? 'black' : undefined}
+        />
+      </Button>
     );
+
+    // const { voting, rank } = member;
+    // const veto: boolean = rank === Rank.Veto;
+
+    // const description = (
+    //   <List.Description>
+    //     Veto
+    //   </List.Description>
+    // );
 
     return (
       <List.Item key={key}>
         {button}
-        <List.Content>
-          {member.name}
+        <List.Content verticalAlign="middle">
+          <List.Header>{member.name.toUpperCase()}</List.Header>
         </List.Content>
       </List.Item>
     );
@@ -252,14 +267,15 @@ export default class Resolution extends React.Component<Props, State> {
     const votes = resolution ? resolution.votes : undefined;
 
     return (
-      <List
-        divided
-        verticalAlign="middle"
-      >
-        {renderVotingMembers(
-          members || {} as Map<string, MemberData>,
-          votes || {} as Votes)}
-      </List>
+      <Segment inverted>
+        <List
+          inverted
+        >
+          {renderVotingMembers(
+            members || {} as Map<string, MemberData>,
+            votes || {} as Votes)}
+        </List>
+      </Segment>
     );
   }
 
