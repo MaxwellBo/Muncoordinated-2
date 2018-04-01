@@ -4,8 +4,9 @@ import { CommitteeData, CommitteeID } from './Committee';
 import { MemberView, MemberData, MemberID, Rank, parseFlagName } from './Member';
 import * as Utils from '../utils';
 import { Dropdown, Segment, Header, Flag, Table, List, Button, Checkbox, Icon, 
-  CheckboxProps, DropdownProps } from 'semantic-ui-react';
+  CheckboxProps, DropdownProps, ButtonProps } from 'semantic-ui-react';
 import { COUNTRY_OPTIONS, CountryOption } from '../constants';
+import { checkboxHandler, dropdownHandler } from '../actions/handlers';
 
 export const canVote = (x: MemberData) => (x.rank === Rank.Veto || x.rank === Rank.Standard);
 export const nonObserver = (x: MemberData) => (x.rank !== Rank.Observer);
@@ -108,14 +109,6 @@ function CommitteeStats(props: { data: CommitteeData }) {
 }
 
 function MemberItem(props: { data: MemberData, fref: firebase.database.Reference }) {
-  const propertyHandler = (property: string) => (event: any, data: any) => {
-    props.fref.child(property).set(data.checked);
-  };
-
-  const rankHandler = (event: any, data: any) => {
-    props.fref.child('rank').set(data.value);
-  };
-
   return (
     <Table.Row>
       <Table.Cell>
@@ -128,7 +121,7 @@ function MemberItem(props: { data: MemberData, fref: firebase.database.Reference
           selection
           fluid
           options={RANK_OPTIONS}
-          onChange={rankHandler}
+          onChange={dropdownHandler<MemberData>(props.fref, 'rank')}
           value={props.data.rank}
         />
       </Table.Cell>
@@ -136,14 +129,14 @@ function MemberItem(props: { data: MemberData, fref: firebase.database.Reference
         <Checkbox 
           toggle 
           checked={props.data.present} 
-          onChange={propertyHandler('present')} 
+          onChange={checkboxHandler<MemberData>(props.fref, 'present')} 
         />
       </Table.Cell>
       <Table.Cell collapsing>
         <Checkbox 
           toggle 
           checked={props.data.present && props.data.voting} 
-          onChange={propertyHandler('voting')} 
+          onChange={checkboxHandler<MemberData>(props.fref, 'voting')} 
           disabled={!props.data.present}
         />
       </Table.Cell>
@@ -172,7 +165,7 @@ export default class CommitteeAdmin extends React.Component<Props, State> {
     };
   }
 
-  pushMember = (event: any) => {
+  pushMember = (event: React.MouseEvent<HTMLButtonElement>, data: ButtonProps) => {
     event.preventDefault();
 
     const newMember: MemberData = {
@@ -185,30 +178,33 @@ export default class CommitteeAdmin extends React.Component<Props, State> {
     this.props.fref.child('members').push().set(newMember);
   }
 
+  countryHandler = (event: React.SyntheticEvent<HTMLElement>, data: DropdownProps) => {
+    this.setState({ 
+      newCountry: [...this.state.newOptions, ...COUNTRY_OPTIONS].filter(c => c.value === data.value)[0] });
+  }
+
+  presentHandler = (event: React.FormEvent<HTMLInputElement>, data: CheckboxProps) => {
+    this.setState({ newMemberPresent: data.checked || false });
+  }
+
+  votingHandler = (event: React.FormEvent<HTMLInputElement>, data: CheckboxProps) => {
+    this.setState({ newMemberVoting: data.checked || false });
+  }
+
+  rankHandler = (event: React.SyntheticEvent<HTMLElement>, data: DropdownProps) => {
+    this.setState({ newMemberRank: data.value as Rank || Rank.Standard });
+  }
+
+  additionHandler = (event: React.KeyboardEvent<HTMLElement>, data: any) => {
+    // FSM looks sorta like the UN flag
+    const newOption: CountryOption = { key: data.value, text: data.value, value: data.value, flag: 'fm' };
+
+    this.setState({ newCountry: newOption, newOptions: [ newOption, ...this.state.newOptions] });
+  }
+
   renderAdder() {
-    const countryHandler = (event: React.SyntheticEvent<HTMLElement>, data: DropdownProps) => {
-      this.setState({ 
-        newCountry: [...this.state.newOptions, ...COUNTRY_OPTIONS].filter(c => c.value === data.value)[0] });
-    };
-
-    const presentHandler = (event: React.FormEvent<HTMLInputElement>, data: CheckboxProps) => {
-      this.setState({ newMemberPresent: data.checked || false });
-    };
-
-    const votingHandler = (event: React.FormEvent<HTMLInputElement>, data: CheckboxProps) => {
-      this.setState({ newMemberVoting: data.checked || false });
-    };
-
-    const rankHandler = (event: React.SyntheticEvent<HTMLElement>, data: DropdownProps) => {
-      this.setState({ newMemberRank: data.value as Rank || Rank.Standard });
-    };
-
-    const additionHandler = (event: any, data: any) => {
-      // FSM looks sorta like the UN flag
-      const newOption: CountryOption = { key: data.value, text: data.value, value: data.value, flag: 'fm' };
-
-      this.setState({ newCountry: newOption, newOptions: [ newOption, ...this.state.newOptions] });
-    };
+    const { additionHandler, countryHandler, rankHandler, presentHandler, votingHandler } = this;
+    const { newMemberPresent, newMemberVoting } = this.state;
 
     return (
       <Table.Row>
@@ -236,10 +232,10 @@ export default class CommitteeAdmin extends React.Component<Props, State> {
           />
         </Table.HeaderCell>
         <Table.HeaderCell collapsing >
-          <Checkbox toggle checked={this.state.newMemberPresent} onChange={presentHandler} />
+          <Checkbox toggle checked={newMemberPresent} onChange={presentHandler} />
         </Table.HeaderCell>
         <Table.HeaderCell collapsing >
-          <Checkbox toggle checked={this.state.newMemberVoting} onChange={votingHandler} />
+          <Checkbox toggle checked={newMemberVoting} onChange={votingHandler} />
         </Table.HeaderCell>
         <Table.HeaderCell>
           <Button
