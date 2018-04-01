@@ -41,6 +41,7 @@ export type ResolutionID = string;
 
 export interface ResolutionData {
   name: string;
+  link: string;
   proposer: MemberID;
   seconder: MemberID;
   status: ResolutionStatus;
@@ -59,6 +60,7 @@ type Votes = Map<string, Vote>;
 
 export const DEFAULT_RESOLUTION: ResolutionData = {
   name: '',
+  link: '',
   proposer: '',
   seconder: '',
   status: ResolutionStatus.Ongoing,
@@ -218,7 +220,7 @@ export default class Resolution extends React.Component<Props, State> {
               floated="right"
               basic
               positive
-              content="Provision"
+              content="Provision Caucus"
               onClick={() => handleProvisionAmendment(amendmentData)}
             />
           </Card.Header>
@@ -436,6 +438,14 @@ export default class Resolution extends React.Component<Props, State> {
             placeholder="Resolution Name"
           />
         <Form>
+          <TextArea
+            value={resolution ? resolution.link : ''}
+            autoHeight
+            onChange={textAreaHandler<ResolutionData>(resolutionFref, 'link')}
+            attatched="top"
+            rows={1}
+            placeholder="Link"
+          />
           <Form.Group widths="equal">
             {proposerTree}
             {seconderTree}
@@ -490,17 +500,17 @@ export default class Resolution extends React.Component<Props, State> {
       <Segment>
         <Button.Group fluid>
           <Button
+            negative
+            content="Delete"
+            basic
+            onClick={() => recoverResolutionFref().remove()}
+          />
+          <Button
             basic
             disabled={!resolution}
             positive
-            content="Provision"
+            content="Provision Caucus"
             onClick={() => handleProvisionResolution(resolution!)}
-          />
-          <Button
-            icon="trash"
-            negative
-            basic
-            onClick={() => recoverResolutionFref().remove()}
           />
         </Button.Group>
       </Segment>
