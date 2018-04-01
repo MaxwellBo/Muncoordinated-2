@@ -133,11 +133,13 @@ export default class Login extends React.Component<Props, State> {
           onChange={passwordHandler}
         />
         <Message
+          key="success"
           success
           header="Account created"
           content="Your account was successfully created"
         />
         <Message
+          key="error"
           error
           header={this.state.error ? this.state.error.name : ''}
           content={this.state.error ? this.state.error.message : ''}

@@ -117,7 +117,6 @@ function CaucusHeader(props: { data: CaucusData, fref: firebase.database.Referen
           autoHeight
           onChange={textAreaHandler<CaucusData>(props.fref, 'topic')}
           attatched="top"
-          fluid
           rows={1}
           placeholder="Caucus Topic"
         />

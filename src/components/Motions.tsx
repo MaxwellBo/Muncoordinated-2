@@ -229,7 +229,7 @@ export default class Motions extends React.Component<Props, State> {
           remaining: caucusSeconds
         },
         speaking: {
-          who: COUNTRY_OPTIONS.filter(c => c.key === proposer)[0].text,
+          who: proposer,
           stance: Stance.For,
           duration: speakerSeconds
         }
@@ -361,8 +361,8 @@ export default class Motions extends React.Component<Props, State> {
             {hasDetail(type) && description}
           </Card.Header>
           <Card.Meta>
-            <Form fluid>
-              <Form.Group fluid widths="equal">
+            <Form>
+              <Form.Group widths="equal">
                 {proposerTree}
                 {hasSeconder(type) && seconderTree}
               </Form.Group>

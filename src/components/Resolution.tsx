@@ -6,15 +6,16 @@ import { AmendmentID, AmendmentData, DEFAULT_AMENDMENT, AMENDMENT_STATUS_OPTIONS
 import { Card, Button, Form, Dimmer, Dropdown, Segment, Input, TextArea, 
   List, Label, SemanticICONS, Icon, ListContent, Tab, Grid, SemanticCOLORS } from 'semantic-ui-react';
 import { CommitteeData } from './Committee';
-import { CaucusID } from './Caucus';
+import { CaucusID, DEFAULT_CAUCUS, Stance, CaucusData } from './Caucus';
 import { RouteComponentProps } from 'react-router';
 import { URLParameters } from '../types';
 import { dropdownHandler, fieldHandler, textAreaHandler, countryDropdownHandler } from '../actions/handlers';
 import { objectToList, makeDropdownOption } from '../utils';
-import { CountryOption } from '../constants';
+import { CountryOption, COUNTRY_OPTIONS } from '../constants';
 import { Loading } from './Loading';
 import { canVote } from './CommitteeAdmin';
 import { voteOnResolution } from '../actions/resolutionActions';
+import { postCaucus } from '../actions/caucusActions';
 
 interface Props extends RouteComponentProps<URLParameters> {
 }
@@ -115,8 +116,29 @@ export default class Resolution extends React.Component<Props, State> {
     this.recoverResolutionFref().child('amendments').push().set(DEFAULT_AMENDMENT);
   }
 
+  handleProvisionAmendment = (amendmentData: AmendmentData) => {
+    const { committeeID } = this.props.match.params;
+    const { proposer, text} = amendmentData;
+
+    const newCaucus: CaucusData = {
+      ...DEFAULT_CAUCUS,
+      name: 'Amendment',
+      topic: text,
+      speaking: {
+        duration: DEFAULT_CAUCUS.speakerTimer.remaining,
+        who: proposer,
+        stance: Stance.For,
+      }
+    };
+
+    const ref = postCaucus(committeeID, newCaucus);
+
+    this.props.history
+      .push(`/committees/${committeeID}/caucuses/${ref.key}`);
+  }
+
   renderAmendment = (id: AmendmentID, amendmentData: AmendmentData, amendmentFref: firebase.database.Reference) => {
-    const { recoverCountryOptions } = this;
+    const { recoverCountryOptions, handleProvisionAmendment } = this;
     const { proposer, text, status } = amendmentData;
 
     const textArea = (
@@ -124,7 +146,6 @@ export default class Resolution extends React.Component<Props, State> {
         value={text}
         autoHeight
         onChange={textAreaHandler<AmendmentData>(amendmentFref, 'text')}
-        fluid
         rows={1}
         placeholder="Text"
       />
@@ -166,6 +187,13 @@ export default class Resolution extends React.Component<Props, State> {
               negative
               basic
               onClick={() => amendmentFref.remove()}
+            />
+            <Button
+              floated="right"
+              basic
+              positive
+              content="Provision"
+              onClick={() => handleProvisionAmendment(amendmentData)}
             />
           </Card.Header>
           <Form>
