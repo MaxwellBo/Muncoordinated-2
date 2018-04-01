@@ -91,7 +91,7 @@ export default class Resolution extends React.Component<Props, State> {
     this.state.committeeFref.off('value', this.firebaseCallback);
   }
 
-  recoverResolutionRef = () => {
+  recoverResolutionFref = () => {
     const resolutionID: ResolutionID = this.props.match.params.resolutionID;
 
     return this.state.committeeFref
@@ -112,7 +112,7 @@ export default class Resolution extends React.Component<Props, State> {
   }
 
   handlePushAmendment = (): void => {
-    this.recoverResolutionRef().child('amendments').push().set(DEFAULT_AMENDMENT);
+    this.recoverResolutionFref().child('amendments').push().set(DEFAULT_AMENDMENT);
   }
 
   renderAmendment = (id: AmendmentID, amendmentData: AmendmentData, amendmentFref: firebase.database.Reference) => {
@@ -330,7 +330,7 @@ export default class Resolution extends React.Component<Props, State> {
   }
 
   renderHeader = (resolution?: ResolutionData) => {
-    const resolutionFref = this.recoverResolutionRef();
+    const resolutionFref = this.recoverResolutionFref();
     const { recoverCountryOptions } = this;
 
     const statusDropdown = (
@@ -392,9 +392,9 @@ export default class Resolution extends React.Component<Props, State> {
   }
 
   renderAmendments = (amendments: Map<AmendmentID, AmendmentData>) => {
-    const { renderAmendment, recoverResolutionRef } = this;
+    const { renderAmendment, recoverResolutionFref } = this;
 
-    const resolutionRef = recoverResolutionRef();
+    const resolutionRef = recoverResolutionFref();
 
     return Object.keys(amendments).map(key => {
       return renderAmendment(key, amendments[key], resolutionRef.child('amendments').child(key));
@@ -430,8 +430,23 @@ export default class Resolution extends React.Component<Props, State> {
     );
   }
 
+  renderOptions = () => {
+    const { recoverResolutionFref } = this;
+    return (
+      <Segment>
+        <Button
+          icon="trash"
+          negative
+          fluid
+          basic
+          onClick={() => recoverResolutionFref().remove()}
+        />
+      </Segment>
+    );
+  }
+
   renderResolution = (resolution?: ResolutionData) => {
-    const { renderHeader, renderAmendmentsGroup, renderVoting } = this;
+    const { renderHeader, renderAmendmentsGroup, renderVoting, renderOptions } = this;
 
     const panes = [
       { 
@@ -441,6 +456,9 @@ export default class Resolution extends React.Component<Props, State> {
       { 
         menuItem: 'Voting', 
         render: () => <Tab.Pane>{renderVoting(resolution)}</Tab.Pane>
+      }, { 
+        menuItem: 'Options', 
+        render: () => <Tab.Pane>{renderOptions()}</Tab.Pane>
       }
     ];
 
