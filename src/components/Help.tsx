@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Button, Segment, Header, List } from 'semantic-ui-react';
 
-export default class Help extends React.Component<{}, {}> {
+export default class Help extends React.PureComponent<{}, {}> {
   render() {
     return (
       <div>
