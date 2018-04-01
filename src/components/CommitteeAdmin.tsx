@@ -4,7 +4,7 @@ import { CommitteeData, CommitteeID } from './Committee';
 import { MemberView, MemberData, MemberID, Rank, parseFlagName } from './Member';
 import * as Utils from '../utils';
 import { Dropdown, Segment, Header, Flag, Table, List, Button, Checkbox, Icon, 
-  CheckboxProps, DropdownProps, ButtonProps } from 'semantic-ui-react';
+  CheckboxProps, DropdownProps, ButtonProps, Tab } from 'semantic-ui-react';
 import { COUNTRY_OPTIONS, CountryOption } from '../constants';
 import { checkboxHandler, dropdownHandler } from '../actions/handlers';
 
@@ -287,14 +287,22 @@ export default class CommitteeAdmin extends React.Component<Props, State> {
   }
 
   render() {
+    const { CommitteeMembers } = this;
+    const { committee, fref } = this.props;
+
+    const panes = [
+      { 
+        menuItem: 'Members', 
+        render: () => <Tab.Pane><CommitteeMembers data={committee} fref={fref} /></Tab.Pane> 
+      },
+      { 
+        menuItem: 'Stats', 
+        render: () => <Tab.Pane><CommitteeStats data={committee} /></Tab.Pane>
+      }
+    ];
+
     return (
-      <div>
-        <this.CommitteeMembers data={this.props.committee} fref={this.props.fref} />
-        <Header as="h2" attached="top">Stats</Header>
-        <Segment attached >
-          <CommitteeStats data={this.props.committee} />
-        </Segment>
-      </div>
+      <Tab panes={panes} />
     );
   }
 }

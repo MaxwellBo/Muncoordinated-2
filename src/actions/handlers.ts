@@ -44,6 +44,3 @@ export function countryDropdownHandler<T>
   return (event: React.SyntheticEvent<HTMLElement>, data: DropdownProps) =>
     fref.child(field).set(countryOptions.filter(c => c.value === data.value)[0].text);
 }
-
-
-
