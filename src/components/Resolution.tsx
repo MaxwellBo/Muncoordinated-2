@@ -4,7 +4,7 @@ import * as _ from 'lodash';
 import { MemberID, nameToCountryOption, MemberData, Rank } from './Member';
 import { AmendmentID, AmendmentData, DEFAULT_AMENDMENT, AMENDMENT_STATUS_OPTIONS } from './Amendment';
 import { Card, Button, Form, Dimmer, Dropdown, Segment, Input, TextArea, 
-  List, Label, SemanticICONS, Icon, ListContent, Tab } from 'semantic-ui-react';
+  List, Label, SemanticICONS, Icon, ListContent, Tab, Grid } from 'semantic-ui-react';
 import { CommitteeData } from './Committee';
 import { CaucusID } from './Caucus';
 import { RouteComponentProps } from 'react-router';
@@ -266,15 +266,29 @@ export default class Resolution extends React.Component<Props, State> {
     const members = committee ? committee.members : undefined;
     const votes = resolution ? resolution.votes : undefined;
 
-    return (
-      <Segment inverted>
+    const votingMembers = renderVotingMembers(
+      members || {} as Map<string, MemberData>,
+      votes || {} as Votes
+    );
+
+    const COLUMNS = 3;
+    const ROWS = Math.ceil(votingMembers.length / COLUMNS);
+
+    const columns = _.times(3, i => (
+      <Grid.Column key={i}>
         <List
           inverted
         >
-          {renderVotingMembers(
-            members || {} as Map<string, MemberData>,
-            votes || {} as Votes)}
+          {_.chain(votingMembers).drop(ROWS * i).take(ROWS).value()}
         </List>
+      </Grid.Column>
+    ));
+
+    return (
+      <Segment inverted>
+        <Grid columns="equal">
+          {columns}
+        </Grid>
       </Segment>
     );
   }
@@ -392,7 +406,7 @@ export default class Resolution extends React.Component<Props, State> {
         menuItem: 'Voting', 
         render: () => <Tab.Pane>{renderVoting(resolution)}</Tab.Pane>
       }
-    ]
+    ];
 
     return (
       <div>
