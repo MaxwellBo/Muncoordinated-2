@@ -1,5 +1,6 @@
 import * as React from 'react';
 import * as firebase from 'firebase';
+import * as _ from 'lodash';
 import Committee, { CommitteeData } from './Committee';
 import { RouteComponentProps } from 'react-router';
 import { Table, Flag  } from 'semantic-ui-react';
@@ -70,21 +71,10 @@ export default class Stats extends React.Component<Props, State> {
 
     const members = committee.members || {} as Map<MemberID, MemberData>;
 
-    const rows = Object.keys(members).sort((mida, midb) => {
-      // FIXME: filthy disgusting hack, probaly bring in Lodash and sortBy or something
-      // Written in debate
-
-      const a = timesSpokenInCommitee(committee, mida, members[mida]);
-      const b = timesSpokenInCommitee(committee, midb, members[midb]);
-
-      if (a < b) {
-        return 1; // reversed
-      } else if (a === b) {
-        return 0;
-      } else {
-        return -1;
-      }
-    }).map(mid => {
+    const rows = _.sortBy(
+      Object.keys(members), 
+      (mid) => timesSpokenInCommitee(committee, mid, members[mid])
+    ).reverse().map(mid => {
       const member = members[mid];
 
       return (

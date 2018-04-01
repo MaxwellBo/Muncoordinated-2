@@ -1,5 +1,6 @@
 import * as React from 'react';
 import * as firebase from 'firebase';
+import * as _ from 'lodash';
 import { MemberID, nameToCountryOption, MemberData } from './Member';
 import { AmendmentID, AmendmentData, DEFAULT_AMENDMENT, AMENDMENT_STATUS_OPTIONS } from './Amendment';
 import { Card, Button, Form, Dimmer, Dropdown, Segment, Input, TextArea, 
@@ -231,12 +232,12 @@ export default class Resolution extends React.Component<Props, State> {
   renderVotingMembers = (members: Map<string, MemberData>, votes: Votes) => {
     const { renderVotingMember } = this;
 
-    // TODO: Sort by name
-    return Object.keys(members).filter(
-      key => canVote(members[key])
-    ).map(key => {
-      return renderVotingMember(key, members[key], votes[key]);
-    });
+    return _.chain(members)
+      .keys()
+      .filter(key => canVote(members[key]))
+      .sortBy(key => [members[key].name])
+      .map(key => renderVotingMember(key, members[key], votes[key]))
+      .value();
   }
 
   renderVoting = (resolution?: ResolutionData) => {

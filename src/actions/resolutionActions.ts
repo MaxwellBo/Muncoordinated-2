@@ -20,4 +20,4 @@ export const voteOnResolution = (
     .set(vote);
 
   return ref;
-}
+};

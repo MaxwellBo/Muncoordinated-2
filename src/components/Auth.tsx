@@ -69,7 +69,7 @@ export default class Login extends React.Component<Props, State> {
     }).catch(err => {
       this.setState({ loggingIn: false, error: err });
     });
-  };
+  }
 
   createHandler = () => {
     const { email, password } = this.state;
