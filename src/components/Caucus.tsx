@@ -436,13 +436,13 @@ export class Caucus extends React.Component<CaucusProps, CaucusState> {
             />
           </Grid.Column>
         </Grid.Row>
-        <Grid.Row>
+        {/* <Grid.Row>
 
           <Grid.Column>
             <CaucusMeta data={props.data} fref={props.fref} />
 
           </Grid.Column>
-        </Grid.Row>
+        </Grid.Row> */}
       </Grid >
     ) : (
         <Loading />
