@@ -111,7 +111,10 @@ export default class Committee extends React.Component<Props, State> {
       name: 'untitled caucus',
     };
 
-    postCaucus(committeeID, newCaucus);
+    const ref = postCaucus(committeeID, newCaucus);
+
+    this.props.history
+      .push(`/committees/${committeeID}/caucuses/${ref.key}`);
   }
 
   pushResolution = () => {
@@ -122,7 +125,10 @@ export default class Committee extends React.Component<Props, State> {
       name: 'untitled resolution',
     };
 
-    postResolution(committeeID, newResolution);
+    const ref = postResolution(committeeID, newResolution);
+
+    this.props.history
+      .push(`/committees/${committeeID}/resolutions/${ref.key}`);
   }
 
   makeMenuItem = (name: string, icon: SemanticICONS) => {
