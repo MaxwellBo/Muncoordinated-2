@@ -179,14 +179,18 @@ export default class Resolution extends React.Component<Props, State> {
     );
   }
 
-  cycleVote = (memberID: MemberID, currentVote?: Vote) => {
+  cycleVote = (memberID: MemberID, member: MemberData, currentVote?: Vote) => {
     const { resolutionID, committeeID } = this.props.match.params;
 
     // leave this be in the case of undefined and Against
     let newVote: Vote = Vote.For;
 
     if (currentVote === Vote.For) {
-      newVote = Vote.Abstaining;
+      if (member.voting) {
+        newVote = Vote.Against;
+      } else {
+        newVote = Vote.Abstaining;
+      }
     } else if (currentVote === Vote.Abstaining) {
       newVote = Vote.Against;
     }
@@ -215,7 +219,7 @@ export default class Resolution extends React.Component<Props, State> {
       <Button
         color={color}
         icon={icon}
-        onClick={() => cycleVote(key, vote)}
+        onClick={() => cycleVote(key, member, vote)}
       />
     );
 
@@ -234,7 +238,7 @@ export default class Resolution extends React.Component<Props, State> {
 
     return _.chain(members)
       .keys()
-      .filter(key => canVote(members[key]))
+      .filter(key => canVote(members[key]) && members[key].present)
       .sortBy(key => [members[key].name])
       .map(key => renderVotingMember(key, members[key], votes[key]))
       .value();
