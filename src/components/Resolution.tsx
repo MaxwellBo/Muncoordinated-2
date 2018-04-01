@@ -4,7 +4,7 @@ import * as _ from 'lodash';
 import { MemberID, nameToCountryOption, MemberData, Rank } from './Member';
 import { AmendmentID, AmendmentData, DEFAULT_AMENDMENT, AMENDMENT_STATUS_OPTIONS } from './Amendment';
 import { Card, Button, Form, Dimmer, Dropdown, Segment, Input, TextArea, 
-  List, Label, SemanticICONS, Icon, ListContent } from 'semantic-ui-react';
+  List, Label, SemanticICONS, Icon, ListContent, Tab } from 'semantic-ui-react';
 import { CommitteeData } from './Committee';
 import { CaucusID } from './Caucus';
 import { RouteComponentProps } from 'react-router';
@@ -383,11 +383,21 @@ export default class Resolution extends React.Component<Props, State> {
   renderResolution = (resolution?: ResolutionData) => {
     const { renderHeader, renderAmendmentsGroup, renderVoting } = this;
 
+    const panes = [
+      { 
+        menuItem: 'Amendments', 
+        render: () => <Tab.Pane>{renderAmendmentsGroup(resolution)}</Tab.Pane> 
+      },
+      { 
+        menuItem: 'Voting', 
+        render: () => <Tab.Pane>{renderVoting(resolution)}</Tab.Pane>
+      }
+    ]
+
     return (
       <div>
         {renderHeader(resolution)}
-        {renderAmendmentsGroup(resolution)}
-        {renderVoting(resolution)}
+        <Tab panes={panes} />
       </div>
     );
   }

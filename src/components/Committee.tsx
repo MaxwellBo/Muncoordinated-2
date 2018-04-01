@@ -17,6 +17,7 @@ import { fieldHandler } from '../actions/handlers';
 import { postCaucus, postResolution } from '../actions/caucusActions';
 import { URLParameters } from '../types';
 import { Loading } from './Loading';
+import { Footer } from './Footer';
 
 interface Props extends RouteComponentProps<URLParameters> {
 }
@@ -242,6 +243,7 @@ export default class Committee extends React.Component<Props, State> {
         <Grid>
           <Grid.Column width={4}>
             {renderNav()}
+            <Footer />
           </Grid.Column>
           <Grid.Column stretched width={12}>
             <Route exact={true} path="/committees/:committeeID/admin" render={Admin} />
