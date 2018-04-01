@@ -6,7 +6,7 @@ import { MemberData, MemberID } from './Member';
 import { Caucus, CaucusData, CaucusID, DEFAULT_CAUCUS, CaucusStatus } from './Caucus';
 import Resolution, { ResolutionData, ResolutionID, DEFAULT_RESOLUTION } from './Resolution';
 import CommitteeAdmin from './CommitteeAdmin';
-import { Dropdown, Icon, Input, Menu, Sticky, Grid, Segment, SemanticICONS } from 'semantic-ui-react';
+import { Dropdown, Icon, Input, Menu, Sticky, Grid, Segment, SemanticICONS, Button } from 'semantic-ui-react';
 import Stats from './Stats';
 import { MotionID, MotionData } from './Motions';
 import { TimerData, DEFAULT_TIMER } from './Timer';
@@ -188,25 +188,33 @@ export default class Committee extends React.Component<Props, State> {
         {makeMenuItem('Motions', 'sort numeric ascending')}
         {makeMenuItem('Unmod', 'discussions')}
         <Menu.Item>
-          <Icon name="users" />
+          <Button
+            icon="add"
+            size="mini"
+            primary
+            basic
+            floated="right"
+            onClick={this.pushCaucus}
+          />
           Caucuses
             <Menu.Menu>
             {!committee && <Loading />}
             {caucusItems}
-            <Menu.Item name="New Caucus" onClick={this.pushCaucus}>
-              <Icon name="add" />
-            </Menu.Item>
           </Menu.Menu>
         </Menu.Item>
         <Menu.Item>
-          <Icon name="ordered list" />
+          <Button
+            icon="add"
+            size="mini"
+            primary
+            basic
+            floated="right"
+            onClick={this.pushResolution}
+          />
           Resolutions
             <Menu.Menu>
             {!committee && <Loading />}
             {resolutionItems}
-            <Menu.Item name="New Resolution" onClick={this.pushResolution}>
-              <Icon name="add" />
-            </Menu.Item>
           </Menu.Menu>
         </Menu.Item>
         {makeMenuItem('Stats', 'bar chart')}
