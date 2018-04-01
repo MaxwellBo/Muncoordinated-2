@@ -44,7 +44,7 @@ export interface ResolutionData {
   proposer: MemberID;
   seconder: MemberID;
   status: ResolutionStatus;
-  caucus?: CaucusID;
+  caucus: CaucusID;
   amendments?: Map<AmendmentID, AmendmentData>;
   votes?: Votes;
 }
@@ -132,6 +132,32 @@ export default class Resolution extends React.Component<Props, State> {
     };
 
     const ref = postCaucus(committeeID, newCaucus);
+
+    this.props.history
+      .push(`/committees/${committeeID}/caucuses/${ref.key}`);
+  }
+
+  handleProvisionResolution = (resolutionData: ResolutionData) => {
+    const { committeeID } = this.props.match.params;
+    const { proposer, seconder, name } = resolutionData;
+
+    const newCaucus: CaucusData = {
+      ...DEFAULT_CAUCUS,
+      name: name,
+      speaking: {
+        duration: DEFAULT_CAUCUS.speakerTimer.remaining,
+        who: proposer,
+        stance: Stance.For,
+      }
+    };
+
+    const ref = postCaucus(committeeID, newCaucus);
+
+    ref.child('queue').push().set({
+      duration: DEFAULT_CAUCUS.speakerTimer.remaining,
+      who: seconder,
+      stance: Stance.For,
+    });
 
     this.props.history
       .push(`/committees/${committeeID}/caucuses/${ref.key}`);
@@ -458,17 +484,25 @@ export default class Resolution extends React.Component<Props, State> {
     );
   }
 
-  renderOptions = () => {
-    const { recoverResolutionFref } = this;
+  renderOptions = (resolution?: ResolutionData) => {
+    const { recoverResolutionFref, handleProvisionResolution } = this;
     return (
       <Segment>
-        <Button
-          icon="trash"
-          negative
-          fluid
-          basic
-          onClick={() => recoverResolutionFref().remove()}
-        />
+        <Button.Group fluid>
+          <Button
+            basic
+            disabled={!resolution}
+            positive
+            content="Provision"
+            onClick={() => handleProvisionResolution(resolution!)}
+          />
+          <Button
+            icon="trash"
+            negative
+            basic
+            onClick={() => recoverResolutionFref().remove()}
+          />
+        </Button.Group>
       </Segment>
     );
   }
@@ -486,7 +520,7 @@ export default class Resolution extends React.Component<Props, State> {
         render: () => <Tab.Pane>{renderVoting(resolution)}</Tab.Pane>
       }, { 
         menuItem: 'Options', 
-        render: () => <Tab.Pane>{renderOptions()}</Tab.Pane>
+        render: () => <Tab.Pane>{renderOptions(resolution)}</Tab.Pane>
       }
     ];
 
