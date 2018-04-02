@@ -311,26 +311,19 @@ class CaucusNextSpeaking extends React.Component<CaucusNextSpeakingProps, {}> {
 
     const q = props.data.queue || {};
 
-    const kv = _.map(q, (value: SpeakerEvent, key: string) => {
-      return { key: key, value: value };
-    });
+    const vs: SpeakerEvent[] = _.values(q);
 
-    const fors     = kv.filter(({ key, value }) => value.stance === Stance.For);
-    const neutrals = kv.filter(({ key, value }) => value.stance === Stance.Neutral);
-    const againsts = kv.filter(({ key, value }) => value.stance === Stance.Against);
+    const fors     = vs.filter((se) => se.stance === Stance.For);
+    const againsts = vs.filter((se) => se.stance === Stance.Against);
+    const neutrals = vs.filter((se) => se.stance === Stance.Neutral);
 
-    const interlaced = _.flatten(_.zip(fors, neutrals, againsts));
-
-    type InterlaceResult = {
-      key: string;
-      value: SpeakerEvent;
-    } | undefined;
+    const interlaced = _.flatten(_.zip(fors, againsts, neutrals));
 
     props.fref.child('queue').set({});
 
-    interlaced.forEach((kvp: InterlaceResult) => {
-      if (kvp) {
-        props.fref.child('queue').push().set(kvp.value);
+    interlaced.forEach((se: SpeakerEvent) => {
+      if (se) {
+        props.fref.child('queue').push().set(se);
       }
     });
   }
