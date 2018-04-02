@@ -78,7 +78,7 @@ export default class Welcome extends React.Component<Props, State> {
             onChange={handleChange}
           />
         </Form.Group>
-        <Form.Button secondary fluid disabled={!this.state.user}>Create Committee</Form.Button>
+        <Form.Button primary fluid disabled={!this.state.user}>Create Committee</Form.Button>
       </Form>
     );
   }

@@ -145,10 +145,10 @@ export default class Login extends React.Component<Props, State> {
           content={this.state.error ? this.state.error.message : ''}
           onDismiss={handleDismiss}
         />
-        <Button.Group>
-          <Button primary fluid onClick={loginHandler} loading={loggingIn} >Login</Button>
+        <Button.Group fluid>
+          <Button primary onClick={loginHandler} loading={loggingIn} >Login</Button>
           {allowSignup && 
-            (<Button secondary fluid onClick={createHandler} loading={creating} >Sign-Up</Button>)
+            (<Button secondary onClick={createHandler} loading={creating} >Sign-Up</Button>)
           }
         </Button.Group>
       </Form>

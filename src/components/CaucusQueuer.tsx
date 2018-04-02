@@ -4,7 +4,7 @@ import { MemberData, nameToCountryOption } from './Member';
 import { CaucusData, SpeakerEvent, Stance } from './Caucus';
 import * as Utils from '../utils';
 import { COUNTRY_OPTIONS, CountryOption } from '../constants';
-import { Header, Segment, Dropdown, Button, Form, DropdownProps } from 'semantic-ui-react';
+import { Header, Segment, Dropdown, Button, Form, DropdownProps, Icon } from 'semantic-ui-react';
 import { TimerSetter, Unit } from './TimerSetter';
 
 interface Props {
@@ -85,12 +85,31 @@ export default class CaucusQueuer extends React.Component<Props, State> {
               onDurationChange={durationHandler}
               onUnitChange={unitHandler}
             />
-            <Button.Group size="large">
-              <Button onClick={stanceHandler(Stance.For)}>For</Button>
+            <Button.Group size="large" fluid>
+              <Button 
+                content="For"
+                labelPosition="left"
+                icon
+                onClick={stanceHandler(Stance.For)}
+              >
+                <Icon name="thumbs outline up" />
+                For
+              </Button>
               <Button.Or />
-              <Button onClick={stanceHandler(Stance.Neutral)}>Neutral</Button>
+              <Button 
+                content="Neutral"
+                onClick={stanceHandler(Stance.Neutral)}
+              />
               <Button.Or />
-              <Button onClick={stanceHandler(Stance.Against)}>Against</Button>
+              <Button 
+                content="Against"
+                labelPosition="right"
+                icon
+                onClick={stanceHandler(Stance.Against)}
+              >
+                <Icon name="thumbs outline down" />
+                Against
+              </Button>
             </Button.Group>
           </Form>
         </Segment>
