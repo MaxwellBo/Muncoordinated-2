@@ -472,7 +472,7 @@ export default class Resolution extends React.Component<Props, State> {
 
     const adder = (
       <Card>
-        <Card.Content>
+        {/* <Card.Content> */}
           <Button
             icon="plus"
             primary
@@ -480,7 +480,7 @@ export default class Resolution extends React.Component<Props, State> {
             basic
             onClick={handlePushAmendment}
           />
-        </Card.Content>
+        {/* </Card.Content> */}
       </Card>
     );
 
@@ -497,23 +497,21 @@ export default class Resolution extends React.Component<Props, State> {
   renderOptions = (resolution?: ResolutionData) => {
     const { recoverResolutionFref, handleProvisionResolution } = this;
     return (
-      <Segment>
-        <Button.Group fluid>
-          <Button
-            negative
-            content="Delete"
-            basic
-            onClick={() => recoverResolutionFref().remove()}
-          />
-          <Button
-            basic
-            disabled={!resolution}
-            positive
-            content="Provision Caucus"
-            onClick={() => handleProvisionResolution(resolution!)}
-          />
-        </Button.Group>
-      </Segment>
+      <Button.Group fluid>
+        <Button
+          negative
+          content="Delete"
+          basic
+          onClick={() => recoverResolutionFref().remove()}
+        />
+        <Button
+          basic
+          disabled={!resolution}
+          positive
+          content="Provision Caucus"
+          onClick={() => handleProvisionResolution(resolution!)}
+        />
+      </Button.Group>
     );
   }
 

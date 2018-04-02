@@ -434,7 +434,7 @@ export default class Motions extends React.Component<Props, State> {
 
     const adder = (
       <Card>
-        <Card.Content>
+        {/* <Card.Content> */}
           <Button
             icon="plus"
             primary
@@ -442,7 +442,7 @@ export default class Motions extends React.Component<Props, State> {
             basic
             onClick={handlePushMotion}
           />
-        </Card.Content>
+        {/* </Card.Content> */}
       </Card>
     );
 
