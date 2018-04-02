@@ -116,6 +116,8 @@ export default class Login extends React.Component<Props, State> {
     const { emailHandler, passwordHandler, handleDismiss, createHandler, loginHandler } = this;
     const { loggingIn, creating } = this.state;
     const { allowSignup } = this.props;
+
+    const signupButton = <Button secondary onClick={createHandler} loading={creating} >Sign-Up</Button>;
     
     return (
       <Form error={!!this.state.error} success={!!user}>
@@ -147,9 +149,8 @@ export default class Login extends React.Component<Props, State> {
         />
         <Button.Group fluid>
           <Button primary onClick={loginHandler} loading={loggingIn} >Login</Button>
-          {allowSignup && 
-            (<Button secondary onClick={createHandler} loading={creating} >Sign-Up</Button>)
-          }
+          {allowSignup && <Button.Or />}
+          {allowSignup && signupButton}
         </Button.Group>
       </Form>
     );
