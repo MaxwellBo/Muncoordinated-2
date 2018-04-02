@@ -9,7 +9,7 @@ import { COUNTRY_OPTIONS, CountryOption } from '../constants';
 import { checkboxHandler, dropdownHandler } from '../actions/handlers';
 
 export const canVote = (x: MemberData) => (x.rank === Rank.Veto || x.rank === Rank.Standard);
-export const nonObserver = (x: MemberData) => (x.rank !== Rank.Observer);
+export const nonNGO = (x: MemberData) => (x.rank === Rank.NGO);
 
 interface Props {
   committee: CommitteeData;
@@ -39,8 +39,10 @@ function CommitteeStats(props: { data: CommitteeData }) {
   const delegatesNo: number     = members.length;
   const presentNo: number       = present.length;
   const canVoteNo: number       = present.filter(canVote).length;
-  const quorum: number          = Math.ceil(members.filter(nonObserver).length * 0.25);
-  const procedural: number      = Math.ceil(presentNo * 0.5);
+  const nonNGONo: number        = present.filter(nonNGO).length;
+
+  const quorum: number          = Math.ceil(canVoteNo * 0.25);
+  const procedural: number      = Math.ceil(nonNGONo * 0.5);
   const operative: number       = Math.ceil(canVoteNo * 0.5);
   const hasQuorum: boolean      = presentNo >= quorum;
   const draftResolution: number = Math.ceil(canVoteNo * 0.25);
@@ -61,7 +63,7 @@ function CommitteeStats(props: { data: CommitteeData }) {
         <Table.Row>
           <Table.Cell>Total</Table.Cell>
           <Table.Cell>{delegatesNo.toString()}</Table.Cell>
-          <Table.Cell>Delegates in committee</Table.Cell>
+          <Table.Cell>Members in committee</Table.Cell>
         </Table.Row>
         <Table.Row>
           <Table.Cell>Present</Table.Cell>
@@ -77,13 +79,13 @@ function CommitteeStats(props: { data: CommitteeData }) {
           <Table.Cell error={!hasQuorum}>Debate</Table.Cell>
           <Table.Cell error={!hasQuorum}>{quorum.toString()}</Table.Cell>
           <Table.Cell error={!hasQuorum}>Delegates needed for debate</Table.Cell>
-          <Table.Cell error={!hasQuorum}>25% of non-observer members</Table.Cell>
+          <Table.Cell error={!hasQuorum}>25% of of members with voting rights</Table.Cell>
         </Table.Row>
         <Table.Row>
           <Table.Cell>Procedural threshold</Table.Cell>
           <Table.Cell>{procedural.toString()}</Table.Cell>
           <Table.Cell>Required votes for procedural matters</Table.Cell>
-          <Table.Cell>50% of delegates in attendence</Table.Cell>
+          <Table.Cell>50% of present non-NGO delegates</Table.Cell>
         </Table.Row>
         <Table.Row>
           <Table.Cell>Operative threshold</Table.Cell>
