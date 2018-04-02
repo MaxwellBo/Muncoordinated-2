@@ -338,32 +338,36 @@ class CaucusNextSpeaking extends React.Component<CaucusNextSpeakingProps, {}> {
 
     return (
       <div>
-        <Header as="h3" attached="top">Next Speaking</Header>
-        <Segment attached>
+        <Header as="h3" attached="top">
+          Next Speaking
+        </Header>
+        <Segment attached textAlign="center">
+          <Button
+            basic
+            icon
+            primary
+            onClick={nextSpeaker}
+          >
+            <Icon name="arrow up" />
+            Next
+          </Button>
+          <Button
+            icon
+            basic
+            negative
+            onClick={() => props.fref.child('queue').remove()}
+          >
+            <Icon name="refresh" />
+            Clear
+          </Button>
+        </Segment>
+        <Segment attached="bottom">
           <SpeakerEvents 
             data={props.data.queue} 
             fref={props.fref.child('queue')} 
             speaking={props.data.speaking} 
             speakerTimer={props.speakerTimer} 
           />
-        </Segment>
-        <Segment attached="bottom" textAlign="center">
-          <Button
-            basic
-            primary
-            onClick={nextSpeaker}
-          >
-            {/* <Icon name="arrow up" /> */}
-            Next
-          </Button>
-          <Button
-            basic
-            negative
-            onClick={() => props.fref.child('queue').remove()}
-          >
-            {/* <Icon name="refresh" /> */}
-            Clear
-          </Button>
         </Segment>
       </div>
     );
