@@ -6,7 +6,7 @@ import './App.css';
 import { ConnectionStatus } from './components/ConnectionStatus';
 
 import { ModalLogin } from './components//Auth';
-import Welcome from './components/Welcome';
+import Onboard from './components/Onboard';
 import Committee, { CommitteeID } from './components/Committee';
 import { CaucusID } from './components/Caucus';
 
@@ -16,7 +16,7 @@ class App extends React.Component {
     return (
       <Container style={{ padding: '1em 0em' }}>
         <ConnectionStatus />
-        <Route exact={true} path="/onboard" component={Welcome} />
+        <Route exact={true} path="/onboard" component={Onboard} />
         <Route path="/committees" component={ModalLogin} />
         <Route path="/committees/:committeeID" component={Committee} />
       </Container>

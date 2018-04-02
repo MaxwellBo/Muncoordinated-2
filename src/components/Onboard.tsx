@@ -18,7 +18,7 @@ interface State {
   user: firebase.User | null;
 }
 
-export default class Welcome extends React.Component<Props, State> {
+export default class Onboard extends React.Component<Props, State> {
   committeesRef = firebase.database().ref('committees');
 
   constructor(props: Props) {
