@@ -5,7 +5,7 @@ import { Button, Container, Header } from 'semantic-ui-react';
 import './App.css';
 import { ConnectionStatus } from './components/ConnectionStatus';
 
-import { ModalLogin } from './components//Auth';
+import { ModalLogin } from './components/Auth';
 import Onboard from './components/Onboard';
 import Homepage from './components/Homepage';
 import Committee, { CommitteeID } from './components/Committee';
