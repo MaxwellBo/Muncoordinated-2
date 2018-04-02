@@ -6,7 +6,7 @@ export class Footer extends React.PureComponent<{}, {}> {
 
   version = (
     <a href="https://github.com/MaxwellBo/Muncoordinated-2/releases">
-      v2.1.0
+      v2.1.1
     </a>
   );
 
