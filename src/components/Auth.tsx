@@ -118,22 +118,33 @@ export default class Login extends React.Component<Props, State> {
     const { allowSignup } = this.props;
 
     const signupButton = <Button secondary onClick={createHandler} loading={creating} >Sign-Up</Button>;
+
+    const usernameInput = <input autoComplete="email" />;
+
+    const passwordInput = <input autoComplete="current-password" />;
     
     return (
       <Form error={!!this.state.error} success={!!user}>
         <Form.Input
+          key="email"
           label="Email"
           placeholder="joe@schmoe.com"
           value={this.state.email}
           onChange={emailHandler}
-        />
+        >
+          {usernameInput}
+        </Form.Input>
         <Form.Input
+          key="password"
           label="Password"
           type="password"
           placeholder="correct horse battery staple"
+          autocomplete="current-password"
           value={this.state.password}
           onChange={passwordHandler}
-        />
+        >
+          {passwordInput}
+        </Form.Input>
         <Message
           key="success"
           success
