@@ -88,13 +88,13 @@ export default class CaucusQueuer extends React.Component<Props, State> {
             <Button.Group size="large" fluid>
               <Button 
                 content="For"
-                labelPosition="left"
-                icon
+                // labelPosition="left"
+                // icon
                 onClick={stanceHandler(Stance.For)}
-              >
-                <Icon name="thumbs outline up" />
+              />
+                {/* <Icon name="thumbs outline up" />
                 For
-              </Button>
+              </Button> */}
               <Button.Or />
               <Button 
                 content="Neutral"
@@ -103,13 +103,13 @@ export default class CaucusQueuer extends React.Component<Props, State> {
               <Button.Or />
               <Button 
                 content="Against"
-                labelPosition="right"
-                icon
+                // labelPosition="right"
+                // icon
                 onClick={stanceHandler(Stance.Against)}
-              >
-                <Icon name="thumbs outline down" />
+              />
+                {/* <Icon name="thumbs outline down" />
                 Against
-              </Button>
+              </Button> */}
             </Button.Group>
           </Form>
         </Segment>
