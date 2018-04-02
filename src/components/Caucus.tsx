@@ -1,5 +1,6 @@
 import * as React from 'react';
 import * as firebase from 'firebase';
+import * as _ from 'lodash';
 import { Timer, TimerData, DEFAULT_TIMER } from './Timer';
 import { RouteComponentProps } from 'react-router';
 import { MemberID, MemberData, nameToCountryOption, parseFlagName } from './Member';
@@ -305,10 +306,39 @@ class CaucusNextSpeaking extends React.Component<CaucusNextSpeakingProps, {}> {
     document.removeEventListener('keydown', handleKeyDown);
   }
 
+  interlace = () => {
+    const { props } = this;
+
+    const q = props.data.queue || {};
+
+    const kv = _.map(q, (value: SpeakerEvent, key: string) => {
+      return { key: key, value: value };
+    });
+
+    const fors     = kv.filter(({ key, value }) => value.stance === Stance.For);
+    const neutrals = kv.filter(({ key, value }) => value.stance === Stance.Neutral);
+    const againsts = kv.filter(({ key, value }) => value.stance === Stance.Against);
+
+    const interlaced = _.flatten(_.zip(fors, neutrals, againsts));
+
+    type InterlaceResult = {
+      key: string;
+      value: SpeakerEvent;
+    } | undefined;
+
+    props.fref.child('queue').set({});
+
+    interlaced.forEach((kvp: InterlaceResult) => {
+      if (kvp) {
+        props.fref.child('queue').push().set(kvp.value);
+      }
+    });
+  }
+
   nextSpeaker = () => {
     const { props } = this;
 
-    let queue = props.data.queue ? props.data.queue : {};
+    const queue = props.data.queue || {};
 
     const queueHeadKey = Object.keys(queue)[0];
 
@@ -334,7 +364,7 @@ class CaucusNextSpeaking extends React.Component<CaucusNextSpeakingProps, {}> {
   }
 
   render() {
-    const { nextSpeaker, props } = this;
+    const { nextSpeaker, props, interlace } = this;
 
     return (
       <div>
@@ -354,11 +384,11 @@ class CaucusNextSpeaking extends React.Component<CaucusNextSpeakingProps, {}> {
           <Button
             icon
             basic
-            negative
-            onClick={() => props.fref.child('queue').remove()}
+            color="purple"
+            onClick={interlace}
           >
-            <Icon name="refresh" />
-            Clear
+            <Icon name="random" />
+            Interlace
           </Button>
         </Segment>
         <Segment attached="bottom">
