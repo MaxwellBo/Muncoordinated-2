@@ -81,10 +81,15 @@ export default class Help extends React.PureComponent<{}, {}> {
               Describe what happened instead 
             </List.Item>
             <List.Item>
+              List the browser you are using
+            </List.Item>
+            <List.Item>
               Copy-paste everything from the {renderFirefox()}, {renderChrome()}, or {renderEdge()} developer 
               console debugging logs
             </List.Item>
           </List>
+          <br />
+          If you're at an Australian MUN, I'll see if I can push a fix within the hour.
         </Segment>
       </div>
     );
