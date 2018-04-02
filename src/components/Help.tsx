@@ -3,37 +3,31 @@ import { Button, Segment, Header, List } from 'semantic-ui-react';
 
 export default class Help extends React.PureComponent<{}, {}> {
 
-  renderEdge() {
-    return (
-      <a href="https://docs.microsoft.com/en-us/microsoft-edge/devtools-guide/console">
-        Edge
-      </a>
-    );
-  }
+  edge = ( 
+    <a href="https://docs.microsoft.com/en-us/microsoft-edge/devtools-guide/console">
+      Edge
+    </a>
+  );
 
-  renderChrome() {
-    return (
-      <a href="https://developers.google.com/web/tools/chrome-devtools/console/">
-        Chrome
-      </a>
-    );
-  }
+  chrome = ( 
+    <a href="https://developers.google.com/web/tools/chrome-devtools/console/">
+      Chrome
+    </a>
+  );
 
-  renderFirefox() {
-    return (
-      <a href="https://developer.mozilla.org/en-US/docs/Tools/Web_Console/Opening_the_Web_Console">
-        Firefox
-      </a>
-    );
-  }
+  firefox = ( 
+    <a href="https://developer.mozilla.org/en-US/docs/Tools/Web_Console/Opening_the_Web_Console">
+      Firefox
+    </a>
+  );
 
   render() {
-    const { renderEdge, renderFirefox, renderChrome } = this;
+    const { edge, firefox, chrome } = this;
 
     return (
       <div>
         <Header as="h2" attached="top">Keyboard Shortcuts</Header>
-        <Segment attached>
+        <Segment attached="bottom">
           <List>
             <List.Item>
               <Button size="mini">
@@ -65,7 +59,7 @@ export default class Help extends React.PureComponent<{}, {}> {
           </List>
         </Segment>
         <Header as="h2" attached="top">Bug Reporting &amp; Help Requests</Header>
-        <Segment attached>
+        <Segment attached="bottom">
           In the likely event that a bug crops up, follow these steps:
           <br />
           <List ordered>
@@ -84,12 +78,15 @@ export default class Help extends React.PureComponent<{}, {}> {
               List the browser you are using
             </List.Item>
             <List.Item>
-              Copy-paste everything from the {renderFirefox()}, {renderChrome()}, or {renderEdge()} developer 
+              List the version of the app you're using (displayed under the sidebar)
+            </List.Item>
+            <List.Item>
+              Copy-paste everything from the {firefox}, {chrome}, or {edge} developer 
               console debugging logs
             </List.Item>
           </List>
           <br />
-          If you're at an Australian MUN, I'll see if I can push a fix within the hour.
+          If you're at an Australian MUN, I'll see if I can push a fix within the hour
         </Segment>
       </div>
     );
