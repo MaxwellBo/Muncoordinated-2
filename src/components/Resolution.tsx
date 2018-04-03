@@ -26,13 +26,13 @@ interface State {
 }
 
 export enum ResolutionStatus {
+  Introduced = 'Introduced',
   Passed = 'Passed',
-  Ongoing = 'Ongoing',
   Failed = 'Failed'
 }
 
 const RESOLUTION_STATUS_OPTIONS = [
-  ResolutionStatus.Ongoing,
+  ResolutionStatus.Introduced,
   ResolutionStatus.Passed,
   ResolutionStatus.Failed
 ].map(makeDropdownOption);
@@ -63,7 +63,7 @@ export const DEFAULT_RESOLUTION: ResolutionData = {
   link: '',
   proposer: '',
   seconder: '',
-  status: ResolutionStatus.Ongoing,
+  status: ResolutionStatus.Introduced,
   caucus: '',
   amendments: {} as Map<AmendmentID, AmendmentData>,
   votes: {} as Votes
@@ -391,7 +391,7 @@ export default class Resolution extends React.Component<Props, State> {
 
     const statusDropdown = (
       <Dropdown 
-        value={resolution ? resolution.status : ResolutionStatus.Ongoing} 
+        value={resolution ? resolution.status : ResolutionStatus.Introduced} 
         options={RESOLUTION_STATUS_OPTIONS} 
         onChange={dropdownHandler<ResolutionData>(resolutionFref, 'status')} 
       /> 
