@@ -9,7 +9,7 @@ import { SpeakerFeed } from './SpeakerFeed';
 import * as _ from 'lodash';
 
 interface Props {
-  data: CaucusData;
+  caucus?: CaucusData;
   speakerTimer: TimerData;
   fref: firebase.database.Reference;
 }
@@ -38,55 +38,60 @@ export class CaucusNextSpeaking extends React.Component<Props, {}> {
   interlace = () => {
     const { props } = this;
 
-    const q = props.data.queue || {};
+    if (props.caucus) {
+      const q = props.caucus.queue || {};
 
-    const vs: SpeakerEvent[] = _.values(q);
+      const vs: SpeakerEvent[] = _.values(q);
 
-    const fors     = vs.filter((se) => se.stance === Stance.For);
-    const againsts = vs.filter((se) => se.stance === Stance.Against);
-    const neutrals = vs.filter((se) => se.stance === Stance.Neutral);
+      const fors     = vs.filter((se) => se.stance === Stance.For);
+      const againsts = vs.filter((se) => se.stance === Stance.Against);
+      const neutrals = vs.filter((se) => se.stance === Stance.Neutral);
 
-    const interlaced = _.flatten(_.zip(fors, againsts, neutrals));
+      const interlaced = _.flatten(_.zip(fors, againsts, neutrals));
 
-    props.fref.child('queue').set({});
+      props.fref.child('queue').set({});
 
-    interlaced.forEach((se: SpeakerEvent) => {
-      if (se) {
-        props.fref.child('queue').push().set(se);
-      }
-    });
+      interlaced.forEach((se: SpeakerEvent) => {
+        if (se) {
+          props.fref.child('queue').push().set(se);
+        }
+      });
+    }
   }
 
   nextSpeaker = () => {
     const { props } = this;
 
-    const queue = props.data.queue || {};
+    if (props.caucus) {
+      const queue = props.caucus.queue || {};
 
-    const queueHeadKey = Object.keys(queue)[0];
+      const queueHeadKey = Object.keys(queue)[0];
 
-    let queueHeadDetails = {};
+      let queueHeadDetails = {};
 
-    if (queueHeadKey) {
-      queueHeadDetails = {
-        queueHeadData: queue[queueHeadKey],
-        queueHead: props.fref.child('queue').child(queueHeadKey)
+      if (queueHeadKey) {
+        queueHeadDetails = {
+          queueHeadData: queue[queueHeadKey],
+          queueHead: props.fref.child('queue').child(queueHeadKey)
+        };
+      }
+
+      const lifecycle: Lifecycle = {
+        history: props.fref.child('history'),
+        speakingData: props.caucus.speaking,
+        speaking: props.fref.child('speaking'),
+        timerData: props.speakerTimer,
+        timer: props.fref.child('speakerTimer'),
+        yielding: false,
       };
+
+      runLifecycle({ ...lifecycle, ...queueHeadDetails });
     }
-
-    const lifecycle: Lifecycle = {
-      history: props.fref.child('history'),
-      speakingData: props.data.speaking,
-      speaking: props.fref.child('speaking'),
-      timerData: props.speakerTimer,
-      timer: props.fref.child('speakerTimer'),
-      yielding: false,
-    };
-
-    runLifecycle({ ...lifecycle, ...queueHeadDetails });
   }
 
   render() {
     const { nextSpeaker, props, interlace } = this;
+    const { caucus } = this.props;
 
     return (
       <div>
@@ -113,11 +118,11 @@ export class CaucusNextSpeaking extends React.Component<Props, {}> {
             Interlace
           </Button>
         </Segment>
-        <Segment attached="bottom">
+        <Segment attached="bottom" loading={!caucus}>
           <SpeakerFeed 
-            data={props.data.queue} 
+            data={caucus ? caucus.queue : undefined}
             fref={props.fref.child('queue')} 
-            speaking={props.data.speaking} 
+            speaking={caucus ? caucus.speaking : undefined}
             speakerTimer={props.speakerTimer} 
           />
         </Segment>

@@ -9,8 +9,7 @@ import { TimerSetter, Unit } from '../TimerSetter';
 import { SpeakerEvent, Stance } from '..//caucus/SpeakerFeed';
 
 interface Props {
-  data: CaucusData;
-  members: Map<string, MemberData>;
+  members?: Map<string, MemberData>;
   fref: firebase.database.Reference;
 }
 
@@ -47,7 +46,9 @@ export default class CaucusQueuer extends React.Component<Props, State> {
   }
 
   recoverCountryOptions = (): CountryOption[] => {
-    return Utils.objectToList(this.props.members).map(x => nameToCountryOption(x.name));
+    const members = this.props.members || {} as Map<string, MemberData>;
+
+    return Utils.objectToList(members).map(x => nameToCountryOption(x.name));
   }
 
   countryHandler = (event: React.SyntheticEvent<HTMLElement>, data: DropdownProps): void => {
@@ -63,6 +64,8 @@ export default class CaucusQueuer extends React.Component<Props, State> {
   render() {
     const { stanceHandler, countryHandler, unitHandler } = this;
 
+    const { members } = this.props;
+
     const countryOptions = this.recoverCountryOptions();
 
     const durationHandler = (e: React.FormEvent<HTMLInputElement>) =>
@@ -71,7 +74,7 @@ export default class CaucusQueuer extends React.Component<Props, State> {
     return (
       <div>
         <Header as="h3" attached="top">Queue</Header>
-        <Segment attached textAlign="center">
+        <Segment attached textAlign="center" loading={!members}>
           <Form>
             <Form.Dropdown
               value={this.state.queueCountry.value}

@@ -20,13 +20,13 @@ import { CaucusNextSpeaking } from './caucus/CaucusNextSpeaking';
 import { SpeakerEvent, SpeakerFeedEntry } from './caucus/SpeakerFeed';
 
 interface Props extends RouteComponentProps<URLParameters> {
-  committee: CommitteeData;
-  fref: firebase.database.Reference;
 }
 
 interface State {
   speakerTimer: TimerData;
   caucusTimer: TimerData;
+  committee?: CommitteeData;
+  committeeFref: firebase.database.Reference;
 }
 
 export type CaucusID = string;
@@ -45,7 +45,6 @@ export interface CaucusData {
   speaking?: SpeakerEvent;
   queue?: Map<string, SpeakerEvent>;
   history?: Map<string, SpeakerEvent>;
-  deleted?: boolean; // FIXME: Needs migration to default false
 }
 
 const CAUCUS_STATUS_OPTIONS = [
@@ -67,47 +66,55 @@ export class Caucus extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
 
+    const { match } = props;
+
     this.state = {
+      committeeFref: firebase.database().ref('committees').child(match.params.committeeID),
       caucusTimer: DEFAULT_CAUCUS.caucusTimer,
       speakerTimer: DEFAULT_CAUCUS.speakerTimer
     };
   }
 
-  renderMeta = (data: CaucusData, fref: firebase.database.Reference) => {
-    // TODO: Make status either a dropdown or a checkbox / on/off slider
-    return (
-      <Segment attached>
-        <Button
-          basic
-          icon
-          negative
-          labelPosition="left"
-          onClick={() => fref.child('deleted').set(true)}
-        >
-          <Icon name="trash" />
-          Delete
-        </Button>
-      </Segment>
-    );
+  firebaseCallback = (committee: firebase.database.DataSnapshot | null) => {
+    if (committee) {
+      this.setState({ committee: committee.val() });
+    }
   }
 
-  renderHeader = (data: CaucusData, fref: firebase.database.Reference) => {
+  componentDidMount() {
+    this.state.committeeFref.on('value', this.firebaseCallback);
+  }
+
+  componentWillUnmount() {
+    this.state.committeeFref.off('value', this.firebaseCallback);
+  }
+
+  recoverCaucusFref = () => {
+    const caucusID: CaucusID = this.props.match.params.caucusID;
+
+    return this.state.committeeFref
+      .child('caucuses')
+      .child(caucusID);
+  }
+
+  renderHeader = (caucus?: CaucusData) => {
+    const caucusFref = this.recoverCaucusFref();
+
     const statusDropdown = (
       <Dropdown 
-        value={data.status} 
+        value={caucus ? caucus.status : CaucusStatus.Open} 
         options={CAUCUS_STATUS_OPTIONS} 
-        onChange={dropdownHandler<CaucusData>(fref, 'status')} 
+        onChange={dropdownHandler<CaucusData>(caucusFref, 'status')} 
       /> 
     );
 
     return (
-      // TODO: Loading spinners
-      <Segment>
+      <Segment loading={!caucus}>
         <Input
           label={statusDropdown}
           labelPosition="right"
-          value={data.name}
-          onChange={fieldHandler<CaucusData>(fref, 'name')}
+          value={caucus ? caucus.name : undefined}
+          onChange={fieldHandler<CaucusData>(caucusFref, 'name')}
           attatched="top"
           size="massive"
           fluid
@@ -115,9 +122,9 @@ export class Caucus extends React.Component<Props, State> {
         />
         <Form>
           <TextArea
-            value={data.topic}
+            value={caucus ? caucus.topic : undefined}
             autoHeight
-            onChange={textAreaHandler<CaucusData>(fref, 'topic')}
+            onChange={textAreaHandler<CaucusData>(caucusFref, 'topic')}
             attatched="top"
             rows={1}
             placeholder="Caucus Topic"
@@ -127,51 +134,58 @@ export class Caucus extends React.Component<Props, State> {
     );
   }
 
-  renderNowSpeaking =  (data: CaucusData, fref: firebase.database.Reference) => {
+  renderNowSpeaking =  (caucus?: CaucusData) => {
     const { speakerTimer } = this.state;
+    
+    const caucusFref = this.recoverCaucusFref();
+
+    const entryData = caucus ? caucus.speaking : undefined;
 
     return (
       <div>
         <Header as="h3" attached="top">Now Speaking</Header>
-        <Segment attached="bottom">
+        <Segment attached="bottom" loading={!caucus}>
           <Feed size="large">
-            <SpeakerFeedEntry data={data.speaking} fref={fref.child('speaking')} speakerTimer={speakerTimer}/>
+            <SpeakerFeedEntry data={entryData} fref={caucusFref.child('speaking')} speakerTimer={speakerTimer}/>
           </Feed>
         </Segment>
       </div>
     );
   }
 
-  renderCaucus = (caucusID: CaucusID, data: CaucusData, 
-                  members: Map<MemberID, MemberData>, fref: firebase.database.Reference) => {
+  renderCaucus = (caucus?: CaucusData) => {
+    const { renderNowSpeaking, renderHeader, recoverCaucusFref } = this;
+    const { speakerTimer, committee } = this.state;
 
-    const { renderNowSpeaking, renderHeader } = this;
-    const { speakerTimer } = this.state;
+    const { caucusID } = this.props.match.params;
+    const caucusFref = recoverCaucusFref();
 
-    return data ? (
+    const members = committee ? committee.members : undefined;
+
+    return (
       <Grid columns="equal">
         <Grid.Row>
           <Grid.Column>
-            {renderHeader(data, fref)}
+            {renderHeader(caucus)}
           </Grid.Column>
         </Grid.Row>
         <Grid.Row>
           <Grid.Column>
-            {renderNowSpeaking(data, fref)}
-            <CaucusNextSpeaking data={data} fref={fref} speakerTimer={speakerTimer} />
-            <CaucusQueuer data={data} members={members} fref={fref} />
+            {renderNowSpeaking(caucus)}
+            <CaucusNextSpeaking caucus={caucus} fref={caucusFref} speakerTimer={speakerTimer} />
+            <CaucusQueuer members={members} fref={caucusFref} />
           </Grid.Column>
           <Grid.Column>
             <Timer
               name="Speaker Timer"
-              fref={fref.child('speakerTimer')}
+              fref={caucusFref.child('speakerTimer')}
               key={caucusID + 'speakerTimer'}
               onChange={(timer) => this.setState({ speakerTimer: timer })}
               toggleKeyCode={83} // S
             />
             <Timer
               name="Caucus Timer"
-              fref={fref.child('caucusTimer')}
+              fref={caucusFref.child('caucusTimer')}
               key={caucusID + 'caucusTimer'}
               onChange={(timer) => this.setState({ caucusTimer: timer })}
               toggleKeyCode={67} // C
@@ -179,33 +193,16 @@ export class Caucus extends React.Component<Props, State> {
           </Grid.Column>
         </Grid.Row>
       </Grid >
-    ) : (
-        <Loading />
-      );
+    );
   }
 
   render() {
-    const { renderCaucus } = this;
-    const { fref, committee } = this.props;
-
+    const { committee, committeeFref } = this.state;
     const caucusID: CaucusID = this.props.match.params.caucusID;
-    const caucuses = this.props.committee.caucuses || {} as Map<CaucusID, CaucusData>;
-    const caucus = caucuses[caucusID];
 
-    if (caucus) {
-      const members = committee.members || {} as Map<MemberID, MemberData>;
+    const caucuses = committee ? committee.caucuses : {};
+    const caucus = (caucuses || {})[caucusID];
 
-      if (!caucus.deleted) {
-        return renderCaucus(caucusID, caucus, members, fref.child('caucuses').child(caucusID));
-      } else {
-        return (
-          <Message negative compact>
-            <Message.Header>Caucus deleted</Message.Header>
-          </Message>
-        );
-      }
-    } else {
-      return <Loading />;
-    }
+    return this.renderCaucus(caucus);
   }
 }

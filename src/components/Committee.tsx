@@ -237,19 +237,9 @@ export default class Committee extends React.Component<Props, State> {
       />
     );
   }
-
-  renderCaucus = (props: RouteComponentProps<URLParameters>) => {
-    return (
-      <Caucus
-        committee={this.state.committee || DEFAULT_COMMITTEE}
-        fref={this.state.committeeFref}
-        {...props}
-      />
-    );
-  }
     
   render() {
-    const { renderNav, renderCaucus, renderAdmin } = this;
+    const { renderNav, renderAdmin } = this;
 
     return (
       <div>
@@ -265,7 +255,7 @@ export default class Committee extends React.Component<Props, State> {
             <Route exact={true} path="/committees/:committeeID/unmod" component={Unmod} />
             <Route exact={true} path="/committees/:committeeID/motions" component={Motions} />
             <Route exact={true} path="/committees/:committeeID/help" component={Help} />
-            <Route path="/committees/:committeeID/caucuses/:caucusID" render={renderCaucus} />
+            <Route path="/committees/:committeeID/caucuses/:caucusID" component={Caucus} />
             <Route path="/committees/:committeeID/resolutions/:resolutionID" component={Resolution} />
           </Grid.Column>
         </Grid>
