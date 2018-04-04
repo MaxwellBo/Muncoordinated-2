@@ -160,7 +160,7 @@ export class Caucus extends React.Component<Props, State> {
     const { caucusID } = this.props.match.params;
     const caucusFref = recoverCaucusFref();
 
-    const members = committee ? committee.members : undefined;
+    const members = committee ? (committee.members || {} as Map<string, MemberData>) : undefined;
 
     return (
       <Grid columns="equal">

@@ -96,21 +96,21 @@ export class Timer extends React.Component<Props, State> {
   }
 
   firebaseCallback = (timer: firebase.database.DataSnapshot | null) => {
-    if (timer) {
-      let val = timer.val();
+    if (timer && timer.val()) {
+      let timerData = timer.val();
 
       const now = Math.floor((new Date).getTime() / 1000);
 
-      if (val.ticking) {
-        const remaining = val.remaining - (now - val.ticking);
-        const elapsed = val.elapsed + (now - val.ticking);
+      if (timerData.ticking) {
+        const remaining = timerData.remaining - (now - timerData.ticking);
+        const elapsed = timerData.elapsed + (now - timerData.ticking);
         // HACK: Handle late mounts by checking the difference between when the clock started clicking
         // and when the timer mounted / recieved new info
-        val = { ...val, remaining , elapsed };
+        timerData = { ...timerData, remaining , elapsed };
       }
 
-      this.setState({ timer: val });
-      this.props.onChange(val);
+      this.setState({ timer: timerData });
+      this.props.onChange(timerData);
     }
   }
 

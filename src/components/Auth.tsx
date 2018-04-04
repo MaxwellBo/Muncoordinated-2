@@ -129,6 +129,8 @@ export default class Login extends React.Component<Props, State> {
     const usernameInput = <input autoComplete="email" />;
 
     const passwordInput = <input autoComplete="current-password" />;
+
+    const err = this.state.error;
     
     return (
       <Form error={!!this.state.error} success={!!user} loading={user === undefined}>
@@ -155,16 +157,18 @@ export default class Login extends React.Component<Props, State> {
         <Message
           key="success"
           success
-          header="Account created"
-          content="Your account was successfully created"
-        />
+        >
+          <Message.Header>Account created</Message.Header>
+          <Message.Content>Your account was successfully created</Message.Content>
+        </Message>
         <Message
           key="error"
           error
-          header={this.state.error ? this.state.error.name : ''}
-          content={this.state.error ? this.state.error.message : ''}
           onDismiss={handleDismiss}
-        />
+        >
+          <Message.Header>{err ? err.name : ''}</Message.Header>
+          <Message.Content>{err ? err.message : ''}</Message.Content>
+        </Message>
         <Button.Group fluid>
           <Button primary onClick={loginHandler} loading={loggingIn} >Login</Button>
           {allowSignup && <Button.Or />}
