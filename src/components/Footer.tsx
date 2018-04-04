@@ -1,12 +1,14 @@
 import * as React from 'react';
 
 import { Message } from 'semantic-ui-react';
+import { Loading } from './Loading';
 
 interface State {
   latestVersion?: string;
+  timerId?: NodeJS.Timer;
 }
 
-const CLIENT_VERSION = 'v2.1.1'
+const CLIENT_VERSION = 'v2.1.2';
 const RELEASES_LATEST = 'https://api.github.com/repos/MaxwellBo/Muncoordinated-2/releases/latest';
 
 export class Footer extends React.PureComponent<{}, State> {
@@ -27,7 +29,18 @@ export class Footer extends React.PureComponent<{}, State> {
   }
 
   componentDidMount() {
-    this.fetchLatestVersion();
+    const { fetchLatestVersion } = this;
+    fetchLatestVersion();
+
+    this.setState({ timerId: setInterval(fetchLatestVersion, 1000 * 60 * 30) });
+  }
+
+  componentWillUnmount() {
+    const { timerId } = this.state;
+
+    if (timerId) {
+      clearInterval(timerId);
+    }
   }
 
   render() {
@@ -46,7 +59,8 @@ export class Footer extends React.PureComponent<{}, State> {
     );
 
     return (
-      <Message compact size="mini" loading={!!latestVersion} list={["HMM"]}>
+      <Message compact size="mini">
+        {!latestVersion && <Loading />}
         Made with 💖 by <a href="https://github.com/MaxwellBo">Max Bo</a>. {version}
         {latestVersion !== CLIENT_VERSION && refreshNudge}
       </Message>

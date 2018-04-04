@@ -5,14 +5,15 @@ import { Link } from 'react-router-dom';
 import { error } from 'util';
 
 interface State {
+  user: firebase.User | null;
   email: string;
   password: string;
   error?: Error;
   loggingIn: boolean;
   creating: boolean;
+  unsubscribe?: () => void;
 }
 interface Props {
-  onAuth: (user: firebase.User | null) => void;
   allowSignup: boolean;
 }
 
@@ -27,17 +28,12 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 
-export var user: firebase.User | null = null;
-
 export default class Login extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
 
-    firebase.auth().onAuthStateChanged(
-      this.authStateChangedCallback,
-    );
-
     this.state = {
+      user: null,
       email: '',
       password: '',
       loggingIn: false,
@@ -45,15 +41,27 @@ export default class Login extends React.Component<Props, State> {
     };
   }
 
-  authStateChangedCallback = (u: firebase.User | null) => {
-    user = u;
-    this.setState({ loggingIn: false, creating: false });
-    this.props.onAuth(u);
+  authStateChangedCallback = (user: firebase.User | null) => {
+    this.setState({ loggingIn: false, creating: false, user: user });
+  }
+
+  componentDidMount() {
+    const unsubscribe = firebase.auth().onAuthStateChanged(
+      this.authStateChangedCallback,
+    );
+
+    this.setState({ unsubscribe });
+  }
+
+  componentWillUnmount() {
+    if (this.state.unsubscribe) {
+      this.state.unsubscribe();
+    }
   }
 
   logOutHandler = () => {
     firebase.auth().signOut().then(() => {
-      user = null;
+      this.setState({ user: null });
     }).catch(err => {
       this.setState({ error: err });
     });
@@ -114,7 +122,7 @@ export default class Login extends React.Component<Props, State> {
 
   renderLogin = () => {
     const { emailHandler, passwordHandler, handleDismiss, createHandler, loginHandler } = this;
-    const { loggingIn, creating } = this.state;
+    const { loggingIn, creating, user } = this.state;
     const { allowSignup } = this.props;
 
     const signupButton = <Button secondary onClick={createHandler} loading={creating} >Sign-Up</Button>;
@@ -168,6 +176,8 @@ export default class Login extends React.Component<Props, State> {
   }
 
   render() {
+    const { user } = this.state;
+
     if (user) {
       return this.renderLoggedIn(user);
     } else {
@@ -176,11 +186,20 @@ export default class Login extends React.Component<Props, State> {
   }
 }
 
-export class ModalLogin extends React.Component<{}, {}> {
-  onAuthHandler = () => {
+export class ModalLogin extends React.Component<{}, 
+  { user: firebase.User | null 
+    unsubscribe?: () => void
+  }> {
+  constructor(props: {}) {
+    super(props);
+    this.state = {
+      user: null
+    };
   }
 
   renderModalTrigger() {
+    const { user } = this.state;
+
     const text = user ? user.email : 'Login';
 
     return (
@@ -189,6 +208,24 @@ export class ModalLogin extends React.Component<{}, {}> {
         {text}
       </Button>
     );
+  }
+
+  authStateChangedCallback = (user: firebase.User | null) => {
+    this.setState({ user: user });
+  }
+
+  componentDidMount() {
+    const unsubscribe = firebase.auth().onAuthStateChanged(
+      this.authStateChangedCallback,
+    );
+
+    this.setState({ unsubscribe });
+  }
+
+  componentWillUnmount() {
+    if (this.state.unsubscribe) {
+      this.state.unsubscribe();
+    }
   }
 
   render() {
@@ -200,7 +237,7 @@ export class ModalLogin extends React.Component<{}, {}> {
       >
         <Modal.Header>Login</Modal.Header>
         <Modal.Content image>
-          <Login onAuth={this.onAuthHandler} allowSignup={false}/>
+          <Login allowSignup={false}/>
         </Modal.Content>
       </Modal>
     );

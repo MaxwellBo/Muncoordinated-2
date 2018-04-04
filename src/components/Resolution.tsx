@@ -6,16 +6,17 @@ import { AmendmentID, AmendmentData, DEFAULT_AMENDMENT, AMENDMENT_STATUS_OPTIONS
 import { Card, Button, Form, Dimmer, Dropdown, Segment, Input, TextArea, 
   List, Label, SemanticICONS, Icon, ListContent, Tab, Grid, SemanticCOLORS } from 'semantic-ui-react';
 import { CommitteeData } from './Committee';
-import { CaucusID, DEFAULT_CAUCUS, Stance, CaucusData } from './Caucus';
+import { CaucusID, DEFAULT_CAUCUS, CaucusData } from './Caucus';
 import { RouteComponentProps } from 'react-router';
 import { URLParameters } from '../types';
 import { dropdownHandler, fieldHandler, textAreaHandler, countryDropdownHandler } from '../actions/handlers';
 import { objectToList, makeDropdownOption } from '../utils';
 import { CountryOption, COUNTRY_OPTIONS } from '../constants';
 import { Loading } from './Loading';
-import { canVote } from './CommitteeAdmin';
+import { canVote } from './Admin';
 import { voteOnResolution } from '../actions/resolutionActions';
 import { postCaucus } from '../actions/caucusActions';
+import { Stance } from './caucus/SpeakerFeed';
 
 interface Props extends RouteComponentProps<URLParameters> {
 }
@@ -26,13 +27,13 @@ interface State {
 }
 
 export enum ResolutionStatus {
+  Introduced = 'Introduced',
   Passed = 'Passed',
-  Ongoing = 'Ongoing',
   Failed = 'Failed'
 }
 
 const RESOLUTION_STATUS_OPTIONS = [
-  ResolutionStatus.Ongoing,
+  ResolutionStatus.Introduced,
   ResolutionStatus.Passed,
   ResolutionStatus.Failed
 ].map(makeDropdownOption);
@@ -63,7 +64,7 @@ export const DEFAULT_RESOLUTION: ResolutionData = {
   link: '',
   proposer: '',
   seconder: '',
-  status: ResolutionStatus.Ongoing,
+  status: ResolutionStatus.Introduced,
   caucus: '',
   amendments: {} as Map<AmendmentID, AmendmentData>,
   votes: {} as Votes
@@ -391,7 +392,7 @@ export default class Resolution extends React.Component<Props, State> {
 
     const statusDropdown = (
       <Dropdown 
-        value={resolution ? resolution.status : ResolutionStatus.Ongoing} 
+        value={resolution ? resolution.status : ResolutionStatus.Introduced} 
         options={RESOLUTION_STATUS_OPTIONS} 
         onChange={dropdownHandler<ResolutionData>(resolutionFref, 'status')} 
       /> 

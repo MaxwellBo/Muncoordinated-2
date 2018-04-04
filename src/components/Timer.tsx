@@ -14,7 +14,7 @@ interface Props {
 
 interface State {
   timer?: TimerData;
-  timerId: any | null;
+  timerId?: NodeJS.Timer;
   unitDropdown: Unit;
   durationField: string;
 }
@@ -22,7 +22,7 @@ interface State {
 export interface TimerData {
   elapsed: number;
   remaining: number;
-  ticking: boolean;
+  ticking: boolean | number;
 }
 
 export const DEFAULT_TIMER = {
@@ -53,7 +53,6 @@ export class Timer extends React.Component<Props, State> {
     super(props);
 
     this.state = {
-      timerId: null,
       unitDropdown: Unit.Seconds,
       durationField: '60'
     };
@@ -63,10 +62,10 @@ export class Timer extends React.Component<Props, State> {
     const timer = this.state.timer;
 
     if (timer && timer.ticking) {
-      const newTimer = {
+      let newTimer = {
+        ...timer,
         elapsed: timer.elapsed + 1,
         remaining: timer.remaining - 1,
-        ticking: timer.ticking
       };
 
       this.setState({ timer: newTimer });
@@ -77,11 +76,13 @@ export class Timer extends React.Component<Props, State> {
   toggleHandler = (event: any, data: any) => {
     const timer = this.state.timer;
 
+    const timestamp = Math.floor((new Date).getTime() / 1000);
+
     if (timer) {
       const newTimer = {
         elapsed: timer.elapsed,
         remaining: timer.remaining,
-        ticking: !timer.ticking
+        ticking: timer.ticking ? false : timestamp
       };
 
       this.props.fref.set(newTimer);
@@ -96,28 +97,43 @@ export class Timer extends React.Component<Props, State> {
 
   firebaseCallback = (timer: firebase.database.DataSnapshot | null) => {
     if (timer) {
-      this.setState({ timer: timer.val() });
-      this.props.onChange(timer.val());
+      let val = timer.val();
+
+      const now = Math.floor((new Date).getTime() / 1000);
+
+      if (val.ticking) {
+        const remaining = val.remaining - (now - val.ticking);
+        const elapsed = val.elapsed + (now - val.ticking);
+        // HACK: Handle late mounts by checking the difference between when the clock started clicking
+        // and when the timer mounted / recieved new info
+        val = { ...val, remaining , elapsed };
+      }
+
+      this.setState({ timer: val });
+      this.props.onChange(val);
     }
   }
 
   componentDidMount() {
-    this.props.fref.on('value', this.firebaseCallback);
+    const { handleKeyDown, firebaseCallback, tick, props } = this;
 
-    this.setState({ timerId: setInterval(this.tick, 1000) });
+    props.fref.on('value', firebaseCallback);
 
-    const { handleKeyDown } = this;
+    this.setState({ timerId: setInterval(tick, 1000) });
+
     document.addEventListener<'keydown'>('keydown', handleKeyDown);
   }
 
   componentWillUnmount() {
-    this.props.fref.off('value', this.firebaseCallback);
+    const { handleKeyDown, firebaseCallback, tick, props } = this;
+    const { timerId } = this.state;
 
-    if (this.state.timerId) {
-      clearInterval(this.state.timerId);
+    props.fref.off('value', firebaseCallback);
+
+    if (timerId) {
+      clearInterval(timerId);
     }
 
-    const { handleKeyDown } = this;
     document.removeEventListener('keydown', handleKeyDown);
   }
 
@@ -180,7 +196,7 @@ export class Timer extends React.Component<Props, State> {
         <Segment attached="bottom" textAlign="center" >
           <Button
             loading={!timer}
-            active={timer ? timer.ticking : false}
+            active={timer ? !!timer.ticking : false}
             negative={timer ? timer.remaining < 0 : false}
             size="massive"
             onClick={toggleHandler}

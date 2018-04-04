@@ -1,12 +1,14 @@
 import * as React from 'react';
 import * as firebase from 'firebase';
 import { CommitteeData, CommitteeID } from './Committee';
-import { MemberView, MemberData, MemberID, Rank, parseFlagName } from './Member';
+import { MemberView, MemberData, MemberID, Rank, parseFlagName, nameToCountryOption } from './Member';
 import * as Utils from '../utils';
 import { Dropdown, Segment, Header, Flag, Table, List, Button, Checkbox, Icon, 
   CheckboxProps, DropdownProps, ButtonProps, Tab } from 'semantic-ui-react';
 import { COUNTRY_OPTIONS, CountryOption } from '../constants';
 import { checkboxHandler, dropdownHandler } from '../actions/handlers';
+import { makeDropdownOption } from '../utils';
+import * as _ from 'lodash';
 
 export const canVote = (x: MemberData) => (x.rank === Rank.Veto || x.rank === Rank.Standard);
 export const nonNGO = (x: MemberData) => (x.rank === Rank.NGO);
@@ -25,11 +27,11 @@ interface State {
 }
 
 const RANK_OPTIONS = [
-  { key: Rank.Standard, value: Rank.Standard, text: Rank.Standard },
-  { key: Rank.Veto, value: Rank.Veto, text: Rank.Veto },
-  { key: Rank.NGO, value: Rank.NGO, text: Rank.NGO },
-  { key: Rank.Observer, value: Rank.Observer, text: Rank.Observer }
-];
+  Rank.Standard,
+  Rank.Veto,
+  Rank.NGO,
+  Rank.Observer
+].map(makeDropdownOption);
 
 function CommitteeStats(props: { data: CommitteeData }) {
   const membersMap = props.data.members ? props.data.members : {} as Map<string, MemberData>;
@@ -154,7 +156,7 @@ function MemberItem(props: { data: MemberData, fref: firebase.database.Reference
   );
 }
 
-export default class CommitteeAdmin extends React.Component<Props, State> {
+export default class Admin extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
 
@@ -181,8 +183,12 @@ export default class CommitteeAdmin extends React.Component<Props, State> {
   }
 
   countryHandler = (event: React.SyntheticEvent<HTMLElement>, data: DropdownProps) => {
-    this.setState({ 
-      newCountry: [...this.state.newOptions, ...COUNTRY_OPTIONS].filter(c => c.value === data.value)[0] });
+    const { newOptions } = this.state;
+    const newCountry = [...newOptions, ...COUNTRY_OPTIONS].filter(c => c.value === data.value)[0];
+
+    if (newCountry) {
+      this.setState({ newCountry });
+    }
   }
 
   presentHandler = (event: React.FormEvent<HTMLInputElement>, data: CheckboxProps) => {
@@ -199,14 +205,19 @@ export default class CommitteeAdmin extends React.Component<Props, State> {
 
   additionHandler = (event: React.KeyboardEvent<HTMLElement>, data: any) => {
     // FSM looks sorta like the UN flag
-    const newOption: CountryOption = { key: data.value, text: data.value, value: data.value, flag: 'fm' };
+    const newCountry = nameToCountryOption(data.value);
 
-    this.setState({ newCountry: newOption, newOptions: [ newOption, ...this.state.newOptions] });
+    if (_.includes(COUNTRY_OPTIONS, newCountry)) {
+      this.setState({ newCountry });
+    } else {
+      const newOptions = [ newCountry, ...this.state.newOptions ];
+      this.setState({ newCountry, newOptions });
+    }
   }
 
   renderAdder() {
     const { additionHandler, countryHandler, rankHandler, presentHandler, votingHandler } = this;
-    const { newMemberPresent, newMemberVoting } = this.state;
+    const { newMemberPresent, newMemberVoting, newOptions, newCountry } = this.state;
 
     return (
       <Table.Row>
@@ -217,10 +228,10 @@ export default class CommitteeAdmin extends React.Component<Props, State> {
             selection
             fluid
             allowAdditions
-            options={[...this.state.newOptions, ...COUNTRY_OPTIONS]}
+            options={[...newOptions, ...COUNTRY_OPTIONS]}
             onAddItem={additionHandler}
             onChange={countryHandler}
-            value={this.state.newCountry.value}
+            value={newCountry.key}
           />
         </Table.HeaderCell>
         <Table.HeaderCell>
