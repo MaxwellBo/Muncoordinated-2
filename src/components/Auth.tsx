@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import { error } from 'util';
 
 interface State {
-  user: firebase.User | null;
+  user?: firebase.User | null;
   email: string;
   password: string;
   error?: Error;
@@ -33,7 +33,6 @@ export default class Login extends React.Component<Props, State> {
     super(props);
 
     this.state = {
-      user: null,
       email: '',
       password: '',
       loggingIn: false,
@@ -132,7 +131,7 @@ export default class Login extends React.Component<Props, State> {
     const passwordInput = <input autoComplete="current-password" />;
     
     return (
-      <Form error={!!this.state.error} success={!!user}>
+      <Form error={!!this.state.error} success={!!user} loading={user === undefined}>
         <Form.Input
           key="email"
           label="Email"
@@ -187,13 +186,12 @@ export default class Login extends React.Component<Props, State> {
 }
 
 export class ModalLogin extends React.Component<{}, 
-  { user: firebase.User | null 
+  { user?: firebase.User | null 
     unsubscribe?: () => void
   }> {
   constructor(props: {}) {
     super(props);
     this.state = {
-      user: null
     };
   }
 
@@ -203,7 +201,7 @@ export class ModalLogin extends React.Component<{},
     const text = user ? user.email : 'Login';
 
     return (
-      <Button basic size="small">
+      <Button basic size="small" loading={user === undefined}>
         <Icon name="lock" />
         {text}
       </Button>
