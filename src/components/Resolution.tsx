@@ -490,6 +490,7 @@ export default class Resolution extends React.Component<Props, State> {
         itemsPerRow={1} 
       >
         {adder}
+        {!resolution && <Loading />}
         {renderAmendments(amendments || {} as Map<string, AmendmentData>)}
       </Card.Group>
     );
