@@ -54,7 +54,7 @@ export class Footer extends React.PureComponent<{}, State> {
 
     const refreshNudge = (
       <Message.List>
-        <Message.Item>New version available - refresh your browser</Message.Item>
+        <Message.Item>New version available</Message.Item>
       </Message.List>
     );
 
