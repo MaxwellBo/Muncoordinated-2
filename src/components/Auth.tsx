@@ -148,7 +148,6 @@ export default class Login extends React.Component<Props, State> {
           label="Password"
           type="password"
           placeholder="correct horse battery staple"
-          autocomplete="current-password"
           value={this.state.password}
           onChange={passwordHandler}
         >
