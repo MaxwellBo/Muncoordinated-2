@@ -119,9 +119,9 @@ export default class Resolution extends React.Component<Props, State> {
     this.recoverResolutionFref().child('amendments').push().set(DEFAULT_AMENDMENT);
   }
 
-  handleProvisionAmendment = (amendmentData: AmendmentData) => {
+  handleProvisionAmendment = (id: AmendmentID, amendment: AmendmentData) => {
     const { committeeID } = this.props.match.params;
-    const { proposer, text} = amendmentData;
+    const { proposer, text} = amendment;
 
     const newCaucus: CaucusData = {
       ...DEFAULT_CAUCUS,
@@ -135,6 +135,8 @@ export default class Resolution extends React.Component<Props, State> {
     };
 
     const ref = postCaucus(committeeID, newCaucus);
+
+    this.recoverResolutionFref().child('amendments').child(id).child('caucus').set(ref.key);
 
     this.gotoCaucus(ref.key);
   }
@@ -175,9 +177,9 @@ export default class Resolution extends React.Component<Props, State> {
     this.gotoCaucus(ref.key);
   }
 
-  renderAmendment = (id: AmendmentID, amendmentData: AmendmentData, amendmentFref: firebase.database.Reference) => {
+  renderAmendment = (id: AmendmentID, amendment: AmendmentData, amendmentFref: firebase.database.Reference) => {
     const { recoverCountryOptions, handleProvisionAmendment } = this;
-    const { proposer, text, status } = amendmentData;
+    const { proposer, text, status } = amendment;
 
     const textArea = (
       <TextArea
@@ -203,13 +205,27 @@ export default class Resolution extends React.Component<Props, State> {
       <Form.Dropdown
         key="proposer"
         value={nameToCountryOption(proposer).key}
-        error={proposer === ''}
         search
         selection
         fluid
         placeholder="Proposer"
         onChange={countryDropdownHandler<AmendmentData>(amendmentFref, 'proposer', countryOptions)}
         options={countryOptions}
+      />
+    );
+
+    const provisionTree = !((amendment || { caucus: undefined }).caucus) ? (
+      <Button
+        floated="right"
+        disabled={!amendment || amendment.proposer === ''}
+        content="Provision Caucus"
+        onClick={() => handleProvisionAmendment(id, amendment!)}
+      />
+    ) : (
+      <Button
+        floated="right"
+        content="Associated Caucus"
+        onClick={() => this.gotoCaucus(amendment!.caucus)}
       />
     );
 
@@ -227,13 +243,7 @@ export default class Resolution extends React.Component<Props, State> {
               basic
               onClick={() => amendmentFref.remove()}
             />
-            <Button
-              floated="right"
-              basic
-              positive
-              content="Provision Caucus"
-              onClick={() => handleProvisionAmendment(amendmentData)}
-            />
+            {provisionTree}
           </Card.Header>
           <Form>
             {textArea}
@@ -414,7 +424,6 @@ export default class Resolution extends React.Component<Props, State> {
       <Form.Dropdown
         key="proposer"
         value={nameToCountryOption(resolution ? resolution.proposer : '').key}
-        error={resolution ? resolution.proposer === '' : undefined}
         search
         selection
         fluid
@@ -428,7 +437,6 @@ export default class Resolution extends React.Component<Props, State> {
       <Form.Dropdown
         key="seconder"
         value={nameToCountryOption(resolution ? resolution.seconder : '').key}
-        error={resolution ? resolution.seconder === '' : undefined}
         search
         selection
         fluid
@@ -441,9 +449,7 @@ export default class Resolution extends React.Component<Props, State> {
     const provisionTree = !((resolution || { caucus: undefined }).caucus) ? (
       // if there's no linked caucus
       <Form.Button
-        basic
-        disabled={!resolution || resolution.proposer === ''}
-        positive
+        disabled={!resolution || resolution.proposer === '' || resolution.seconder === ''}
         content="Provision Caucus"
         onClick={() => handleProvisionResolution(resolution!)}
       />
