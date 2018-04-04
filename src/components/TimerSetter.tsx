@@ -32,7 +32,7 @@ export class TimerSetter extends React.Component<Props, {}> {
         onChange={props.onDurationChange}
         action
         fluid
-        error={!props.durationValue}
+        error={!props.durationValue || isNaN(Number(props.durationValue))}
         label={props.label}
       >
         <input />
