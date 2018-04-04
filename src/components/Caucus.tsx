@@ -53,13 +53,12 @@ const CAUCUS_STATUS_OPTIONS = [
   CaucusStatus.Closed
 ].map(makeDropdownOption);
 
-
 export const DEFAULT_CAUCUS: CaucusData = {
   name: 'Genearal Speaker\'s List',
   topic: '',
   status: CaucusStatus.Open,
-  speakerTimer: { remaining: 60, elapsed: 0, ticking: false },
-  caucusTimer: { remaining: 60 * 10, elapsed: 0, ticking: false },
+  speakerTimer: { ...DEFAULT_TIMER, remaining: 60 },
+  caucusTimer: { ...DEFAULT_TIMER, remaining: 60 * 10 },
   queue: {} as Map<string, SpeakerEvent>,
   history: {} as Map<string, SpeakerEvent>,
 };
