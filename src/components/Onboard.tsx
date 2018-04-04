@@ -16,6 +16,8 @@ interface State {
   topic: string;
   chairperson: string;
   user: firebase.User | null;
+  committeesFref: firebase.database.Reference;
+  unsubscribe?: () => void;
 }
 
 export default class Onboard extends React.Component<Props, State> {
@@ -29,20 +31,37 @@ export default class Onboard extends React.Component<Props, State> {
       name: '',
       topic: '',
       chairperson: '',
-      user: null
+      user: null,
+      committeesFref: firebase.database().ref('committees')
     };
   }
 
+  firebaseCallback = (committees: firebase.database.DataSnapshot | null) => {
+    if (committees) {
+      this.setState({ committees: committees.val() });
+    }
+  }
+
+  authStateChangedCallback = (user: firebase.User | null) => {
+    this.setState({ user: user });
+  }
+
   componentDidMount() {
-    this.committeesRef.on('value', (committees) => {
-      if (committees) {
-        this.setState({ committees: committees.val() });
-      }
-    });
+    this.state.committeesFref.on('value', this.firebaseCallback);
+
+    const unsubscribe = firebase.auth().onAuthStateChanged(
+      this.authStateChangedCallback,
+    );
+
+    this.setState({ unsubscribe });
   }
 
   componentWillUnmount() {
-    this.committeesRef.off();
+    this.state.committeesFref.off('value', this.firebaseCallback);
+
+    if (this.state.unsubscribe) {
+      this.state.unsubscribe();
+    }
   }
 
   NewCommitteeForm = () => {
@@ -94,7 +113,7 @@ export default class Onboard extends React.Component<Props, State> {
           Muncoordinated
           </Header>
           <Segment>
-            <Login onAuth={(user) => this.setState({ user: user })} allowSignup={true}/>
+            <Login allowSignup={true}/>
             <Divider horizontal>And</Divider>
             <this.NewCommitteeForm />
           </Segment>
