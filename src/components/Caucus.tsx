@@ -113,7 +113,7 @@ export class Caucus extends React.Component<Props, State> {
         <Input
           label={statusDropdown}
           labelPosition="right"
-          value={caucus ? caucus.name : undefined}
+          value={caucus ? caucus.name : ''}
           onChange={fieldHandler<CaucusData>(caucusFref, 'name')}
           attatched="top"
           size="massive"
@@ -122,7 +122,7 @@ export class Caucus extends React.Component<Props, State> {
         />
         <Form>
           <TextArea
-            value={caucus ? caucus.topic : undefined}
+            value={caucus ? caucus.topic : ''}
             autoHeight
             onChange={textAreaHandler<CaucusData>(caucusFref, 'topic')}
             attatched="top"
