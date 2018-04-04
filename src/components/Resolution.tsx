@@ -373,7 +373,7 @@ export default class Resolution extends React.Component<Props, State> {
     ));
 
     return (
-      <Segment inverted>
+      <Segment inverted loading={!resolution}>
         <Grid columns="equal">
           {columns}
         </Grid>
