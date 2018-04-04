@@ -46,7 +46,7 @@ export interface ResolutionData {
   proposer: MemberID;
   seconder: MemberID;
   status: ResolutionStatus;
-  caucus: CaucusID;
+  caucus?: CaucusID;
   amendments?: Map<AmendmentID, AmendmentData>;
   votes?: Votes;
 }
@@ -136,8 +136,16 @@ export default class Resolution extends React.Component<Props, State> {
 
     const ref = postCaucus(committeeID, newCaucus);
 
-    this.props.history
-      .push(`/committees/${committeeID}/caucuses/${ref.key}`);
+    this.gotoCaucus(ref.key);
+  }
+
+  gotoCaucus = (caucusID: CaucusID | null | undefined) => {
+    const { committeeID } = this.props.match.params;
+
+    if (caucusID) {
+      this.props.history
+        .push(`/committees/${committeeID}/caucuses/${caucusID}`);
+    }
   }
 
   handleProvisionResolution = (resolutionData: ResolutionData) => {
@@ -162,8 +170,9 @@ export default class Resolution extends React.Component<Props, State> {
       stance: Stance.For,
     });
 
-    this.props.history
-      .push(`/committees/${committeeID}/caucuses/${ref.key}`);
+    this.recoverResolutionFref().child('caucus').set(ref.key);
+
+    this.gotoCaucus(ref.key);
   }
 
   renderAmendment = (id: AmendmentID, amendmentData: AmendmentData, amendmentFref: firebase.database.Reference) => {
@@ -194,6 +203,7 @@ export default class Resolution extends React.Component<Props, State> {
       <Form.Dropdown
         key="proposer"
         value={nameToCountryOption(proposer).key}
+        error={proposer === ''}
         search
         selection
         fluid
@@ -388,7 +398,7 @@ export default class Resolution extends React.Component<Props, State> {
 
   renderHeader = (resolution?: ResolutionData) => {
     const resolutionFref = this.recoverResolutionFref();
-    const { recoverCountryOptions } = this;
+    const { recoverCountryOptions, handleProvisionResolution } = this;
 
     const statusDropdown = (
       <Dropdown 
@@ -404,6 +414,7 @@ export default class Resolution extends React.Component<Props, State> {
       <Form.Dropdown
         key="proposer"
         value={nameToCountryOption(resolution ? resolution.proposer : '').key}
+        error={resolution ? resolution.proposer === '' : undefined}
         search
         selection
         fluid
@@ -417,12 +428,29 @@ export default class Resolution extends React.Component<Props, State> {
       <Form.Dropdown
         key="seconder"
         value={nameToCountryOption(resolution ? resolution.seconder : '').key}
+        error={resolution ? resolution.seconder === '' : undefined}
         search
         selection
         fluid
         onChange={countryDropdownHandler<ResolutionData>(resolutionFref, 'seconder', countryOptions)}
         options={countryOptions}
         label="Seconder"
+      />
+    );
+
+    const provisionTree = !((resolution || { caucus: undefined }).caucus) ? (
+      // if there's no linked caucus
+      <Form.Button
+        basic
+        disabled={!resolution || resolution.proposer === ''}
+        positive
+        content="Provision Caucus"
+        onClick={() => handleProvisionResolution(resolution!)}
+      />
+    ) : (
+      <Form.Button
+        content="Associated Caucus"
+        onClick={() => this.gotoCaucus(resolution!.caucus)}
       />
     );
 
@@ -451,6 +479,7 @@ export default class Resolution extends React.Component<Props, State> {
             {proposerTree}
             {seconderTree}
           </Form.Group>
+          {provisionTree}
         </Form>
       </Segment>
     );
@@ -499,21 +528,12 @@ export default class Resolution extends React.Component<Props, State> {
   renderOptions = (resolution?: ResolutionData) => {
     const { recoverResolutionFref, handleProvisionResolution } = this;
     return (
-      <Button.Group fluid>
-        <Button
-          negative
-          content="Delete"
-          basic
-          onClick={() => recoverResolutionFref().remove()}
-        />
-        <Button
-          basic
-          disabled={!resolution}
-          positive
-          content="Provision Caucus"
-          onClick={() => handleProvisionResolution(resolution!)}
-        />
-      </Button.Group>
+      <Button
+        negative
+        content="Delete"
+        basic
+        onClick={() => recoverResolutionFref().remove()}
+      />
     );
   }
 
