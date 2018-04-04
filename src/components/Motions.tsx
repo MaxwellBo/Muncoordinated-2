@@ -382,6 +382,9 @@ export default class Motions extends React.Component<Props, State> {
             </Button>
             {approvable(type) && <Button.Or />}
             {approvable(type) && <Button 
+              disabled={motionData.proposer === ''}
+              basic
+              positive
               onClick={() => handleApproveMotion(motionData)}
             >
               Provision
