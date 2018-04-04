@@ -93,6 +93,12 @@ export class CaucusNextSpeaking extends React.Component<Props, {}> {
     const { nextSpeaker, props, interlace } = this;
     const { caucus } = this.props;
 
+    const queue = caucus ? caucus.queue : {}; 
+    const hasNowSpeaking = caucus ? !!caucus.speaking : false;
+    const hasNextSpeaking = _.values(queue).length > 0;
+    const nextable = hasNowSpeaking || hasNextSpeaking;
+    const interlaceable = _.values(queue).length > 1;
+
     return (
       <div>
         <Header as="h3" attached="top">
@@ -103,6 +109,7 @@ export class CaucusNextSpeaking extends React.Component<Props, {}> {
             basic
             icon
             primary
+            disabled={!nextable}
             onClick={nextSpeaker}
           >
             <Icon name="arrow up" />
@@ -110,6 +117,7 @@ export class CaucusNextSpeaking extends React.Component<Props, {}> {
           </Button>
           <Button
             icon
+            disabled={!interlaceable}
             basic
             color="purple"
             onClick={interlace}
