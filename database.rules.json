@@ -3,7 +3,9 @@
     "committees": {
     	"$uid": {
         ".read": true,
-        ".write": "auth != null && root.child('committees').child($uid).child('creatorUid').val() === auth.uid"
+        ".write": "auth != null && 
+        	(root.child('committees').child($uid).child('creatorUid').val() === auth.uid
+           || newData.child('creatorUid').val() === auth.uid)"
       }
     }
   }
