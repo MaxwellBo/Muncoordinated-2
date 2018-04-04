@@ -154,7 +154,7 @@ function MemberItem(props: { data: MemberData, fref: firebase.database.Reference
   );
 }
 
-export default class CommitteeAdmin extends React.Component<Props, State> {
+export default class Admin extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
 

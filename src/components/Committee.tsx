@@ -5,7 +5,7 @@ import { Route, Link } from 'react-router-dom';
 import { MemberData, MemberID } from './Member';
 import { Caucus, CaucusData, CaucusID, DEFAULT_CAUCUS, CaucusStatus } from './Caucus';
 import Resolution, { ResolutionData, ResolutionID, DEFAULT_RESOLUTION } from './Resolution';
-import CommitteeAdmin from './CommitteeAdmin';
+import Admin from './Admin';
 import { Dropdown, Icon, Input, Menu, Sticky, Grid, Segment, SemanticICONS, Button } from 'semantic-ui-react';
 import Stats from './Stats';
 import { MotionID, MotionData } from './Motions';
@@ -229,16 +229,16 @@ export default class Committee extends React.Component<Props, State> {
     );
   }
 
-  Admin = () => {
+  renderAdmin = () => {
     return (
-      <CommitteeAdmin
+      <Admin
         committee={this.state.committee || DEFAULT_COMMITTEE}
         fref={this.state.committeeFref}
       />
     );
   }
 
-  CaucusComponent = (props: RouteComponentProps<URLParameters>) => {
+  renderCaucus = (props: RouteComponentProps<URLParameters>) => {
     return (
       <Caucus
         committee={this.state.committee || DEFAULT_COMMITTEE}
@@ -249,7 +249,7 @@ export default class Committee extends React.Component<Props, State> {
   }
     
   render() {
-    const { renderNav, Admin, CaucusComponent } = this;
+    const { renderNav, renderCaucus, renderAdmin } = this;
 
     return (
       <div>
@@ -260,12 +260,12 @@ export default class Committee extends React.Component<Props, State> {
             <Footer />
           </Grid.Column>
           <Grid.Column stretched width={12}>
-            <Route exact={true} path="/committees/:committeeID/admin" render={Admin} />
+            <Route exact={true} path="/committees/:committeeID/admin" render={renderAdmin} />
             <Route exact={true} path="/committees/:committeeID/stats" component={Stats} />
             <Route exact={true} path="/committees/:committeeID/unmod" component={Unmod} />
             <Route exact={true} path="/committees/:committeeID/motions" component={Motions} />
             <Route exact={true} path="/committees/:committeeID/help" component={Help} />
-            <Route path="/committees/:committeeID/caucuses/:caucusID" render={CaucusComponent} />
+            <Route path="/committees/:committeeID/caucuses/:caucusID" render={renderCaucus} />
             <Route path="/committees/:committeeID/resolutions/:resolutionID" component={Resolution} />
           </Grid.Column>
         </Grid>
