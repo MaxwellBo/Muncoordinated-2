@@ -6,7 +6,7 @@ import { AmendmentID, AmendmentData, DEFAULT_AMENDMENT, AMENDMENT_STATUS_OPTIONS
 import { Card, Button, Form, Dimmer, Dropdown, Segment, Input, TextArea, 
   List, Label, SemanticICONS, Icon, ListContent, Tab, Grid, SemanticCOLORS } from 'semantic-ui-react';
 import { CommitteeData } from './Committee';
-import { CaucusID, DEFAULT_CAUCUS, Stance, CaucusData } from './Caucus';
+import { CaucusID, DEFAULT_CAUCUS, CaucusData } from './Caucus';
 import { RouteComponentProps } from 'react-router';
 import { URLParameters } from '../types';
 import { dropdownHandler, fieldHandler, textAreaHandler, countryDropdownHandler } from '../actions/handlers';
@@ -16,6 +16,7 @@ import { Loading } from './Loading';
 import { canVote } from './CommitteeAdmin';
 import { voteOnResolution } from '../actions/resolutionActions';
 import { postCaucus } from '../actions/caucusActions';
+import { Stance } from './caucus/SpeakerFeed';
 
 interface Props extends RouteComponentProps<URLParameters> {
 }

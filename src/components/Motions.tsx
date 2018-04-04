@@ -9,13 +9,14 @@ import { makeDropdownOption, objectToList } from '../utils';
 import { TimerSetter, Unit } from './TimerSetter';
 import { nameToCountryOption, MemberID, MemberData } from './Member';
 import { CountryOption, COUNTRY_OPTIONS } from '../constants';
-import { DEFAULT_CAUCUS, CaucusData, Stance } from './Caucus';
+import { DEFAULT_CAUCUS, CaucusData } from './Caucus';
 import { postCaucus, postResolution } from '../actions/caucusActions';
 import { TimerData } from './Timer';
 import { putUnmodTimer } from '../actions/committeeActions';
 import { URLParameters } from '../types';
 import { Loading } from './Loading';
 import { ResolutionData, DEFAULT_RESOLUTION } from './Resolution';
+import { Stance } from './caucus/SpeakerFeed';
 
 export type MotionID = string;
 

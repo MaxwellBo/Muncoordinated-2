@@ -1,11 +1,12 @@
 import * as React from 'react';
 import * as firebase from 'firebase';
-import { MemberData, nameToCountryOption } from './Member';
-import { CaucusData, SpeakerEvent, Stance } from './Caucus';
-import * as Utils from '../utils';
-import { COUNTRY_OPTIONS, CountryOption } from '../constants';
+import { MemberData, nameToCountryOption } from '../Member';
+import { CaucusData } from '../Caucus';
+import * as Utils from '../../utils';
+import { COUNTRY_OPTIONS, CountryOption } from '../../constants';
 import { Header, Segment, Dropdown, Button, Form, DropdownProps, Icon } from 'semantic-ui-react';
-import { TimerSetter, Unit } from './TimerSetter';
+import { TimerSetter, Unit } from '../TimerSetter';
+import { SpeakerEvent, Stance } from '..//caucus/SpeakerFeed';
 
 interface Props {
   data: CaucusData;
