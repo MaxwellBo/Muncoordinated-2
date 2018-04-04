@@ -3,7 +3,7 @@ import { RouteComponentProps } from 'react-router';
 import { Link } from 'react-router-dom';
 import * as firebase from 'firebase';
 import { CommitteeData, CommitteeID, DEFAULT_COMMITTEE } from './Committee';
-import { Segment, Button, Divider, Form, Grid, Header } from 'semantic-ui-react';
+import { Segment, Button, Divider, Form, Grid, Header, InputOnChangeData } from 'semantic-ui-react';
 import Login from './Auth'; // side-effects: triggers firebase setup, don't reorder
 import { URLParameters } from '../types';
 
@@ -82,7 +82,7 @@ export default class Onboard extends React.Component<Props, State> {
       }
     };
 
-    const handleChange = (event: any, data: any) =>
+    const handleChange = (event: React.SyntheticEvent<HTMLInputElement>, data: InputOnChangeData): void =>
       this.setState({ [data.name]: data.value });
 
     return (

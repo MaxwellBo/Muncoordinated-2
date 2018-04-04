@@ -22,35 +22,6 @@ const DEFAULT_SPEAKER_EVENT = {
   duration: 0
 };
 
-export const SpeakerFeed = (props: {
-  data?: Map<string, SpeakerEvent>,
-  fref: firebase.database.Reference,
-  speaking?: SpeakerEvent,
-  speakerTimer: TimerData
-}) => {
-  const { data, fref, speaking, speakerTimer } = props;
-
-  const events = data || {};
-
-  const eventItems = Object.keys(events).map(key =>
-    (
-      <SpeakerFeedEntry
-        key={key}
-        data={events[key]}
-        fref={fref.child(key)}
-        speaking={speaking}
-        speakerTimer={speakerTimer}
-      />
-    )
-  );
-
-  return (
-    <Feed size="large">
-      {eventItems}
-    </Feed>
-  );
-};
-
 const StanceIcon = (props: { stance: Stance }) => {
   switch (props.stance) {
     case Stance.For:
@@ -102,7 +73,7 @@ export const SpeakerFeedEntry = (props: {
       <Feed.Content>
         <Feed.Summary>
           <Feed.User>
-            <Flag name={parseFlagName(data.who) as any} />
+            <Flag name={parseFlagName(data.who)} />
             {data.who}
           </Feed.User>
           <Feed.Date>{data.duration.toString() + ' seconds'}</Feed.Date>
@@ -122,4 +93,33 @@ export const SpeakerFeedEntry = (props: {
       </Feed.Content>
     </Feed.Event>
   ) : <Feed.Event />;
+};
+
+export const SpeakerFeed = (props: {
+  data?: Map<string, SpeakerEvent>,
+  fref: firebase.database.Reference,
+  speaking?: SpeakerEvent,
+  speakerTimer: TimerData
+}) => {
+  const { data, fref, speaking, speakerTimer } = props;
+
+  const events = data || {};
+
+  const eventItems = Object.keys(events).map(key =>
+    (
+      <SpeakerFeedEntry
+        key={key}
+        data={events[key]}
+        fref={fref.child(key)}
+        speaking={speaking}
+        speakerTimer={speakerTimer}
+      />
+    )
+  );
+
+  return (
+    <Feed size="large">
+      {eventItems}
+    </Feed>
+  );
 };

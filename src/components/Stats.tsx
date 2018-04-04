@@ -81,7 +81,7 @@ export default class Stats extends React.Component<Props, State> {
       return (
         <Table.Row key={mid} >
           <Table.Cell>
-            <Flag name={parseFlagName(member.name) as any} />
+            <Flag name={parseFlagName(member.name)} />
             {member.name}
           </Table.Cell>
           <Table.Cell>

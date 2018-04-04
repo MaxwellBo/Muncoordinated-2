@@ -1,14 +1,14 @@
 import * as React from 'react';
 import * as firebase from 'firebase';
 import { Form, Checkbox, Segment, Header, Statistic, Button, Input, Select, 
-  Divider, Progress, DropdownProps } from 'semantic-ui-react';
+  Divider, Progress, DropdownProps, ButtonProps } from 'semantic-ui-react';
 import { makeDropdownOption } from '../utils';
 import { Unit, TimerSetter } from './TimerSetter';
 
 interface Props {
   name: string;
   fref: firebase.database.Reference;
-  onChange: (timer: TimerData) => any;
+  onChange: (timer: TimerData) => void;
   toggleKeyCode?: number;
 }
 
@@ -73,7 +73,7 @@ export class Timer extends React.Component<Props, State> {
     }
   }
 
-  toggleHandler = (event: any, data: any) => {
+  toggleHandler = (event: React.MouseEvent<HTMLButtonElement> | {}, data: ButtonProps | {}) => {
     const timer = this.state.timer;
 
     const timestamp = Math.floor((new Date).getTime() / 1000);

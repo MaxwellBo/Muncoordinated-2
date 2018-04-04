@@ -272,7 +272,7 @@ export default class Resolution extends React.Component<Props, State> {
       newVote = Vote.Against;
     }
     
-    voteOnResolution(committeeID, resolutionID, memberID, newVote)
+    voteOnResolution(committeeID, resolutionID, memberID, newVote);
   }
 
   renderVotingMember = (key: MemberID, member: MemberData, vote?: Vote) => {

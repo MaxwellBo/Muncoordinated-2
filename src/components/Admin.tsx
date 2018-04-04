@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as firebase from 'firebase';
 import { CommitteeData, CommitteeID } from './Committee';
-import { MemberView, MemberData, MemberID, Rank, parseFlagName, nameToCountryOption } from './Member';
+import { MemberData, MemberID, Rank, parseFlagName, nameToCountryOption } from './Member';
 import * as Utils from '../utils';
 import { Dropdown, Segment, Header, Flag, Table, List, Button, Checkbox, Icon, 
   CheckboxProps, DropdownProps, ButtonProps, Tab } from 'semantic-ui-react';
@@ -116,7 +116,7 @@ function MemberItem(props: { data: MemberData, fref: firebase.database.Reference
   return (
     <Table.Row>
       <Table.Cell>
-        <Flag name={parseFlagName(props.data.name) as any} />
+        <Flag name={parseFlagName(props.data.name)} />
         {props.data.name}
       </Table.Cell>
       <Table.Cell>
@@ -203,9 +203,9 @@ export default class Admin extends React.Component<Props, State> {
     this.setState({ newMemberRank: data.value as Rank || Rank.Standard });
   }
 
-  additionHandler = (event: React.KeyboardEvent<HTMLElement>, data: any) => {
+  additionHandler = (event: React.KeyboardEvent<HTMLElement>, data: DropdownProps) => {
     // FSM looks sorta like the UN flag
-    const newCountry = nameToCountryOption(data.value);
+    const newCountry = nameToCountryOption((data.value as number | string).toString());
 
     if (_.includes(COUNTRY_OPTIONS, newCountry)) {
       this.setState({ newCountry });
