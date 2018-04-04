@@ -1,6 +1,10 @@
 {
   "rules": {
-    ".read": "true",
-    ".write": "auth != null"
+    "committees": {
+    	"$uid": {
+        ".read": true,
+        ".write": "auth != null && root.child('committees').child($uid).child('creatorUid').val() === auth.uid"
+      }
+    }
   }
 }
