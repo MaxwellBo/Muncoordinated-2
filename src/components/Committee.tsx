@@ -6,7 +6,7 @@ import { MemberData, MemberID } from './Member';
 import { Caucus, CaucusData, CaucusID, DEFAULT_CAUCUS, CaucusStatus } from './Caucus';
 import Resolution, { ResolutionData, ResolutionID, DEFAULT_RESOLUTION } from './Resolution';
 import Admin from './Admin';
-import { Dropdown, Icon, Input, Menu, Sticky, Grid, Segment, SemanticICONS, Button } from 'semantic-ui-react';
+import { Icon, Input, Menu, Sticky, Grid, Segment, SemanticICONS, Button } from 'semantic-ui-react';
 import Stats from './Stats';
 import { MotionID, MotionData } from './Motions';
 import { TimerData, DEFAULT_TIMER } from './Timer';

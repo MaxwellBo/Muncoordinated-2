@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as firebase from 'firebase';
 import { CommitteeData, CommitteeID, DEFAULT_COMMITTEE } from './Committee';
 import { RouteComponentProps } from 'react-router';
-import { Segment, Input, Dropdown, Button, Card, Form } from 'semantic-ui-react';
+import { Segment, Input, Dropdown, Button, Card, Form, Message } from 'semantic-ui-react';
 import { fieldHandler, dropdownHandler, validatedNumberFieldHandler, 
   countryDropdownHandler } from '../actions/handlers';
 import { makeDropdownOption, objectToList } from '../utils';
@@ -305,13 +305,28 @@ export default class Motions extends React.Component<Props, State> {
       />
     );
 
+    const speakerSeconds = (speakerDuration || 0) * (speakerUnit === Unit.Minutes ? 60 : 1);
+    const caucusSeconds = (caucusDuration || 0) * (caucusUnit === Unit.Minutes ? 60 : 1);
+
+    const doesNotEvenlyDivide = (caucusSeconds % speakerSeconds) !== 0;
+
+    const warning = (
+      <Card.Content extra>
+        <Message
+          error
+          content="Speaker time does not evenly divide the caucus time"
+        />
+      </Card.Content>
+    );
+
     const extra = (
       <Card.Content extra>
-        <Form>
+        <Form error={hasSpeakers(type) && hasDuration(type) && doesNotEvenlyDivide}>
           <Form.Group widths="equal">
             {hasDuration(type) && durationSetter}
             {hasSpeakers(type) && speakerSetter}
           </Form.Group>
+          {warning}
         </Form>
       </Card.Content>
     );
