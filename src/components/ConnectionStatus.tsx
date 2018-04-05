@@ -51,7 +51,7 @@ export class ConnectionStatus extends React.Component<Props, State> {
         <Icon name="circle notched" loading />
         <Message.Content>
           <Message.Header>Connection Lost</Message.Header>
-          Refresh the page, as local changes will no longer be committed to the server.
+          Refresh the page, as local changes will no longer be committed to the server. You will need to login again.
         </Message.Content>
       </Message>
     ) : <div />;
