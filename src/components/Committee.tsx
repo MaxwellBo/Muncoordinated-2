@@ -45,10 +45,9 @@ function CommitteeMeta(props: { data?: CommitteeData, fref: firebase.database.Re
   const { data } = props;
 
   return (
-    <Segment>
+    <Segment loading={!data}>
       <Input
         value={data ? data.name : ''}
-        loading={!data}
         onChange={fieldHandler<CommitteeData>(props.fref, 'name')}
         attached="top"
         size="massive"
@@ -57,7 +56,6 @@ function CommitteeMeta(props: { data?: CommitteeData, fref: firebase.database.Re
       />
       <Input 
         value={data ? data.topic : ''} 
-        loading={!data}
         onChange={fieldHandler<CommitteeData>(props.fref, 'topic')} 
         attached="bottom" 
         fluid 
