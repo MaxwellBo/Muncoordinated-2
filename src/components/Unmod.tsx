@@ -30,7 +30,7 @@ export class Unmod extends React.Component<Props, State> {
     const { fref } = this.state;
 
     return (
-      <Timer name="Unmoderated Caucus" fref={fref} onChange={(x: TimerData) => x} />
+      <Timer name="Unmoderated Caucus" timerFref={fref} onChange={(x: TimerData) => x} />
     );
   }
 }

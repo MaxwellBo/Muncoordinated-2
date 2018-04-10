@@ -7,7 +7,7 @@ import { Unit, TimerSetter } from './TimerSetter';
 
 interface Props {
   name: string;
-  fref: firebase.database.Reference;
+  timerFref: firebase.database.Reference;
   onChange: (timer: TimerData) => void;
   toggleKeyCode?: number;
 }
@@ -85,7 +85,7 @@ export class Timer extends React.Component<Props, State> {
         ticking: timer.ticking ? false : timestamp
       };
 
-      this.props.fref.set(newTimer);
+      this.props.timerFref.set(newTimer);
     }
   }
 
@@ -117,7 +117,7 @@ export class Timer extends React.Component<Props, State> {
   componentDidMount() {
     const { handleKeyDown, firebaseCallback, tick, props } = this;
 
-    props.fref.on('value', firebaseCallback);
+    props.timerFref.on('value', firebaseCallback);
 
     this.setState({ timerId: setInterval(tick, 1000) });
 
@@ -128,7 +128,7 @@ export class Timer extends React.Component<Props, State> {
     const { handleKeyDown, firebaseCallback, tick, props } = this;
     const { timerId } = this.state;
 
-    props.fref.off('value', firebaseCallback);
+    props.timerFref.off('value', firebaseCallback);
 
     if (timerId) {
       clearInterval(timerId);
@@ -155,7 +155,7 @@ export class Timer extends React.Component<Props, State> {
         ticking: false
       };
 
-      this.props.fref.set(newTimer);
+      this.props.timerFref.set(newTimer);
     }
   }
 
