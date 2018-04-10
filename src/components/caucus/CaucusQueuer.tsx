@@ -4,13 +4,15 @@ import { MemberData, nameToCountryOption } from '../Member';
 import { CaucusData } from '../Caucus';
 import * as Utils from '../../utils';
 import { COUNTRY_OPTIONS, CountryOption } from '../../constants';
-import { Header, Segment, Dropdown, Button, Form, DropdownProps, Icon } from 'semantic-ui-react';
+import { Header, Segment, Dropdown, Button, Form, DropdownProps, Icon, Checkbox } from 'semantic-ui-react';
 import { TimerSetter, Unit } from '../TimerSetter';
 import { SpeakerEvent, Stance } from '..//caucus/SpeakerFeed';
+import { checkboxHandler } from '../../actions/handlers';
 
 interface Props {
+  caucus?: CaucusData;
   members?: Map<string, MemberData>;
-  fref: firebase.database.Reference;
+  caucusFref: firebase.database.Reference;
 }
 
 interface State {
@@ -41,7 +43,7 @@ export default class CaucusQueuer extends React.Component<Props, State> {
         duration: this.state.unitDropdown === Unit.Minutes ? duration * 60 : duration,
       };
 
-      this.props.fref.child('queue').push().set(newEvent);
+      this.props.caucusFref.child('queue').push().set(newEvent);
     }
   }
 
@@ -64,7 +66,7 @@ export default class CaucusQueuer extends React.Component<Props, State> {
   render() {
     const { stanceHandler, countryHandler, unitHandler } = this;
 
-    const { members } = this.props;
+    const { members, caucus, caucusFref } = this.props;
 
     const countryOptions = this.recoverCountryOptions();
 
@@ -88,6 +90,13 @@ export default class CaucusQueuer extends React.Component<Props, State> {
               durationValue={this.state.durationField}
               onDurationChange={durationHandler}
               onUnitChange={unitHandler}
+            />
+            <Form.Checkbox 
+              label="Delegates can queue"
+              indeterminate={!caucus} 
+              toggle 
+              checked={caucus ? (caucus.queueIsPublic || false) : false} // zoo wee mama
+              onChange={checkboxHandler<CaucusData>(caucusFref, 'queueIsPublic')} 
             />
             <Button.Group size="large" fluid>
               <Button 

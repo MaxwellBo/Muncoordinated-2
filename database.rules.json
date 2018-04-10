@@ -5,7 +5,16 @@
         ".read": true,
         ".write": "auth != null && 
         	(!root.child('committees').child($uid).child('creatorUid').exists()
-           || root.child('committees').child($uid).child('creatorUid').val() === auth.uid)"
+           || root.child('committees').child($uid).child('creatorUid').val() === auth.uid)",
+        "caucuses": {
+          "$cid" : {
+            "queue": {
+              "$qid": {
+                ".write": "!data.exists() && newData.exists() && data.parent().parent().child('queueIsPublic').val() === true"
+              }
+            }
+          }
+        }
       }
     }
   }

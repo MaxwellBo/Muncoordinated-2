@@ -42,6 +42,7 @@ export interface CaucusData {
   status: CaucusStatus;
   speakerTimer: TimerData;
   caucusTimer: TimerData;
+  queueIsPublic?: boolean;
   speaking?: SpeakerEvent;
   queue?: Map<string, SpeakerEvent>;
   history?: Map<string, SpeakerEvent>;
@@ -58,6 +59,7 @@ export const DEFAULT_CAUCUS: CaucusData = {
   status: CaucusStatus.Open,
   speakerTimer: { ...DEFAULT_TIMER, remaining: 60 },
   caucusTimer: { ...DEFAULT_TIMER, remaining: 60 * 10 },
+  queueIsPublic: false,
   queue: {} as Map<string, SpeakerEvent>,
   history: {} as Map<string, SpeakerEvent>,
 };
@@ -173,19 +175,19 @@ export class Caucus extends React.Component<Props, State> {
           <Grid.Column>
             {renderNowSpeaking(caucus)}
             <CaucusNextSpeaking caucus={caucus} fref={caucusFref} speakerTimer={speakerTimer} />
-            <CaucusQueuer members={members} fref={caucusFref} />
+            <CaucusQueuer caucus={caucus} members={members} caucusFref={caucusFref} />
           </Grid.Column>
           <Grid.Column>
             <Timer
               name="Speaker Timer"
-              fref={caucusFref.child('speakerTimer')}
+              timerFref={caucusFref.child('speakerTimer')}
               key={caucusID + 'speakerTimer'}
               onChange={(timer) => this.setState({ speakerTimer: timer })}
               toggleKeyCode={83} // S
             />
             <Timer
               name="Caucus Timer"
-              fref={caucusFref.child('caucusTimer')}
+              timerFref={caucusFref.child('caucusTimer')}
               key={caucusID + 'caucusTimer'}
               onChange={(timer) => this.setState({ caucusTimer: timer })}
               toggleKeyCode={67} // C
