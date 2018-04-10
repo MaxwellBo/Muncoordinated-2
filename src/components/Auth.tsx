@@ -9,8 +9,10 @@ interface State {
   email: string;
   password: string;
   error?: Error;
+  success?: { name?: string, message?: string }; // like Error
   loggingIn: boolean;
   creating: boolean;
+  resetting: boolean;
   unsubscribe?: () => void;
 }
 interface Props {
@@ -37,6 +39,7 @@ export default class Login extends React.Component<Props, State> {
       password: '',
       loggingIn: false,
       creating: false,
+      resetting: false
     };
   }
 
@@ -83,9 +86,26 @@ export default class Login extends React.Component<Props, State> {
     this.setState({ creating: true });
 
     firebase.auth().createUserWithEmailAndPassword(email, password).then(() => {
-      this.setState({ creating: false });
+      const nme = 'Account created';
+      const message = 'Your account was successfully created';
+
+      this.setState({ creating: false, success: { name: nme, message } });
     }).catch(err => {
       this.setState({ creating: false, error: err });
+    });
+  }
+
+  passwordResetHandler = () => {
+    const { email } = this.state;
+    this.setState({ resetting: true });
+
+    firebase.auth().sendPasswordResetEmail(email).then(() => {
+      const nme = 'Password reset';
+      const message = `Check your inbox at ${email} for further instructions`;
+
+      this.setState({ resetting: false, success: { name: nme, message }  });
+    }).catch(err => {
+      this.setState({ resetting: false, error: err });
     });
   }
 
@@ -120,8 +140,8 @@ export default class Login extends React.Component<Props, State> {
   }
 
   renderLogin = () => {
-    const { emailHandler, passwordHandler, handleDismiss, createHandler, loginHandler } = this;
-    const { loggingIn, creating, user } = this.state;
+    const { emailHandler, passwordHandler, handleDismiss, createHandler, loginHandler, passwordResetHandler } = this;
+    const { loggingIn, creating, user, resetting, email, password } = this.state;
     const { allowSignup } = this.props;
 
     const signupButton = <Button secondary onClick={createHandler} loading={creating} >Sign-Up</Button>;
@@ -131,14 +151,15 @@ export default class Login extends React.Component<Props, State> {
     const passwordInput = <input autoComplete="current-password" />;
 
     const err = this.state.error;
+    const succ = this.state.success;
     
     return (
-      <Form error={!!this.state.error} success={!!user} loading={user === undefined}>
+      <Form error={!!err} success={!!succ} loading={user === undefined}>
         <Form.Input
           key="email"
           label="Email"
           placeholder="joe@schmoe.com"
-          value={this.state.email}
+          value={email}
           onChange={emailHandler}
         >
           {usernameInput}
@@ -148,7 +169,7 @@ export default class Login extends React.Component<Props, State> {
           label="Password"
           type="password"
           placeholder="correct horse battery staple"
-          value={this.state.password}
+          value={password}
           onChange={passwordHandler}
         >
           {passwordInput}
@@ -157,8 +178,8 @@ export default class Login extends React.Component<Props, State> {
           key="success"
           success
         >
-          <Message.Header>Account created</Message.Header>
-          <Message.Content>Your account was successfully created</Message.Content>
+          <Message.Header>{succ ? succ.name : ''}</Message.Header>
+          <Message.Content>{succ ? succ.message : ''}</Message.Content>
         </Message>
         <Message
           key="error"
@@ -170,6 +191,8 @@ export default class Login extends React.Component<Props, State> {
         </Message>
         <Button.Group fluid>
           <Button primary onClick={loginHandler} loading={loggingIn} >Login</Button>
+          <Button.Or />
+          <Button onClick={passwordResetHandler} loading={resetting} disabled={!email}>Reset Password</Button>
           {allowSignup && <Button.Or />}
           {allowSignup && signupButton}
         </Button.Group>
