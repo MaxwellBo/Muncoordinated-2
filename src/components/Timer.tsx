@@ -16,6 +16,8 @@ interface Props {
 interface State {
   timer?: TimerData;
   timerId?: NodeJS.Timer;
+  skew?: number;
+  offsetRef: firebase.database.Reference;
   unitDropdown: Unit;
   durationField: string;
 }
@@ -37,6 +39,7 @@ export default class Timer extends React.Component<Props, State> {
     super(props);
 
     this.state = {
+      offsetRef: firebase.database().ref('/.info/serverTimeOffset'),
       unitDropdown: Unit.Seconds,
       durationField: '60'
     };
@@ -57,16 +60,30 @@ export default class Timer extends React.Component<Props, State> {
     }
   }
 
+  getNow = () => {
+    const { skew } = this.state;
+
+    const millis =  skew ? skew + (new Date).getTime() : (new Date).getTime();
+
+    return Math.floor(millis / 1000);
+  }
+
+  getNowIn = () => {
+    const { skew } = this.state;
+
+    const millis = (new Date).getTime();
+
+    return Math.floor(millis / 1000);
+  }
+
   toggleHandler = (event: React.MouseEvent<HTMLButtonElement> | {}, data: ButtonProps | {}) => {
     const timer = this.state.timer;
-
-    const timestamp = Math.floor((new Date).getTime() / 1000);
 
     if (timer) {
       const newTimer = {
         elapsed: timer.elapsed,
         remaining: timer.remaining,
-        ticking: timer.ticking ? false : timestamp
+        ticking: timer.ticking ? false : this.getNow()
       };
 
       this.props.timerFref.set(newTimer);
@@ -79,11 +96,17 @@ export default class Timer extends React.Component<Props, State> {
     }
   }
 
-  firebaseCallback = (timer: firebase.database.DataSnapshot | null) => {
+  skewCallback = (skew: firebase.database.DataSnapshot | null) => {
+    if (skew) {
+      this.setState({ skew: skew.val() });
+    }
+  }
+
+  timerCallback = (timer: firebase.database.DataSnapshot | null) => {
     if (timer && timer.val()) {
       let timerData = timer.val();
 
-      const now = Math.floor((new Date).getTime() / 1000);
+      const now = this.getNow();
 
       if (timerData.ticking) {
         const remaining = timerData.remaining - (now - timerData.ticking);
@@ -99,9 +122,10 @@ export default class Timer extends React.Component<Props, State> {
   }
 
   componentDidMount() {
-    const { handleKeyDown, firebaseCallback, tick, props } = this;
+    const { handleKeyDown, timerCallback, tick, props, state, skewCallback } = this;
 
-    props.timerFref.on('value', firebaseCallback);
+    props.timerFref.on('value', timerCallback);
+    state.offsetRef.on('value', skewCallback);
 
     this.setState({ timerId: setInterval(tick, 1000) });
 
@@ -109,10 +133,11 @@ export default class Timer extends React.Component<Props, State> {
   }
 
   componentWillUnmount() {
-    const { handleKeyDown, firebaseCallback, tick, props } = this;
+    const { handleKeyDown, timerCallback, skewCallback, tick, props, state } = this;
     const { timerId } = this.state;
 
-    props.timerFref.off('value', firebaseCallback);
+    props.timerFref.off('value', timerCallback);
+    state.offsetRef.off('value', skewCallback);
 
     if (timerId) {
       clearInterval(timerId);
