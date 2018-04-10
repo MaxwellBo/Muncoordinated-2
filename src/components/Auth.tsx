@@ -86,10 +86,12 @@ export default class Login extends React.Component<Props, State> {
     this.setState({ creating: true });
 
     firebase.auth().createUserWithEmailAndPassword(email, password).then(() => {
-      const nme = 'Account created';
-      const message = 'Your account was successfully created';
+      const success = { 
+        name: 'Account created',
+        message: 'Your account was successfully created' 
+      };
 
-      this.setState({ creating: false, success: { name: nme, message } });
+      this.setState({ creating: false, success });
     }).catch(err => {
       this.setState({ creating: false, error: err });
     });
@@ -100,17 +102,23 @@ export default class Login extends React.Component<Props, State> {
     this.setState({ resetting: true });
 
     firebase.auth().sendPasswordResetEmail(email).then(() => {
-      const nme = 'Password reset';
-      const message = `Check your inbox at ${email} for further instructions`;
+      const success = {
+        name: 'Password reset',
+        message: `Check your inbox at ${email} for further instructions`
+      };
 
-      this.setState({ resetting: false, success: { name: nme, message }  });
+      this.setState({ resetting: false, success });
     }).catch(err => {
       this.setState({ resetting: false, error: err });
     });
   }
 
-  handleDismiss = () => {
+  handleDismissError = () => {
     this.setState({ error: undefined });
+  }
+
+  handleDismissSuccess = () => {
+    this.setState({ success: undefined });
   }
 
   emailHandler = (e: React.FormEvent<HTMLInputElement>) =>
@@ -140,7 +148,8 @@ export default class Login extends React.Component<Props, State> {
   }
 
   renderLogin = () => {
-    const { emailHandler, passwordHandler, handleDismiss, createHandler, loginHandler, passwordResetHandler } = this;
+    const { emailHandler, passwordHandler, handleDismissError, handleDismissSuccess, createHandler, 
+      loginHandler, passwordResetHandler } = this;
     const { loggingIn, creating, user, resetting, email, password } = this.state;
     const { allowSignup } = this.props;
 
@@ -177,6 +186,7 @@ export default class Login extends React.Component<Props, State> {
         <Message
           key="success"
           success
+          onDismiss={handleDismissSuccess}
         >
           <Message.Header>{succ ? succ.name : ''}</Message.Header>
           <Message.Content>{succ ? succ.message : ''}</Message.Content>
@@ -184,7 +194,7 @@ export default class Login extends React.Component<Props, State> {
         <Message
           key="error"
           error
-          onDismiss={handleDismiss}
+          onDismiss={handleDismissError}
         >
           <Message.Header>{err ? err.name : ''}</Message.Header>
           <Message.Content>{err ? err.message : ''}</Message.Content>
