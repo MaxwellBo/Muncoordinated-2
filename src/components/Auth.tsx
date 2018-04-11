@@ -1,8 +1,10 @@
 import * as React from 'react';
 import * as firebase from 'firebase';
-import { Card, Button, Form, Message, Modal, Header, Icon } from 'semantic-ui-react';
-import { Link } from 'react-router-dom';
+import { Card, Button, Form, Message, Modal, Header, Icon, List } from 'semantic-ui-react';
 import { error } from 'util';
+import { CommitteeID, CommitteeData } from './Committee';
+import * as _ from 'lodash';
+import { Loading } from './Loading';
 
 interface State {
   user?: firebase.User | null;
@@ -14,6 +16,7 @@ interface State {
   creating: boolean;
   resetting: boolean;
   unsubscribe?: () => void;
+  committees?: Map<CommitteeID, CommitteeData>;
 }
 interface Props {
   allowSignup: boolean;
@@ -53,6 +56,10 @@ export default class Login extends React.Component<Props, State> {
     );
 
     this.setState({ unsubscribe });
+
+    firebase.database().ref('committees').once('value').then(committees => {
+      this.setState({ committees: committees.val() });
+    });
   }
 
   componentWillUnmount() {
@@ -127,8 +134,38 @@ export default class Login extends React.Component<Props, State> {
   passwordHandler = (e: React.FormEvent<HTMLInputElement>) =>
     this.setState({ password: e.currentTarget.value })
 
+  renderCommittees = (u: firebase.User) => {
+    const { renderCommittee } = this;
+    const { committees } = this.state;
+
+    const defaulted = committees || {} as Map<CommitteeID, CommitteeData>;
+
+    const owned = _.keys(defaulted).filter(k =>
+      defaulted[k].creatorUid === u.uid);
+
+    return (
+      <List relaxed>
+        {owned.map(k => renderCommittee(k, defaulted[k]))}
+      </List>
+    );
+  }
+
+  renderCommittee = (committeeID: CommitteeID, committee: CommitteeData) => {
+    const target = `/committees/${committeeID}`;
+
+    return (
+      <List.Item key={committeeID}>
+        <List.Content>
+          <List.Header as="a" href={target}>{committee.name}</List.Header>
+          <List.Description>{committee.topic}</List.Description>
+        </List.Content>
+      </List.Item>
+    );
+  }
+
   renderLoggedIn = (u: firebase.User) => {
-    const { logOutHandler } = this;
+    const { logOutHandler, renderCommittees } = this;
+    const { committees } = this.state;
 
     return (
       <Card centered>
@@ -139,6 +176,9 @@ export default class Login extends React.Component<Props, State> {
           <Card.Meta>
             Logged in
           </Card.Meta>
+        </Card.Content>
+        <Card.Content key="committees">
+          {committees ? renderCommittees(u) : <Loading />}
         </Card.Content>
         <Card.Content extra key="extra">
           <Button basic color="red" fluid onClick={logOutHandler}>Logout</Button>
@@ -263,14 +303,16 @@ export class ModalLogin extends React.Component<{},
   }
 
   render() {
+    const { user } = this.state;
+
     return (
       <Modal 
         trigger={this.renderModalTrigger()}
-        dimmer
         size="large"
+        dimmer
+        basic={!!user} // strip away the outer window when we know we have a card
       >
-        <Modal.Header>Login</Modal.Header>
-        <Modal.Content image>
+        <Modal.Content>
           <Login allowSignup={false}/>
         </Modal.Content>
       </Modal>
