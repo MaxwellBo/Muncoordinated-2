@@ -21,8 +21,14 @@ export default class Help extends React.PureComponent<{}, {}> {
     </a>
   );
 
+  gpl = ( 
+    <a href="https://github.com/MaxwellBo/Muncoordinated-2/blob/master/LICENSE">
+      GNU GPLv3
+    </a>
+  );
+
   render() {
-    const { edge, firefox, chrome } = this;
+    const { edge, firefox, chrome, gpl } = this;
 
     return (
       <div>
@@ -87,6 +93,10 @@ export default class Help extends React.PureComponent<{}, {}> {
           </List>
           <br />
           If you're at an Australian MUN, I'll see if I can push a fix within the hour
+        </Segment>
+        <Header as="h2" attached="top">License</Header>
+        <Segment attached="bottom">
+          Muncoordinated is licensed under {gpl}
         </Segment>
       </div>
     );
