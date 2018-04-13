@@ -210,8 +210,11 @@ export default class Login extends React.Component<Props, State> {
           placeholder="joe@schmoe.com"
           value={email}
           onChange={emailHandler}
+          action
         >
+
           {usernameInput}
+          <Button onClick={passwordResetHandler} loading={resetting} disabled={!email}>Reset Password</Button>
         </Form.Input>
         <Form.Input
           key="password"
@@ -241,8 +244,6 @@ export default class Login extends React.Component<Props, State> {
         </Message>
         <Button.Group fluid>
           <Button primary onClick={loginHandler} loading={loggingIn} >Login</Button>
-          <Button.Or />
-          <Button onClick={passwordResetHandler} loading={resetting} disabled={!email}>Reset Password</Button>
           {allowSignup && <Button.Or />}
           {allowSignup && signupButton}
         </Button.Group>
