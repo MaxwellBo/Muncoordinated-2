@@ -7,7 +7,7 @@ import { ConnectionStatus } from './components/ConnectionStatus';
 
 import { ModalLogin } from './components/Auth';
 import Onboard from './components/Onboard';
-import Homepage from './components/Homepage';
+import { Homepage } from './components/Homepage';
 import Committee, { CommitteeID } from './components/Committee';
 import { CaucusID } from './components/Caucus';
 
