@@ -6,6 +6,11 @@ import { CommitteeID, CommitteeData } from './Committee';
 import * as _ from 'lodash';
 import { Loading } from './Loading';
 
+enum Mode {
+  Login = 'Login',
+  ForgotPassword = 'ForgotPassword'
+}
+
 interface State {
   user?: firebase.User | null;
   email: string;
@@ -14,6 +19,7 @@ interface State {
   success?: { name?: string, message?: string }; // like Error
   loggingIn: boolean;
   creating: boolean;
+  mode: Mode;
   resetting: boolean;
   unsubscribe?: () => void;
   committees?: Map<CommitteeID, CommitteeData>;
@@ -40,6 +46,7 @@ export default class Login extends React.Component<Props, State> {
     this.state = {
       email: '',
       password: '',
+      mode: Mode.Login,
       loggingIn: false,
       creating: false,
       resetting: false
@@ -128,6 +135,14 @@ export default class Login extends React.Component<Props, State> {
     this.setState({ success: undefined });
   }
 
+  handleForgotPassword = () => {
+    this.setState({ mode: Mode.ForgotPassword });
+  }
+
+  handleResetPasswordCancel = () => {
+    this.setState( { mode: Mode.Login });
+  }
+
   emailHandler = (e: React.FormEvent<HTMLInputElement>) =>
     this.setState({ email: e.currentTarget.value })
 
@@ -189,11 +204,13 @@ export default class Login extends React.Component<Props, State> {
 
   renderLogin = () => {
     const { emailHandler, passwordHandler, handleDismissError, handleDismissSuccess, createHandler, 
-      loginHandler, passwordResetHandler } = this;
-    const { loggingIn, creating, user, resetting, email, password } = this.state;
+      loginHandler, passwordResetHandler, handleForgotPassword, handleResetPasswordCancel } = this;
+    const { loggingIn, creating, user, resetting, email, password, mode } = this.state;
     const { allowSignup } = this.props;
 
-    const signupButton = <Button secondary onClick={createHandler} loading={creating} >Sign-Up</Button>;
+    const signupButton = <Button onClick={createHandler} loading={creating} >Sign-Up</Button>;
+
+    const cancelButton = <Button onClick={handleResetPasswordCancel}>Cancel</Button>;
 
     const usernameInput = <input autoComplete="email" />;
 
@@ -213,7 +230,7 @@ export default class Login extends React.Component<Props, State> {
         >
           {usernameInput}
         </Form.Input>
-        <Form.Input
+        {mode === Mode.Login && <Form.Input
           key="password"
           label="Password"
           type="password"
@@ -222,7 +239,7 @@ export default class Login extends React.Component<Props, State> {
           onChange={passwordHandler}
         >
           {passwordInput}
-        </Form.Input>
+        </Form.Input>}
         <Message
           key="success"
           success
@@ -240,12 +257,36 @@ export default class Login extends React.Component<Props, State> {
           <Message.Content>{err ? err.message : ''}</Message.Content>
         </Message>
         <Button.Group fluid>
-          <Button primary onClick={loginHandler} loading={loggingIn} >Login</Button>
-          <Button.Or />
-          <Button onClick={passwordResetHandler} loading={resetting} disabled={!email}>Reset Password</Button>
-          {allowSignup && <Button.Or />}
-          {allowSignup && signupButton}
+          {mode === Mode.Login && 
+            <Button 
+              primary 
+              onClick={loginHandler} 
+              loading={loggingIn} 
+            >
+              Login
+            </Button>
+          }
+          {mode === Mode.ForgotPassword &&
+            <Button 
+              primary
+              onClick={passwordResetHandler} 
+              loading={resetting} 
+              disabled={!email}
+            >
+              Reset Password
+            </Button>
+          }
+        {allowSignup && mode === Mode.Login && <Button.Or />}
+        {allowSignup && mode === Mode.Login && signupButton}
+        {mode === Mode.ForgotPassword && cancelButton}
         </Button.Group>
+        {mode === Mode.Login && 
+          <a 
+            onClick={handleForgotPassword} 
+            style={{'cursor': 'pointer'}}
+          >
+            Forgot password?
+          </a>}
       </Form>
     );
   }
