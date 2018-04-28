@@ -5,7 +5,7 @@ import {
   Segment, Dimmer, Header, Dropdown, TextArea, Input, Button, Icon, Grid, Feed, Flag,
   Label, Form, Message
 } from 'semantic-ui-react';
-import { Timer, TimerData, DEFAULT_TIMER } from './Timer';
+import Timer, { TimerData, DEFAULT_TIMER } from './Timer';
 import { RouteComponentProps } from 'react-router';
 import { MemberID, MemberData, nameToCountryOption, parseFlagName } from './Member';
 import { CommitteeID, CommitteeData } from './Committee';
@@ -15,7 +15,7 @@ import { COUNTRY_OPTIONS, CountryOption } from '../constants';
 import { textAreaHandler, dropdownHandler, fieldHandler } from '../actions/handlers';
 import { makeDropdownOption } from '../utils';
 import { URLParameters } from '../types';
-import { Loading } from './Loading';
+import Loading from './Loading';
 import { CaucusNextSpeaking } from './caucus/CaucusNextSpeaking';
 import { SpeakerEvent, SpeakerFeedEntry } from './caucus/SpeakerFeed';
 
@@ -64,7 +64,7 @@ export const DEFAULT_CAUCUS: CaucusData = {
   history: {} as Map<string, SpeakerEvent>,
 };
 
-export class Caucus extends React.Component<Props, State> {
+export default class Caucus extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
 

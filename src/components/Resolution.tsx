@@ -12,7 +12,7 @@ import { URLParameters } from '../types';
 import { dropdownHandler, fieldHandler, textAreaHandler, countryDropdownHandler } from '../actions/handlers';
 import { objectToList, makeDropdownOption } from '../utils';
 import { CountryOption, COUNTRY_OPTIONS } from '../constants';
-import { Loading } from './Loading';
+import Loading from './Loading';
 import { canVote } from './Admin';
 import { voteOnResolution } from '../actions/resolutionActions';
 import { postCaucus } from '../actions/caucusActions';

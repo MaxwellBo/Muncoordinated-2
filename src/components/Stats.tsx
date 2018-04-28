@@ -7,7 +7,7 @@ import { Table, Flag  } from 'semantic-ui-react';
 import { MemberData, MemberID, parseFlagName } from './Member';
 import { CaucusID, CaucusData } from './Caucus';
 import { URLParameters } from '../types';
-import { Loading } from './Loading';
+import Loading from './Loading';
 import { SpeakerEvent } from './caucus/SpeakerFeed';
 
 interface Props extends RouteComponentProps<URLParameters> {

@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import { Message } from 'semantic-ui-react';
-import { Loading } from './Loading';
+import Loading from './Loading';
 
 interface State {
   latestVersion?: string;
@@ -11,7 +11,7 @@ interface State {
 const CLIENT_VERSION = 'v2.3.0';
 const RELEASES_LATEST = 'https://api.github.com/repos/MaxwellBo/Muncoordinated-2/releases/latest';
 
-export class Footer extends React.PureComponent<{}, State> {
+export default class Footer extends React.PureComponent<{}, State> {
   constructor(props: {}) {
     super(props);
 

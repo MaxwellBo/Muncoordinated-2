@@ -14,7 +14,7 @@ import { postCaucus, postResolution } from '../actions/caucusActions';
 import { TimerData } from './Timer';
 import { putUnmodTimer } from '../actions/committeeActions';
 import { URLParameters } from '../types';
-import { Loading } from './Loading';
+import Loading from './Loading';
 import { ResolutionData, DEFAULT_RESOLUTION } from './Resolution';
 import { Stance } from './caucus/SpeakerFeed';
 

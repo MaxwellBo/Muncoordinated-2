@@ -3,21 +3,22 @@ import * as firebase from 'firebase';
 import { RouteComponentProps } from 'react-router';
 import { Route, Link } from 'react-router-dom';
 import { MemberData, MemberID } from './Member';
-import { Caucus, CaucusData, CaucusID, DEFAULT_CAUCUS, CaucusStatus } from './Caucus';
+import Caucus, { CaucusData, CaucusID, DEFAULT_CAUCUS, CaucusStatus } from './Caucus';
 import Resolution, { ResolutionData, ResolutionID, DEFAULT_RESOLUTION } from './Resolution';
 import Admin from './Admin';
 import { Icon, Input, Menu, Sticky, Grid, Segment, SemanticICONS, Button } from 'semantic-ui-react';
 import Stats from './Stats';
 import { MotionID, MotionData } from './Motions';
 import { TimerData, DEFAULT_TIMER } from './Timer';
-import { Unmod } from './Unmod';
+import Unmod from './Unmod';
+import Notes from './Notes';
 import Help from './Help';
 import Motions from './Motions';
 import { fieldHandler } from '../actions/handlers';
 import { postCaucus, postResolution } from '../actions/caucusActions';
 import { URLParameters } from '../types';
-import { Loading } from './Loading';
-import { Footer } from './Footer';
+import Loading from './Loading';
+import Footer from './Footer';
 
 interface Props extends RouteComponentProps<URLParameters> {
 }
@@ -39,6 +40,7 @@ export interface CommitteeData {
   resolutions?: Map<ResolutionID, ResolutionData>;
   motions?: Map<MotionID, MotionData>;
   timer: TimerData;
+  notes: string;
 }
 
 function CommitteeMeta(props: { data?: CommitteeData, fref: firebase.database.Reference; }) {
@@ -73,7 +75,8 @@ export const DEFAULT_COMMITTEE: CommitteeData = {
   members: {} as Map<MemberID, MemberData>,
   caucuses: {} as Map<CaucusID, CaucusData>,
   resolutions: {} as Map<ResolutionID, ResolutionData>,
-  timer: DEFAULT_TIMER
+  timer: DEFAULT_TIMER,
+  notes: ''
 };
 
 export default class Committee extends React.Component<Props, State> {
@@ -221,6 +224,7 @@ export default class Committee extends React.Component<Props, State> {
             {resolutionItems}
           </Menu.Menu>
         </Menu.Item>
+        {makeMenuItem('Notes', 'sticky note outline')}
         {makeMenuItem('Stats', 'bar chart')}
         {makeMenuItem('Help', 'help')}
       </Menu>
@@ -252,6 +256,7 @@ export default class Committee extends React.Component<Props, State> {
             <Route exact={true} path="/committees/:committeeID/stats" component={Stats} />
             <Route exact={true} path="/committees/:committeeID/unmod" component={Unmod} />
             <Route exact={true} path="/committees/:committeeID/motions" component={Motions} />
+            <Route exact={true} path="/committees/:committeeID/notes" component={Notes} />
             <Route exact={true} path="/committees/:committeeID/help" component={Help} />
             <Route path="/committees/:committeeID/caucuses/:caucusID" component={Caucus} />
             <Route path="/committees/:committeeID/resolutions/:resolutionID" component={Resolution} />

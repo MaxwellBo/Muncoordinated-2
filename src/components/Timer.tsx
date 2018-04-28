@@ -48,7 +48,7 @@ function padStart(xs: string, targetLength: number, padString?: string) {
   }
 }
 
-export class Timer extends React.Component<Props, State> {
+export default class Timer extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
 

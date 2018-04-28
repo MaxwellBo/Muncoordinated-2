@@ -4,7 +4,7 @@ import { Card, Button, Form, Message, Modal, Header, Icon, List } from 'semantic
 import { error } from 'util';
 import { CommitteeID, CommitteeData } from './Committee';
 import * as _ from 'lodash';
-import { Loading } from './Loading';
+import Loading from './Loading';
 
 enum Mode {
   Login = 'Login',
