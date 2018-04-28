@@ -32,7 +32,7 @@ export default class Help extends React.PureComponent<{}, {}> {
 
     return (
       <div>
-        <Header as="h2" attached="top">Keyboard Shortcuts</Header>
+        <Header as="h3" attached="top">Keyboard Shortcuts</Header>
         <Segment attached="bottom">
           <List>
             <List.Item>
@@ -64,7 +64,7 @@ export default class Help extends React.PureComponent<{}, {}> {
             </List.Item>
           </List>
         </Segment>
-        <Header as="h2" attached="top">Bug Reporting &amp; Help Requests</Header>
+        <Header as="h3" attached="top">Bug Reporting &amp; Help Requests</Header>
         <Segment attached="bottom">
           In the likely event that a bug crops up, follow these steps:
           <br />
@@ -94,7 +94,7 @@ export default class Help extends React.PureComponent<{}, {}> {
           <br />
           If you're at an Australian MUN, I'll see if I can push a fix within the hour
         </Segment>
-        <Header as="h2" attached="top">License</Header>
+        <Header as="h3" attached="top">License</Header>
         <Segment attached="bottom">
           Muncoordinated is licensed under {gpl}
         </Segment>

@@ -184,6 +184,10 @@ export default class Caucus extends React.Component<Props, State> {
       />
     );
 
+    const moveQueueUp = committee ? committee.settings.moveQueueUp : false;
+
+    const renderedCaucusQueuer = <CaucusQueuer caucus={caucus} members={members} caucusFref={caucusFref} />;
+
     return (
       <Grid columns="equal">
         <Grid.Row>
@@ -194,8 +198,9 @@ export default class Caucus extends React.Component<Props, State> {
         <Grid.Row>
           <Grid.Column>
             {renderNowSpeaking(caucus)}
+            {moveQueueUp && renderedCaucusQueuer}
             <CaucusNextSpeaking caucus={caucus} fref={caucusFref} speakerTimer={speakerTimer} />
-            <CaucusQueuer caucus={caucus} members={members} caucusFref={caucusFref} />
+            {!moveQueueUp && renderedCaucusQueuer}
           </Grid.Column>
           <Grid.Column>
             {renderedSpeakerTimer}

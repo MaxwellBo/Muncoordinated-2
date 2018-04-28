@@ -19,6 +19,7 @@ import { postCaucus, postResolution } from '../actions/caucusActions';
 import { URLParameters } from '../types';
 import Loading from './Loading';
 import Footer from './Footer';
+import Settings, { SettingsData, DEFAULT_SETTINGS } from './Settings';
 
 interface Props extends RouteComponentProps<URLParameters> {
 }
@@ -41,6 +42,7 @@ export interface CommitteeData {
   motions?: Map<MotionID, MotionData>;
   timer: TimerData;
   notes: string;
+  settings: SettingsData;
 }
 
 function CommitteeMeta(props: { data?: CommitteeData, fref: firebase.database.Reference; }) {
@@ -76,7 +78,8 @@ export const DEFAULT_COMMITTEE: CommitteeData = {
   caucuses: {} as Map<CaucusID, CaucusData>,
   resolutions: {} as Map<ResolutionID, ResolutionData>,
   timer: DEFAULT_TIMER,
-  notes: ''
+  notes: '',
+  settings: DEFAULT_SETTINGS
 };
 
 export default class Committee extends React.Component<Props, State> {
@@ -191,7 +194,7 @@ export default class Committee extends React.Component<Props, State> {
 
     return (
       <Menu fluid vertical size="massive">
-        {makeMenuItem('Admin', 'setting')}
+        {makeMenuItem('Admin', 'users')}
         {makeMenuItem('Motions', 'sort numeric ascending')}
         {makeMenuItem('Unmod', 'discussions')}
         <Menu.Item>
@@ -226,6 +229,7 @@ export default class Committee extends React.Component<Props, State> {
         </Menu.Item>
         {makeMenuItem('Notes', 'sticky note outline')}
         {makeMenuItem('Stats', 'bar chart')}
+        {makeMenuItem('Settings', 'settings')}
         {makeMenuItem('Help', 'help')}
       </Menu>
     );
@@ -257,6 +261,7 @@ export default class Committee extends React.Component<Props, State> {
             <Route exact={true} path="/committees/:committeeID/unmod" component={Unmod} />
             <Route exact={true} path="/committees/:committeeID/motions" component={Motions} />
             <Route exact={true} path="/committees/:committeeID/notes" component={Notes} />
+            <Route exact={true} path="/committees/:committeeID/settings" component={Settings} />
             <Route exact={true} path="/committees/:committeeID/help" component={Help} />
             <Route path="/committees/:committeeID/caucuses/:caucusID" component={Caucus} />
             <Route path="/committees/:committeeID/resolutions/:resolutionID" component={Resolution} />
