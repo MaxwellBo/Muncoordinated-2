@@ -307,7 +307,7 @@ export class ModalLogin extends React.Component<{},
     const text = user ? user.email : 'Login';
 
     return (
-      <Button basic size="small" loading={user === undefined} floated="right">
+      <Button basic size="small" loading={user === undefined}>
         <Icon name="lock" />
         {text}
       </Button>

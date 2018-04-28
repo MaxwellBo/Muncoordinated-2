@@ -16,7 +16,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 
 import ConnectionStatus from './components/ConnectionStatus';
-import { ModalLogin } from './components/Auth';
+import { ModalLogin, Login } from './components/Auth';
 import Onboard from './components/Onboard';
 import Homepage from './components/Homepage';
 import Committee, { CommitteeID } from './components/Committee';
@@ -27,9 +27,10 @@ class App extends React.Component {
     return (
       <Container style={{ padding: '1em 0em' }}>
         <ConnectionStatus />
-        <Route exact={true} path="/" component={Homepage} />
-        <Route exact={true} path="/onboard" component={Onboard} />
-        <Route path="/committees" component={ModalLogin} />
+        <Route exact path="/" component={Homepage} />
+        <Route exact path="/onboard" component={Onboard} />
+        <Route exact path="/committees" component={Login} />
+        <Route path="/committees/:committeeID" component={ModalLogin} />
         <Route path="/committees/:committeeID" component={Committee} />
       </Container>
     );
