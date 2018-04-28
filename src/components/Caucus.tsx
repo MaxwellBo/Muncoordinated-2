@@ -184,29 +184,50 @@ export default class Caucus extends React.Component<Props, State> {
       />
     );
 
-    const moveQueueUp = committee ? committee.settings.moveQueueUp : false;
+    const header = (
+      <Grid.Row>
+        <Grid.Column>
+          {renderHeader(caucus)}
+        </Grid.Column>
+      </Grid.Row>
+    );
 
+    const timersInSeperateColumns = committee ? committee.settings.timersInSeperateColumns : false;
+
+    const moveQueueUp = committee ? committee.settings.moveQueueUp : false;
     const renderedCaucusQueuer = <CaucusQueuer caucus={caucus} members={members} caucusFref={caucusFref} />;
+
+    const body = !timersInSeperateColumns ? (
+      <Grid.Row>
+        <Grid.Column>
+          {renderNowSpeaking(caucus)}
+          {moveQueueUp && renderedCaucusQueuer}
+          <CaucusNextSpeaking caucus={caucus} fref={caucusFref} speakerTimer={speakerTimer} />
+          {!moveQueueUp && renderedCaucusQueuer}
+        </Grid.Column>
+        <Grid.Column>
+          {renderedSpeakerTimer}
+          {renderedCaucusTimer}
+        </Grid.Column>
+      </Grid.Row>
+    ) : (
+      <Grid.Row>
+        <Grid.Column>
+          {renderedSpeakerTimer}
+          {renderNowSpeaking(caucus)}
+          <CaucusNextSpeaking caucus={caucus} fref={caucusFref} speakerTimer={speakerTimer} />
+        </Grid.Column>
+        <Grid.Column>
+          {renderedCaucusTimer}
+          {renderedCaucusQueuer}
+        </Grid.Column>
+      </Grid.Row>
+    );
 
     return (
       <Grid columns="equal">
-        <Grid.Row>
-          <Grid.Column>
-            {renderHeader(caucus)}
-          </Grid.Column>
-        </Grid.Row>
-        <Grid.Row>
-          <Grid.Column>
-            {renderNowSpeaking(caucus)}
-            {moveQueueUp && renderedCaucusQueuer}
-            <CaucusNextSpeaking caucus={caucus} fref={caucusFref} speakerTimer={speakerTimer} />
-            {!moveQueueUp && renderedCaucusQueuer}
-          </Grid.Column>
-          <Grid.Column>
-            {renderedSpeakerTimer}
-            {renderedCaucusTimer}
-          </Grid.Column>
-        </Grid.Row>
+        {header}
+        {body}
       </Grid >
     );
   }

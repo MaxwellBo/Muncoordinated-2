@@ -16,10 +16,12 @@ interface State {
 
 export interface SettingsData {
   moveQueueUp: boolean;
+  timersInSeperateColumns: boolean;
 }
 
 export const DEFAULT_SETTINGS = {
-  moveQueueUp: false
+  moveQueueUp: false,
+  timersInSeperateColumns: false
 };
 
 export default class Settings extends React.Component<Props, State> {
@@ -57,7 +59,7 @@ export default class Settings extends React.Component<Props, State> {
 
     return (
       <Checkbox 
-        toggle 
+        slider 
         indeterminate={value === undefined}
         checked={value || false}
         onChange={checkboxHandler<SettingsData>(settingsFref, setting)}
@@ -75,6 +77,8 @@ export default class Settings extends React.Component<Props, State> {
         <Header as="h3" attached="top">Settings</Header>
         <Segment attached="bottom" loading={!committee}>
           {renderSetting('moveQueueUp', '\'Queue\' should appear above \'Next Speaking\'')}
+          {renderSetting('timersInSeperateColumns',
+            'Alternate arrangement with \'Speaker Timer\' and \'Caucus Timer\' in seperate columns')}
         </Segment>
       </div>
     );
