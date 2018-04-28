@@ -20,6 +20,7 @@ export class CaucusNextSpeaking extends React.Component<Props, {}> {
   }
 
   handleKeyDown = (ev: KeyboardEvent) => {
+    // if changing this, update Help
     if (ev.keyCode === 78 && ev.altKey) {
       this.nextSpeaker();
     }

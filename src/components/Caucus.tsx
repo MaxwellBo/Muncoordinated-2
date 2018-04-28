@@ -164,6 +164,26 @@ export default class Caucus extends React.Component<Props, State> {
 
     const members = committee ? (committee.members || {} as Map<string, MemberData>) : undefined;
 
+    const renderedSpeakerTimer = (
+      <Timer
+        name="Speaker Timer"
+        timerFref={caucusFref.child('speakerTimer')}
+        key={caucusID + 'speakerTimer'}
+        onChange={(timer) => this.setState({ speakerTimer: timer })}
+        toggleKeyCode={83} // S - if changing this, update Help
+      />
+    );
+
+    const renderedCaucusTimer = (
+      <Timer
+        name="Caucus Timer"
+        timerFref={caucusFref.child('caucusTimer')}
+        key={caucusID + 'caucusTimer'}
+        onChange={(timer) => this.setState({ caucusTimer: timer })}
+        toggleKeyCode={67} // C - if changing this, update help
+      />
+    );
+
     return (
       <Grid columns="equal">
         <Grid.Row>
@@ -178,20 +198,8 @@ export default class Caucus extends React.Component<Props, State> {
             <CaucusQueuer caucus={caucus} members={members} caucusFref={caucusFref} />
           </Grid.Column>
           <Grid.Column>
-            <Timer
-              name="Speaker Timer"
-              timerFref={caucusFref.child('speakerTimer')}
-              key={caucusID + 'speakerTimer'}
-              onChange={(timer) => this.setState({ speakerTimer: timer })}
-              toggleKeyCode={83} // S
-            />
-            <Timer
-              name="Caucus Timer"
-              timerFref={caucusFref.child('caucusTimer')}
-              key={caucusID + 'caucusTimer'}
-              onChange={(timer) => this.setState({ caucusTimer: timer })}
-              toggleKeyCode={67} // C
-            />
+            {renderedSpeakerTimer}
+            {renderedCaucusTimer}
           </Grid.Column>
         </Grid.Row>
       </Grid >
