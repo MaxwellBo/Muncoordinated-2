@@ -11,7 +11,7 @@ interface State {
   fref: firebase.database.Reference;
 }
 
-export class ConnectionStatus extends React.Component<Props, State> {
+export default class ConnectionStatus extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
 

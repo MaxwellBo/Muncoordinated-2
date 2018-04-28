@@ -28,18 +28,7 @@ interface Props {
   allowSignup: boolean;
 }
 
-const firebaseConfig = {
-  apiKey: 'AIzaSyA9EuEf7m3YOTBhBNhoe7DcOIZJP2toL6w',
-  authDomain: 'muncoordinated.firebaseapp.com',
-  databaseURL: 'https://muncoordinated.firebaseio.com',
-  projectId: 'muncoordinated',
-  storageBucket: 'muncoordinated.appspot.com',
-  messagingSenderId: '308589918735'
-};
-
-firebase.initializeApp(firebaseConfig);
-
-export default class Login extends React.Component<Props, State> {
+export class Login extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
 
@@ -318,7 +307,7 @@ export class ModalLogin extends React.Component<{},
     const text = user ? user.email : 'Login';
 
     return (
-      <Button basic size="small" loading={user === undefined}>
+      <Button basic size="small" loading={user === undefined} floated="right">
         <Icon name="lock" />
         {text}
       </Button>
