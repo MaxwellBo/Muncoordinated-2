@@ -3,6 +3,8 @@ Muncoordinated is a Model UN committee management service, (re)written using Typ
 
 It seeks to replace the preexisting Windows-only desktop application, [Munrun](https://github.com/mjwest/munrun).
 
+![demo screenshot](public/promo.png)
+
 ## Licensing
 
 The code in this project is licensed under GNU GPLv3.

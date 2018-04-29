@@ -25,14 +25,16 @@ import { CaucusID } from './components/Caucus';
 class App extends React.Component {
   render() {
     return (
-      <Container style={{ padding: '1em 0em' }}>
-        <ConnectionStatus />
+      <div>
         <Route exact path="/" component={Homepage} />
-        <Route exact path="/onboard" component={Onboard} />
-        <Route exact path="/committees" component={Login} />
-        <Route path="/committees/:committeeID" component={ModalLogin} />
-        <Route path="/committees/:committeeID" component={Committee} />
-      </Container>
+        <Container style={{ padding: '1em 0em' }}>
+          <ConnectionStatus />
+          <Route exact path="/onboard" component={Onboard} />
+          <Route exact path="/committees" component={Login} />
+          <Route path="/committees/:committeeID" component={ModalLogin} />
+          <Route path="/committees/:committeeID" component={Committee} />
+        </Container>
+      </div>
     );
   }
 }
