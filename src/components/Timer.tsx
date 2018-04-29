@@ -4,6 +4,7 @@ import { Form, Checkbox, Segment, Header, Statistic, Button, Input, Select,
   Divider, Progress, DropdownProps, ButtonProps } from 'semantic-ui-react';
 import { makeDropdownOption } from '../utils';
 import { Unit, TimerSetter } from './TimerSetter';
+import * as _ from 'lodash';
 
 interface Props {
   name: string;
@@ -30,23 +31,6 @@ export const DEFAULT_TIMER = {
   remaining: 60,
   ticking: false
 };
-
-// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/padStart
-function padStart(xs: string, targetLength: number, padString?: string) {
-  // tslint:disable-next-line
-  targetLength = targetLength >> 0; // floor if number or convert non-number to 0;
-  padString = String(padString || ' ');
-  if (xs.length > targetLength) {
-    return String(xs);
-  } else {
-    targetLength = targetLength - xs.length;
-    if (targetLength > padString.length) {
-      // append to original to ensure we are longer than needed
-      padString += padString.repeat(targetLength / padString.length);
-    }
-    return padString.slice(0, targetLength) + String(xs);
-  }
-}
 
 export default class Timer extends React.Component<Props, State> {
   constructor(props: Props) {
@@ -183,7 +167,7 @@ export default class Timer extends React.Component<Props, State> {
 
     const sign = (remaining < 0 ? '-' : '');
     const minutes = Math.floor(Math.abs(remaining / 60)).toString();
-    const seconds = padStart(Math.abs(remaining % 60).toString(), 2, '0');
+    const seconds = _.padStart(Math.abs(remaining % 60).toString(), 2, '0');
 
     const formatted = sign + minutes + ':' + seconds;
 
