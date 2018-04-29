@@ -50,11 +50,11 @@ const HomepageHeading = ({ mobile }: HomepageHeadingProps) => (
       }}
     />
     <br />
-    <br />
     <Button as="a" primary size="huge" href="/onboard">
       Create a committee
       <Icon name="arrow right" />
     </Button>
+    <br />
   </Container>
 );
 
