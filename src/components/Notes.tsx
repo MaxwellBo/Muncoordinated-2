@@ -51,7 +51,7 @@ export default class Notes extends React.Component<Props, State> {
           <TextArea
             value={committee ? committee.notes : ''}
             onChange={textAreaHandler<CommitteeData>(committeeFref, 'notes')}
-            rows={4}
+            autoHeight
             placeholder="Notes"
           />
           <Popup
