@@ -204,7 +204,7 @@ export default class Timer extends React.Component<Props, State> {
             {formatted}
           </Button>
 
-          <Progress percent={percentage} active={false} />
+          <Progress percent={percentage} active={false} indicating={true}/>
 
           {/* <Statistic>
             <Statistic.Value>{this.state.timer.remaining}</Statistic.Value>
