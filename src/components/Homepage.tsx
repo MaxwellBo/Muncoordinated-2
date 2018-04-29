@@ -49,6 +49,8 @@ const HomepageHeading = ({ mobile }: HomepageHeadingProps) => (
         marginTop: mobile ? '0.5em' : '1.5em',
       }}
     />
+    <br />
+    <br />
     <Button as="a" primary size="huge" href="/onboard">
       Create a committee
       <Icon name="arrow right" />
