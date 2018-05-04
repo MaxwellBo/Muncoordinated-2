@@ -68,14 +68,6 @@ export default class Timer extends React.Component<Props, State> {
     return Math.floor(millis / 1000);
   }
 
-  getNowIn = () => {
-    const { skew } = this.state;
-
-    const millis = (new Date).getTime();
-
-    return Math.floor(millis / 1000);
-  }
-
   toggleHandler = (event: React.MouseEvent<HTMLButtonElement> | {}, data: ButtonProps | {}) => {
     const timer = this.state.timer;
 
@@ -203,6 +195,7 @@ export default class Timer extends React.Component<Props, State> {
       <div>
         <Header as="h3" attached="top">{this.props.name}</Header>
         <Segment attached="bottom" textAlign="center" >
+          Skew {this.state.skew}
           <Button
             loading={!timer}
             active={timer ? !!timer.ticking : false}
