@@ -139,7 +139,7 @@ export default class Files extends React.Component<Props, State> {
         <Form onSubmit={this.triggerUpload}>
           <Form.Group>
             <input type="file" onChange={this.onFileChange} />
-            <Button type="submit">Upload</Button>
+            <Button type="submit" loading={state === firebase.storage.TaskState.RUNNING}>Upload</Button>
           </Form.Group>
         </Form>
         <List divided relaxed>
