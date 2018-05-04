@@ -20,6 +20,7 @@ import { URLParameters } from '../types';
 import Loading from './Loading';
 import Footer from './Footer';
 import Settings, { SettingsData, DEFAULT_SETTINGS } from './Settings';
+import Files from './Files';
 
 interface Props extends RouteComponentProps<URLParameters> {
 }
@@ -228,6 +229,7 @@ export default class Committee extends React.Component<Props, State> {
           </Menu.Menu>
         </Menu.Item>
         {makeMenuItem('Notes', 'sticky note outline')}
+        {makeMenuItem('Files', 'file pdf outline')}
         {makeMenuItem('Stats', 'bar chart')}
         {makeMenuItem('Settings', 'settings')}
         {makeMenuItem('Help', 'help')}
@@ -261,6 +263,7 @@ export default class Committee extends React.Component<Props, State> {
             <Route exact={true} path="/committees/:committeeID/unmod" component={Unmod} />
             <Route exact={true} path="/committees/:committeeID/motions" component={Motions} />
             <Route exact={true} path="/committees/:committeeID/notes" component={Notes} />
+            <Route exact={true} path="/committees/:committeeID/files" component={Files} />
             <Route exact={true} path="/committees/:committeeID/settings" component={Settings} />
             <Route exact={true} path="/committees/:committeeID/help" component={Help} />
             <Route path="/committees/:committeeID/caucuses/:caucusID" component={Caucus} />
