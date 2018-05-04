@@ -90,6 +90,7 @@ export default class Timer extends React.Component<Props, State> {
 
   skewCallback = (skew: firebase.database.DataSnapshot | null) => {
     if (skew) {
+      console.debug('Detected clock skew is', skew.val(), 'millis');
       this.setState({ skew: skew.val() });
     }
   }
@@ -195,7 +196,6 @@ export default class Timer extends React.Component<Props, State> {
       <div>
         <Header as="h3" attached="top">{this.props.name}</Header>
         <Segment attached="bottom" textAlign="center" >
-          Skew {this.state.skew}
           <Button
             loading={!timer}
             active={timer ? !!timer.ticking : false}
