@@ -1,44 +1,54 @@
 import * as React from 'react';
 import * as firebase from 'firebase';
+import * as FileSaver from 'file-saver';
 import { CommitteeData } from './Committee';
 import { RouteComponentProps } from 'react-router';
 import { URLParameters } from '../types';
-import { TextArea, Segment, Form, Button, Popup, InputOnChangeData, Progress } from 'semantic-ui-react';
+import { TextArea, Segment, Form, Button, Popup, InputOnChangeData, Progress, List } from 'semantic-ui-react';
 import { textAreaHandler } from '../actions/handlers';
 
 interface Props extends RouteComponentProps<URLParameters> {
 }
 
 interface State {
+  committee?: CommitteeData;
+  committeeFref: firebase.database.Reference;
   progress?: number;
   file?: any;
   state?: firebase.storage.TaskState;
+  errorCode?: string
 }
 
 export default class Files extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
 
+    const { match } = props;
+
     this.state = {
+      committeeFref: firebase.database().ref('committees')
+        .child(match.params.committeeID)
     };
   }
 
-  handleUploadError = (error: any) => {
+  firebaseCallback = (committee: firebase.database.DataSnapshot | null) => {
+    if (committee) {
+      this.setState({ committee: committee.val() });
+    }
+  }
+
+  componentDidMount() {
+    this.state.committeeFref.on('value', this.firebaseCallback);
+  }
+
+  componentWillUnmount() {
+    this.state.committeeFref.off('value', this.firebaseCallback);
+  }
+
+  handleError = (error: any) => {
     // A full list of error codes is available at
     // https://firebase.google.com/docs/storage/web/handle-errors
-    switch (error.code) {
-      case 'storage/unauthorized':
-        // User doesn't have permission to access the object
-        break;
-      case 'storage/canceled':
-        // User canceled the upload
-        break;
-      case 'storage/unknown':
-        // Unknown error occurred, inspect error.serverResponse
-        break;
-      default:
-        return
-    }
+    this.setState({ errorCode: error.code });
   }
 
   handleSnapshot = (snapshot: any) => {
@@ -46,8 +56,9 @@ export default class Files extends React.Component<Props, State> {
     this.setState({progress: progress, state: snapshot.state});
   }
 
-  handleComplete = () => {
-    // downloadURL = uploadTask.snapshot.downloadURL;
+  handleComplete = (uploadTask: firebase.storage.UploadTask) => () => {
+    this.state.committeeFref.child('files').push().set(uploadTask.snapshot.ref.name);
+    this.setState({ state: uploadTask.snapshot.state });
   }
 
   onFileChange = (event: any) => {
@@ -55,7 +66,7 @@ export default class Files extends React.Component<Props, State> {
   }
 
   triggerUpload = () => {
-    const { handleSnapshot, handleUploadError, handleComplete } = this;
+    const { handleSnapshot, handleError, handleComplete } = this;
     const { file } = this.state;
 
     const { committeeID } = this.props.match.params;
@@ -71,22 +82,69 @@ export default class Files extends React.Component<Props, State> {
     uploadTask.on(
       firebase.storage.TaskEvent.STATE_CHANGED, 
       handleSnapshot, 
-      handleUploadError, 
-      handleComplete
+      handleError, 
+      handleComplete(uploadTask)
+    );
+  }
+
+  download = (fileName: string) => () => {
+    const { committeeID } = this.props.match.params;
+
+    const storageRef = firebase.storage().ref();
+    const pathReference = storageRef.child('committees').child(committeeID).child(fileName);
+
+    pathReference.getDownloadURL().then((url) => {
+      var xhr = new XMLHttpRequest();
+      xhr.responseType = 'blob';
+      xhr.onload = (event) => {
+        const blob = xhr.response;
+        FileSaver.saveAs(blob, fileName);
+      };
+      xhr.open('GET', url);
+      xhr.send();
+    });
+  }
+
+  renderFile = (dbId: string, fileName: string) => {
+    const { download } = this;
+
+    return (
+      <List.Item key={dbId}>
+        <List.Icon name="file outline" verticalAlign="middle"/>
+        <List.Content>
+          <List.Header as="a" onClick={download(fileName)}>{fileName}</List.Header>
+          {/* <List.Description as="a">Updated 10 mins ago</List.Description> */}
+        </List.Content>
+      </List.Item>
     );
   }
 
   render() {
-    const { progress, state } = this.state;
+    const { renderFile } = this;
+    const { progress, state, errorCode, committee } = this.state;
+
+    const files = committee ? (committee.files || {}) : {};
 
     return (
       <div>
-        {state}
-        <Progress percent={progress || 0} progress active={true} indicating={true} />
+        <Progress 
+          percent={Math.round(progress || 0 )} 
+          progress 
+          warning={state === firebase.storage.TaskState.PAUSED}
+          success={state === firebase.storage.TaskState.SUCCESS}
+          error={!!errorCode} 
+          active={true} 
+          label={errorCode} 
+        />
         <Form onSubmit={this.triggerUpload}>
-          <input type="file" onChange={this.onFileChange} />
-          <Button type="submit">Upload</Button>
+          <Form.Group>
+            <input type="file" onChange={this.onFileChange} />
+            <Button type="submit">Upload</Button>
+          </Form.Group>
         </Form>
+        <List divided relaxed>
+          {Object.keys(files).reverse().map(key => renderFile(key, files[key]))}
+        </List>
       </div>
     );
   }

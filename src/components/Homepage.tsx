@@ -230,6 +230,7 @@ export default class Homepage extends React.Component<{}, {}> {
                     />
                     <List.Item as="li">Resolution amendments</List.Item>
                     <List.Item as="li">Roll-call voting</List.Item>
+                    <List.Item as="li">File uploads</List.Item>
                     <List.Item as="li">Notes</List.Item>
                   </List>
                 </p>

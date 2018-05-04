@@ -41,6 +41,7 @@ export interface CommitteeData {
   caucuses?: Map<CaucusID, CaucusData>;
   resolutions?: Map<ResolutionID, ResolutionData>;
   motions?: Map<MotionID, MotionData>;
+  files?: Map<string, string>;
   timer: TimerData;
   notes: string;
   settings: SettingsData;
@@ -229,7 +230,7 @@ export default class Committee extends React.Component<Props, State> {
           </Menu.Menu>
         </Menu.Item>
         {makeMenuItem('Notes', 'sticky note outline')}
-        {makeMenuItem('Files', 'file pdf outline')}
+        {makeMenuItem('Files', 'file outline')}
         {makeMenuItem('Stats', 'bar chart')}
         {makeMenuItem('Settings', 'settings')}
         {makeMenuItem('Help', 'help')}
