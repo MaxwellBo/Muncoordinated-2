@@ -141,7 +141,6 @@ export default class Files extends React.Component<Props, State> {
               value={this.state.uploader.key}
               search
               selection
-              fluid
               onChange={this.countryHandler}
               options={countryOptions}
               label="Uploader"
