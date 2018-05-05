@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as firebase from 'firebase';
 import * as FileSaver from 'file-saver';
-import { CommitteeData } from './Committee';
+import { CommitteeData, CommitteeID } from './Committee';
 import { RouteComponentProps } from 'react-router';
 import { URLParameters } from '../types';
 import { TextArea, Segment, Form, Button, Popup, InputOnChangeData, Progress, List } from 'semantic-ui-react';
@@ -10,13 +10,20 @@ import { textAreaHandler } from '../actions/handlers';
 interface Props extends RouteComponentProps<URLParameters> {
 }
 
+export type FileID = string;
+
 interface State {
   committee?: CommitteeData;
   committeeFref: firebase.database.Reference;
   progress?: number;
   file?: any;
   state?: firebase.storage.TaskState;
-  errorCode?: string
+  errorCode?: string;
+}
+
+export interface FileData {
+  filename: string;
+  // uploader: string;
 }
 
 export default class Files extends React.Component<Props, State> {
@@ -57,7 +64,10 @@ export default class Files extends React.Component<Props, State> {
   }
 
   handleComplete = (uploadTask: firebase.storage.UploadTask) => () => {
-    this.state.committeeFref.child('files').push().set(uploadTask.snapshot.ref.name);
+    this.state.committeeFref.child('files').push().set(
+      { filename: uploadTask.snapshot.ref.name }
+    );
+
     this.setState({ state: uploadTask.snapshot.state });
   }
 
@@ -87,41 +97,10 @@ export default class Files extends React.Component<Props, State> {
     );
   }
 
-  download = (fileName: string) => () => {
-    const { committeeID } = this.props.match.params;
-
-    const storageRef = firebase.storage().ref();
-    const pathReference = storageRef.child('committees').child(committeeID).child(fileName);
-
-    pathReference.getDownloadURL().then((url) => {
-      var xhr = new XMLHttpRequest();
-      xhr.responseType = 'blob';
-      xhr.onload = (event) => {
-        const blob = xhr.response;
-        FileSaver.saveAs(blob, fileName);
-      };
-      xhr.open('GET', url);
-      xhr.send();
-    });
-  }
-
-  renderFile = (dbId: string, fileName: string) => {
-    const { download } = this;
-
-    return (
-      <List.Item key={dbId}>
-        <List.Icon name="file outline" verticalAlign="middle"/>
-        <List.Content>
-          <List.Header as="a" onClick={download(fileName)}>{fileName}</List.Header>
-          {/* <List.Description as="a">Updated 10 mins ago</List.Description> */}
-        </List.Content>
-      </List.Item>
-    );
-  }
-
   render() {
-    const { renderFile } = this;
     const { progress, state, errorCode, committee } = this.state;
+
+    const { committeeID } = this.props.match.params;
 
     const files = committee ? (committee.files || {}) : {};
 
@@ -143,9 +122,93 @@ export default class Files extends React.Component<Props, State> {
           </Form.Group>
         </Form>
         <List divided relaxed>
-          {Object.keys(files).reverse().map(key => renderFile(key, files[key]))}
+          {Object.keys(files).reverse().map(key => 
+            <FileEntry 
+              key={key} 
+              committeeID={committeeID}
+              file={files[key]}
+            />
+          )}
         </List>
       </div>
+    );
+  }
+}
+
+interface FileEntryProps {
+  committeeID: CommitteeID;
+  file: FileData;
+}
+
+interface FileEntryState {
+  metadata?: any;
+}
+
+class FileEntry extends React.Component<FileEntryProps, FileEntryState> {
+  constructor(props: FileEntryProps) {
+    super(props);
+
+    this.state = {
+    };
+  }
+
+  recoverRef = () => {
+    const { committeeID, file } = this.props;
+
+    const storageRef = firebase.storage().ref();
+    return storageRef.child('committees').child(committeeID).child(file.filename);
+  }
+
+  componentDidMount() {
+    this.recoverRef().getMetadata().then((metadata: any) => {
+      this.setState({metadata: metadata});
+    });
+  }
+
+  download = (filename: string) => () => {
+
+    this.recoverRef().getDownloadURL().then((url: any) => {
+      var xhr = new XMLHttpRequest();
+      xhr.responseType = 'blob';
+      xhr.onload = (event) => {
+        const blob = xhr.response;
+        FileSaver.saveAs(blob, filename);
+      };
+      xhr.open('GET', url);
+      xhr.send();
+    });
+  }
+
+  render() {
+    const { download } = this;
+    const { file } = this.props;
+    const { metadata } = this.state;
+
+    let since: string | undefined;
+
+    if (metadata) {
+      const millis = new Date().getTime() - new Date(metadata.timeCreated).getTime();
+
+      const secondsSince = millis / 1000;
+
+      if (secondsSince < 60) {
+        since = `Uploaded ${Math.round(secondsSince)} seconds ago`;
+      } else if (secondsSince < 60 * 60) {
+        since = `Uploaded ${Math.round(secondsSince / 60 )} minutes ago`;
+      } else {
+        since = `Uploaded ${Math.round(secondsSince / (60 * 60))} hours ago`;
+      }
+
+    }
+
+    return (
+      <List.Item>
+        <List.Icon name="file outline" verticalAlign="middle"/>
+        <List.Content>
+          <List.Header as="a" onClick={download(file.filename)}>{file.filename}</List.Header>
+          {since && <List.Description as="a">{since}</List.Description>}
+        </List.Content>
+      </List.Item>
     );
   }
 }

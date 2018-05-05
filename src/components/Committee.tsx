@@ -20,7 +20,7 @@ import { URLParameters } from '../types';
 import Loading from './Loading';
 import Footer from './Footer';
 import Settings, { SettingsData, DEFAULT_SETTINGS } from './Settings';
-import Files from './Files';
+import Files, { FileID, FileData } from './Files';
 
 interface Props extends RouteComponentProps<URLParameters> {
 }
@@ -41,7 +41,7 @@ export interface CommitteeData {
   caucuses?: Map<CaucusID, CaucusData>;
   resolutions?: Map<ResolutionID, ResolutionData>;
   motions?: Map<MotionID, MotionData>;
-  files?: Map<string, string>;
+  files?: Map<FileID, FileData>;
   timer: TimerData;
   notes: string;
   settings: SettingsData;
@@ -79,6 +79,7 @@ export const DEFAULT_COMMITTEE: CommitteeData = {
   members: {} as Map<MemberID, MemberData>,
   caucuses: {} as Map<CaucusID, CaucusData>,
   resolutions: {} as Map<ResolutionID, ResolutionData>,
+  files: {} as Map<FileID, FileData>,
   timer: DEFAULT_TIMER,
   notes: '',
   settings: DEFAULT_SETTINGS
