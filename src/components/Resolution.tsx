@@ -10,7 +10,7 @@ import { CaucusID, DEFAULT_CAUCUS, CaucusData } from './Caucus';
 import { RouteComponentProps } from 'react-router';
 import { URLParameters } from '../types';
 import { dropdownHandler, fieldHandler, textAreaHandler, countryDropdownHandler } from '../actions/handlers';
-import { objectToList, makeDropdownOption } from '../utils';
+import { objectToList, makeDropdownOption, recoverCountryOptions } from '../utils';
 import { CountryOption, COUNTRY_OPTIONS } from '../constants';
 import Loading from './Loading';
 import { canVote } from './Admin';
@@ -103,18 +103,6 @@ export default class Resolution extends React.Component<Props, State> {
       .child(resolutionID);
   }
 
-  // DUPE
-  recoverCountryOptions = (): CountryOption[] => {
-    const { committee } = this.state;
-
-    if (committee) {
-      return objectToList(committee.members || {} as Map<MemberID, MemberData>)
-        .map(x => nameToCountryOption(x.name));
-    }
-
-    return [];
-  }
-
   handlePushAmendment = (): void => {
     this.recoverResolutionFref().child('amendments').push().set(DEFAULT_AMENDMENT);
   }
@@ -178,7 +166,7 @@ export default class Resolution extends React.Component<Props, State> {
   }
 
   renderAmendment = (id: AmendmentID, amendment: AmendmentData, amendmentFref: firebase.database.Reference) => {
-    const { recoverCountryOptions, handleProvisionAmendment } = this;
+    const { handleProvisionAmendment } = this;
     const { proposer, text, status } = amendment;
 
     const textArea = (
@@ -199,7 +187,7 @@ export default class Resolution extends React.Component<Props, State> {
       /> 
     );
 
-    const countryOptions = recoverCountryOptions();
+    const countryOptions = recoverCountryOptions(this.state.committee);
 
     const proposerDropdown = (
       <Form.Dropdown
@@ -408,7 +396,7 @@ export default class Resolution extends React.Component<Props, State> {
 
   renderHeader = (resolution?: ResolutionData) => {
     const resolutionFref = this.recoverResolutionFref();
-    const { recoverCountryOptions, handleProvisionResolution } = this;
+    const { handleProvisionResolution } = this;
 
     const statusDropdown = (
       <Dropdown 
@@ -418,7 +406,7 @@ export default class Resolution extends React.Component<Props, State> {
       /> 
     );
 
-    const countryOptions = recoverCountryOptions();
+    const countryOptions = recoverCountryOptions(this.state.committee);
 
     const proposerTree = (
       <Form.Dropdown

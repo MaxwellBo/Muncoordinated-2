@@ -4,8 +4,12 @@ import * as FileSaver from 'file-saver';
 import { CommitteeData, CommitteeID } from './Committee';
 import { RouteComponentProps } from 'react-router';
 import { URLParameters } from '../types';
-import { TextArea, Segment, Form, Button, Popup, InputOnChangeData, Progress, List } from 'semantic-ui-react';
+import { TextArea, Segment, Form, Button, Popup, InputOnChangeData, Progress, 
+  List, DropdownProps, ListDescription, Flag } from 'semantic-ui-react';
 import { textAreaHandler } from '../actions/handlers';
+import { nameToCountryOption, parseFlagName } from './Member';
+import { recoverCountryOptions } from '../utils';
+import { CountryOption, COUNTRY_OPTIONS } from '../constants';
 
 interface Props extends RouteComponentProps<URLParameters> {
 }
@@ -19,11 +23,12 @@ interface State {
   file?: any;
   state?: firebase.storage.TaskState;
   errorCode?: string;
+  uploader: CountryOption;
 }
 
 export interface FileData {
   filename: string;
-  // uploader: string;
+  uploader: string;
 }
 
 export default class Files extends React.Component<Props, State> {
@@ -34,7 +39,8 @@ export default class Files extends React.Component<Props, State> {
 
     this.state = {
       committeeFref: firebase.database().ref('committees')
-        .child(match.params.committeeID)
+        .child(match.params.committeeID),
+      uploader: COUNTRY_OPTIONS[0]
     };
   }
 
@@ -64,9 +70,13 @@ export default class Files extends React.Component<Props, State> {
   }
 
   handleComplete = (uploadTask: firebase.storage.UploadTask) => () => {
-    this.state.committeeFref.child('files').push().set(
-      { filename: uploadTask.snapshot.ref.name }
-    );
+
+    const fileData: FileData = {
+      filename: uploadTask.snapshot.ref.name,
+      uploader: this.state.uploader.text
+    };
+
+    this.state.committeeFref.child('files').push().set(fileData);
 
     this.setState({ state: uploadTask.snapshot.state });
   }
@@ -77,7 +87,7 @@ export default class Files extends React.Component<Props, State> {
 
   triggerUpload = () => {
     const { handleSnapshot, handleError, handleComplete } = this;
-    const { file } = this.state;
+    const { file, uploader } = this.state;
 
     const { committeeID } = this.props.match.params;
 
@@ -97,12 +107,20 @@ export default class Files extends React.Component<Props, State> {
     );
   }
 
+  countryHandler = (event: React.SyntheticEvent<HTMLElement>, data: DropdownProps): void => {
+    const countryOptions = recoverCountryOptions(this.state.committee);
+
+    this.setState({ uploader: countryOptions.filter(c => c.value === data.value)[0] });
+  }
+
   render() {
-    const { progress, state, errorCode, committee } = this.state;
+    const { progress, state, errorCode, committee, file } = this.state;
 
     const { committeeID } = this.props.match.params;
 
     const files = committee ? (committee.files || {}) : {};
+
+    const countryOptions = recoverCountryOptions(committee);
 
     return (
       <div>
@@ -118,7 +136,23 @@ export default class Files extends React.Component<Props, State> {
         <Form onSubmit={this.triggerUpload}>
           <Form.Group>
             <input type="file" onChange={this.onFileChange} />
-            <Button type="submit" loading={state === firebase.storage.TaskState.RUNNING}>Upload</Button>
+            <Form.Dropdown
+              key="uploader"
+              value={this.state.uploader.key}
+              search
+              selection
+              fluid
+              onChange={this.countryHandler}
+              options={countryOptions}
+              label="Uploader"
+            />
+            <Button 
+              type="submit" 
+              loading={state === firebase.storage.TaskState.RUNNING}
+              disabled={!file}
+            >
+                Upload
+            </Button>
           </Form.Group>
         </Form>
         <List divided relaxed>
@@ -161,7 +195,7 @@ class FileEntry extends React.Component<FileEntryProps, FileEntryState> {
 
   componentDidMount() {
     this.recoverRef().getMetadata().then((metadata: any) => {
-      this.setState({metadata: metadata});
+      this.setState({ metadata: metadata });
     });
   }
 
@@ -184,7 +218,7 @@ class FileEntry extends React.Component<FileEntryProps, FileEntryState> {
     const { file } = this.props;
     const { metadata } = this.state;
 
-    let since: string | undefined;
+    let description: string | undefined | JSX.Element;
 
     if (metadata) {
       const millis = new Date().getTime() - new Date(metadata.timeCreated).getTime();
@@ -192,13 +226,14 @@ class FileEntry extends React.Component<FileEntryProps, FileEntryState> {
       const secondsSince = millis / 1000;
 
       if (secondsSince < 60) {
-        since = `Uploaded ${Math.round(secondsSince)} seconds ago`;
+        description = `Uploaded ${Math.round(secondsSince)} seconds ago`;
       } else if (secondsSince < 60 * 60) {
-        since = `Uploaded ${Math.round(secondsSince / 60 )} minutes ago`;
+        description = `Uploaded ${Math.round(secondsSince / 60 )} minutes ago`;
       } else {
-        since = `Uploaded ${Math.round(secondsSince / (60 * 60))} hours ago`;
+        description = `Uploaded ${Math.round(secondsSince / (60 * 60))} hours ago`;
       }
 
+      description = <div>{description}, by  <Flag name={parseFlagName(file.uploader)} /></div>;
     }
 
     return (
@@ -206,7 +241,7 @@ class FileEntry extends React.Component<FileEntryProps, FileEntryState> {
         <List.Icon name="file outline" verticalAlign="middle"/>
         <List.Content>
           <List.Header as="a" onClick={download(file.filename)}>{file.filename}</List.Header>
-          {since && <List.Description as="a">{since}</List.Description>}
+          {description && <List.Description as="a">{description}</List.Description>}
         </List.Content>
       </List.Item>
     );

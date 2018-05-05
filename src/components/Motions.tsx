@@ -5,7 +5,7 @@ import { RouteComponentProps } from 'react-router';
 import { Segment, Input, Dropdown, Button, Card, Form, Message } from 'semantic-ui-react';
 import { fieldHandler, dropdownHandler, validatedNumberFieldHandler, 
   countryDropdownHandler } from '../actions/handlers';
-import { makeDropdownOption, objectToList } from '../utils';
+import { makeDropdownOption, objectToList, recoverCountryOptions } from '../utils';
 import { TimerSetter, Unit } from './TimerSetter';
 import { nameToCountryOption, MemberID, MemberData } from './Member';
 import { CountryOption, COUNTRY_OPTIONS } from '../constants';
@@ -188,17 +188,6 @@ export default class Motions extends React.Component<Props, State> {
     this.state.committeeFref.off('value', this.firebaseCallback);
   }
 
-  recoverCountryOptions = (): CountryOption[] => {
-    const { committee } = this.state;
-
-    if (committee) {
-      return objectToList(committee.members || {} as Map<MemberID, MemberData>)
-        .map(x => nameToCountryOption(x.name));
-    }
-
-    return [];
-  }
-
   handlePushMotion = (): void => {
     this.state.committeeFref.child('motions').push().set(DEFAULT_MOTION);
   }
@@ -271,7 +260,7 @@ export default class Motions extends React.Component<Props, State> {
   }
 
   renderMotion = (id: MotionID, motionData: MotionData, motionFref: firebase.database.Reference) => {
-    const { recoverCountryOptions, handleApproveMotion } = this;
+    const { handleApproveMotion } = this;
     const { proposer, proposal, type, caucusUnit, caucusDuration, speakerUnit, 
       speakerDuration, seconder } = motionData;
 
@@ -331,7 +320,7 @@ export default class Motions extends React.Component<Props, State> {
       </Card.Content>
     );
 
-    const countryOptions = recoverCountryOptions();
+    const countryOptions = recoverCountryOptions(this.state.committee);
 
     const proposerTree = (
       <Form.Dropdown
