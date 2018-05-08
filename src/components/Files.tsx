@@ -8,6 +8,7 @@ import { TextArea, Segment, Form, Button, Popup, InputOnChangeData, Progress,
   List, DropdownProps, ListDescription, Flag } from 'semantic-ui-react';
 import { textAreaHandler } from '../actions/handlers';
 import { nameToCountryOption, parseFlagName } from './Member';
+import Loading from './Loading';
 import { recoverCountryOptions } from '../utils';
 import { CountryOption, COUNTRY_OPTIONS } from '../constants';
 
@@ -217,22 +218,26 @@ class FileEntry extends React.Component<FileEntryProps, FileEntryState> {
     const { file } = this.props;
     const { metadata } = this.state;
 
-    let description: string | undefined | JSX.Element;
+    let description: undefined | JSX.Element;
 
     if (metadata) {
       const millis = new Date().getTime() - new Date(metadata.timeCreated).getTime();
 
       const secondsSince = millis / 1000;
 
+      let sinceText: string;
+
       if (secondsSince < 60) {
-        description = `Uploaded ${Math.round(secondsSince)} seconds ago`;
+        sinceText = `Uploaded ${Math.round(secondsSince)} seconds ago`;
       } else if (secondsSince < 60 * 60) {
-        description = `Uploaded ${Math.round(secondsSince / 60 )} minutes ago`;
+        sinceText = `Uploaded ${Math.round(secondsSince / 60 )} minutes ago`;
+      } else if (secondsSince < 60 * 60 * 24) {
+        sinceText = `Uploaded ${Math.round(secondsSince / (60 * 60))} hours ago`;
       } else {
-        description = `Uploaded ${Math.round(secondsSince / (60 * 60))} hours ago`;
+        sinceText = `Uploaded ${Math.round(secondsSince / (60 * 60 * 24))} days ago`;
       }
 
-      description = <div>{description}, by  <Flag name={parseFlagName(file.uploader)} /></div>;
+      description = <div>{sinceText}, by  <Flag name={parseFlagName(file.uploader)} /></div>;
     }
 
     return (
@@ -240,8 +245,10 @@ class FileEntry extends React.Component<FileEntryProps, FileEntryState> {
         <List.Icon name="file outline" verticalAlign="middle"/>
         <List.Content>
           <List.Header as="a" onClick={download(file.filename)}>{file.filename}</List.Header>
-          {description && <List.Description as="a">{description}</List.Description>}
-        </List.Content>
+          {description ? 
+            <List.Description as="a">{description}</List.Description>
+          : <List.Description as="a"><Loading small /></List.Description>}
+          </List.Content>
       </List.Item>
     );
   }

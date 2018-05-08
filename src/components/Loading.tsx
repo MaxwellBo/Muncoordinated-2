@@ -1,12 +1,20 @@
 import * as React from 'react';
-import { Loader, Dimmer } from 'semantic-ui-react';
+import { Loader, Dimmer, Icon } from 'semantic-ui-react';
 
-export default class Loading extends React.PureComponent<{}, {}> {
+interface Props {
+  small?: boolean;
+}
+
+export default class Loading extends React.PureComponent<Props, {}> {
   render() {
-    return (
-      <Dimmer active inverted>
-        <Loader inverted size="large" />
-      </Dimmer>
-    );
+    if (this.props.small) {
+      return <Icon name="circle notched" loading />;
+    } else {
+      return (
+        <Dimmer active inverted>
+          <Loader inverted size="large" />
+        </Dimmer>
+      );
+    }
   }
 }
