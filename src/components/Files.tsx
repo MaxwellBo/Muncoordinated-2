@@ -156,13 +156,13 @@ export default class Files extends React.Component<Props, State> {
           </Form.Group>
         </Form>
         <List divided relaxed>
-          {Object.keys(files).reverse().map(key => 
+          {committee ? Object.keys(files).reverse().map(key => 
             <FileEntry 
               key={key} 
               committeeID={committeeID}
               file={files[key]}
             />
-          )}
+          ) : <Loading />}
         </List>
       </div>
     );
