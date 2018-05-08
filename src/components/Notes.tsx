@@ -5,6 +5,7 @@ import { RouteComponentProps } from 'react-router';
 import { URLParameters } from '../types';
 import { TextArea, Segment, Form, Button, Popup } from 'semantic-ui-react';
 import { textAreaHandler } from '../actions/handlers';
+import Loading from './Loading';
 
 interface Props extends RouteComponentProps<URLParameters> {
 }
@@ -45,7 +46,7 @@ export default class Notes extends React.Component<Props, State> {
 
     const trigger = <Button icon="question" size="mini" basic floated="right" />;
 
-    return (
+    return committee ? (
       <div>
         <Form>
           <TextArea
@@ -60,7 +61,7 @@ export default class Notes extends React.Component<Props, State> {
             basic
           />
         </Form>
-      </div>
-    );
+      </div> 
+    ) : <Loading />;
   }
 }
