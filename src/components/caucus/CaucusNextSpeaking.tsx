@@ -100,22 +100,39 @@ export class CaucusNextSpeaking extends React.Component<Props, {}> {
     const nextable = hasNowSpeaking || hasNextSpeaking;
     const interlaceable = _.values(queue).length > 1;
 
+    const endButton = (
+      <Button
+        basic
+        icon
+        negative
+        disabled={!nextable}
+        onClick={nextSpeaker}
+      >
+        <Icon name="hourglass end" />
+        End
+      </Button>
+    );
+
+    const nextButton = (
+      <Button
+        basic
+        icon
+        primary
+        disabled={!nextable}
+        onClick={nextSpeaker}
+      >
+        <Icon name="arrow up" />
+        Next
+      </Button>
+    );
+
     return (
       <div>
         <Header as="h3" attached="top">
           Next Speaking
         </Header>
         <Segment attached textAlign="center">
-          <Button
-            basic
-            icon
-            primary
-            disabled={!nextable}
-            onClick={nextSpeaker}
-          >
-            <Icon name="arrow up" />
-            Next
-          </Button>
+          {hasNowSpeaking && !hasNextSpeaking ? endButton : nextButton}
           <Button
             icon
             disabled={!interlaceable}
