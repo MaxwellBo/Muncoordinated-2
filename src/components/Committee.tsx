@@ -257,25 +257,27 @@ export default class Committee extends React.Component<Props, State> {
       <div>
         <ShareHint committeeID={this.props.match.params.committeeID} />
         <ModalLogin />
-        {renderMeta()}
-        <Grid>
-          <Grid.Column width={4}>
-            {renderNav()}
-            <Footer />
-          </Grid.Column>
-          <Grid.Column stretched width={12}>
-            <Route exact={true} path="/committees/:committeeID/admin" render={renderAdmin} />
-            <Route exact={true} path="/committees/:committeeID/stats" component={Stats} />
-            <Route exact={true} path="/committees/:committeeID/unmod" component={Unmod} />
-            <Route exact={true} path="/committees/:committeeID/motions" component={Motions} />
-            <Route exact={true} path="/committees/:committeeID/notes" component={Notes} />
-            <Route exact={true} path="/committees/:committeeID/files" component={Files} />
-            <Route exact={true} path="/committees/:committeeID/settings" component={Settings} />
-            <Route exact={true} path="/committees/:committeeID/help" component={Help} />
-            <Route path="/committees/:committeeID/caucuses/:caucusID" component={Caucus} />
-            <Route path="/committees/:committeeID/resolutions/:resolutionID" component={Resolution} />
-          </Grid.Column>
-        </Grid>
+        <div>
+          {renderMeta()}
+          <Grid>
+            <Grid.Column width={4}>
+              {renderNav()}
+              <Footer />
+            </Grid.Column>
+            <Grid.Column stretched width={12}>
+              <Route exact={true} path="/committees/:committeeID/admin" render={renderAdmin} />
+              <Route exact={true} path="/committees/:committeeID/stats" component={Stats} />
+              <Route exact={true} path="/committees/:committeeID/unmod" component={Unmod} />
+              <Route exact={true} path="/committees/:committeeID/motions" component={Motions} />
+              <Route exact={true} path="/committees/:committeeID/notes" component={Notes} />
+              <Route exact={true} path="/committees/:committeeID/files" component={Files} />
+              <Route exact={true} path="/committees/:committeeID/settings" component={Settings} />
+              <Route exact={true} path="/committees/:committeeID/help" component={Help} />
+              <Route path="/committees/:committeeID/caucuses/:caucusID" component={Caucus} />
+              <Route path="/committees/:committeeID/resolutions/:resolutionID" component={Resolution} />
+            </Grid.Column>
+          </Grid>
+        </div>
       </div>
     );
   }
