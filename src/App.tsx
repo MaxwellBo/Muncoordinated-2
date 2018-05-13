@@ -31,7 +31,6 @@ class App extends React.Component {
           <ConnectionStatus />
           <Route exact path="/onboard" component={Onboard} />
           <Route exact path="/committees" component={Login} />
-          <Route path="/committees/:committeeID" component={ModalLogin} />
           <Route path="/committees/:committeeID" component={Committee} />
         </Container>
       </div>

@@ -226,7 +226,8 @@ export default class Homepage extends React.Component<{}, {}> {
                     <List.Item as="li">Moderated and unmoderated caucuses</List.Item>
                     <Popup
                       trigger={<List.Item as="li">Useful hotkeys</List.Item>}
-                      content="Currently implemented hotkeys include 'Next Speaker', 'Toggle Caucus Timer' and 'Toggle Speaker Timer'"
+                      content="Currently implemented hotkeys include 'Next Speaker', 
+                      'Toggle Caucus Timer' and 'Toggle Speaker Timer'"
                     />
                     <List.Item as="li">Resolution amendments</List.Item>
                     <List.Item as="li">Roll-call voting</List.Item>
@@ -265,11 +266,21 @@ export default class Homepage extends React.Component<{}, {}> {
               <Grid.Column style={{ paddingBottom: '5em', paddingTop: '5em' }}>
                 <Header as="h3" style={{ fontSize: '2em' }}><a href="https://brismun18.com/">Brismun 2018</a></Header>
                 {/* <p style={{ fontSize: '1.33em' }}>That is what they all say about us</p> */}
-                <Image centered size="small" rounded src="https://scontent-syd2-1.xx.fbcdn.net/v/t1.0-9/22519205_1627627783924172_998223643884382844_n.jpg?_nc_cat=0&oh=ad7fc767f42fcf2d57865c7b927943c1&oe=5B51EFF0" />
+                <Image 
+                  centered 
+                  size="small" 
+                  rounded 
+                  src="https://scontent-syd2-1.xx.fbcdn.net/v/t1.0-9/22519205_1627627783924172_998223643884382844_n.jpg?_nc_cat=0&oh=ad7fc767f42fcf2d57865c7b927943c1&oe=5B51EFF0" 
+                />
               </Grid.Column>
               <Grid.Column style={{ paddingBottom: '5em', paddingTop: '5em' }}>
                 <Header as="h3" style={{ fontSize: '2em' }}><a href="https://www.facebook.com/SYDMUN2017/">SydMUN 2017</a></Header>
-                <Image centered size="small" rounded src="https://scontent-syd2-1.xx.fbcdn.net/v/t31.0-8/22426346_1760899207277524_7600392921986087577_o.jpg?_nc_cat=0&oh=4b155461263996442285cd325e5ef0c1&oe=5B979DC8" />
+                <Image 
+                  centered 
+                  size="small" 
+                  rounded 
+                  src="https://scontent-syd2-1.xx.fbcdn.net/v/t31.0-8/22426346_1760899207277524_7600392921986087577_o.jpg?_nc_cat=0&oh=4b155461263996442285cd325e5ef0c1&oe=5B979DC8" 
+                />
               </Grid.Column>
             </Grid.Row>
           </Grid>

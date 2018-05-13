@@ -24,8 +24,9 @@ interface State {
   unsubscribe?: () => void;
   committees?: Map<CommitteeID, CommitteeData>;
 }
+
 interface Props {
-  allowSignup: boolean;
+  allowSignup: boolean | undefined;
 }
 
 export class Login extends React.Component<Props, State> {

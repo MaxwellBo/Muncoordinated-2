@@ -21,6 +21,8 @@ import Loading from './Loading';
 import Footer from './Footer';
 import Settings, { SettingsData, DEFAULT_SETTINGS } from './Settings';
 import Files, { FileID, FileData } from './Files';
+import { ModalLogin } from './Auth';
+import ShareHint from './ShareHint';
 
 interface Props extends RouteComponentProps<URLParameters> {
 }
@@ -45,30 +47,6 @@ export interface CommitteeData {
   timer: TimerData;
   notes: string;
   settings: SettingsData;
-}
-
-function CommitteeMeta(props: { data?: CommitteeData, fref: firebase.database.Reference; }) {
-  const { data } = props;
-
-  return (
-    <Segment loading={!data}>
-      <Input
-        value={data ? data.name : ''}
-        onChange={fieldHandler<CommitteeData>(props.fref, 'name')}
-        attached="top"
-        size="massive"
-        fluid
-        placeholder="Committee Name"
-      />
-      <Input 
-        value={data ? data.topic : ''} 
-        onChange={fieldHandler<CommitteeData>(props.fref, 'topic')} 
-        attached="bottom" 
-        fluid 
-        placeholder="Committee Topic" 
-      />
-    </Segment>
-  );
 }
 
 export const DEFAULT_COMMITTEE: CommitteeData = {
@@ -239,6 +217,30 @@ export default class Committee extends React.Component<Props, State> {
     );
   }
 
+  renderMeta = () => {
+    const { committee, committeeFref } = this.state;
+
+    return (
+      <Segment loading={!committee}>
+        <Input
+          value={committee ? committee.name : ''}
+          onChange={fieldHandler<CommitteeData>(committeeFref, 'name')}
+          attached="top"
+          size="massive"
+          fluid
+          placeholder="Committee Name"
+        />
+        <Input 
+          value={committee ? committee.topic : ''} 
+          onChange={fieldHandler<CommitteeData>(committeeFref, 'topic')} 
+          attached="bottom" 
+          fluid 
+          placeholder="Committee Topic" 
+        />
+      </Segment>
+    );
+  }
+
   renderAdmin = () => {
     return (
       <Admin
@@ -249,11 +251,13 @@ export default class Committee extends React.Component<Props, State> {
   }
     
   render() {
-    const { renderNav, renderAdmin } = this;
+    const { renderNav, renderAdmin, renderMeta } = this;
 
     return (
       <div>
-        <CommitteeMeta data={this.state.committee} fref={this.state.committeeFref} />
+        <ShareHint committeeID={this.props.match.params.committeeID} />
+        <ModalLogin />
+        {renderMeta()}
         <Grid>
           <Grid.Column width={4}>
             {renderNav()}
