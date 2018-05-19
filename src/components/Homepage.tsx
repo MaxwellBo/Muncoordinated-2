@@ -214,7 +214,7 @@ export default class Homepage extends React.Component<{}, {}> {
                   Muncoordinated tracks and distributes all updates in real-time&nbsp;(like&nbsp;Google&nbsp;Docs),
                   allowing directors to pass delegates a shared link.< br />
                   Delegates may then add themselves to selected speaker's lists.
-              </p>
+                </p>
                 <Header as="h3" style={{ fontSize: '2em' }}>A stunning feature set</Header>
                 <p style={{ fontSize: '1.33em' }}>
                   Muncoordinated supports <br />
@@ -234,6 +234,13 @@ export default class Homepage extends React.Component<{}, {}> {
                     <List.Item as="li">File uploads</List.Item>
                     <List.Item as="li">Notes</List.Item>
                   </List>
+                </p>
+                <Header as="h3" style={{ fontSize: '2em' }}>Free as in freedom, not free as in free beer</Header>
+                <p style={{ fontSize: '1.33em' }}>
+                  All of Muncoordinated's features are available for free, not locked behind paywalls.
+                </p>
+                <p style={{ fontSize: '1.33em' }}>
+                  It's also open source, so you're free to customize it to your needs and liking.
                 </p>
               </Grid.Column>
               <Grid.Column floated="right" width={8}>
@@ -264,7 +271,9 @@ export default class Homepage extends React.Component<{}, {}> {
           <Grid celled="internally" columns="equal" stackable>
             <Grid.Row textAlign="center">
               <Grid.Column style={{ paddingBottom: '5em', paddingTop: '5em' }}>
-                <Header as="h3" style={{ fontSize: '2em' }}><a href="https://brismun18.com/">Brismun 2018</a></Header>
+                <Header as="h3" style={{ fontSize: '2em' }}>
+                  <a href="https://brismun18.com/">Brismun 2018</a>
+                </Header>
                 {/* <p style={{ fontSize: '1.33em' }}>That is what they all say about us</p> */}
                 <Image 
                   centered 
@@ -274,7 +283,9 @@ export default class Homepage extends React.Component<{}, {}> {
                 />
               </Grid.Column>
               <Grid.Column style={{ paddingBottom: '5em', paddingTop: '5em' }}>
-                <Header as="h3" style={{ fontSize: '2em' }}><a href="https://www.facebook.com/SYDMUN2017/">SydMUN 2017</a></Header>
+                <Header as="h3" style={{ fontSize: '2em' }}>
+                  <a href="https://www.facebook.com/SYDMUN2017/">SydMUN 2017</a>
+                </Header>
                 <Image 
                   centered 
                   size="small" 
@@ -337,7 +348,9 @@ export default class Homepage extends React.Component<{}, {}> {
                 </Grid.Column>
                 <Grid.Column width={7}>
                   <Header as="h4" inverted>Info</Header>
-                  <p>Made with 💖 by <a href="https://github.com/MaxwellBo">Max Bo</a></p>
+                  <p>Made with 💖 by <a href="https://github.com/MaxwellBo">Max Bo</a>, 
+                  with assistance from the <a href="http://www.uqunsa.com/">UQ United Nations Student Association</a>
+                  </p>
                   <p>Copyright © 2018</p>
                 </Grid.Column>
               </Grid.Row>

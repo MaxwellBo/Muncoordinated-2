@@ -61,7 +61,8 @@ export default class Footer extends React.PureComponent<{}, State> {
     return (
       <Message compact size="mini">
         {!latestVersion && <Loading />}
-        Made with 💖 by <a href="https://github.com/MaxwellBo">Max Bo</a>. {version}
+        Made with 💖 by <a href="https://github.com/MaxwellBo">Max Bo</a> &amp; <a href="http://www.uqunsa.com/">UQUNSA</a>. 
+        <br />{version}
         {latestVersion !== CLIENT_VERSION && refreshNudge}
       </Message>
     );
