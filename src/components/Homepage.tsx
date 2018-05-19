@@ -240,7 +240,7 @@ export default class Homepage extends React.Component<{}, {}> {
                   All of Muncoordinated's features are available for free, not locked behind paywalls.
                 </p>
                 <p style={{ fontSize: '1.33em' }}>
-                  It's also open source, so you're free to customize it to your needs and liking.
+                  It's also <a href="https://github.com/MaxwellBo/Muncoordinated-2">open-source</a>, so you're free to customize it to your needs and liking.
                 </p>
               </Grid.Column>
               <Grid.Column floated="right" width={8}>
