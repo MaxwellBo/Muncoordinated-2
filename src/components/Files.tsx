@@ -237,7 +237,7 @@ class FileEntry extends React.Component<FileEntryProps, FileEntryState> {
         sinceText = `Uploaded ${Math.round(secondsSince / (60 * 60 * 24))} days ago`;
       }
 
-      description = <div>{sinceText}, by  <Flag name={parseFlagName(file.uploader)} /></div>;
+      description = <div>{sinceText}, by  <Flag name={parseFlagName(file.uploader)}/>{file.uploader}</div>;
     }
 
     return (
