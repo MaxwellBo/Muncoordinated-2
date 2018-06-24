@@ -2,12 +2,16 @@ import * as React from 'react';
 import * as firebase from 'firebase';
 import { CommitteeData, CommitteeID, DEFAULT_COMMITTEE } from './Committee';
 import { RouteComponentProps } from 'react-router';
-import { Segment, Input, Dropdown, Button, Card, Form, Message } from 'semantic-ui-react';
+import { Segment, Input, Dropdown, Button, Card, Form, Message, Flag, Label } from 'semantic-ui-react';
 import { fieldHandler, dropdownHandler, validatedNumberFieldHandler, 
-  countryDropdownHandler } from '../actions/handlers';
+  countryDropdownHandler, 
+  stateFieldHandler,
+  stateDropdownHandler,
+  stateValidatedNumberFieldHandler,
+  stateCountryDropdownHandler} from '../actions/handlers';
 import { makeDropdownOption, objectToList, recoverCountryOptions } from '../utils';
 import { TimerSetter, Unit } from './TimerSetter';
-import { nameToCountryOption, MemberID, MemberData } from './Member';
+import { nameToCountryOption, MemberID, MemberData, parseFlagName } from './Member';
 import { CountryOption, COUNTRY_OPTIONS } from '../constants';
 import { DEFAULT_CAUCUS, CaucusData } from './Caucus';
 import { postCaucus, postResolution } from '../actions/caucusActions';
@@ -132,6 +136,7 @@ interface Props extends RouteComponentProps<URLParameters> {
 }
 
 interface State {
+  newMotion: MotionData;
   committee?: CommitteeData;
   committeeFref: firebase.database.Reference;
 }
@@ -170,7 +175,8 @@ export default class Motions extends React.Component<Props, State> {
     const { match } = props;
 
     this.state = {
-      committeeFref: firebase.database().ref('committees').child(match.params.committeeID)
+      committeeFref: firebase.database().ref('committees').child(match.params.committeeID),
+      newMotion: DEFAULT_MOTION
     };
   }
 
@@ -189,11 +195,32 @@ export default class Motions extends React.Component<Props, State> {
   }
 
   handlePushMotion = (): void => {
-    this.state.committeeFref.child('motions').push().set(DEFAULT_MOTION);
+    const { newMotion } = this.state;
+
+    this.state.committeeFref.child('motions').push().set(newMotion);
+
+    const duration = newMotion.caucusUnit === 'min'
+      ? (newMotion.caucusDuration || 0) + 1
+      : newMotion.caucusDuration;
+
+    this.setState(prevState => {
+      return {
+        newMotion: {
+          ...prevState.newMotion,
+          caucusDuration: duration
+        }
+      };
+    });
   }
 
   handleClearMotions = (): void => {
     this.state.committeeFref.child('motions').set({});
+  }
+
+  handleClearAdder = () => {
+    this.setState({
+      newMotion: DEFAULT_MOTION
+    });
   }
 
   handleApproveMotion = (motionData: MotionData): void => {
@@ -266,9 +293,85 @@ export default class Motions extends React.Component<Props, State> {
 
     const description = (
       <Card.Description>
+        {proposal}
+      </Card.Description>
+    );
+
+    const countryOptions = recoverCountryOptions(this.state.committee);
+
+    const proposerTree = (
+      <div>
+        <Label horizontal>
+          Proposer
+        </Label>
+        <Flag name={parseFlagName(proposer)} /> {proposer}
+      </div>
+    );
+
+    const seconderTree = (
+      <div>
+        <Label horizontal>
+          Seconder
+        </Label>
+        <Flag name={parseFlagName(seconder)} /> {seconder}
+      </div>
+    );
+
+    const time = hasDuration(type) ? 
+      hasSpeakers(type) 
+        ? `${caucusDuration || 0} ${caucusUnit} / ${speakerDuration || 0} ${speakerUnit} `
+        : `${caucusDuration || 0} ${caucusUnit} `
+      : '';
+
+    return (
+      <Card 
+        key={id}
+      >
+        <Card.Content>
+          <Card.Header>
+            {time}{type}
+            {hasDetail(type) && description}
+          </Card.Header>
+          <Card.Meta>
+              {proposerTree}
+              {hasSeconder(type) && seconderTree}
+          </Card.Meta>
+        </Card.Content>
+        <Card.Content extra>
+          <Button.Group fluid>
+            <Button 
+              basic 
+              negative
+              onClick={() => motionFref.remove()}
+            >
+              Delete
+            </Button>
+            {approvable(type) && <Button.Or />}
+            {approvable(type) && <Button 
+              disabled={motionData.proposer === ''}
+              basic
+              positive
+              onClick={() => handleApproveMotion(motionData)}
+            >
+              Provision
+            </Button>}
+          </Button.Group>
+        </Card.Content>
+      </Card>
+    );
+  }
+
+  renderAdder = (): JSX.Element => {
+    const { handleApproveMotion } = this;
+    const { newMotion } = this.state;
+    const { proposer, proposal, type, caucusUnit, caucusDuration, speakerUnit, 
+      speakerDuration, seconder } = newMotion;
+
+    const description = (
+      <Card.Description>
         <Input 
           value={proposal}
-          onChange={fieldHandler<MotionData>(motionFref, 'proposal')} 
+          onChange={stateFieldHandler<Props, State>(this, 'newMotion', 'proposal')} 
           fluid 
         /> 
       </Card.Description>
@@ -278,8 +381,8 @@ export default class Motions extends React.Component<Props, State> {
       <TimerSetter
         unitValue={speakerUnit}
         durationValue={speakerDuration ? speakerDuration.toString() : undefined}
-        onUnitChange={dropdownHandler<MotionData>(motionFref, 'speakerUnit')}
-        onDurationChange={validatedNumberFieldHandler<MotionData>(motionFref, 'speakerDuration')}
+        onUnitChange={stateDropdownHandler<Props, State>(this, 'newMotion', 'speakerUnit')}
+        onDurationChange={stateValidatedNumberFieldHandler<Props, State>(this, 'newMotion', 'speakerDuration')}
         label={'Speaker'}
       />
     );
@@ -288,8 +391,8 @@ export default class Motions extends React.Component<Props, State> {
       <TimerSetter
         unitValue={caucusUnit}
         durationValue={caucusDuration ? caucusDuration.toString() : undefined}
-        onUnitChange={dropdownHandler<MotionData>(motionFref, 'caucusUnit')}
-        onDurationChange={validatedNumberFieldHandler<MotionData>(motionFref, 'caucusDuration')}
+        onUnitChange={stateDropdownHandler<Props, State>(this, 'newMotion', 'caucusUnit')}
+        onDurationChange={stateValidatedNumberFieldHandler<Props, State>(this, 'newMotion', 'caucusDuration')}
         label={'Duration'}
       />
     );
@@ -329,7 +432,7 @@ export default class Motions extends React.Component<Props, State> {
         search
         selection
         fluid
-        onChange={countryDropdownHandler<MotionData>(motionFref, 'proposer', countryOptions)}
+        onChange={stateCountryDropdownHandler<Props, State>(this, 'newMotion', 'proposer', countryOptions)}
         options={countryOptions}
         label="Proposer"
       />
@@ -342,7 +445,7 @@ export default class Motions extends React.Component<Props, State> {
         search
         selection
         fluid
-        onChange={countryDropdownHandler<MotionData>(motionFref, 'seconder', countryOptions)}
+        onChange={stateCountryDropdownHandler<Props, State>(this, 'newMotion', 'seconder', countryOptions)}
         options={countryOptions}
         label="Seconder"
       />
@@ -350,7 +453,7 @@ export default class Motions extends React.Component<Props, State> {
 
     return (
       <Card 
-        key={id}
+        key="adder"
       >
         <Card.Content>
           <Card.Header>
@@ -360,7 +463,7 @@ export default class Motions extends React.Component<Props, State> {
               selection
               fluid
               options={MOTION_TYPE_OPTIONS}
-              onChange={dropdownHandler<MotionData>(motionFref, 'type')}
+              onChange={stateDropdownHandler<Props, State>(this, 'newMotion', 'type')}
               value={type}
             />
             {hasDetail(type) && description}
@@ -377,22 +480,19 @@ export default class Motions extends React.Component<Props, State> {
         {(hasSpeakers(type) || hasDuration(type)) && extra}
         <Card.Content extra>
           <Button.Group fluid>
-            <Button 
+            {/* <Button 
               basic 
-              negative
-              onClick={() => motionFref.remove()}
+              onClick={this.handleClearAdder}
             >
-              Delete
-            </Button>
-            {approvable(type) && <Button.Or />}
-            {approvable(type) && <Button 
-              disabled={motionData.proposer === ''}
+              Clear
+            </Button> */}
+            <Button 
+              disabled={proposer === ''}
+              icon="plus"
               basic
-              positive
-              onClick={() => handleApproveMotion(motionData)}
-            >
-              Provision
-            </Button>}
+              primary
+              onClick={this.handlePushMotion}
+            />
           </Button.Group>
         </Card.Content>
       </Card>
@@ -434,30 +534,16 @@ export default class Motions extends React.Component<Props, State> {
   }
 
   renderTab = (committee: CommitteeData) => {
-    const { renderMotions, handlePushMotion } = this;
+    const { renderMotions, handlePushMotion, renderAdder } = this;
 
     const motions = committee.motions || {} as Map<MotionID, MotionData>;
-
-    const adder = (
-      <Card>
-        {/* <Card.Content> */}
-          <Button
-            icon="plus"
-            primary
-            fluid
-            basic
-            onClick={handlePushMotion}
-          />
-        {/* </Card.Content> */}
-      </Card>
-    );
 
     return (
       <div>
         <Card.Group
           itemsPerRow={1} 
         >
-          {adder}
+          {renderAdder()}
           {renderMotions(motions)}
         </Card.Group>
       </div>

@@ -2,7 +2,6 @@ import * as React from 'react';
 import { CaucusData } from '../Caucus';
 import { TimerData } from '../Timer';
 import { Header, Segment, Button, Icon, Feed, Label, Flag } from 'semantic-ui-react';
-import { parseFlagName } from '../Member';
 import { runLifecycle, Lifecycle } from '../../actions/caucusActions';
 import { SpeakerEvent, Stance } from './SpeakerFeed';
 import { SpeakerFeed } from './SpeakerFeed';

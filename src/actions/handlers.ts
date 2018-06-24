@@ -8,16 +8,43 @@ export function fieldHandler<T>
     fref.child(field).set(e.currentTarget.value);
 }
 
+function lens<P, S>(comp: React.Component<P, S>, field: keyof S, target: string, value: any) {
+    // @ts-ignore
+    comp.setState(prevState => {
+
+      // @ts-ignore
+      const old: object = prevState[field];
+
+      return {
+        [field]: {
+          ...old,
+          [target]: value
+        }
+      };
+    });
+}
+
+export function stateFieldHandler<P, S>
+  (comp: React.Component<P, S>, field: keyof S, target: string) {
+  return (e: React.FormEvent<HTMLInputElement>) =>
+    lens(comp, field, target, e.currentTarget.value);
+}
+
 export function validatedNumberFieldHandler<T>
   (fref: firebase.database.Reference, field: keyof T) {
   return (e: React.FormEvent<HTMLInputElement>) => {
     const n: number = Number(e.currentTarget.value);
 
-    if (n) {
-      fref.child(field).set(n);
-    } else {
-      fref.child(field).set({});
-    }
+    fref.child(field).set(n ? n : {});
+  };
+}
+
+export function stateValidatedNumberFieldHandler<P, S>
+  (comp: React.Component<P, S>, field: keyof S, target: string) {
+  return (e: React.FormEvent<HTMLInputElement>) => {
+    const n: number = Number(e.currentTarget.value);
+
+    lens(comp, field, target, n ? n : null);
   };
 }
 
@@ -33,6 +60,12 @@ export function dropdownHandler<T>
     fref.child(field).set(data.value);
 }
 
+export function stateDropdownHandler<P, S>
+  (comp: React.Component<P, S>, field: keyof S, target: string) {
+  return (event: React.SyntheticEvent<HTMLElement>, data: DropdownProps) =>
+    lens(comp, field, target, data.value);
+}
+
 export function checkboxHandler<T>
   (fref: firebase.database.Reference, field: keyof T) {
   return (event: React.FormEvent<HTMLInputElement>, data: CheckboxProps) =>
@@ -43,4 +76,10 @@ export function countryDropdownHandler<T>
   (fref: firebase.database.Reference, field: keyof T, countryOptions: CountryOption[]) {
   return (event: React.SyntheticEvent<HTMLElement>, data: DropdownProps) =>
     fref.child(field).set(countryOptions.filter(c => c.value === data.value)[0].text);
+}
+
+export function stateCountryDropdownHandler<P, S>
+  (comp: React.Component<P, S>, field: keyof S, target: string, countryOptions: CountryOption[]) {
+  return (event: React.SyntheticEvent<HTMLElement>, data: DropdownProps) =>
+    lens(comp, field, target, countryOptions.filter(c => c.value === data.value)[0].text);
 }
