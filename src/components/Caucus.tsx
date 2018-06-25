@@ -196,14 +196,18 @@ export default class Caucus extends React.Component<Props, State> {
     );
 
     let timersInSeparateColumns: boolean = DEFAULT_SETTINGS.timersInSeparateColumns;
+    let moveQueueUp: boolean = DEFAULT_SETTINGS.moveQueueUp;
 
     if (committee) {
       if (committee.settings.timersInSeparateColumns !== undefined) {
         timersInSeparateColumns = committee.settings.timersInSeparateColumns;
       }
+
+      if (committee.settings.moveQueueUp !== undefined) {
+        moveQueueUp = committee.settings.moveQueueUp;
+      }
     }
 
-    const moveQueueUp = committee ? committee.settings.moveQueueUp : false;
     const renderedCaucusQueuer = <CaucusQueuer caucus={caucus} members={members} caucusFref={caucusFref} />;
 
     const body = !timersInSeparateColumns ? (
