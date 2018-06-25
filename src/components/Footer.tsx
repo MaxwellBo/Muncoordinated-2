@@ -8,7 +8,7 @@ interface State {
   timerId?: NodeJS.Timer;
 }
 
-const CLIENT_VERSION = 'v2.5.0';
+const CLIENT_VERSION = 'v2.6.0';
 const RELEASES_LATEST = 'https://api.github.com/repos/MaxwellBo/Muncoordinated-2/releases/latest';
 
 export default class Footer extends React.PureComponent<{}, State> {
