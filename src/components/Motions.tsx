@@ -2,17 +2,15 @@ import * as React from 'react';
 import * as firebase from 'firebase';
 import { CommitteeData, CommitteeID, DEFAULT_COMMITTEE } from './Committee';
 import { RouteComponentProps } from 'react-router';
-import { Segment, Input, Dropdown, Button, Card, Form, Message, Flag, Label } from 'semantic-ui-react';
-import { fieldHandler, dropdownHandler, validatedNumberFieldHandler, 
-  countryDropdownHandler, 
-  stateFieldHandler,
+import { Icon, Input, Dropdown, Button, Card, Form, Message, Flag, Label } from 'semantic-ui-react';
+import { stateFieldHandler,
   stateDropdownHandler,
   stateValidatedNumberFieldHandler,
-  stateCountryDropdownHandler} from '../actions/handlers';
-import { makeDropdownOption, objectToList, recoverCountryOptions } from '../utils';
+  stateCountryDropdownHandler
+} from '../actions/handlers';
+import { makeDropdownOption, recoverCountryOptions } from '../utils';
 import { TimerSetter, Unit } from './TimerSetter';
-import { nameToCountryOption, MemberID, MemberData, parseFlagName } from './Member';
-import { CountryOption, COUNTRY_OPTIONS } from '../constants';
+import { nameToCountryOption, parseFlagName } from './Member';
 import { DEFAULT_CAUCUS, CaucusData } from './Caucus';
 import { postCaucus, postResolution } from '../actions/caucusActions';
 import { TimerData } from './Timer';
@@ -226,7 +224,7 @@ export default class Motions extends React.Component<Props, State> {
   handleApproveMotion = (motionData: MotionData): void => {
     const committeeID: CommitteeID = this.props.match.params.committeeID;
 
-    const { proposal, proposer, speakerDuration, speakerUnit, 
+    const { proposer, speakerDuration, speakerUnit, 
       caucusDuration, caucusUnit, seconder } = motionData;
 
     if (motionData.type === MotionType.OpenModeratedCaucus && speakerDuration && caucusDuration) {
@@ -297,8 +295,6 @@ export default class Motions extends React.Component<Props, State> {
       </Card.Description>
     );
 
-    const countryOptions = recoverCountryOptions(this.state.committee);
-
     const proposerTree = (
       <div>
         <Label horizontal>
@@ -362,7 +358,6 @@ export default class Motions extends React.Component<Props, State> {
   }
 
   renderAdder = (): JSX.Element => {
-    const { handleApproveMotion } = this;
     const { newMotion } = this.state;
     const { proposer, proposal, type, caucusUnit, caucusDuration, speakerUnit, 
       speakerDuration, seconder } = newMotion;
@@ -534,7 +529,7 @@ export default class Motions extends React.Component<Props, State> {
   }
 
   renderTab = (committee: CommitteeData) => {
-    const { renderMotions, handlePushMotion, renderAdder } = this;
+    const { renderMotions, renderAdder } = this;
 
     const motions = committee.motions || {} as Map<MotionID, MotionData>;
 
@@ -544,6 +539,11 @@ export default class Motions extends React.Component<Props, State> {
           itemsPerRow={1} 
         >
           {renderAdder()}
+        </Card.Group>
+        <Icon name="sort numeric descending" /> Sorted from most to least disruptive
+        <Card.Group
+          itemsPerRow={1} 
+        >
           {renderMotions(motions)}
         </Card.Group>
       </div>
