@@ -41,7 +41,7 @@ const HomepageHeading = ({ mobile }: HomepageHeadingProps) => (
     />
     <Header
       as="h2"
-      content="The real-time browser-based Model UN management app"
+      content="The real-time browser-based Model UN committee management app"
       inverted
       style={{
         fontSize: mobile ? '1.5em' : '1.7em',
