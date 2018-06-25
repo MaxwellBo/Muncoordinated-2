@@ -176,7 +176,7 @@ export default class Committee extends React.Component<Props, State> {
     return (
       <Menu fluid vertical size="massive">
         {makeMenuItem('Admin', 'users')}
-        {makeMenuItem('Motions', 'sort numeric ascending')}
+        {makeMenuItem('Motions', 'sort numeric descending')}
         {makeMenuItem('Unmod', 'discussions')}
         <Menu.Item>
           <Button
