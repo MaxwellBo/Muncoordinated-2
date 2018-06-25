@@ -16,12 +16,12 @@ interface State {
 
 export interface SettingsData {
   moveQueueUp: boolean;
-  timersInSeperateColumns: boolean;
+  timersInSeparateColumns: boolean;
 }
 
-export const DEFAULT_SETTINGS = {
+export const DEFAULT_SETTINGS: SettingsData = {
   moveQueueUp: false,
-  timersInSeperateColumns: false
+  timersInSeparateColumns: false
 };
 
 export default class Settings extends React.Component<Props, State> {
@@ -70,15 +70,15 @@ export default class Settings extends React.Component<Props, State> {
 
   render() {
     const { renderSetting } = this;
-    const { committee, committeeFref } = this.state;
+    const { committee } = this.state;
 
     return (
       <div>
         <Header as="h3" attached="top">Settings</Header>
         <Segment attached="bottom" loading={!committee}>
           {renderSetting('moveQueueUp', '\'Queue\' should appear above \'Next Speaking\'')}
-          {renderSetting('timersInSeperateColumns',
-            'Alternate arrangement with \'Speaker Timer\' and \'Caucus Timer\' in seperate columns')}
+          {renderSetting('timersInSeparateColumns',
+            'Alternate arrangement with \'Speaker Timer\' and \'Caucus Timer\' in separate columns')}
         </Segment>
       </div>
     );

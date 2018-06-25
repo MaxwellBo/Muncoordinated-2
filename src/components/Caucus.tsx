@@ -19,6 +19,7 @@ import Loading from './Loading';
 import ConnectionStatus from './ConnectionStatus';
 import { CaucusNextSpeaking } from './caucus/CaucusNextSpeaking';
 import { SpeakerEvent, SpeakerFeedEntry } from './caucus/SpeakerFeed';
+import { DEFAULT_SETTINGS } from './Settings';
 
 interface Props extends RouteComponentProps<URLParameters> {
 }
@@ -194,12 +195,18 @@ export default class Caucus extends React.Component<Props, State> {
       </Grid.Row>
     );
 
-    const timersInSeperateColumns = committee ? committee.settings.timersInSeperateColumns : false;
+    let timersInSeparateColumns: boolean = DEFAULT_SETTINGS.timersInSeparateColumns;
+
+    if (committee) {
+      if (committee.settings.timersInSeparateColumns !== undefined) {
+        timersInSeparateColumns = committee.settings.timersInSeparateColumns;
+      }
+    }
 
     const moveQueueUp = committee ? committee.settings.moveQueueUp : false;
     const renderedCaucusQueuer = <CaucusQueuer caucus={caucus} members={members} caucusFref={caucusFref} />;
 
-    const body = !timersInSeperateColumns ? (
+    const body = !timersInSeparateColumns ? (
       <Grid.Row>
         <Grid.Column>
           {renderNowSpeaking(caucus)}
