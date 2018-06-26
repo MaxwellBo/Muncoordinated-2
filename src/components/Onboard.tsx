@@ -3,7 +3,7 @@ import { RouteComponentProps } from 'react-router';
 import { Link } from 'react-router-dom';
 import * as firebase from 'firebase';
 import { CommitteeData, CommitteeID, DEFAULT_COMMITTEE } from './Committee';
-import { Segment, Button, Divider, Form, Grid, Header, InputOnChangeData } from 'semantic-ui-react';
+import { Segment, Button, Divider, Form, Grid, Header, InputOnChangeData, Message, Icon } from 'semantic-ui-react';
 import { Login } from './Auth';
 import { URLParameters } from '../types';
 
@@ -103,6 +103,7 @@ export default class Onboard extends React.Component<Props, State> {
   }
 
   render() {
+    const { user } = this.state;
 
     return (
       <Grid
@@ -113,6 +114,13 @@ export default class Onboard extends React.Component<Props, State> {
           Muncoordinated
           </Header>
           <Segment>
+            {!user && (
+              <Message warning>
+                <Icon name="warning" />
+                Be sure to login if you'd like to access your previously created committees. 
+              </Message>
+              )
+            }
             <Login allowSignup={true}/>
             <Divider horizontal>And</Divider>
             <this.NewCommitteeForm />

@@ -215,6 +215,11 @@ export default class Homepage extends React.Component<{}, {}> {
                   allowing directors to pass delegates a shared link.< br />
                   Delegates may then add themselves to selected speaker's lists.
                 </p>
+                <Header as="h3" style={{ fontSize: '2em' }}>Cloud based</Header>
+                <p style={{ fontSize: '1.33em' }}>
+                  You won't have to worry about data loss ever again. All committee activity is automatically saved to the server, 
+                  so you can start sessions with all data available from the day before.
+                </p>
                 <Header as="h3" style={{ fontSize: '2em' }}>A stunning feature set</Header>
                 <p style={{ fontSize: '1.33em' }}>
                   Muncoordinated supports <br />
