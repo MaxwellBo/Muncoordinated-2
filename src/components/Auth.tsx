@@ -168,32 +168,71 @@ export class Login extends React.Component<Props, State> {
     );
   }
 
-  renderLoggedIn = (u: firebase.User) => {
-    const { logOutHandler, renderCommittees } = this;
-    const { committees } = this.state;
+  renderError = () => {
+    const { handleDismissError } = this;
+
+    const err = this.state.error;
+    
+    return (
+      <Message
+        key="error"
+        error
+        onDismiss={handleDismissError}
+      >
+        <Message.Header>{err ? err.name : ''}</Message.Header>
+        <Message.Content>{err ? err.message : ''}</Message.Content>
+      </Message>
+    );
+  }
+
+  renderSuccess = () => {
+    const { handleDismissSuccess } = this;
+
+    const succ = this.state.success;
 
     return (
-      <Card centered>
-        <Card.Content key="main">
-          <Card.Header>
-            {u.email}
-          </Card.Header>
-          <Card.Meta>
-            Logged in
-          </Card.Meta>
-        </Card.Content>
-        <Card.Content key="committees">
-          {committees ? renderCommittees(u) : <Loading />}
-        </Card.Content>
-        <Card.Content extra key="extra">
-          <Button basic color="red" fluid onClick={logOutHandler}>Logout</Button>
-        </Card.Content>
-      </Card>
+      <Message
+        key="success"
+        success
+        onDismiss={handleDismissSuccess}
+      >
+        <Message.Header>{succ ? succ.name : ''}</Message.Header>
+        <Message.Content>{succ ? succ.message : ''}</Message.Content>
+      </Message>
+    );
+  }
+
+  renderLoggedIn = (u: firebase.User) => {
+    const { logOutHandler, renderCommittees, renderSuccess } = this;
+    const { committees } = this.state;
+
+    const succ = this.state.success;
+    
+    return (
+      <div>
+        {succ && renderSuccess()}
+        <Card centered>
+          <Card.Content key="main">
+            <Card.Header>
+              {u.email}
+            </Card.Header>
+            <Card.Meta>
+              Logged in
+            </Card.Meta>
+          </Card.Content>
+          <Card.Content key="committees">
+            {committees ? renderCommittees(u) : <Loading />}
+          </Card.Content>
+          <Card.Content extra key="extra">
+            <Button basic color="red" fluid onClick={logOutHandler}>Logout</Button>
+          </Card.Content>
+        </Card>
+      </div>
     );
   }
 
   renderLogin = () => {
-    const { emailHandler, passwordHandler, handleDismissError, handleDismissSuccess, createHandler, 
+    const { emailHandler, passwordHandler, createHandler, 
       loginHandler, passwordResetHandler, handleForgotPassword, handleResetPasswordCancel } = this;
     const { loggingIn, creating, user, resetting, email, password, mode } = this.state;
     const { allowSignup } = this.props;
@@ -230,22 +269,8 @@ export class Login extends React.Component<Props, State> {
         >
           {passwordInput}
         </Form.Input>}
-        <Message
-          key="success"
-          success
-          onDismiss={handleDismissSuccess}
-        >
-          <Message.Header>{succ ? succ.name : ''}</Message.Header>
-          <Message.Content>{succ ? succ.message : ''}</Message.Content>
-        </Message>
-        <Message
-          key="error"
-          error
-          onDismiss={handleDismissError}
-        >
-          <Message.Header>{err ? err.name : ''}</Message.Header>
-          <Message.Content>{err ? err.message : ''}</Message.Content>
-        </Message>
+        {this.renderSuccess()}
+        {this.renderError()}
         <Button.Group fluid>
           {mode === Mode.Login && 
             <Button 

@@ -64,7 +64,7 @@ export default class Onboard extends React.Component<Props, State> {
     }
   }
 
-  NewCommitteeForm = () => {
+  renderNewCommitteeForm = () => {
     const submitHandler = () => {
       if (this.state.user) {
         const newCommittee = {
@@ -117,13 +117,13 @@ export default class Onboard extends React.Component<Props, State> {
             {!user && (
               <Message warning>
                 <Icon name="warning" />
-                Be sure to login if you'd like to access your previously created committees. 
+                Login to access your previously created committees, or create a new one.
               </Message>
               )
             }
             <Login allowSignup={true}/>
-            <Divider horizontal>And</Divider>
-            <this.NewCommitteeForm />
+            {user && <Divider horizontal>And</Divider>}
+            {user && this.renderNewCommitteeForm()}
           </Segment>
         </Grid.Column>
       </Grid>
