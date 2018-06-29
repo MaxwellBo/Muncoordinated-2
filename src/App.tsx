@@ -21,6 +21,7 @@ import Onboard from './components/Onboard';
 import Homepage from './components/Homepage';
 import Committee, { CommitteeID } from './components/Committee';
 import { CaucusID } from './components/Caucus';
+import Notifications from './components/Notifications';
 
 class App extends React.Component {
   render() {
@@ -29,6 +30,7 @@ class App extends React.Component {
         <Route exact path="/" component={Homepage} />
         <Container style={{ padding: '1em 0em' }}>
           <ConnectionStatus />
+          <Notifications />
           <Route exact path="/onboard" component={Onboard} />
           <Route exact path="/committees" component={Login} />
           <Route path="/committees/:committeeID" component={Committee} />
