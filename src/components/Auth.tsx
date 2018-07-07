@@ -237,7 +237,7 @@ export class Login extends React.Component<Props, State> {
     const { loggingIn, creating, user, resetting, email, password, mode } = this.state;
     const { allowSignup } = this.props;
 
-    const signupButton = <Button onClick={createHandler} loading={creating} >Sign-Up</Button>;
+    const signupButton = <Button onClick={createHandler} loading={creating} >Create Account</Button>;
 
     const cancelButton = <Button onClick={handleResetPasswordCancel}>Cancel</Button>;
 
