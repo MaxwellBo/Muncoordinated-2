@@ -170,7 +170,7 @@ export default class Timer extends React.Component<Props, State> {
 
     osc.connect(context.destination); 
     osc.start(); 
-    osc.stop(context.currentTime + 0.2); 
+    osc.stop(context.currentTime + 0.35); 
   }
 
   set = () => {

@@ -161,7 +161,7 @@ const DEFAULT_MOTION: MotionData = {
   seconder: '',
   speakerDuration: 60,
   speakerUnit: Unit.Seconds,
-  caucusDuration: 15,
+  caucusDuration: 10,
   caucusUnit: Unit.Minutes,
   type: MotionType.OpenUnmoderatedCaucus // this will force it to the top of the list
 };
