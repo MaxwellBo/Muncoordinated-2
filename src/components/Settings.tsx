@@ -17,11 +17,13 @@ interface State {
 export interface SettingsData {
   moveQueueUp: boolean;
   timersInSeparateColumns: boolean;
+  autoNextSpeaker: boolean;
 }
 
 export const DEFAULT_SETTINGS: SettingsData = {
   moveQueueUp: false,
-  timersInSeparateColumns: false
+  timersInSeparateColumns: false,
+  autoNextSpeaker: false
 };
 
 export default class Settings extends React.Component<Props, State> {
@@ -79,6 +81,8 @@ export default class Settings extends React.Component<Props, State> {
           {renderSetting('moveQueueUp', '\'Queue\' should appear above \'Next Speaking\'')}
           {renderSetting('timersInSeparateColumns',
             'Alternate arrangement with \'Speaker Timer\' and \'Caucus Timer\' in separate columns')}
+          {renderSetting('autoNextSpeaker',
+            'The next speaker will automatically be moved to the \'Now Speaking\' position after the time has elapsed for the current speaker')}
         </Segment>
       </div>
     );

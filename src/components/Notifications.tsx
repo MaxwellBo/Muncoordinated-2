@@ -41,6 +41,8 @@ export default class Notifications extends React.Component<Props, State> {
 
         // Debounce unique
         if (!_.some(prevState.notifications, newNotification)) {
+          console.debug(newNotification);
+
           return {
             notifications: [...prevState.notifications, newNotification]
           };

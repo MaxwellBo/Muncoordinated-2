@@ -63,7 +63,7 @@ export default class Timer extends React.Component<Props, State> {
       const { mute } = this.state;
 
       if (newTimer.remaining === 0 && !mute) {
-        console.debug('Sound trigger');
+        console.debug('[BEEP] Time elapsed');
         this.playSound();
       }
     }

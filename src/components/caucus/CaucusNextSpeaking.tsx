@@ -11,6 +11,7 @@ interface Props {
   caucus?: CaucusData;
   speakerTimer: TimerData;
   fref: firebase.database.Reference;
+  autoNextSpeaker: boolean;
 }
 
 export class CaucusNextSpeaking extends React.Component<Props, {}> {
@@ -33,6 +34,16 @@ export class CaucusNextSpeaking extends React.Component<Props, {}> {
   componentWillUnmount() {
     const { handleKeyDown } = this;
     document.removeEventListener('keydown', handleKeyDown);
+  }
+
+  componentDidUpdate(prevProps: Props) {
+    const { autoNextSpeaker } = this.props;
+    const { remaining, ticking } = prevProps.speakerTimer;
+
+    if (remaining === 0 && ticking && autoNextSpeaker) {
+      console.debug('Next speaker action triggered due to elapsed time and committee setting');
+      this.nextSpeaker();
+    }
   }
 
   interlace = () => {

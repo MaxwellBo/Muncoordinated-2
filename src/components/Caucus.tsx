@@ -185,7 +185,7 @@ export default class Caucus extends React.Component<Props, State> {
         timerFref={caucusFref.child('caucusTimer')}
         key={caucusID + 'caucusTimer'}
         onChange={(timer) => this.setState({ caucusTimer: timer })}
-        toggleKeyCode={67} // C - if changing this, update help
+        toggleKeyCode={67} // C - if changing this, update Help
       />
     );
 
@@ -200,6 +200,7 @@ export default class Caucus extends React.Component<Props, State> {
 
     let timersInSeparateColumns: boolean = DEFAULT_SETTINGS.timersInSeparateColumns;
     let moveQueueUp: boolean = DEFAULT_SETTINGS.moveQueueUp;
+    let autoNextSpeaker: boolean = DEFAULT_SETTINGS.autoNextSpeaker;
 
     if (committee) {
       if (committee.settings.timersInSeparateColumns !== undefined) {
@@ -209,16 +210,35 @@ export default class Caucus extends React.Component<Props, State> {
       if (committee.settings.moveQueueUp !== undefined) {
         moveQueueUp = committee.settings.moveQueueUp;
       }
+
+      if (committee.settings.autoNextSpeaker !== undefined) {
+        autoNextSpeaker = committee.settings.autoNextSpeaker;
+      }
     }
 
-    const renderedCaucusQueuer = <CaucusQueuer caucus={caucus} members={members} caucusFref={caucusFref} />;
+    const renderedCaucusQueuer = (
+      <CaucusQueuer 
+        caucus={caucus} 
+        members={members} 
+        caucusFref={caucusFref} 
+      />
+    );
+
+    const renderedCaucusNextSpeaking = (
+      <CaucusNextSpeaking 
+        caucus={caucus} 
+        fref={caucusFref} 
+        speakerTimer={speakerTimer} 
+        autoNextSpeaker={autoNextSpeaker}
+      />
+    );
 
     const body = !timersInSeparateColumns ? (
       <Grid.Row>
         <Grid.Column>
           {renderNowSpeaking(caucus)}
           {moveQueueUp && renderedCaucusQueuer}
-          <CaucusNextSpeaking caucus={caucus} fref={caucusFref} speakerTimer={speakerTimer} />
+          {renderedCaucusNextSpeaking}
           {!moveQueueUp && renderedCaucusQueuer}
         </Grid.Column>
         <Grid.Column>
@@ -231,7 +251,7 @@ export default class Caucus extends React.Component<Props, State> {
         <Grid.Column>
           {renderedSpeakerTimer}
           {renderNowSpeaking(caucus)}
-          <CaucusNextSpeaking caucus={caucus} fref={caucusFref} speakerTimer={speakerTimer} />
+          {renderedCaucusNextSpeaking}
         </Grid.Column>
         <Grid.Column>
           {renderedCaucusTimer}
