@@ -30,7 +30,6 @@ class App extends React.Component {
         <Route exact path="/" component={Homepage} />
         <Container style={{ padding: '1em 0em' }}>
           <ConnectionStatus />
-          <Notifications />
           <Route exact path="/onboard" component={Onboard} />
           <Route exact path="/committees" component={Login} />
           <Route path="/committees/:committeeID" component={Committee} />

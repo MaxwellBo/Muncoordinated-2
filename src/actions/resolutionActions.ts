@@ -9,7 +9,7 @@ export const voteOnResolution = (
   memberID: MemberID, 
   vote: Vote
   // tslint:disable-next-line
-): firebase.Promise<any> => {
+): Promise<any> => {
 
   const ref = firebase.database()
     .ref('committees')

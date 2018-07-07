@@ -85,6 +85,9 @@ export default class Caucus extends React.Component<Props, State> {
     }
   }
 
+  // XXX: I'm worried that this might be the source of a bug that I'm yet to observe
+  // Say our route changes the committeeID, _but does not unmount the caucus component_
+  // Will these listeners be purged?
   componentDidMount() {
     this.state.committeeFref.on('value', this.firebaseCallback);
   }

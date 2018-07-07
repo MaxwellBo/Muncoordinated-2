@@ -23,6 +23,7 @@ import Settings, { SettingsData, DEFAULT_SETTINGS } from './Settings';
 import Files, { FileID, FileData } from './Files';
 import { ModalLogin } from './Auth';
 import ShareHint from './ShareHint';
+import Notifications from './Notifications';
 
 interface Props extends RouteComponentProps<URLParameters> {
 }
@@ -255,6 +256,7 @@ export default class Committee extends React.Component<Props, State> {
 
     return (
       <div>
+        <Notifications {...this.props} />
         <ShareHint committeeID={this.props.match.params.committeeID} />
         <ModalLogin />
         <div>
