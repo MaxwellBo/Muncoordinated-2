@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as firebase from 'firebase';
 import { Form, Checkbox, Segment, Header, Statistic, Button, Input, Select, 
-  Divider, Progress, DropdownProps, ButtonProps } from 'semantic-ui-react';
+  Divider, Progress, DropdownProps, ButtonProps, Icon } from 'semantic-ui-react';
 import { makeDropdownOption } from '../utils';
 import { Unit, TimerSetter } from './TimerSetter';
 import * as _ from 'lodash';
@@ -20,6 +20,7 @@ interface State {
   offsetRef: firebase.database.Reference;
   unitDropdown: Unit;
   durationField: string;
+  mute: boolean;
 }
 
 export interface TimerData {
@@ -41,7 +42,8 @@ export default class Timer extends React.Component<Props, State> {
     this.state = {
       offsetRef: firebase.database().ref('/.info/serverTimeOffset'),
       unitDropdown: Unit.Seconds,
-      durationField: '60'
+      durationField: '60',
+      mute: true
     };
   }
 
@@ -57,6 +59,13 @@ export default class Timer extends React.Component<Props, State> {
 
       this.setState({ timer: newTimer });
       this.props.onChange(newTimer);
+
+      const { mute } = this.state;
+
+      if (newTimer.remaining === 0 && !mute) {
+        console.debug('Sound trigger');
+        this.playSound();
+      }
     }
   }
 
@@ -80,6 +89,10 @@ export default class Timer extends React.Component<Props, State> {
 
       this.props.timerFref.set(newTimer);
     }
+  }
+
+  toggleMute = () => {
+    this.setState(prevState => ({ mute: !prevState.mute }));
   }
 
   handleKeyDown = (ev: KeyboardEvent) => {
@@ -146,6 +159,19 @@ export default class Timer extends React.Component<Props, State> {
       this.setState({ durationField: (num + 1).toString() });
     }
   }
+  
+  playSound = () => {
+    // @ts-ignore
+    var context = new (window.audioContext || window.AudioContext || window.webkitAudioContext)();
+
+    var osc = context.createOscillator(); 
+    osc.type = 'sine'; // sine, square, sawtooth, triangle
+    osc.frequency.value = 440; // Hz
+
+    osc.connect(context.destination); 
+    osc.start(); 
+    osc.stop(context.currentTime + 0.2); 
+  }
 
   set = () => {
     const duration = Number(this.state.durationField);
@@ -178,6 +204,7 @@ export default class Timer extends React.Component<Props, State> {
 
   render() {
     const { unitHandler, durationHandler, toggleHandler } = this;
+    const { mute } = this.state;
     const timer = this.state.timer;
 
     const remaining = timer ? timer.remaining : DEFAULT_TIMER.remaining;
@@ -204,6 +231,16 @@ export default class Timer extends React.Component<Props, State> {
             onClick={toggleHandler}
           >
             {formatted}
+          </Button>
+
+          <Button
+            icon
+            active={!mute}
+            onClick={this.toggleMute}
+            negative={timer ? timer.remaining === 0 && !!timer.ticking : false}
+            loading={timer ? timer.remaining === 0 && !!timer.ticking : false}
+          >
+            <Icon name={mute ? 'alarm mute' : 'alarm'} />
           </Button>
 
           <Progress percent={percentage} active={false} indicating={true}/>
