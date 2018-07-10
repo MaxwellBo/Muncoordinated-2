@@ -310,6 +310,19 @@ export default class Homepage extends React.Component<{}, {}> {
                 />
               </Grid.Column>
             </Grid.Row>
+            <Grid.Row textAlign="center">
+              <Grid.Column style={{ paddingBottom: '5em', paddingTop: '5em' }}>
+                <Header as="h3" style={{ fontSize: '2em' }}>
+                <a href="https://www.facebook.com/amunc/">AMUNC 2018</a>
+                </Header>
+                <Image 
+                  centered 
+                  size="small" 
+                  rounded 
+                  src="https://scontent-lga3-1.xx.fbcdn.net/v/t1.0-9/22448139_1465100343573987_9004189728239441932_n.jpg?_nc_cat=0&oh=827887faa680a16bc5bd9f1345c1512c&oe=5BA5FC15" 
+                />
+              </Grid.Column>
+            </Grid.Row>
           </Grid>
         </Segment>
         {/* <Segment style={{ padding: '8em 0em' }} vertical>
