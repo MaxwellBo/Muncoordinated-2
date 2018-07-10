@@ -122,7 +122,7 @@ export default class Onboard extends React.Component<Props, State> {
               )
             }
             <Login allowSignup={true}/>
-            {user && <Divider horizontal>And</Divider>}
+            {user && <Divider horizontal>Or</Divider>}
             {user && this.renderNewCommitteeForm()}
           </Segment>
         </Grid.Column>
