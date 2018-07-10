@@ -1,6 +1,7 @@
 {
   "rules": {
     "committees": {
+      ".read": true,
     	"$uid": {
         ".read": true,
         ".write": "auth != null && 
@@ -14,6 +15,9 @@
               }
             }
           }
+        },
+        "files": {
+          ".write": true
         }
       }
     }
