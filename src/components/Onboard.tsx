@@ -117,7 +117,7 @@ export default class Onboard extends React.Component<Props, State> {
             {!user && (
               <Message warning>
                 <Icon name="warning" />
-                Login to access your previously created committees, or create a new one.
+                Login to access your previously created committees, or to create a new committee.
               </Message>
               )
             }
