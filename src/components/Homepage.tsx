@@ -41,7 +41,7 @@ const HomepageHeading = ({ mobile }: HomepageHeadingProps) => (
     />
     <Header
       as="h2"
-      content="The real-time browser-based Model UN committee management app"
+      content="The multi-user browser-based Model UN committee management app"
       inverted
       style={{
         fontSize: mobile ? '1.5em' : '1.7em',
@@ -205,22 +205,22 @@ export default class Homepage extends React.Component<{}, {}> {
   render() {
     return (
       <ResponsiveContainer>
-        <Segment style={{ padding: '8em 0em' }} vertical>
+        <Segment style={{ padding: '3em 0em' }} vertical>
           <Grid container stackable verticalAlign="middle">
             <Grid.Row>
               <Grid.Column width={8}>
-                <Header as="h3" style={{ fontSize: '2em' }}>Real-time</Header>
+                <Header as="h3" style={{ fontSize: '2em' }}>Collaborative</Header>
                 <p style={{ fontSize: '1.33em' }}>
-                  Muncoordinated tracks and distributes all updates in real-time&nbsp;(like&nbsp;Google&nbsp;Docs),
+                  Muncoordinated tracks and distributes all committee updates in real-time&nbsp;(like&nbsp;Google&nbsp;Docs),
                   allowing directors to pass delegates a shared link.< br />
-                  Delegates may then add themselves to selected speaker's lists.
+                  Delegates may then add themselves to selected speaker's lists, and upload files.
                 </p>
                 <Header as="h3" style={{ fontSize: '2em' }}>Cloud based</Header>
                 <p style={{ fontSize: '1.33em' }}>
                   You won't have to worry about data loss ever again. All committee activity is automatically saved to the server, 
                   so you can start sessions with all data available from the day before.
                 </p>
-                <Header as="h3" style={{ fontSize: '2em' }}>A stunning feature set</Header>
+                <Header as="h3" style={{ fontSize: '2em' }}>A comprehensive feature set</Header>
                 <p style={{ fontSize: '1.33em' }}>
                   Muncoordinated supports <br />
 
@@ -240,7 +240,7 @@ export default class Homepage extends React.Component<{}, {}> {
                     <List.Item as="li">Notes</List.Item>
                   </List>
                 </p>
-                <Header as="h3" style={{ fontSize: '2em' }}>Free as in freedom, not free as in free beer</Header>
+                <Header as="h3" style={{ fontSize: '2em' }}>Free and open-source</Header>
                 <p style={{ fontSize: '1.33em' }}>
                   All of Muncoordinated's features are available for free, not locked behind paywalls.
                 </p>
