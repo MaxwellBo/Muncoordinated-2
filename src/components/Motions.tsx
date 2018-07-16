@@ -15,7 +15,7 @@ import { nameToCountryOption, parseFlagName } from './Member';
 import { DEFAULT_CAUCUS, CaucusData, CaucusID, CaucusStatus } from './Caucus';
 import { postCaucus, postResolution } from '../actions/caucusActions';
 import { TimerData } from './Timer';
-import { putUnmodTimer, extendUnmodTimer } from '../actions/committeeActions';
+import { putUnmodTimer, extendUnmodTimer, extendModTimer } from '../actions/committeeActions';
 import { URLParameters } from '../types';
 import Loading from './Loading';
 import { ResolutionData, DEFAULT_RESOLUTION, ResolutionID } from './Resolution';
@@ -68,12 +68,40 @@ const disruptiveness = (motionType: MotionType): number => {
   }
 };
 
+const actionName = (motionType: MotionType): string => {
+  switch (motionType) {
+    case MotionType.ExtendUnmoderatedCaucus:
+    case MotionType.ExtendModeratedCaucus:
+      return 'Extend';
+    case MotionType.CloseModeratedCaucus:
+    case MotionType.CloseDebate:
+      return 'Close';
+    case MotionType.OpenUnmoderatedCaucus:
+    case MotionType.OpenDebate:
+    case MotionType.OpenModeratedCaucus:
+      return 'Open';
+    case MotionType.IntroduceDraftResolution:
+    case MotionType.IntroduceAmendment:
+      return 'Introduce';
+    case MotionType.SuspendDraftResolutionSpeakersList:
+    case MotionType.SuspendDebate:
+      return 'Suspend';
+    case MotionType.ResumeDebate:
+      return 'Resume';
+    case MotionType.ReorderDraftResolutions:
+      return 'Reorder';
+    default:
+      return 'Provision';
+  }
+};
+
 const approvable = (motionType: MotionType): boolean => {
   switch (motionType) {
     case MotionType.OpenModeratedCaucus:
     case MotionType.OpenUnmoderatedCaucus:
     case MotionType.IntroduceDraftResolution:
     case MotionType.ExtendUnmoderatedCaucus:
+    case MotionType.ExtendModeratedCaucus:
       return true;
     default:
       return false;
@@ -276,10 +304,10 @@ export default class Motions extends React.Component<Props, State> {
         }
       };
 
-      const ref = postCaucus(committeeID, newCaucus);
+      const caucusRef = postCaucus(committeeID, newCaucus);
 
       this.props.history
-        .push(`/committees/${committeeID}/caucuses/${ref.key}`);
+        .push(`/committees/${committeeID}/caucuses/${caucusRef.key}`);
 
     } else if (motionData.type === MotionType.OpenUnmoderatedCaucus && caucusDuration) {
 
@@ -303,10 +331,10 @@ export default class Motions extends React.Component<Props, State> {
         seconder: seconder
       };
 
-      const ref = postResolution(committeeID, newResolution);
+      const resolutionRef = postResolution(committeeID, newResolution);
 
       this.props.history
-        .push(`/committees/${committeeID}/resolutions/${ref.key}`);
+        .push(`/committees/${committeeID}/resolutions/${resolutionRef.key}`);
     } else if (motionData.type === MotionType.ExtendUnmoderatedCaucus && caucusDuration) {
       const caucusSeconds = caucusDuration * (caucusUnit === Unit.Minutes ? 60 : 1);
 
@@ -318,6 +346,16 @@ export default class Motions extends React.Component<Props, State> {
       // FIXME: This has an obvious bug, in that we don't have the actual timer value
       // when this gets fired off
       extendUnmodTimer(committeeID, caucusSeconds);
+
+    } else if (motionData.type === MotionType.ExtendModeratedCaucus && caucusDuration) {
+      const caucusSeconds = caucusDuration * (caucusUnit === Unit.Minutes ? 60 : 1);
+      
+      const caucusID = motionData.caucusTarget;
+
+      this.props.history
+        .push(`/committees/${committeeID}/caucuses/${caucusID}`);
+
+      extendModTimer(committeeID, caucusID, caucusSeconds);
     }
 
     // remember to add the correct enum value to the approvable predicate when adding 
@@ -433,7 +471,7 @@ export default class Motions extends React.Component<Props, State> {
               positive
               onClick={() => handleApproveMotion(motionData)}
             >
-              Provision
+              {actionName(type)}
             </Button>}
           </Button.Group>
         </Card.Content>
