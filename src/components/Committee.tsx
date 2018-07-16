@@ -164,6 +164,7 @@ export default class Committee extends React.Component<Props, State> {
     const caucuses = committee ? committee.caucuses : undefined;
     const resolutions = committee ? committee.resolutions : undefined;
 
+    // BADCODE: Filter predicate shared with caucus target in motions, also update when changing
     const caucusItems = Object.keys(caucuses || {}).filter(key =>
       caucuses![key].status === CaucusStatus.Open.toString() && !caucuses![key].deleted
     ).map(key =>

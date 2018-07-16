@@ -6,18 +6,19 @@ import { Icon, Input, Dropdown, Button, Card, Form, Message, Flag, Label } from 
 import { stateFieldHandler,
   stateDropdownHandler,
   stateValidatedNumberFieldHandler,
-  stateCountryDropdownHandler
+  stateCountryDropdownHandler,
+  dropdownHandler
 } from '../actions/handlers';
 import { makeDropdownOption, recoverCountryOptions } from '../utils';
 import { TimerSetter, Unit } from './TimerSetter';
 import { nameToCountryOption, parseFlagName } from './Member';
-import { DEFAULT_CAUCUS, CaucusData } from './Caucus';
+import { DEFAULT_CAUCUS, CaucusData, CaucusID, CaucusStatus } from './Caucus';
 import { postCaucus, postResolution } from '../actions/caucusActions';
 import { TimerData } from './Timer';
 import { putUnmodTimer } from '../actions/committeeActions';
 import { URLParameters } from '../types';
 import Loading from './Loading';
-import { ResolutionData, DEFAULT_RESOLUTION } from './Resolution';
+import { ResolutionData, DEFAULT_RESOLUTION, ResolutionID } from './Resolution';
 import { Stance } from './caucus/SpeakerFeed';
 
 export type MotionID = string;
@@ -63,7 +64,7 @@ const disruptiveness = (motionType: MotionType): number => {
     case MotionType.ReorderDraftResolutions:
       return 10;
     default:
-      return 69;
+      return 69; // nice
   }
 };
 
@@ -119,6 +120,26 @@ const hasDuration = (motionType: MotionType): boolean => {
   }
 };
 
+const hasCaucusTarget = (motionType: MotionType): boolean => {
+  switch (motionType) {
+    case MotionType.ExtendModeratedCaucus:
+    case MotionType.CloseModeratedCaucus:
+      return true;
+    default:
+      return false;
+  }
+};
+
+const hasResolutionTarget = (motionType: MotionType): boolean => {
+  switch (motionType) {
+    case MotionType.IntroduceAmendment:
+    case MotionType.SuspendDraftResolutionSpeakersList:
+      return true;
+    default:
+      return false;
+  }
+};
+
 export interface MotionData {
   proposal: string;
   proposer: string;
@@ -128,6 +149,8 @@ export interface MotionData {
   caucusDuration?: number;
   caucusUnit: Unit;
   type: MotionType;
+  caucusTarget: CaucusID;
+  resolutionTarget: ResolutionID;
 }
 
 interface Props extends RouteComponentProps<URLParameters> {
@@ -163,7 +186,9 @@ const DEFAULT_MOTION: MotionData = {
   speakerUnit: Unit.Seconds,
   caucusDuration: 10,
   caucusUnit: Unit.Minutes,
-  type: MotionType.OpenUnmoderatedCaucus // this will force it to the top of the list
+  type: MotionType.OpenUnmoderatedCaucus, // this will force it to the top of the list
+  caucusTarget: '',
+  resolutionTarget: ''
 };
 
 export default class Motions extends React.Component<Props, State> {
@@ -282,6 +307,8 @@ export default class Motions extends React.Component<Props, State> {
       this.props.history
         .push(`/committees/${committeeID}/resolutions/${ref.key}`);
     }
+    // remember to add the correct enum value to the approvable predicate when adding 
+    // new cases
   }
 
   renderMotion = (id: MotionID, motionData: MotionData, motionFref: firebase.database.Reference) => {
@@ -360,7 +387,7 @@ export default class Motions extends React.Component<Props, State> {
   renderAdder = (): JSX.Element => {
     const { newMotion } = this.state;
     const { proposer, proposal, type, caucusUnit, caucusDuration, speakerUnit, 
-      speakerDuration, seconder } = newMotion;
+      speakerDuration, seconder, caucusTarget, resolutionTarget } = newMotion;
 
     const description = (
       <Card.Description>
@@ -406,10 +433,51 @@ export default class Motions extends React.Component<Props, State> {
       </Card.Content>
     );
 
+    const { caucuses, resolutions } = this.state.committee || { caucuses:  {}, resolutions: {} };
+
+    // BADCODE: Filter predicate shared with menu in Committee, also update when changing
+    const caucusOptions = Object.keys(caucuses || {}).filter(key =>
+      caucuses![key].status === CaucusStatus.Open.toString() && !caucuses![key].deleted
+    ).map(key =>
+      ({ key: key, value: key, text: caucuses![key].name })
+    );
+
+    const resolutionOptions = Object.keys(resolutions || {}).map(key =>
+      ({ key: key, value: key, text: resolutions![key].name })
+    );
+
+    const caucusTargetSetter = (
+      <Form.Dropdown
+        key="caucusTarget"
+        value={caucusTarget}
+        search
+        selection
+        fluid
+        onChange={stateDropdownHandler<Props, State>(this, 'newMotion', 'caucusTarget')}
+        options={caucusOptions}
+        label="Target Caucus"
+      />
+    );
+
+    const resolutionTargetSetter = (
+      <Form.Dropdown
+        key="resolutionTarget"
+        value={resolutionTarget}
+        search
+        selection
+        fluid
+        onChange={stateDropdownHandler<Props, State>(this, 'newMotion', 'resolutionTarget')}
+        options={resolutionOptions}
+        label="Target Resolution"
+      />
+    );
+
     const extra = (
       <Card.Content extra>
         <Form error={hasSpeakers(type) && hasDuration(type) && doesNotEvenlyDivide}>
           <Form.Group widths="equal">
+            {hasCaucusTarget(type) && caucusTargetSetter}
+            {hasResolutionTarget(type) && resolutionTargetSetter}
             {hasDuration(type) && durationSetter}
             {hasSpeakers(type) && speakerSetter}
           </Form.Group>
@@ -472,7 +540,11 @@ export default class Motions extends React.Component<Props, State> {
             </Form>
           </Card.Meta>
         </Card.Content>
-        {(hasSpeakers(type) || hasDuration(type)) && extra}
+        {(hasSpeakers(type) 
+          || hasDuration(type) 
+          || hasCaucusTarget(type) 
+          || hasResolutionTarget(type) 
+          ) && extra}
         <Card.Content extra>
           <Button.Group fluid>
             {/* <Button 
