@@ -15,7 +15,7 @@ import { nameToCountryOption, parseFlagName } from './Member';
 import { DEFAULT_CAUCUS, CaucusData, CaucusID, CaucusStatus } from './Caucus';
 import { postCaucus, postResolution } from '../actions/caucusActions';
 import { TimerData } from './Timer';
-import { putUnmodTimer } from '../actions/committeeActions';
+import { putUnmodTimer, extendUnmodTimer } from '../actions/committeeActions';
 import { URLParameters } from '../types';
 import Loading from './Loading';
 import { ResolutionData, DEFAULT_RESOLUTION, ResolutionID } from './Resolution';
@@ -73,6 +73,7 @@ const approvable = (motionType: MotionType): boolean => {
     case MotionType.OpenModeratedCaucus:
     case MotionType.OpenUnmoderatedCaucus:
     case MotionType.IntroduceDraftResolution:
+    case MotionType.ExtendUnmoderatedCaucus:
       return true;
     default:
       return false;
@@ -306,15 +307,28 @@ export default class Motions extends React.Component<Props, State> {
 
       this.props.history
         .push(`/committees/${committeeID}/resolutions/${ref.key}`);
+    } else if (motionData.type === MotionType.ExtendUnmoderatedCaucus && caucusDuration) {
+      const caucusSeconds = caucusDuration * (caucusUnit === Unit.Minutes ? 60 : 1);
+
+      this.props.history
+        .push(`/committees/${committeeID}/unmod`);
+
+      // TODO: Do I wait a second before extending so it looks sexy?
+
+      // FIXME: This has an obvious bug, in that we don't have the actual timer value
+      // when this gets fired off
+      extendUnmodTimer(committeeID, caucusSeconds);
     }
+
     // remember to add the correct enum value to the approvable predicate when adding 
     // new cases
   }
 
   renderMotion = (id: MotionID, motionData: MotionData, motionFref: firebase.database.Reference) => {
     const { handleApproveMotion } = this;
+    const { committee } = this.state;
     const { proposer, proposal, type, caucusUnit, caucusDuration, speakerUnit, 
-      speakerDuration, seconder } = motionData;
+      speakerDuration, seconder, caucusTarget, resolutionTarget } = motionData;
 
     const description = (
       <Card.Description>
@@ -340,6 +354,47 @@ export default class Motions extends React.Component<Props, State> {
       </div>
     );
 
+    // this is absolutely batshit insane, surely there's a better option here
+
+    let caucusTargetText = caucusTarget;
+
+    if (committee 
+      && committee.caucuses 
+      && committee.caucuses[caucusTarget] 
+      && committee.caucuses[caucusTarget].name
+    ) {
+      caucusTargetText = committee.caucuses[caucusTarget].name;
+    }
+
+    let resolutionTargetText = resolutionTarget;
+
+    if (committee 
+      && committee.resolutions 
+      && committee.resolutions[resolutionTarget] 
+      && committee.resolutions[resolutionTarget].name
+    ) {
+      resolutionTargetText = committee.resolutions[caucusTarget].name;
+    }
+
+    // TODO: we definately can add links here
+    const caucusTargetTree = (
+      <div>
+        <Label horizontal>
+          Target Caucus
+        </Label>
+        {caucusTargetText}
+      </div>
+    );
+
+    const resolutionTargetTree = (
+      <div>
+        <Label horizontal>
+          Target Resolution
+        </Label>
+        {resolutionTargetText}
+      </div>
+    );
+
     const time = hasDuration(type) ? 
       hasSpeakers(type) 
         ? `${caucusDuration || 0} ${caucusUnit} / ${speakerDuration || 0} ${speakerUnit} `
@@ -358,6 +413,8 @@ export default class Motions extends React.Component<Props, State> {
           <Card.Meta>
               {proposerTree}
               {hasSeconder(type) && seconderTree}
+              {hasCaucusTarget(type) && caucusTargetTree}
+              {hasResolutionTarget(type) && resolutionTargetTree}
           </Card.Meta>
         </Card.Content>
         <Card.Content extra>
@@ -571,7 +628,6 @@ export default class Motions extends React.Component<Props, State> {
     const { committeeFref } = this.state;
 
     return Object.keys(motions).sort((a, b) => {
-      // don't like non-descriptive variable names? suck it
       const ma: MotionData = motions[a];
       const mb: MotionData = motions[b];
       const ca = disruptiveness(ma.type);
