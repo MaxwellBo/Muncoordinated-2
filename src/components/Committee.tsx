@@ -15,7 +15,7 @@ import Notes from './Notes';
 import Help from './Help';
 import Motions from './Motions';
 import { fieldHandler } from '../actions/handlers';
-import { postCaucus, postResolution } from '../actions/caucusActions';
+import { postCaucus } from '../actions/caucusActions';
 import { URLParameters } from '../types';
 import Loading from './Loading';
 import Footer from './Footer';
@@ -24,6 +24,7 @@ import Files, { FileID, FileData } from './Files';
 import { ModalLogin } from './Auth';
 import ShareHint from './ShareHint';
 import Notifications from './Notifications';
+import { postResolution } from '../actions/resolutionActions';
 
 interface Props extends RouteComponentProps<URLParameters> {
 }

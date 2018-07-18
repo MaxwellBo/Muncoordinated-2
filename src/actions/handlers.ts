@@ -54,6 +54,12 @@ export function textAreaHandler<T>
     fref.child(field).set(data.value);
 }
 
+export function stateTextAreaHandler<P, S>
+  (comp: React.Component<P, S>, field: keyof S, target: string) {
+  return (event: React.FormEvent<HTMLTextAreaElement>, data: TextAreaProps) =>
+    lens(comp, field, target, data.value);
+}
+
 export function dropdownHandler<T>
   (fref: firebase.database.Reference, field: keyof T) {
   return (event: React.SyntheticEvent<HTMLElement>, data: DropdownProps) =>

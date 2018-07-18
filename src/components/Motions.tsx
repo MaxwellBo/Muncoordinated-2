@@ -2,23 +2,26 @@ import * as React from 'react';
 import * as firebase from 'firebase';
 import { CommitteeData, CommitteeID, DEFAULT_COMMITTEE } from './Committee';
 import { RouteComponentProps } from 'react-router';
-import { Icon, Input, Dropdown, Button, Card, Form, Message, Flag, Label } from 'semantic-ui-react';
+import { Icon, Input, Dropdown, Button, Card, Form, Message, Flag, Label, TextArea } from 'semantic-ui-react';
 import { stateFieldHandler,
   stateDropdownHandler,
   stateValidatedNumberFieldHandler,
-  stateCountryDropdownHandler
+  stateCountryDropdownHandler,
+  stateTextAreaHandler
 } from '../actions/handlers';
 import { makeDropdownOption, recoverCountryOptions } from '../utils';
 import { TimerSetter, Unit } from './TimerSetter';
 import { nameToCountryOption, parseFlagName } from './Member';
 import { DEFAULT_CAUCUS, CaucusData, CaucusID, CaucusStatus } from './Caucus';
-import { postCaucus, postResolution, closeCaucus } from '../actions/caucusActions';
+import { postCaucus, closeCaucus } from '../actions/caucusActions';
 import { TimerData } from './Timer';
 import { putUnmodTimer, extendUnmodTimer, extendModTimer } from '../actions/committeeActions';
 import { URLParameters } from '../types';
 import Loading from './Loading';
 import { ResolutionData, DEFAULT_RESOLUTION, ResolutionID } from './Resolution';
 import { Stance } from './caucus/SpeakerFeed';
+import { AmendmentData, DEFAULT_AMENDMENT } from './Amendment';
+import { postAmendment, postResolution } from '../actions/resolutionActions';
 
 export type MotionID = string;
 
@@ -102,6 +105,7 @@ const approvable = (motionType: MotionType): boolean => {
     case MotionType.ExtendUnmoderatedCaucus:
     case MotionType.ExtendModeratedCaucus:
     case MotionType.CloseModeratedCaucus:
+    case MotionType.IntroduceAmendment:
       return true;
     default:
       return false;
@@ -192,14 +196,14 @@ interface State {
 }
 
 const MOTION_TYPE_OPTIONS = [
-  MotionType.OpenUnmoderatedCaucus,
-  MotionType.OpenModeratedCaucus,
-  MotionType.ExtendUnmoderatedCaucus,
-  MotionType.ExtendModeratedCaucus,
-  MotionType.CloseModeratedCaucus,
-  MotionType.IntroduceDraftResolution,
-  MotionType.IntroduceAmendment,
-  MotionType.SuspendDraftResolutionSpeakersList,
+  MotionType.OpenUnmoderatedCaucus, // implemented
+  MotionType.OpenModeratedCaucus, // implemented
+  MotionType.ExtendUnmoderatedCaucus, // partially implemented
+  MotionType.ExtendModeratedCaucus, // partially implemented
+  MotionType.CloseModeratedCaucus, // implemented
+  MotionType.IntroduceDraftResolution, // implemented
+  MotionType.IntroduceAmendment, // implemented
+  MotionType.SuspendDraftResolutionSpeakersList, 
   MotionType.OpenDebate,
   MotionType.SuspendDebate,
   MotionType.ResumeDebate,
@@ -279,7 +283,7 @@ export default class Motions extends React.Component<Props, State> {
     const committeeID: CommitteeID = this.props.match.params.committeeID;
 
     const { proposer, speakerDuration, speakerUnit, 
-      caucusDuration, caucusUnit, seconder } = motionData;
+      caucusDuration, caucusUnit, seconder, proposal } = motionData;
 
     if (motionData.type === MotionType.OpenModeratedCaucus && speakerDuration && caucusDuration) {
 
@@ -288,7 +292,7 @@ export default class Motions extends React.Component<Props, State> {
 
       const newCaucus: CaucusData = {
         ...DEFAULT_CAUCUS,
-        name: motionData.proposal,
+        name: proposal,
         speakerTimer: {
           ...DEFAULT_CAUCUS.speakerTimer,
           remaining: speakerSeconds
@@ -327,7 +331,7 @@ export default class Motions extends React.Component<Props, State> {
 
       const newResolution: ResolutionData = {
         ...DEFAULT_RESOLUTION,
-        name: motionData.proposal,
+        name: proposal,
         proposer: proposer,
         seconder: seconder
       };
@@ -369,10 +373,24 @@ export default class Motions extends React.Component<Props, State> {
         .push(`/committees/${committeeID}/caucuses/${caucusID}`);
 
       closeCaucus(committeeID, caucusID);
-    }
+    } else if (motionData.type === MotionType.IntroduceAmendment) {
 
+      const resolutionID = motionData.resolutionTarget;
+
+      this.props.history
+        .push(`/committees/${committeeID}/resolutions/${resolutionID}`);
+
+      const newAmendment: AmendmentData = {
+        ...DEFAULT_AMENDMENT,
+        text: proposal,
+        proposer: proposer
+      };
+
+      postAmendment(committeeID, resolutionID, newAmendment);
+    }
     // remember to add the correct enum value to the approvable predicate when adding 
     // new cases
+
   } 
   renderMotion = (id: MotionID, motionData: MotionData, motionFref: firebase.database.Reference) => {
     const { handleApproveMotion } = this;
@@ -423,7 +441,7 @@ export default class Motions extends React.Component<Props, State> {
       && committee.resolutions[resolutionTarget] 
       && committee.resolutions[resolutionTarget].name
     ) {
-      resolutionTargetText = committee.resolutions[caucusTarget].name;
+      resolutionTargetText = committee.resolutions[resolutionTarget].name;
     }
 
     // TODO: we definately can add links here
@@ -496,13 +514,29 @@ export default class Motions extends React.Component<Props, State> {
     const { proposer, proposal, type, caucusUnit, caucusDuration, speakerUnit, 
       speakerDuration, seconder, caucusTarget, resolutionTarget } = newMotion;
 
+    const boxForAmmendments = (
+      <Form>
+        <TextArea
+          value={proposal}
+          autoHeight
+          onChange={stateTextAreaHandler<Props, State>(this, 'newMotion', 'proposal')}
+          rows={1}
+          placeholder="Text"
+        />
+      </Form>
+    );
+
+    const boxForNames = (
+      <Input 
+        value={proposal}
+        onChange={stateFieldHandler<Props, State>(this, 'newMotion', 'proposal')} 
+        fluid 
+      /> 
+    );
+
     const description = (
       <Card.Description>
-        <Input 
-          value={proposal}
-          onChange={stateFieldHandler<Props, State>(this, 'newMotion', 'proposal')} 
-          fluid 
-        /> 
+        {newMotion.type === MotionType.IntroduceAmendment ? boxForAmmendments : boxForNames}
       </Card.Description>
     );
 

@@ -30,20 +30,6 @@ export const closeCaucus =
     .set(CaucusStatus.Closed);
 };
 
-export const postResolution = 
-  (committeeID: CommitteeID, resolutionData: ResolutionData): firebase.database.ThenableReference => {
-
-  const ref = firebase.database()
-    .ref('committees')
-    .child(committeeID)
-    .child('resolutions')
-    .push();
-
-  ref.set(resolutionData);
-
-  return ref;
-};
-
 export interface Lifecycle {
   history: firebase.database.Reference;
   speakingData?: SpeakerEvent;
