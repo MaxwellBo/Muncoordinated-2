@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as firebase from 'firebase';
-import { CommitteeData, CommitteeID, DEFAULT_COMMITTEE } from './Committee';
+import Committee, { CommitteeData, CommitteeID, DEFAULT_COMMITTEE } from './Committee';
 import { RouteComponentProps } from 'react-router';
 import { Icon, Input, Dropdown, Button, Card, Form, Message, Flag, Label, TextArea } from 'semantic-ui-react';
 import { stateFieldHandler,
@@ -93,7 +93,7 @@ const actionName = (motionType: MotionType): string => {
     case MotionType.ReorderDraftResolutions:
       return 'Reorder';
     default:
-      return 'Provision';
+      return 'Enact';
   }
 };
 
@@ -509,7 +509,7 @@ export default class Motions extends React.Component<Props, State> {
     );
   }
 
-  renderAdder = (): JSX.Element => {
+  renderAdder = (committee?: CommitteeData): JSX.Element => {
     const { newMotion } = this.state;
     const { proposer, proposal, type, caucusUnit, caucusDuration, speakerUnit, 
       speakerDuration, seconder, caucusTarget, resolutionTarget } = newMotion;
@@ -594,6 +594,7 @@ export default class Motions extends React.Component<Props, State> {
         search
         selection
         fluid
+        loading={!committee}
         onChange={stateDropdownHandler<Props, State>(this, 'newMotion', 'caucusTarget')}
         options={caucusOptions}
         label="Target Caucus"
@@ -607,6 +608,7 @@ export default class Motions extends React.Component<Props, State> {
         search
         selection
         fluid
+        loading={!committee}
         onChange={stateDropdownHandler<Props, State>(this, 'newMotion', 'resolutionTarget')}
         options={resolutionOptions}
         label="Target Resolution"
@@ -740,35 +742,29 @@ export default class Motions extends React.Component<Props, State> {
     });
   }
 
-  renderTab = (committee: CommitteeData) => {
+  render() {
     const { renderMotions, renderAdder } = this;
 
-    const motions = committee.motions || {} as Map<MotionID, MotionData>;
+    const { committee } = this.state;
+
+    const renderedMotions = committee 
+      ? renderMotions(committee.motions || {} as Map<string, MotionData>)
+      : <div />; // TODO: This could probably do with a nice spinner
 
     return (
       <div>
         <Card.Group
           itemsPerRow={1} 
         >
-          {renderAdder()}
+          {renderAdder(committee)}
         </Card.Group>
         <Icon name="sort numeric descending" /> Sorted from most to least disruptive
         <Card.Group
           itemsPerRow={1} 
         >
-          {renderMotions(motions)}
+          {renderedMotions}
         </Card.Group>
       </div>
     );
-  }
-
-  render() {
-    const { committee } = this.state;
-
-    if (committee) {
-      return this.renderTab(committee);
-    } else {
-      return <Loading />;
-    }
   }
 }
