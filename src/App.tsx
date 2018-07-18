@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as firebase from 'firebase';
 import { Route } from 'react-router-dom';
-import { Button, Container, Header } from 'semantic-ui-react';
+import { Container } from 'semantic-ui-react';
 import './App.css';
 
 const firebaseConfig = {
@@ -16,12 +16,10 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 
 import ConnectionStatus from './components/ConnectionStatus';
-import { ModalLogin, Login } from './components/Auth';
+import { Login } from './components/Auth';
 import Onboard from './components/Onboard';
 import Homepage from './components/Homepage';
-import Committee, { CommitteeID } from './components/Committee';
-import { CaucusID } from './components/Caucus';
-import Notifications from './components/Notifications';
+import Committee from './components/Committee';
 
 class App extends React.Component {
   render() {
