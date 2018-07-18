@@ -6,14 +6,13 @@ import { Icon, Input, Dropdown, Button, Card, Form, Message, Flag, Label } from 
 import { stateFieldHandler,
   stateDropdownHandler,
   stateValidatedNumberFieldHandler,
-  stateCountryDropdownHandler,
-  dropdownHandler
+  stateCountryDropdownHandler
 } from '../actions/handlers';
 import { makeDropdownOption, recoverCountryOptions } from '../utils';
 import { TimerSetter, Unit } from './TimerSetter';
 import { nameToCountryOption, parseFlagName } from './Member';
 import { DEFAULT_CAUCUS, CaucusData, CaucusID, CaucusStatus } from './Caucus';
-import { postCaucus, postResolution } from '../actions/caucusActions';
+import { postCaucus, postResolution, closeCaucus } from '../actions/caucusActions';
 import { TimerData } from './Timer';
 import { putUnmodTimer, extendUnmodTimer, extendModTimer } from '../actions/committeeActions';
 import { URLParameters } from '../types';
@@ -102,6 +101,7 @@ const approvable = (motionType: MotionType): boolean => {
     case MotionType.IntroduceDraftResolution:
     case MotionType.ExtendUnmoderatedCaucus:
     case MotionType.ExtendModeratedCaucus:
+    case MotionType.CloseModeratedCaucus:
       return true;
     default:
       return false;
@@ -311,6 +311,9 @@ export default class Motions extends React.Component<Props, State> {
 
     } else if (motionData.type === MotionType.OpenUnmoderatedCaucus && caucusDuration) {
 
+      this.props.history
+        .push(`/committees/${committeeID}/unmod`);
+
       const caucusSeconds = caucusDuration * (caucusUnit === Unit.Minutes ? 60 : 1);
 
       const newTimer: TimerData = {
@@ -320,8 +323,6 @@ export default class Motions extends React.Component<Props, State> {
 
       putUnmodTimer(committeeID, newTimer);
 
-      this.props.history
-        .push(`/committees/${committeeID}/unmod`);
     } else if (motionData.type === MotionType.IntroduceDraftResolution) {
 
       const newResolution: ResolutionData = {
@@ -335,11 +336,13 @@ export default class Motions extends React.Component<Props, State> {
 
       this.props.history
         .push(`/committees/${committeeID}/resolutions/${resolutionRef.key}`);
+
     } else if (motionData.type === MotionType.ExtendUnmoderatedCaucus && caucusDuration) {
-      const caucusSeconds = caucusDuration * (caucusUnit === Unit.Minutes ? 60 : 1);
 
       this.props.history
         .push(`/committees/${committeeID}/unmod`);
+
+      const caucusSeconds = caucusDuration * (caucusUnit === Unit.Minutes ? 60 : 1);
 
       // TODO: Do I wait a second before extending so it looks sexy?
 
@@ -348,20 +351,29 @@ export default class Motions extends React.Component<Props, State> {
       extendUnmodTimer(committeeID, caucusSeconds);
 
     } else if (motionData.type === MotionType.ExtendModeratedCaucus && caucusDuration) {
-      const caucusSeconds = caucusDuration * (caucusUnit === Unit.Minutes ? 60 : 1);
-      
+
       const caucusID = motionData.caucusTarget;
 
       this.props.history
         .push(`/committees/${committeeID}/caucuses/${caucusID}`);
 
+      const caucusSeconds = caucusDuration * (caucusUnit === Unit.Minutes ? 60 : 1);
+      
       extendModTimer(committeeID, caucusID, caucusSeconds);
+
+    } else if (motionData.type === MotionType.CloseModeratedCaucus) {
+
+      const caucusID = motionData.caucusTarget;
+
+      this.props.history
+        .push(`/committees/${committeeID}/caucuses/${caucusID}`);
+
+      closeCaucus(committeeID, caucusID);
     }
 
     // remember to add the correct enum value to the approvable predicate when adding 
     // new cases
-  }
-
+  } 
   renderMotion = (id: MotionID, motionData: MotionData, motionFref: firebase.database.Reference) => {
     const { handleApproveMotion } = this;
     const { committee } = this.state;

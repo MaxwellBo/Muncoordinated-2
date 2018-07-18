@@ -1,15 +1,16 @@
 import * as firebase from 'firebase';
 
 import { CommitteeID } from '../components/Committee';
-import { CaucusData, DEFAULT_CAUCUS } from '../components/Caucus';
+import { CaucusData, CaucusID, CaucusStatus } from '../components/Caucus';
 import { ResolutionData } from '../components/Resolution';
 import { TimerData } from '../components/Timer';
 import { SpeakerEvent } from '../components/caucus/SpeakerFeed';
 
-export const postCaucus = (committeID: CommitteeID, caucusData: CaucusData): firebase.database.ThenableReference => {
+export const postCaucus = 
+  (committeeID: CommitteeID, caucusData: CaucusData): firebase.database.ThenableReference => {
   const ref = firebase.database()
     .ref('committees')
-    .child(committeID)
+    .child(committeeID)
     .child('caucuses')
     .push();
 
@@ -18,13 +19,23 @@ export const postCaucus = (committeID: CommitteeID, caucusData: CaucusData): fir
   return ref;
 };
 
+export const closeCaucus = 
+  (committeeID: CommitteeID, caucusID: CaucusID): Promise<any> => {
+  return firebase.database()
+    .ref('committees')
+    .child(committeeID)
+    .child('caucuses')
+    .child(caucusID)
+    .child('status')
+    .set(CaucusStatus.Closed);
+};
+
 export const postResolution = 
-  (committeID: CommitteeID, resolutionData: ResolutionData): 
-    firebase.database.ThenableReference => {
+  (committeeID: CommitteeID, resolutionData: ResolutionData): firebase.database.ThenableReference => {
 
   const ref = firebase.database()
     .ref('committees')
-    .child(committeID)
+    .child(committeeID)
     .child('resolutions')
     .push();
 
