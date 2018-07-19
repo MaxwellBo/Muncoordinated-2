@@ -41,7 +41,7 @@ const HomepageHeading = ({ mobile }: HomepageHeadingProps) => (
     />
     <Header
       as="h2"
-      content="The multi-user browser-based Model UN committee management app"
+      content="The collaborative browser-based Model UN committee management app"
       inverted
       style={{
         fontSize: mobile ? '1.5em' : '1.7em',
@@ -93,8 +93,10 @@ class DesktopContainer extends React.Component<DesktopContainerProps, DesktopCon
     const { children } = this.props;
     const { fixed } = this.state;
 
+    // Semantic-UI-React/src/addons/Responsive/Responsive.js
     return (
-      <Responsive {...Responsive.onlyComputer}>
+      // @ts-ignore
+      <Responsive {...{ minWidth: Responsive.onlyMobile.maxWidth + 1 }}>
         <Visibility once={false} onBottomPassed={this.showFixedMenu} onBottomPassedReverse={this.hideFixedMenu}>
           <Segment inverted textAlign="center" style={{ minHeight: 700, padding: '1em 0em' }} vertical>
             <Menu
@@ -211,9 +213,10 @@ export default class Homepage extends React.Component<{}, {}> {
               <Grid.Column width={8}>
                 <Header as="h3" style={{ fontSize: '2em' }}>Collaborative</Header>
                 <p style={{ fontSize: '1.33em' }}>
-                  Muncoordinated tracks and distributes all committee updates in real-time&nbsp;(like&nbsp;Google&nbsp;Docs),
-                  allowing directors to pass delegates a shared link.< br />
-                  Delegates may then add themselves to selected speaker's lists, and upload files.
+                  Using a sharable link, multiple directors can run the committee at once. Delegates can upload files and add themselves to selected speaker's lists. <br />
+                </p>
+                <p style={{ fontSize: '1.33em' }}>
+                  Everyone will see all updates in real-time, without needing to refresh the page. It's like Google Docs, but for MUN.
                 </p>
                 <Header as="h3" style={{ fontSize: '2em' }}>Cloud based</Header>
                 <p style={{ fontSize: '1.33em' }}>
@@ -230,7 +233,7 @@ export default class Homepage extends React.Component<{}, {}> {
                     <List.Item as="li">Motions</List.Item>
                     <List.Item as="li">Moderated and unmoderated caucuses</List.Item>
                     <Popup
-                      trigger={<List.Item as="li">Useful hotkeys</List.Item>}
+                      trigger={<List.Item as="li">Time-saving hotkeys for frequently used actions</List.Item>}
                       content="Currently implemented hotkeys include 'Next Speaker', 
                       'Toggle Caucus Timer' and 'Toggle Speaker Timer'"
                     />
