@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as firebase from 'firebase';
-import { Card, Button, Form, Message, Modal, Header, Icon, List } from 'semantic-ui-react';
+import { Card, Button, Form, Message, Modal, Header, Icon, List, Container } from 'semantic-ui-react';
 import { error } from 'util';
 import { CommitteeID, CommitteeData } from './Committee';
 import * as _ from 'lodash';
@@ -27,6 +27,16 @@ interface State {
 
 interface Props {
   allowSignup: boolean | undefined;
+}
+
+export class ContaineredLogin extends React.Component<Props, State>  {
+  render() {
+    return (
+      <Container style={{ padding: '1em 0em' }}>
+        <Login {...this.props} />
+      </Container>
+    );
+  }
 }
 
 export class Login extends React.Component<Props, State> {
@@ -333,7 +343,7 @@ export class ModalLogin extends React.Component<{},
     const text = user ? user.email : 'Login';
 
     return (
-      <Button basic size="small" loading={user === undefined}>
+      <Button loading={user === undefined}>
         <Icon name="lock" />
         {text}
       </Button>

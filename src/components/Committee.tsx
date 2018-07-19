@@ -6,7 +6,7 @@ import { MemberData, MemberID } from './Member';
 import Caucus, { CaucusData, CaucusID, DEFAULT_CAUCUS, CaucusStatus } from './Caucus';
 import Resolution, { ResolutionData, ResolutionID, DEFAULT_RESOLUTION } from './Resolution';
 import Admin from './Admin';
-import { Icon, Input, Menu, Sticky, Grid, Segment, SemanticICONS, Button } from 'semantic-ui-react';
+import { Icon, Input, Menu, Sticky, Grid, Segment, SemanticICONS, Button, Dropdown, Container } from 'semantic-ui-react';
 import Stats from './Stats';
 import { MotionID, MotionData } from './Motions';
 import { TimerData, DEFAULT_TIMER } from './Timer';
@@ -120,17 +120,35 @@ export default class Committee extends React.Component<Props, State> {
 
   makeMenuItem = (name: string, icon: SemanticICONS) => {
     const committeeID: CommitteeID = this.props.match.params.committeeID;
-    const caucusID: CaucusID = this.props.match.params.committeeID;
 
     return (
       <Menu.Item
+        link
         key={name}
         name={name.toLowerCase()}
         active={false}
         onClick={() => this.props.history.push(`/committees/${committeeID}/${name.toLowerCase()}`)}
       >
-        <Icon name={icon} />
+        {/* <Icon name={icon} /> */}
         {name}
+      </Menu.Item>
+    );
+  }
+
+  makeMenuIcon = (name: string, icon: SemanticICONS) => {
+    const committeeID: CommitteeID = this.props.match.params.committeeID;
+
+    return (
+      <Menu.Item
+        icon
+        link
+        key={name}
+        name={name.toLowerCase()}
+        active={false}
+        position="right"
+        onClick={() => this.props.history.push(`/committees/${committeeID}/${name.toLowerCase()}`)}
+      >
+        <Icon name={icon} />
       </Menu.Item>
     );
   }
@@ -147,19 +165,19 @@ export default class Committee extends React.Component<Props, State> {
     }
 
     return (
-      <Menu.Item
+      <Dropdown.Item
         key={id}
         name={name}
         active={active}
         onClick={() => this.props.history.push(`/committees/${committeeID}/${type}/${id}`)}
       >
         {name}
-      </Menu.Item>
+      </Dropdown.Item>
     );
   }
 
   renderNav = () => {
-    const { makeMenuItem, makeSubmenuItem } = this;
+    const { makeMenuItem, makeSubmenuItem, makeMenuIcon } = this;
     const { committee } = this.state;
 
     const caucuses = committee ? committee.caucuses : undefined;
@@ -177,45 +195,49 @@ export default class Committee extends React.Component<Props, State> {
     );
 
     return (
-      <Menu fluid vertical size="massive">
+      <Menu stackable fluid>
+        <Menu.Item header>
+          {committee ? committee.name : undefined}
+        </Menu.Item>
         {makeMenuItem('Admin', 'users')}
         {makeMenuItem('Motions', 'sort numeric descending')}
         {makeMenuItem('Unmod', 'discussions')}
-        <Menu.Item>
-          <Button
-            icon="add"
-            size="mini"
-            primary
-            basic
-            floated="right"
-            onClick={this.pushCaucus}
-          />
-          Caucuses
-            <Menu.Menu>
-            {!committee && <Loading />}
+        {/* <Button
+          icon="add"
+          size="mini"
+          primary
+          basic
+          floated="right"
+          onClick={this.pushCaucus}
+        /> */}
+        <Dropdown item text="Caucuses" loading={!committee}>
+          <Dropdown.Menu>
             {caucusItems}
-          </Menu.Menu>
-        </Menu.Item>
-        <Menu.Item>
-          <Button
-            icon="add"
-            size="mini"
-            primary
-            basic
-            floated="right"
-            onClick={this.pushResolution}
-          />
-          Resolutions
-            <Menu.Menu>
-            {!committee && <Loading />}
+          </Dropdown.Menu>
+        </Dropdown>
+        {/* <Button
+          icon="add"
+          size="mini"
+          primary
+          basic
+          floated="right"
+          onClick={this.pushResolution}
+        /> */}
+        <Dropdown item text="Resolutions" loading={!committee}>
+            <Dropdown.Menu>
             {resolutionItems}
-          </Menu.Menu>
-        </Menu.Item>
+            </Dropdown.Menu>
+        </Dropdown>
         {makeMenuItem('Notes', 'sticky note outline')}
         {makeMenuItem('Files', 'file outline')}
         {makeMenuItem('Stats', 'bar chart')}
-        {makeMenuItem('Settings', 'settings')}
-        {makeMenuItem('Help', 'help')}
+        <Menu.Menu icon position="right">
+          {makeMenuIcon('Settings', 'settings')}
+          {makeMenuIcon('Help', 'help')}
+        </Menu.Menu>
+        <Menu.Item>
+          <ModalLogin />
+        </Menu.Item>
       </Menu>
     );
   }
@@ -259,29 +281,21 @@ export default class Committee extends React.Component<Props, State> {
     return (
       <div>
         <Notifications {...this.props} />
-        <ShareHint committeeID={this.props.match.params.committeeID} />
-        <ModalLogin />
-        <div>
-          {renderMeta()}
-          <Grid>
-            <Grid.Column width={4}>
-              {renderNav()}
-              <Footer />
-            </Grid.Column>
-            <Grid.Column width={12}>
-              <Route exact={true} path="/committees/:committeeID/admin" render={renderAdmin} />
-              <Route exact={true} path="/committees/:committeeID/stats" component={Stats} />
-              <Route exact={true} path="/committees/:committeeID/unmod" component={Unmod} />
-              <Route exact={true} path="/committees/:committeeID/motions" component={Motions} />
-              <Route exact={true} path="/committees/:committeeID/notes" component={Notes} />
-              <Route exact={true} path="/committees/:committeeID/files" component={Files} />
-              <Route exact={true} path="/committees/:committeeID/settings" component={Settings} />
-              <Route exact={true} path="/committees/:committeeID/help" component={Help} />
-              <Route path="/committees/:committeeID/caucuses/:caucusID" component={Caucus} />
-              <Route path="/committees/:committeeID/resolutions/:resolutionID" component={Resolution} />
-            </Grid.Column>
-          </Grid>
-        </div>
+        {renderNav()}
+        <Container style={{ padding: '1em 0em' }}>
+          <ShareHint committeeID={this.props.match.params.committeeID} />
+          <Route exact={true} path="/committees/:committeeID/admin" render={renderAdmin} />
+          <Route exact={true} path="/committees/:committeeID/stats" component={Stats} />
+          <Route exact={true} path="/committees/:committeeID/unmod" component={Unmod} />
+          <Route exact={true} path="/committees/:committeeID/motions" component={Motions} />
+          <Route exact={true} path="/committees/:committeeID/notes" component={Notes} />
+          <Route exact={true} path="/committees/:committeeID/files" component={Files} />
+          <Route exact={true} path="/committees/:committeeID/settings" component={Settings} />
+          <Route exact={true} path="/committees/:committeeID/help" component={Help} />
+          <Route path="/committees/:committeeID/caucuses/:caucusID" component={Caucus} />
+          <Route path="/committees/:committeeID/resolutions/:resolutionID" component={Resolution} />
+          <Footer />
+        </Container>
       </div>
     );
   }
