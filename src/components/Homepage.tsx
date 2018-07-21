@@ -63,7 +63,6 @@ const HomepageHeading = ({ mobile }: HomepageHeadingProps) => (
 
 interface DesktopContainerProps {
   children?: any;
-
 }
 
 interface DesktopContainerState {

@@ -6,7 +6,8 @@ import { MemberData, MemberID } from './Member';
 import Caucus, { CaucusData, CaucusID, DEFAULT_CAUCUS, CaucusStatus } from './Caucus';
 import Resolution, { ResolutionData, ResolutionID, DEFAULT_RESOLUTION } from './Resolution';
 import Admin from './Admin';
-import { Icon, Input, Menu, Sticky, Grid, Segment, SemanticICONS, Button, Dropdown, Container } from 'semantic-ui-react';
+import { Icon, Input, Menu, Sticky, Grid, Segment, SemanticICONS, Button, 
+  Dropdown, Container, Responsive, Sidebar } from 'semantic-ui-react';
 import Stats from './Stats';
 import { MotionID, MotionData } from './Motions';
 import { TimerData, DEFAULT_TIMER } from './Timer';
@@ -65,59 +66,108 @@ export const DEFAULT_COMMITTEE: CommitteeData = {
   settings: DEFAULT_SETTINGS
 };
 
-export default class Committee extends React.Component<Props, State> {
-  constructor(props: Props) {
+interface DesktopContainerProps {
+  menu?: any;
+  body?: any;
+}
+
+interface DesktopContainerState {
+}
+
+class DesktopContainer extends React.Component<DesktopContainerProps, DesktopContainerState> {
+  constructor(props: DesktopContainerProps) {
     super(props);
 
-    const committeeID: CommitteeID = this.props.match.params.committeeID;
-
     this.state = {
-      committeeFref: firebase.database().ref('committees').child(committeeID),
+      fixed: false
     };
   }
 
-  firebaseCallback = (committee: firebase.database.DataSnapshot | null) => {
-    if (committee) {
-      this.setState({ committee: committee.val() });
+  hideFixedMenu = () => {
+    this.setState({ fixed: false });
+  }
+
+  showFixedMenu = () => {
+    this.setState({ fixed: true });
+  }
+
+  render() {
+    const { body, menu } = this.props;
+
+    // Semantic-UI-React/src/addons/Responsive/Responsive.js
+    return (
+      // @ts-ignore
+      <Responsive {...{ minWidth: Responsive.onlyMobile.maxWidth + 1 }}>
+        <Menu stackable fluid>
+          {menu}
+        </Menu>
+      {body}
+      </Responsive>
+    );
+  }
+}
+
+interface MobileContainerProps {
+  menu?: any;
+  body?: any;
+}
+
+interface MobileContainerState {
+  sidebarOpened: boolean;
+}
+
+class MobileContainer extends React.Component<MobileContainerProps, MobileContainerState> {
+  constructor(props: MobileContainerProps) {
+    super(props);
+
+    this.state = {
+      sidebarOpened: false
+    };
+  }
+
+  handlePusherClick = () => {
+    const { sidebarOpened } = this.state;
+
+    if (sidebarOpened) {
+      this.setState({ sidebarOpened: false });
     }
   }
 
-  componentDidMount() {
-    this.state.committeeFref.on('value', this.firebaseCallback);
+  handleToggle = () => {
+    this.setState({ sidebarOpened: !this.state.sidebarOpened });
   }
 
-  componentWillUnmount() {
-    this.state.committeeFref.off('value', this.firebaseCallback);
+  render() {
+    const { body, menu } = this.props;
+    const { sidebarOpened } = this.state;
+
+    return (
+      <Responsive {...Responsive.onlyMobile}>
+        <Sidebar.Pushable>
+          <Sidebar as={Menu} animation="uncover" stackable visible={sidebarOpened}>
+            {menu}
+          </Sidebar>
+
+          <Sidebar.Pusher dimmed={sidebarOpened} onClick={this.handlePusherClick} style={{ minHeight: '100vh' }}>
+            <Menu size="large">
+              <Menu.Item onClick={this.handleToggle}>
+                <Icon name="sidebar" />
+              </Menu.Item>
+            </Menu>
+            {body}
+          </Sidebar.Pusher>
+        </Sidebar.Pushable>
+      </Responsive>
+    );
   }
+}
 
-  pushCaucus = () => {
-    const committeeID: CommitteeID = this.props.match.params.committeeID;
+interface ResponsiveContainerProps extends RouteComponentProps<URLParameters> {
+  children?: any;
+  committee?: CommitteeData;
+}
 
-    const newCaucus: CaucusData = {
-      ...DEFAULT_CAUCUS,
-      name: 'untitled caucus',
-    };
-
-    const ref = postCaucus(committeeID, newCaucus);
-
-    this.props.history
-      .push(`/committees/${committeeID}/caucuses/${ref.key}`);
-  }
-
-  pushResolution = () => {
-    const committeeID: CommitteeID = this.props.match.params.committeeID;
-
-    const newResolution: ResolutionData = {
-      ...DEFAULT_RESOLUTION,
-      name: 'untitled resolution',
-    };
-
-    const ref = postResolution(committeeID, newResolution);
-
-    this.props.history
-      .push(`/committees/${committeeID}/resolutions/${ref.key}`);
-  }
-
+class ResponsiveNav extends React.Component<ResponsiveContainerProps, {}> {
   makeMenuItem = (name: string, icon: SemanticICONS) => {
     const committeeID: CommitteeID = this.props.match.params.committeeID;
 
@@ -176,9 +226,9 @@ export default class Committee extends React.Component<Props, State> {
     );
   }
 
-  renderNav = () => {
+  renderMenuItems = () => {
     const { makeMenuItem, makeSubmenuItem, makeMenuIcon } = this;
-    const { committee } = this.state;
+    const { committee } = this.props;
 
     const caucuses = committee ? committee.caucuses : undefined;
     const resolutions = committee ? committee.resolutions : undefined;
@@ -194,76 +244,119 @@ export default class Committee extends React.Component<Props, State> {
       makeSubmenuItem(key, resolutions![key].name, 'resolutions')
     );
 
+    {/* <Button
+      icon="add"
+      size="mini"
+      primary
+      basic
+      floated="right"
+      onClick={this.pushCaucus}
+    /> */}
+
+    // should really be a React.Fragment, but I couldn't be fucked upgrading to 16.2.0
     return (
-      <Menu stackable fluid>
-        <Menu.Item header>
-          {committee ? committee.name : undefined}
-        </Menu.Item>
-        {makeMenuItem('Admin', 'users')}
-        {makeMenuItem('Motions', 'sort numeric descending')}
-        {makeMenuItem('Unmod', 'discussions')}
-        {/* <Button
-          icon="add"
-          size="mini"
-          primary
-          basic
-          floated="right"
-          onClick={this.pushCaucus}
-        /> */}
-        <Dropdown item text="Caucuses" loading={!committee}>
-          <Dropdown.Menu>
-            {caucusItems}
-          </Dropdown.Menu>
-        </Dropdown>
-        {/* <Button
-          icon="add"
-          size="mini"
-          primary
-          basic
-          floated="right"
-          onClick={this.pushResolution}
-        /> */}
-        <Dropdown item text="Resolutions" loading={!committee}>
+      [
+        (
+          <Menu.Item header>
+            {committee ? committee.name : undefined}
+          </Menu.Item>
+        ),
+        makeMenuItem('Admin', 'users'),
+        makeMenuItem('Motions', 'sort numeric descending'),
+        makeMenuItem('Unmod', 'discussions'),
+        (
+          <Dropdown item text="Caucuses" loading={!committee}>
             <Dropdown.Menu>
-            {resolutionItems}
+              {caucusItems}
             </Dropdown.Menu>
-        </Dropdown>
-        {makeMenuItem('Notes', 'sticky note outline')}
-        {makeMenuItem('Files', 'file outline')}
-        {makeMenuItem('Stats', 'bar chart')}
-        <Menu.Menu icon position="right">
-          {makeMenuIcon('Settings', 'settings')}
-          {makeMenuIcon('Help', 'help')}
-        </Menu.Menu>
-        <Menu.Item>
-          <ModalLogin />
-        </Menu.Item>
-      </Menu>
+          </Dropdown>
+        ),
+        (
+          <Dropdown item text="Resolutions" loading={!committee}>
+            <Dropdown.Menu>
+              {resolutionItems}
+            </Dropdown.Menu>
+          </Dropdown>
+        ),
+        makeMenuItem('Notes', 'sticky note outline'),
+        makeMenuItem('Files', 'file outline'),
+        makeMenuItem('Stats', 'bar chart'),
+        (
+          <Menu.Menu icon position="right">
+            {makeMenuIcon('Settings', 'settings')}
+            {makeMenuIcon('Help', 'help')}
+          </Menu.Menu>
+        ),
+        (
+          <Menu.Item>
+            <ModalLogin />
+          </Menu.Item>
+        )
+      ]
     );
   }
 
-  renderMeta = () => {
-    const { committee, committeeFref } = this.state;
-
+  render() {
     return (
-      <Segment loading={!committee}>
-        <Input
-          value={committee ? committee.name : ''}
-          onChange={fieldHandler<CommitteeData>(committeeFref, 'name')}
-          attached="top"
-          size="massive"
-          fluid
-          placeholder="Committee Name"
-        />
-        <Input 
-          value={committee ? committee.topic : ''} 
-          onChange={fieldHandler<CommitteeData>(committeeFref, 'topic')} 
-          attached="bottom" 
-          fluid 
-          placeholder="Committee Topic" 
-        />
-      </Segment>
+      <div>
+        <DesktopContainer body={this.props.children} menu={this.renderMenuItems()} />
+        <MobileContainer body={this.props.children} menu={this.renderMenuItems()} />
+      </div>
     );
+  }
+}
+
+export default class Committee extends React.Component<Props, State> {
+  constructor(props: Props) {
+    super(props);
+
+    const committeeID: CommitteeID = this.props.match.params.committeeID;
+
+    this.state = {
+      committeeFref: firebase.database().ref('committees').child(committeeID),
+    };
+  }
+
+  firebaseCallback = (committee: firebase.database.DataSnapshot | null) => {
+    if (committee) {
+      this.setState({ committee: committee.val() });
+    }
+  }
+
+  componentDidMount() {
+    this.state.committeeFref.on('value', this.firebaseCallback);
+  }
+
+  componentWillUnmount() {
+    this.state.committeeFref.off('value', this.firebaseCallback);
+  }
+
+  pushCaucus = () => {
+    const committeeID: CommitteeID = this.props.match.params.committeeID;
+
+    const newCaucus: CaucusData = {
+      ...DEFAULT_CAUCUS,
+      name: 'untitled caucus',
+    };
+
+    const ref = postCaucus(committeeID, newCaucus);
+
+    this.props.history
+      .push(`/committees/${committeeID}/caucuses/${ref.key}`);
+  }
+
+  pushResolution = () => {
+    const committeeID: CommitteeID = this.props.match.params.committeeID;
+
+    const newResolution: ResolutionData = {
+      ...DEFAULT_RESOLUTION,
+      name: 'untitled resolution',
+    };
+
+    const ref = postResolution(committeeID, newResolution);
+
+    this.props.history
+      .push(`/committees/${committeeID}/resolutions/${ref.key}`);
   }
 
   renderAdmin = () => {
@@ -276,26 +369,27 @@ export default class Committee extends React.Component<Props, State> {
   }
     
   render() {
-    const { renderNav, renderAdmin, renderMeta } = this;
+    const { renderAdmin } = this;
 
     return (
       <div>
         <Notifications {...this.props} />
-        {renderNav()}
-        <Container style={{ padding: '1em 0em' }}>
-          <ShareHint committeeID={this.props.match.params.committeeID} />
-          <Route exact={true} path="/committees/:committeeID/admin" render={renderAdmin} />
-          <Route exact={true} path="/committees/:committeeID/stats" component={Stats} />
-          <Route exact={true} path="/committees/:committeeID/unmod" component={Unmod} />
-          <Route exact={true} path="/committees/:committeeID/motions" component={Motions} />
-          <Route exact={true} path="/committees/:committeeID/notes" component={Notes} />
-          <Route exact={true} path="/committees/:committeeID/files" component={Files} />
-          <Route exact={true} path="/committees/:committeeID/settings" component={Settings} />
-          <Route exact={true} path="/committees/:committeeID/help" component={Help} />
-          <Route path="/committees/:committeeID/caucuses/:caucusID" component={Caucus} />
-          <Route path="/committees/:committeeID/resolutions/:resolutionID" component={Resolution} />
-          <Footer />
-        </Container>
+        <ResponsiveNav {...this.props} committee={this.state.committee} >
+          <Container style={{ padding: '1em 0em' }}>
+            <ShareHint committeeID={this.props.match.params.committeeID} />
+            <Route exact={true} path="/committees/:committeeID/admin" render={renderAdmin} />
+            <Route exact={true} path="/committees/:committeeID/stats" component={Stats} />
+            <Route exact={true} path="/committees/:committeeID/unmod" component={Unmod} />
+            <Route exact={true} path="/committees/:committeeID/motions" component={Motions} />
+            <Route exact={true} path="/committees/:committeeID/notes" component={Notes} />
+            <Route exact={true} path="/committees/:committeeID/files" component={Files} />
+            <Route exact={true} path="/committees/:committeeID/settings" component={Settings} />
+            <Route exact={true} path="/committees/:committeeID/help" component={Help} />
+            <Route path="/committees/:committeeID/caucuses/:caucusID" component={Caucus} />
+            <Route path="/committees/:committeeID/resolutions/:resolutionID" component={Resolution} />
+            <Footer />
+          </Container>
+        </ResponsiveNav>
       </div>
     );
   }
