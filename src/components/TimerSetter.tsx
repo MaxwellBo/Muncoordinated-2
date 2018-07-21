@@ -50,7 +50,8 @@ export class TimerSetter extends React.Component<Props, {}> {
         error={isInvalid()}
         label={props.label}
       >
-        <input style={{ 'text-align': 'right' }} />
+        {/* <input style={{ 'text-align': 'right' }} /> */}
+        <input />
         {/* <Button icon="minus" onClick={this.decrement} />
         <Button icon="plus"  onClick={this.increment} /> */}
         <Select 
