@@ -22,8 +22,23 @@ interface Props {
 }
 
 export class TimerSetter extends React.Component<Props, {}> {
+  
+  isInvalid = () => {
+    const { durationValue: n } = this.props;
+
+    return !n || isNaN(Number(n)) || Number(n) <= 0;
+  }
+
+  handleOnSet = () => {
+    const { props, isInvalid } = this;
+
+    if (props.onSet && !isInvalid()) { // defensive, button shouldn't exist if we don't have it
+      props.onSet();
+    }
+  }
+
   render() {
-    const { props } = this;
+    const { props, isInvalid, handleOnSet } = this;
 
     return (
       <Form.Input
@@ -32,10 +47,10 @@ export class TimerSetter extends React.Component<Props, {}> {
         onChange={props.onDurationChange}
         action
         fluid
-        error={!props.durationValue || isNaN(Number(props.durationValue))}
+        error={isInvalid()}
         label={props.label}
       >
-        <input />
+        <input style={{ 'text-align': 'right' }} />
         {/* <Button icon="minus" onClick={this.decrement} />
         <Button icon="plus"  onClick={this.increment} /> */}
         <Select 
@@ -45,7 +60,7 @@ export class TimerSetter extends React.Component<Props, {}> {
           button 
           onChange={props.onUnitChange} 
         />
-        {props.onSet && (<Button onClick={props.onSet}>Set</Button>)}
+        {props.onSet && (<Button onClick={handleOnSet}>Set</Button>)}
       </Form.Input>
     );
   }
