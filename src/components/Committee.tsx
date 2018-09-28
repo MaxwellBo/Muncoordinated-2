@@ -268,7 +268,7 @@ export default class Committee extends React.Component<Props, State> {
               {renderNav()}
               <Footer />
             </Grid.Column>
-            <Grid.Column stretched width={12}>
+            <Grid.Column width={12}>
               <Route exact={true} path="/committees/:committeeID/admin" render={renderAdmin} />
               <Route exact={true} path="/committees/:committeeID/stats" component={Stats} />
               <Route exact={true} path="/committees/:committeeID/unmod" component={Unmod} />
