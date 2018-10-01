@@ -192,6 +192,7 @@ export default class Resolution extends React.Component<Props, State> {
     const proposerDropdown = (
       <Form.Dropdown
         key="proposer"
+        icon="search"
         value={nameToCountryOption(proposer).key}
         search
         selection
@@ -411,6 +412,7 @@ export default class Resolution extends React.Component<Props, State> {
     const proposerTree = (
       <Form.Dropdown
         key="proposer"
+        icon="search"
         value={nameToCountryOption(resolution ? resolution.proposer : '').key}
         search
         selection
@@ -424,6 +426,7 @@ export default class Resolution extends React.Component<Props, State> {
     const seconderTree = (
       <Form.Dropdown
         key="seconder"
+        icon="search"
         value={nameToCountryOption(resolution ? resolution.seconder : '').key}
         search
         selection

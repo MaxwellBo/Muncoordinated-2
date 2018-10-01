@@ -633,6 +633,7 @@ export default class Motions extends React.Component<Props, State> {
 
     const proposerTree = (
       <Form.Dropdown
+        icon="search"
         key="proposer"
         value={nameToCountryOption(proposer).key}
         search
@@ -646,6 +647,7 @@ export default class Motions extends React.Component<Props, State> {
 
     const seconderTree = (
       <Form.Dropdown
+        icon="search"
         key="seconder"
         value={nameToCountryOption(seconder).key}
         search

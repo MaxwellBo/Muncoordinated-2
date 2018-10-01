@@ -138,6 +138,7 @@ export default class Files extends React.Component<Props, State> {
           <Form.Group>
             <input type="file" onChange={this.onFileChange} />
             <Form.Dropdown
+              icon="search"
               key="uploader"
               value={this.state.uploader.key}
               search

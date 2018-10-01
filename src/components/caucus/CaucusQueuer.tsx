@@ -79,6 +79,7 @@ export default class CaucusQueuer extends React.Component<Props, State> {
         <Segment attached textAlign="center" loading={!members}>
           <Form>
             <Form.Dropdown
+              icon="search"
               value={this.state.queueCountry.value}
               search
               selection

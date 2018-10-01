@@ -223,7 +223,8 @@ export default class Admin extends React.Component<Props, State> {
       <Table.Row>
         <Table.HeaderCell>
           <Dropdown
-            placeholder="Select Country"
+            icon="search"
+            placeholder="Select prepared member"
             search
             selection
             fluid
