@@ -325,6 +325,17 @@ export default class Homepage extends React.Component<{}, {}> {
                   src="/amunc2018.jpg" 
                 />
               </Grid.Column>
+              <Grid.Column style={{ paddingBottom: '5em', paddingTop: '5em' }}>
+                <Header as="h3" style={{ fontSize: '2em' }}>
+                <a href="https://www.facebook.com/NationalCapitalMUN/">NCMUN 2018</a>
+                </Header>
+                <Image 
+                  centered 
+                  size="small" 
+                  rounded 
+                  src="/ncmun2018.jpg" 
+                />
+              </Grid.Column>
             </Grid.Row>
           </Grid>
         </Segment>
