@@ -26,7 +26,6 @@ class App extends React.Component {
     return (
       <div>
         <Route exact path="/" component={Homepage} />
-        <ConnectionStatus />
         <Route exact path="/onboard" component={Onboard} />
         <Route exact path="/committees" component={ContaineredLogin} />
         <Route path="/committees/:committeeID" component={Committee} />

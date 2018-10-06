@@ -7,6 +7,7 @@ import { Segment, Button, Divider, Form, Grid, Header, InputOnChangeData,
   Message, Icon, Container } from 'semantic-ui-react';
 import { Login } from './Auth';
 import { URLParameters } from '../types';
+import ConnectionStatus from './ConnectionStatus';
 
 interface Props extends RouteComponentProps<URLParameters> {
 }
@@ -108,6 +109,7 @@ export default class Onboard extends React.Component<Props, State> {
 
     return (
       <Container style={{ padding: '1em 0em' }}>
+        <ConnectionStatus />
         <Grid
           style={{ height: '100%' }}
         >

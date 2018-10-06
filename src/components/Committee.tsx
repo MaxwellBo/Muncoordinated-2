@@ -26,6 +26,7 @@ import { ModalLogin } from './Auth';
 import ShareHint from './ShareHint';
 import Notifications from './Notifications';
 import { postResolution } from '../actions/resolutionActions';
+import ConnectionStatus from './ConnectionStatus';
 
 interface Props extends RouteComponentProps<URLParameters> {
 }
@@ -173,7 +174,7 @@ class ResponsiveNav extends React.Component<ResponsiveContainerProps, {}> {
 
     return (
       <Menu.Item
-        link
+        // link
         key={name}
         name={name.toLowerCase()}
         active={false}
@@ -188,7 +189,7 @@ class ResponsiveNav extends React.Component<ResponsiveContainerProps, {}> {
   makeMenuButton = (name: string, icon: SemanticICONS, f: () => void) => {
     return (
       <Menu.Item
-        link
+        // link
         key={name}
         name={name.toLowerCase()}
         active={false}
@@ -203,7 +204,7 @@ class ResponsiveNav extends React.Component<ResponsiveContainerProps, {}> {
   makeSubmenuButton = (name: string, icon: SemanticICONS, f: () => void) => {
     return (
       <Dropdown.Item
-        link
+        // link
         key={name}
         name={name.toLowerCase()}
         active={false}
@@ -220,8 +221,7 @@ class ResponsiveNav extends React.Component<ResponsiveContainerProps, {}> {
 
     return (
       <Menu.Item
-        icon
-        link
+        // link
         key={name}
         name={name.toLowerCase()}
         active={false}
@@ -315,7 +315,7 @@ class ResponsiveNav extends React.Component<ResponsiveContainerProps, {}> {
     return (
       [
         (
-          <Menu.Item header>
+          <Menu.Item header key="header">
             {committee ? committee.name : <Loading small />}
           </Menu.Item>
         ),
@@ -323,7 +323,7 @@ class ResponsiveNav extends React.Component<ResponsiveContainerProps, {}> {
         makeMenuItem('Motions', 'sort numeric descending'),
         makeMenuItem('Unmod', 'discussions'),
         (
-          <Dropdown item text="Caucuses" loading={!committee} icon={committee ? 'add' : undefined}>
+          <Dropdown key="caucuses" item text="Caucuses" loading={!committee} icon={committee ? 'add' : undefined}>
             <Dropdown.Menu>
               {makeSubmenuButton('New caucus', 'add', this.pushCaucus)}
               {caucusItems}
@@ -331,7 +331,7 @@ class ResponsiveNav extends React.Component<ResponsiveContainerProps, {}> {
           </Dropdown>
         ),
         (
-          <Dropdown item text="Resolutions" loading={!committee} icon={committee ? 'add' : undefined}>
+          <Dropdown key="resolutions" item text="Resolutions" loading={!committee} icon={committee ? 'add' : undefined}>
             <Dropdown.Menu>
               {makeSubmenuButton('New resolution', 'add', this.pushResolution)}
               {resolutionItems}
@@ -342,13 +342,13 @@ class ResponsiveNav extends React.Component<ResponsiveContainerProps, {}> {
         makeMenuItem('Files', 'file outline'),
         makeMenuItem('Stats', 'bar chart'),
         (
-          <Menu.Menu icon position="right">
+          <Menu.Menu key="icon-submenu" position="right">
             {makeMenuIcon('Settings', 'settings')}
             {makeMenuIcon('Help', 'help')}
           </Menu.Menu>
         ),
         (
-          <Menu.Item>
+          <Menu.Item key="login">
             <ModalLogin />
           </Menu.Item>
         )
@@ -410,6 +410,7 @@ export default class Committee extends React.Component<Props, State> {
         <ResponsiveNav {...this.props} committee={this.state.committee} >
           <Container text style={{ padding: '1em 0em' }}>
             <ShareHint committeeID={this.props.match.params.committeeID} />
+            <ConnectionStatus />
           </Container>
           <Route exact={true} path="/committees/:committeeID/admin" render={renderAdmin} />
           <Route exact={true} path="/committees/:committeeID/stats" component={Stats} />
