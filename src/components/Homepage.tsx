@@ -1,4 +1,5 @@
 import * as React from 'react';
+import * as firebase from 'firebase';
 import {
   Button,
   Container,
@@ -11,10 +12,12 @@ import {
   Menu,
   Responsive,
   Segment,
+  Statistic,
   Sidebar,
   Visibility,
   Popup
 } from 'semantic-ui-react';
+import Loading from './Loading';
 
 interface HomepageHeadingProps {
   mobile: boolean;
@@ -203,7 +206,36 @@ const ResponsiveContainer = ({ children }: ResponsiveContainerProps) => (
   </div>
 );
 
-export default class Homepage extends React.Component<{}, {}> {
+export default class Homepage extends React.Component<{}, { 
+  committeeNo?: number,
+  delegeateNo?: number
+}> {
+  constructor(props: {}) {
+    super(props);
+    this.state = {};
+  }
+
+  // componentDidMount() {
+  //   firebase.database().ref('committees').once('value').then(committees => {
+  //     this.setState({ committeeNo: Object.keys(committees.val() || {}).length });
+  //   });
+  // }
+
+  renderStatistics() {
+    return (
+      <Statistic.Group textAlign="center">
+        <Statistic>
+          <Statistic.Value>{this.state.committeeNo || <Loading small />}</Statistic.Value>
+          <Statistic.Label>Committees created</Statistic.Label>
+        </Statistic>
+        <Statistic>
+          <Statistic.Value>{this.state.committeeNo || <Loading small />}</Statistic.Value>
+          <Statistic.Label>Delegates participating</Statistic.Label>
+        </Statistic>
+      </Statistic.Group>
+    );
+  }
+
   render() {
     return (
       <ResponsiveContainer>
@@ -277,6 +309,9 @@ export default class Homepage extends React.Component<{}, {}> {
         </Divider>
         <Segment style={{ padding: '0em' }} vertical>
           <Grid celled="internally" columns="equal" stackable>
+            {/* <Grid.Row textAlign="center">
+              {this.renderStatistics()}
+            </Grid.Row> */}
             <Grid.Row textAlign="center">
               <Grid.Column style={{ paddingBottom: '5em', paddingTop: '5em' }}>
                 <Header as="h3" style={{ fontSize: '2em' }}>
