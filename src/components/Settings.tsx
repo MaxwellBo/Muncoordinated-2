@@ -3,7 +3,7 @@ import * as firebase from 'firebase';
 import { CommitteeData } from './Committee';
 import { RouteComponentProps } from 'react-router';
 import { URLParameters } from '../types';
-import { Header, Segment, Checkbox } from 'semantic-ui-react';
+import { Header, Segment, Checkbox, Container } from 'semantic-ui-react';
 import { checkboxHandler } from '../actions/handlers';
 
 interface Props extends RouteComponentProps<URLParameters> {
@@ -75,7 +75,7 @@ export default class Settings extends React.Component<Props, State> {
     const { committee } = this.state;
 
     return (
-      <div>
+      <Container text>
         <Header as="h3" attached="top">Settings</Header>
         <Segment attached="bottom" loading={!committee}>
           {renderSetting('moveQueueUp', '\'Queue\' should appear above \'Next Speaking\'')}
@@ -84,7 +84,7 @@ export default class Settings extends React.Component<Props, State> {
           {renderSetting('autoNextSpeaker',
             'The next speaker will automatically be moved to the \'Now Speaking\' position after the time has elapsed for the current speaker')}
         </Segment>
-      </div>
+      </Container>
     );
   }
 }

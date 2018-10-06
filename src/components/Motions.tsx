@@ -2,7 +2,8 @@ import * as React from 'react';
 import * as firebase from 'firebase';
 import Committee, { CommitteeData, CommitteeID, DEFAULT_COMMITTEE } from './Committee';
 import { RouteComponentProps } from 'react-router';
-import { Icon, Input, Dropdown, Button, Card, Form, Message, Flag, Label, TextArea } from 'semantic-ui-react';
+import { Icon, Input, Dropdown, Button, Card, Form, Message, Flag, Label, TextArea, 
+  Container } from 'semantic-ui-react';
 import { stateFieldHandler,
   stateDropdownHandler,
   stateValidatedNumberFieldHandler,
@@ -754,7 +755,7 @@ export default class Motions extends React.Component<Props, State> {
       : <div />; // TODO: This could probably do with a nice spinner
 
     return (
-      <div>
+      <Container text>
         <Card.Group
           itemsPerRow={1} 
         >
@@ -766,7 +767,7 @@ export default class Motions extends React.Component<Props, State> {
         >
           {renderedMotions}
         </Card.Group>
-      </div>
+      </Container>
     );
   }
 }

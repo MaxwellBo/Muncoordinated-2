@@ -4,7 +4,7 @@ import { CommitteeData, CommitteeID } from './Committee';
 import { MemberData, MemberID, Rank, parseFlagName, nameToCountryOption } from './Member';
 import * as Utils from '../utils';
 import { Dropdown, Segment, Header, Flag, Table, List, Button, Checkbox, Icon, 
-  CheckboxProps, DropdownProps, ButtonProps, Tab } from 'semantic-ui-react';
+  CheckboxProps, DropdownProps, ButtonProps, Tab, Container } from 'semantic-ui-react';
 import { COUNTRY_OPTIONS, CountryOption } from '../constants';
 import { checkboxHandler, dropdownHandler } from '../actions/handlers';
 import { makeDropdownOption } from '../utils';
@@ -316,7 +316,9 @@ export default class Admin extends React.Component<Props, State> {
     ];
 
     return (
-      <Tab panes={panes} />
+      <Container text>
+        <Tab panes={panes} />
+      </Container>
     );
   }
 }

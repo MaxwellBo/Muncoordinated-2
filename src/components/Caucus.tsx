@@ -3,7 +3,7 @@ import * as firebase from 'firebase';
 import * as _ from 'lodash';
 import {
   Segment, Dimmer, Header, Dropdown, TextArea, Input, Button, Icon, Grid, Feed, Flag,
-  Label, Form, Message
+  Label, Form, Message, Container
 } from 'semantic-ui-react';
 import Timer, { TimerData, DEFAULT_TIMER } from './Timer';
 import { RouteComponentProps } from 'react-router';
@@ -261,10 +261,12 @@ export default class Caucus extends React.Component<Props, State> {
     );
 
     return (
-      <Grid columns="equal">
-        {header}
-        {body}
-      </Grid >
+      <Container>
+        <Grid columns="equal">
+          {header}
+          {body}
+        </Grid >
+      </Container>
     );
   }
 

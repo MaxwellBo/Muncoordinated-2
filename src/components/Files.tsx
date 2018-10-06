@@ -5,7 +5,7 @@ import { CommitteeData, CommitteeID } from './Committee';
 import { RouteComponentProps } from 'react-router';
 import { URLParameters } from '../types';
 import { TextArea, Segment, Form, Button, Popup, InputOnChangeData, Progress, 
-  List, DropdownProps, ListDescription, Flag } from 'semantic-ui-react';
+  List, DropdownProps, ListDescription, Flag, Container } from 'semantic-ui-react';
 import { textAreaHandler } from '../actions/handlers';
 import { nameToCountryOption, parseFlagName } from './Member';
 import Loading from './Loading';
@@ -124,7 +124,7 @@ export default class Files extends React.Component<Props, State> {
     const countryOptions = recoverCountryOptions(committee);
 
     return (
-      <div>
+      <Container text>
         <Progress 
           percent={Math.round(progress || 0 )} 
           progress 
@@ -165,7 +165,7 @@ export default class Files extends React.Component<Props, State> {
             />
           ) : <Loading />}
         </List>
-      </div>
+      </Container>
     );
   }
 }

@@ -3,7 +3,7 @@ import * as firebase from 'firebase';
 import { CommitteeData } from './Committee';
 import { RouteComponentProps } from 'react-router';
 import { URLParameters } from '../types';
-import { TextArea, Segment, Form, Button, Popup } from 'semantic-ui-react';
+import { TextArea, Segment, Form, Button, Popup, Container } from 'semantic-ui-react';
 import { textAreaHandler } from '../actions/handlers';
 import Loading from './Loading';
 
@@ -47,7 +47,7 @@ export default class Notes extends React.Component<Props, State> {
     const trigger = <Button icon="question" size="mini" basic floated="right" />;
 
     return committee ? (
-      <div>
+      <Container text>
         <Form>
           <TextArea
             value={committee ? committee.notes : ''}
@@ -61,7 +61,7 @@ export default class Notes extends React.Component<Props, State> {
             basic
           />
         </Form>
-      </div> 
+      </Container> 
     ) : <Loading />;
   }
 }

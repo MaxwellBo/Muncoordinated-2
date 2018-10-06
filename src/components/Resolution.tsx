@@ -4,7 +4,7 @@ import * as _ from 'lodash';
 import { MemberID, nameToCountryOption, MemberData, Rank } from './Member';
 import { AmendmentID, AmendmentData, DEFAULT_AMENDMENT, AMENDMENT_STATUS_OPTIONS } from './Amendment';
 import { Card, Button, Form, Dimmer, Dropdown, Segment, Input, TextArea, 
-  List, Label, SemanticICONS, Icon, ListContent, Tab, Grid, SemanticCOLORS } from 'semantic-ui-react';
+  List, Label, SemanticICONS, Icon, ListContent, Tab, Grid, SemanticCOLORS, Container } from 'semantic-ui-react';
 import { CommitteeData } from './Committee';
 import { CaucusID, DEFAULT_CAUCUS, CaucusData } from './Caucus';
 import { RouteComponentProps } from 'react-router';
@@ -552,10 +552,10 @@ export default class Resolution extends React.Component<Props, State> {
     ];
 
     return (
-      <div>
+      <Container>
         {renderHeader(resolution)}
         <Tab panes={panes} />
-      </div>
+      </Container>
     );
   }
 

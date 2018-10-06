@@ -3,7 +3,7 @@ import * as firebase from 'firebase';
 import * as _ from 'lodash';
 import Committee, { CommitteeData } from './Committee';
 import { RouteComponentProps } from 'react-router';
-import { Table, Flag  } from 'semantic-ui-react';
+import { Table, Flag, Container } from 'semantic-ui-react';
 import { MemberData, MemberID, parseFlagName } from './Member';
 import { CaucusID, CaucusData } from './Caucus';
 import { URLParameters } from '../types';
@@ -92,18 +92,20 @@ export default class Stats extends React.Component<Props, State> {
     });
 
     return (
-      <Table compact celled definition>
-        <Table.Header>
-          <Table.Row>
-            <Table.HeaderCell />
-            <Table.HeaderCell>Times Spoken</Table.HeaderCell>
-          </Table.Row>
-        </Table.Header>
+      <Container text>
+        <Table compact celled definition>
+          <Table.Header>
+            <Table.Row>
+              <Table.HeaderCell />
+              <Table.HeaderCell>Times Spoken</Table.HeaderCell>
+            </Table.Row>
+          </Table.Header>
 
-        <Table.Body>
-          {rows}
-        </Table.Body>
-      </Table>
+          <Table.Body>
+            {rows}
+          </Table.Body>
+        </Table>
+      </Container>
     );
   }
 

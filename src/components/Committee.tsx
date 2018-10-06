@@ -375,20 +375,20 @@ export default class Committee extends React.Component<Props, State> {
       <div>
         <Notifications {...this.props} />
         <ResponsiveNav {...this.props} committee={this.state.committee} >
-          <Container style={{ padding: '1em 0em' }}>
+          <Container text style={{ padding: '1em 0em' }}>
             <ShareHint committeeID={this.props.match.params.committeeID} />
-            <Route exact={true} path="/committees/:committeeID/admin" render={renderAdmin} />
-            <Route exact={true} path="/committees/:committeeID/stats" component={Stats} />
-            <Route exact={true} path="/committees/:committeeID/unmod" component={Unmod} />
-            <Route exact={true} path="/committees/:committeeID/motions" component={Motions} />
-            <Route exact={true} path="/committees/:committeeID/notes" component={Notes} />
-            <Route exact={true} path="/committees/:committeeID/files" component={Files} />
-            <Route exact={true} path="/committees/:committeeID/settings" component={Settings} />
-            <Route exact={true} path="/committees/:committeeID/help" component={Help} />
-            <Route path="/committees/:committeeID/caucuses/:caucusID" component={Caucus} />
-            <Route path="/committees/:committeeID/resolutions/:resolutionID" component={Resolution} />
-            <Footer />
           </Container>
+          <Route exact={true} path="/committees/:committeeID/admin" render={renderAdmin} />
+          <Route exact={true} path="/committees/:committeeID/stats" component={Stats} />
+          <Route exact={true} path="/committees/:committeeID/unmod" component={Unmod} />
+          <Route exact={true} path="/committees/:committeeID/motions" component={Motions} />
+          <Route exact={true} path="/committees/:committeeID/notes" component={Notes} />
+          <Route exact={true} path="/committees/:committeeID/files" component={Files} />
+          <Route exact={true} path="/committees/:committeeID/settings" component={Settings} />
+          <Route exact={true} path="/committees/:committeeID/help" component={Help} />
+          <Route path="/committees/:committeeID/caucuses/:caucusID" component={Caucus} />
+          <Route path="/committees/:committeeID/resolutions/:resolutionID" component={Resolution} />
+            {/* <Footer /> */}
         </ResponsiveNav>
       </div>
     );

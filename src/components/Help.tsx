@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Button, Segment, Header, List } from 'semantic-ui-react';
+import { Button, Segment, Header, List, Container } from 'semantic-ui-react';
 
 export default class Help extends React.PureComponent<{}, {}> {
 
@@ -31,7 +31,7 @@ export default class Help extends React.PureComponent<{}, {}> {
     const { edge, firefox, chrome, gpl } = this;
 
     return (
-      <div>
+      <Container>
         <Header as="h3" attached="top">Keyboard Shortcuts</Header>
         <Segment attached="bottom">
           <List>
@@ -98,7 +98,7 @@ export default class Help extends React.PureComponent<{}, {}> {
         <Segment attached="bottom">
           Muncoordinated is licensed under {gpl}
         </Segment>
-      </div>
+      </Container>
     );
   }
 }

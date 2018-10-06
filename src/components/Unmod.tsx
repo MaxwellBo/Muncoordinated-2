@@ -1,5 +1,6 @@
 import * as React from 'react';
 import * as firebase from 'firebase';
+import { Container } from 'semantic-ui-react';
 import { CommitteeData } from './Committee';
 import { RouteComponentProps } from 'react-router';
 import Timer, { TimerData } from './Timer';
@@ -30,7 +31,9 @@ export default class Unmod extends React.Component<Props, State> {
     const { committeeFref } = this.state;
 
     return (
-      <Timer name="Unmoderated Caucus" timerFref={committeeFref} onChange={(x: TimerData) => x} />
+      <Container text>
+        <Timer name="Unmoderated Caucus" timerFref={committeeFref} onChange={(x: TimerData) => x} />
+      </Container>
     );
   }
 }
