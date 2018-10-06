@@ -185,6 +185,36 @@ class ResponsiveNav extends React.Component<ResponsiveContainerProps, {}> {
     );
   }
 
+  makeMenuButton = (name: string, icon: SemanticICONS, f: () => void) => {
+    return (
+      <Menu.Item
+        link
+        key={name}
+        name={name.toLowerCase()}
+        active={false}
+        onClick={f}
+      >
+        {/* <Icon name={icon} /> */}
+        {name}
+      </Menu.Item>
+    );
+  }
+
+  makeSubmenuButton = (name: string, icon: SemanticICONS, f: () => void) => {
+    return (
+      <Dropdown.Item
+        link
+        key={name}
+        name={name.toLowerCase()}
+        active={false}
+        onClick={f}
+      >
+        <Icon name={icon} />
+        {name}
+      </Dropdown.Item>
+    );
+  }
+
   makeMenuIcon = (name: string, icon: SemanticICONS) => {
     const committeeID: CommitteeID = this.props.match.params.committeeID;
 
@@ -226,8 +256,36 @@ class ResponsiveNav extends React.Component<ResponsiveContainerProps, {}> {
     );
   }
 
+  pushCaucus = () => {
+    const committeeID: CommitteeID = this.props.match.params.committeeID;
+
+    const newCaucus: CaucusData = {
+      ...DEFAULT_CAUCUS,
+      name: 'untitled caucus',
+    };
+
+    const ref = postCaucus(committeeID, newCaucus);
+
+    this.props.history
+      .push(`/committees/${committeeID}/caucuses/${ref.key}`);
+  }
+
+  pushResolution = () => {
+    const committeeID: CommitteeID = this.props.match.params.committeeID;
+
+    const newResolution: ResolutionData = {
+      ...DEFAULT_RESOLUTION,
+      name: 'untitled resolution',
+    };
+
+    const ref = postResolution(committeeID, newResolution);
+
+    this.props.history
+      .push(`/committees/${committeeID}/resolutions/${ref.key}`);
+  }
+
   renderMenuItems = () => {
-    const { makeMenuItem, makeSubmenuItem, makeMenuIcon } = this;
+    const { makeMenuItem, makeSubmenuItem, makeMenuIcon, makeSubmenuButton, makeMenuButton } = this;
     const { committee } = this.props;
 
     const caucuses = committee ? committee.caucuses : undefined;
@@ -265,15 +323,17 @@ class ResponsiveNav extends React.Component<ResponsiveContainerProps, {}> {
         makeMenuItem('Motions', 'sort numeric descending'),
         makeMenuItem('Unmod', 'discussions'),
         (
-          <Dropdown item text="Caucuses" loading={!committee}>
+          <Dropdown item text="Caucuses" loading={!committee} icon={committee ? 'add' : undefined}>
             <Dropdown.Menu>
+              {makeSubmenuButton('New caucus', 'add', this.pushCaucus)}
               {caucusItems}
             </Dropdown.Menu>
           </Dropdown>
         ),
         (
-          <Dropdown item text="Resolutions" loading={!committee}>
+          <Dropdown item text="Resolutions" loading={!committee} icon={committee ? 'add' : undefined}>
             <Dropdown.Menu>
+              {makeSubmenuButton('New resolution', 'add', this.pushResolution)}
               {resolutionItems}
             </Dropdown.Menu>
           </Dropdown>
@@ -331,33 +391,6 @@ export default class Committee extends React.Component<Props, State> {
     this.state.committeeFref.off('value', this.firebaseCallback);
   }
 
-  pushCaucus = () => {
-    const committeeID: CommitteeID = this.props.match.params.committeeID;
-
-    const newCaucus: CaucusData = {
-      ...DEFAULT_CAUCUS,
-      name: 'untitled caucus',
-    };
-
-    const ref = postCaucus(committeeID, newCaucus);
-
-    this.props.history
-      .push(`/committees/${committeeID}/caucuses/${ref.key}`);
-  }
-
-  pushResolution = () => {
-    const committeeID: CommitteeID = this.props.match.params.committeeID;
-
-    const newResolution: ResolutionData = {
-      ...DEFAULT_RESOLUTION,
-      name: 'untitled resolution',
-    };
-
-    const ref = postResolution(committeeID, newResolution);
-
-    this.props.history
-      .push(`/committees/${committeeID}/resolutions/${ref.key}`);
-  }
 
   renderAdmin = () => {
     return (
