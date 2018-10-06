@@ -316,7 +316,7 @@ class ResponsiveNav extends React.Component<ResponsiveContainerProps, {}> {
       [
         (
           <Menu.Item header>
-            {committee ? committee.name : undefined}
+            {committee ? committee.name : <Loading small />}
           </Menu.Item>
         ),
         makeMenuItem('Admin', 'users'),
