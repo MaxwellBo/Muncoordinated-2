@@ -99,7 +99,7 @@ class DesktopContainer extends React.Component<DesktopContainerProps, DesktopCon
     return (
       // @ts-ignore
       <Responsive {...{ minWidth: Responsive.onlyMobile.maxWidth + 1 }}>
-        <Menu stackable fluid>
+        <Menu fluid size="small">
           {menu}
         </Menu>
       {body}
