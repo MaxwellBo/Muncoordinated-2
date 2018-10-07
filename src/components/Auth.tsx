@@ -29,16 +29,6 @@ interface Props {
   allowSignup: boolean | undefined;
 }
 
-export class ContaineredLogin extends React.Component<Props, State>  {
-  render() {
-    return (
-      <Container style={{ padding: '1em 0em' }}>
-        <Login {...this.props} />
-      </Container>
-    );
-  }
-}
-
 export class Login extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
