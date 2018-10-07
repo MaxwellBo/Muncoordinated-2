@@ -2,7 +2,6 @@ import * as firebase from 'firebase';
 
 import { CommitteeID } from '../components/Committee';
 import { CaucusData, CaucusID, CaucusStatus } from '../components/Caucus';
-import { ResolutionData } from '../components/Resolution';
 import { TimerData } from '../components/Timer';
 import { SpeakerEvent } from '../components/caucus/SpeakerFeed';
 

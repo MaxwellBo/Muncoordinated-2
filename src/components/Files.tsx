@@ -9,7 +9,7 @@ import { TextArea, Segment, Form, Button, Popup, InputOnChangeData, Progress,
 import { textAreaHandler } from '../actions/handlers';
 import { nameToCountryOption, parseFlagName } from './Member';
 import Loading from './Loading';
-import { recoverCountryOptions } from '../utils';
+import { membersToOptions, recoverCountryOptions } from '../utils';
 import { CountryOption, COUNTRY_OPTIONS } from '../constants';
 
 interface Props extends RouteComponentProps<URLParameters> {

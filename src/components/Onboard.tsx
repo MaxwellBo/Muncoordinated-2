@@ -1,10 +1,9 @@
 import * as React from 'react';
 import { RouteComponentProps } from 'react-router';
-import { Link } from 'react-router-dom';
 import * as firebase from 'firebase';
-import { CommitteeData, CommitteeID, DEFAULT_COMMITTEE } from './Committee';
-import { Segment, Button, Divider, Form, Grid, Header, InputOnChangeData, 
-  Message, Icon, Container, List } from 'semantic-ui-react';
+import { CommitteeData, DEFAULT_COMMITTEE } from './Committee';
+import { Segment, Divider, Form, Grid, Header, InputOnChangeData, 
+  Message, Container, List } from 'semantic-ui-react';
 import { Login } from './Auth';
 import { URLParameters } from '../types';
 import ConnectionStatus from './ConnectionStatus';
@@ -84,8 +83,12 @@ export default class Onboard extends React.Component<Props, State> {
       }
     };
 
-    const handleChange = (event: React.SyntheticEvent<HTMLInputElement>, data: InputOnChangeData): void =>
-      this.setState({ [data.name]: data.value });
+    const handleChange = (event: React.SyntheticEvent<HTMLInputElement>, data: InputOnChangeData): void => {
+      // @ts-ignore
+      // XXX: Don't do stupid shit and choose form input names that don't
+      // map to valid state properties
+      this.setState({ [target]: data.value });
+    };
 
     return (
       <Form onSubmit={submitHandler}>
@@ -121,8 +124,10 @@ export default class Onboard extends React.Component<Props, State> {
               {!user && (
                 <Message warning>
                   <List bulleted>
-                    <List.Item>Login to access your previously created committees, or to create a new committee.</List.Item>
-                    <List.Item>Muncoordinated officially supports Google Chrome. Use of other browsers may lead to bugs or data loss.</List.Item>
+                    <List.Item>Login to access your previously created committees, 
+                      or to create a new committee.</List.Item>
+                    <List.Item>Muncoordinated officially supports Google Chrome. 
+                      Use of other browsers may lead to bugs or data loss.</List.Item>
                   </List>
                 </Message>
                 )

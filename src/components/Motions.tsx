@@ -10,7 +10,7 @@ import { stateFieldHandler,
   stateCountryDropdownHandler,
   stateTextAreaHandler
 } from '../actions/handlers';
-import { makeDropdownOption, recoverCountryOptions } from '../utils';
+import { makeDropdownOption, membersToOptions, recoverCountryOptions } from '../utils';
 import { TimerSetter, Unit } from './TimerSetter';
 import { nameToCountryOption, parseFlagName } from './Member';
 import { DEFAULT_CAUCUS, CaucusData, CaucusID, CaucusStatus } from './Caucus';

@@ -5,7 +5,7 @@ import { CountryOption } from '../constants';
 export function fieldHandler<T>
   (fref: firebase.database.Reference, field: keyof T) {
   return (e: React.FormEvent<HTMLInputElement>) =>
-    fref.child(field).set(e.currentTarget.value);
+    fref.child(field.toString()).set(e.currentTarget.value);
 }
 
 function lens<P, S>(comp: React.Component<P, S>, field: keyof S, target: string, value: any) {
@@ -35,7 +35,7 @@ export function validatedNumberFieldHandler<T>
   return (e: React.FormEvent<HTMLInputElement>) => {
     const n: number = Number(e.currentTarget.value);
 
-    fref.child(field).set(n ? n : {});
+    fref.child(field.toString()).set(n ? n : {});
   };
 }
 
@@ -51,7 +51,7 @@ export function stateValidatedNumberFieldHandler<P, S>
 export function textAreaHandler<T>
   (fref: firebase.database.Reference, field: keyof T) {
   return (event: React.FormEvent<HTMLTextAreaElement>, data: TextAreaProps) =>
-    fref.child(field).set(data.value);
+    fref.child(field.toString()).set(data.value);
 }
 
 export function stateTextAreaHandler<P, S>
@@ -63,7 +63,7 @@ export function stateTextAreaHandler<P, S>
 export function dropdownHandler<T>
   (fref: firebase.database.Reference, field: keyof T) {
   return (event: React.SyntheticEvent<HTMLElement>, data: DropdownProps) =>
-    fref.child(field).set(data.value);
+    fref.child(field.toString()).set(data.value);
 }
 
 export function stateDropdownHandler<P, S>
@@ -75,13 +75,13 @@ export function stateDropdownHandler<P, S>
 export function checkboxHandler<T>
   (fref: firebase.database.Reference, field: keyof T) {
   return (event: React.FormEvent<HTMLInputElement>, data: CheckboxProps) =>
-    fref.child(field).set(data.checked);
+    fref.child(field.toString()).set(data.checked);
 }
 
 export function countryDropdownHandler<T>
   (fref: firebase.database.Reference, field: keyof T, countryOptions: CountryOption[]) {
   return (event: React.SyntheticEvent<HTMLElement>, data: DropdownProps) =>
-    fref.child(field).set(countryOptions.filter(c => c.value === data.value)[0].text);
+    fref.child(field.toString()).set(countryOptions.filter(c => c.value === data.value)[0].text);
 }
 
 export function stateCountryDropdownHandler<P, S>

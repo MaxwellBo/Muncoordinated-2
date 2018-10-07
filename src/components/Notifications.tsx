@@ -33,8 +33,7 @@ export default class Notifications extends React.Component<Props, State> {
 
     if (reason && reason.code === 'PERMISSION_DENIED') {
       this.setState(prevState => {
-
-        const newNotification = {
+        const newNotification: Notification = {
           header: 'Permission denied',
           message: 'Please login as the owner of this committee in order to perform that action'
         };
@@ -47,7 +46,7 @@ export default class Notifications extends React.Component<Props, State> {
             notifications: [...prevState.notifications, newNotification]
           };
         } else {
-          return {};
+          return { notifications: prevState.notifications };
         }
       });
     }

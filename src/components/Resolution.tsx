@@ -1,17 +1,18 @@
 import * as React from 'react';
 import * as firebase from 'firebase';
 import * as _ from 'lodash';
-import { MemberID, nameToCountryOption, MemberData, Rank } from './Member';
+import { MemberID, nameToCountryOption, MemberData } from './Member';
 import { AmendmentID, AmendmentData, DEFAULT_AMENDMENT, AMENDMENT_STATUS_OPTIONS } from './Amendment';
-import { Card, Button, Form, Dimmer, Dropdown, Segment, Input, TextArea, 
-  List, Label, SemanticICONS, Icon, ListContent, Tab, Grid, SemanticCOLORS, Container } from 'semantic-ui-react';
+import {
+  Card, Button, Form, Dropdown, Segment, Input, TextArea,
+  List, SemanticICONS, Icon, Tab, Grid, SemanticCOLORS, Container
+} from 'semantic-ui-react';
 import { CommitteeData } from './Committee';
 import { CaucusID, DEFAULT_CAUCUS, CaucusData } from './Caucus';
 import { RouteComponentProps } from 'react-router';
 import { URLParameters } from '../types';
 import { dropdownHandler, fieldHandler, textAreaHandler, countryDropdownHandler } from '../actions/handlers';
-import { objectToList, makeDropdownOption, recoverCountryOptions } from '../utils';
-import { CountryOption, COUNTRY_OPTIONS } from '../constants';
+import { makeDropdownOption, membersToOptions, recoverCountryOptions } from '../utils';
 import Loading from './Loading';
 import { canVote } from './Admin';
 import { voteOnResolution } from '../actions/resolutionActions';
@@ -109,7 +110,7 @@ export default class Resolution extends React.Component<Props, State> {
 
   handleProvisionAmendment = (id: AmendmentID, amendment: AmendmentData) => {
     const { committeeID } = this.props.match.params;
-    const { proposer, text} = amendment;
+    const { proposer, text } = amendment;
 
     const newCaucus: CaucusData = {
       ...DEFAULT_CAUCUS,
@@ -180,11 +181,11 @@ export default class Resolution extends React.Component<Props, State> {
     );
 
     const statusDropdown = (
-      <Dropdown 
-        value={status} 
-        options={AMENDMENT_STATUS_OPTIONS} 
-        onChange={dropdownHandler<AmendmentData>(amendmentFref, 'status')} 
-      /> 
+      <Dropdown
+        value={status}
+        options={AMENDMENT_STATUS_OPTIONS}
+        onChange={dropdownHandler<AmendmentData>(amendmentFref, 'status')}
+      />
     );
 
     const countryOptions = recoverCountryOptions(this.state.committee);
@@ -211,15 +212,15 @@ export default class Resolution extends React.Component<Props, State> {
         onClick={() => handleProvisionAmendment(id, amendment!)}
       />
     ) : (
-      <Button
-        floated="right"
-        content="Associated Caucus"
-        onClick={() => this.gotoCaucus(amendment!.caucus)}
-      />
-    );
+        <Button
+          floated="right"
+          content="Associated Caucus"
+          onClick={() => this.gotoCaucus(amendment!.caucus)}
+        />
+      );
 
     return (
-      <Card 
+      <Card
         key={id}
       >
         <Card.Content>
@@ -260,7 +261,7 @@ export default class Resolution extends React.Component<Props, State> {
     } else if (currentVote === Vote.Abstaining) {
       newVote = Vote.Against;
     }
-    
+
     voteOnResolution(committeeID, resolutionID, memberID, newVote);
   }
 
@@ -288,7 +289,7 @@ export default class Resolution extends React.Component<Props, State> {
         icon
         onClick={() => cycleVote(key, member, vote)}
       >
-        <Icon 
+        <Icon
           name={icon}
           color={color === 'yellow' ? 'black' : undefined}
         />
@@ -320,8 +321,8 @@ export default class Resolution extends React.Component<Props, State> {
     return _.chain(members)
       .keys()
       .filter(key => canVote(members[key]) && members[key].present)
-      .sortBy(key => [members[key].name])
-      .map(key => renderVotingMember(key, members[key], votes[key]))
+      .sortBy((key: string) => [members[key].name])
+      .map((key: string) => renderVotingMember(key, members[key], votes[key]))
       .value();
   }
 
@@ -400,11 +401,11 @@ export default class Resolution extends React.Component<Props, State> {
     const { handleProvisionResolution } = this;
 
     const statusDropdown = (
-      <Dropdown 
-        value={resolution ? resolution.status : ResolutionStatus.Introduced} 
-        options={RESOLUTION_STATUS_OPTIONS} 
-        onChange={dropdownHandler<ResolutionData>(resolutionFref, 'status')} 
-      /> 
+      <Dropdown
+        value={resolution ? resolution.status : ResolutionStatus.Introduced}
+        options={RESOLUTION_STATUS_OPTIONS}
+        onChange={dropdownHandler<ResolutionData>(resolutionFref, 'status')}
+      />
     );
 
     const countryOptions = recoverCountryOptions(this.state.committee);
@@ -445,24 +446,24 @@ export default class Resolution extends React.Component<Props, State> {
         onClick={() => handleProvisionResolution(resolution!)}
       />
     ) : (
-      <Form.Button
-        content="Associated Caucus"
-        onClick={() => this.gotoCaucus(resolution!.caucus)}
-      />
-    );
+        <Form.Button
+          content="Associated Caucus"
+          onClick={() => this.gotoCaucus(resolution!.caucus)}
+        />
+      );
 
     return (
-        <Segment loading={!resolution}>
-          <Input
-            value={resolution ? resolution.name : ''}
-            label={statusDropdown}
-            labelPosition="right"
-            onChange={fieldHandler<ResolutionData>(resolutionFref, 'name')}
-            attatched="top"
-            size="massive"
-            fluid
-            placeholder="Resolution Name"
-          />
+      <Segment loading={!resolution}>
+        <Input
+          value={resolution ? resolution.name : ''}
+          label={statusDropdown}
+          labelPosition="right"
+          onChange={fieldHandler<ResolutionData>(resolutionFref, 'name')}
+          attatched="top"
+          size="massive"
+          fluid
+          placeholder="Resolution Name"
+        />
         <Form>
           <TextArea
             value={resolution ? resolution.link : ''}
@@ -500,20 +501,20 @@ export default class Resolution extends React.Component<Props, State> {
     const adder = (
       <Card>
         {/* <Card.Content> */}
-          <Button
-            icon="plus"
-            primary
-            fluid
-            basic
-            onClick={handlePushAmendment}
-          />
+        <Button
+          icon="plus"
+          primary
+          fluid
+          basic
+          onClick={handlePushAmendment}
+        />
         {/* </Card.Content> */}
       </Card>
     );
 
     return (
       <Card.Group
-        itemsPerRow={1} 
+        itemsPerRow={1}
       >
         {adder}
         {!resolution && <Loading />}
@@ -522,32 +523,25 @@ export default class Resolution extends React.Component<Props, State> {
     );
   }
 
-  renderOptions = (resolution?: ResolutionData) => {
-    const { recoverResolutionFref, handleProvisionResolution } = this;
-    return (
-      <Button
-        negative
-        content="Delete"
-        basic
-        onClick={() => recoverResolutionFref().remove()}
-      />
-    );
+  renderOptions = () => {
+    const { recoverResolutionFref } = this;
+    return (<Button negative content="Delete" basic onClick={() => recoverResolutionFref().remove()} />);
   }
 
   renderResolution = (resolution?: ResolutionData) => {
     const { renderHeader, renderAmendmentsGroup, renderVoting, renderOptions } = this;
 
     const panes = [
-      { 
-        menuItem: 'Amendments', 
-        render: () => <Tab.Pane>{renderAmendmentsGroup(resolution)}</Tab.Pane> 
+      {
+        menuItem: 'Amendments',
+        render: () => <Tab.Pane>{renderAmendmentsGroup(resolution)}</Tab.Pane>
       },
-      { 
-        menuItem: 'Voting', 
+      {
+        menuItem: 'Voting',
         render: () => <Tab.Pane>{renderVoting(resolution)}</Tab.Pane>
-      }, { 
-        menuItem: 'Options', 
-        render: () => <Tab.Pane>{renderOptions(resolution)}</Tab.Pane>
+      }, {
+        menuItem: 'Options',
+        render: () => <Tab.Pane>{renderOptions()}</Tab.Pane>
       }
     ];
 

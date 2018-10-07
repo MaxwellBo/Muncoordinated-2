@@ -1,13 +1,12 @@
 import * as React from 'react';
 import * as firebase from 'firebase';
 import { RouteComponentProps } from 'react-router';
-import { Route, Link } from 'react-router-dom';
+import { Route } from 'react-router-dom';
 import { MemberData, MemberID } from './Member';
 import Caucus, { CaucusData, CaucusID, DEFAULT_CAUCUS, CaucusStatus } from './Caucus';
 import Resolution, { ResolutionData, ResolutionID, DEFAULT_RESOLUTION } from './Resolution';
 import Admin from './Admin';
-import { Icon, Input, Menu, Sticky, Grid, Segment, SemanticICONS, Button, 
-  Dropdown, Container, Responsive, Sidebar, Header } from 'semantic-ui-react';
+import { Icon, Menu, SemanticICONS, Dropdown, Container, Responsive, Sidebar, Header } from 'semantic-ui-react';
 import Stats from './Stats';
 import { MotionID, MotionData } from './Motions';
 import { TimerData, DEFAULT_TIMER } from './Timer';
@@ -15,7 +14,6 @@ import Unmod from './Unmod';
 import Notes from './Notes';
 import Help from './Help';
 import Motions from './Motions';
-import { fieldHandler } from '../actions/handlers';
 import { postCaucus } from '../actions/caucusActions';
 import { URLParameters } from '../types';
 import Loading from './Loading';
@@ -218,7 +216,7 @@ class ResponsiveNav extends React.Component<ResponsiveContainerProps, {}> {
   }
 
   makeSubmenuItem = (id: string, name: string, type: 'caucuses' | 'resolutions') => {
-    const { committeeID, caucusID, resolutionID } = this.props.match.params;
+    const { committeeID } = this.props.match.params;
     const destination = `/committees/${committeeID}/${type}/${id}`;
 
     return (
@@ -314,7 +312,7 @@ class ResponsiveNav extends React.Component<ResponsiveContainerProps, {}> {
         ),
         makeMenuItem('Notes', 'sticky note outline'),
         makeMenuItem('Files', 'file outline'),
-        makeMenuItem('Stats', 'bar chart'),
+        makeMenuItem('Stats', 'chart bar'),
         (
           <Menu.Menu key="icon-submenu" position="right">
             {makeMenuIcon('Settings', 'settings')}

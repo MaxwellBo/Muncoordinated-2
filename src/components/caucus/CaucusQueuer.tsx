@@ -1,13 +1,13 @@
 import * as React from 'react';
 import * as firebase from 'firebase';
-import { MemberData, nameToCountryOption } from '../Member';
+import { MemberData } from '../Member';
 import { CaucusData } from '../Caucus';
-import * as Utils from '../../utils';
 import { COUNTRY_OPTIONS, CountryOption } from '../../constants';
-import { Header, Segment, Dropdown, Button, Form, DropdownProps, Icon, Checkbox } from 'semantic-ui-react';
+import { Header, Segment, Button, Form, DropdownProps } from 'semantic-ui-react';
 import { TimerSetter, Unit } from '../TimerSetter';
 import { SpeakerEvent, Stance } from '..//caucus/SpeakerFeed';
 import { checkboxHandler } from '../../actions/handlers';
+import { membersToOptions } from '../../utils';
 
 interface Props {
   caucus?: CaucusData;
@@ -47,14 +47,9 @@ export default class CaucusQueuer extends React.Component<Props, State> {
     }
   }
 
-  recoverCountryOptions = (): CountryOption[] => {
-    const members = this.props.members || {} as Map<string, MemberData>;
-
-    return Utils.objectToList(members).map(x => nameToCountryOption(x.name));
-  }
-
   countryHandler = (event: React.SyntheticEvent<HTMLElement>, data: DropdownProps): void => {
-    const countryOptions = this.recoverCountryOptions();
+    const { members } = this.props;
+    const countryOptions = membersToOptions(members);
 
     this.setState({ queueCountry: countryOptions.filter(c => c.value === data.value)[0] });
   }
@@ -68,7 +63,7 @@ export default class CaucusQueuer extends React.Component<Props, State> {
 
     const { members, caucus, caucusFref } = this.props;
 
-    const countryOptions = this.recoverCountryOptions();
+    const countryOptions = membersToOptions(members);
 
     const durationHandler = (e: React.FormEvent<HTMLInputElement>) =>
       this.setState({ durationField: e.currentTarget.value });
@@ -92,36 +87,36 @@ export default class CaucusQueuer extends React.Component<Props, State> {
               onDurationChange={durationHandler}
               onUnitChange={unitHandler}
             />
-            <Form.Checkbox 
+            <Form.Checkbox
               label="Delegates can queue"
-              indeterminate={!caucus} 
-              toggle 
+              indeterminate={!caucus}
+              toggle
               checked={caucus ? (caucus.queueIsPublic || false) : false} // zoo wee mama
-              onChange={checkboxHandler<CaucusData>(caucusFref, 'queueIsPublic')} 
+              onChange={checkboxHandler<CaucusData>(caucusFref, 'queueIsPublic')}
             />
             <Button.Group size="large" fluid>
-              <Button 
+              <Button
                 content="For"
                 // labelPosition="left"
                 // icon
                 onClick={stanceHandler(Stance.For)}
               />
-                {/* <Icon name="thumbs outline up" />
+              {/* <Icon name="thumbs outline up" />
                 For
               </Button> */}
               <Button.Or />
-              <Button 
+              <Button
                 content="Neutral"
                 onClick={stanceHandler(Stance.Neutral)}
               />
               <Button.Or />
-              <Button 
+              <Button
                 content="Against"
                 // labelPosition="right"
                 // icon
                 onClick={stanceHandler(Stance.Against)}
               />
-                {/* <Icon name="thumbs outline down" />
+              {/* <Icon name="thumbs outline down" />
                 Against
               </Button> */}
             </Button.Group>

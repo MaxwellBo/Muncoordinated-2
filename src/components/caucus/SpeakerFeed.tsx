@@ -16,20 +16,14 @@ export interface SpeakerEvent {
   duration: number;
 }
 
-const DEFAULT_SPEAKER_EVENT = {
-  who: '',
-  stance: Stance.Neutral,
-  duration: 0
-};
-
 const StanceIcon = (props: { stance: Stance }) => {
   switch (props.stance) {
     case Stance.For:
-      return <Icon name="thumbs outline up" />;
+      return <Icon name="thumbs up outline" />;
     case Stance.Against:
-      return <Icon name="thumbs outline down" />;
+      return <Icon name="thumbs down outline" />;
     default:
-      return <Icon name="hand outline right" />;
+      return <Icon name="hand point right outline" />;
   }
 };
 
