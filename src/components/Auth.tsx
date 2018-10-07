@@ -364,7 +364,7 @@ export class ModalLogin extends React.Component<{},
     return (
       <Modal 
         trigger={this.renderModalTrigger()}
-        size="large"
+        size="tiny"
         dimmer
         basic={!!user} // strip away the outer window when we know we have a card
       >
