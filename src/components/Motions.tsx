@@ -755,7 +755,7 @@ export default class Motions extends React.Component<Props, State> {
       : <div />; // TODO: This could probably do with a nice spinner
 
     return (
-      <Container text>
+      <Container text style={{ padding: '1em 0em' }}>
         <Card.Group
           itemsPerRow={1} 
         >

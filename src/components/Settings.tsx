@@ -75,7 +75,7 @@ export default class Settings extends React.Component<Props, State> {
     const { committee } = this.state;
 
     return (
-      <Container text>
+      <Container text style={{ padding: '1em 0em' }}>
         <Header as="h3" attached="top">Settings</Header>
         <Segment attached="bottom" loading={!committee}>
           {renderSetting('moveQueueUp', '\'Queue\' should appear above \'Next Speaking\'')}

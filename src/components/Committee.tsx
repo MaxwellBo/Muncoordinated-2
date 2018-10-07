@@ -407,7 +407,7 @@ export default class Committee extends React.Component<Props, State> {
       <div>
         <Notifications {...this.props} />
         <ResponsiveNav {...this.props} committee={this.state.committee} >
-          <Container text style={{ padding: '1em 0em' }}>
+          <Container text>
             <ShareHint committeeID={this.props.match.params.committeeID} />
             <ConnectionStatus />
           </Container>

@@ -31,7 +31,7 @@ export default class Unmod extends React.Component<Props, State> {
     const { committeeFref } = this.state;
 
     return (
-      <Container text>
+      <Container text style={{ padding: '1em 0em' }}>
         <Timer name="Unmoderated Caucus" timerFref={committeeFref} onChange={(x: TimerData) => x} />
       </Container>
     );

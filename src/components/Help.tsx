@@ -31,7 +31,7 @@ export default class Help extends React.PureComponent<{}, {}> {
     const { edge, firefox, chrome, gpl } = this;
 
     return (
-      <Container text>
+      <Container text style={{ padding: '1em 0em' }}>
         <Header as="h3" attached="top">Keyboard Shortcuts</Header>
         <Segment attached="bottom">
           <List>

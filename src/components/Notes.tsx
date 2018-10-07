@@ -47,7 +47,7 @@ export default class Notes extends React.Component<Props, State> {
     const trigger = <Button icon="question" size="mini" basic floated="right" />;
 
     return committee ? (
-      <Container text>
+      <Container text style={{ padding: '1em 0em' }}>
         <Form>
           <TextArea
             value={committee ? committee.notes : ''}

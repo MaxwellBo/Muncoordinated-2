@@ -316,7 +316,7 @@ export default class Admin extends React.Component<Props, State> {
     ];
 
     return (
-      <Container text>
+      <Container text style={{ padding: '1em 0em' }}>
         <Tab panes={panes} />
       </Container>
     );

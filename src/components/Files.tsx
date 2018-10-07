@@ -124,7 +124,7 @@ export default class Files extends React.Component<Props, State> {
     const countryOptions = recoverCountryOptions(committee);
 
     return (
-      <Container text>
+      <Container text style={{ padding: '1em 0em' }}>
         <Progress 
           percent={Math.round(progress || 0 )} 
           progress 
