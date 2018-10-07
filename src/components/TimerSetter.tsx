@@ -19,6 +19,7 @@ interface Props {
   onDurationChange: (event: React.FormEvent<HTMLInputElement>) => void;
   onSet?: () => void;
   label?: string;
+  error?: boolean;
 }
 
 export class TimerSetter extends React.Component<Props, {}> {
@@ -47,7 +48,7 @@ export class TimerSetter extends React.Component<Props, {}> {
         onChange={props.onDurationChange}
         action
         fluid
-        error={isInvalid()}
+        error={isInvalid() || props.error }
         label={props.label}
       >
         {/* <input style={{ 'text-align': 'right' }} /> */}

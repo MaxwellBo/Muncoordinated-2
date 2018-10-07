@@ -3,7 +3,7 @@ import * as firebase from 'firebase';
 import Committee, { CommitteeData, CommitteeID, DEFAULT_COMMITTEE } from './Committee';
 import { RouteComponentProps } from 'react-router';
 import { Icon, Input, Dropdown, Button, Card, Form, Message, Flag, Label, TextArea, 
-  Container } from 'semantic-ui-react';
+  Container, Divider } from 'semantic-ui-react';
 import { stateFieldHandler,
   stateDropdownHandler,
   stateValidatedNumberFieldHandler,
@@ -516,19 +516,20 @@ export default class Motions extends React.Component<Props, State> {
       speakerDuration, seconder, caucusTarget, resolutionTarget } = newMotion;
 
     const boxForAmmendments = (
-      <Form>
-        <TextArea
-          value={proposal}
-          autoHeight
-          onChange={stateTextAreaHandler<Props, State>(this, 'newMotion', 'proposal')}
-          rows={1}
-          placeholder="Text"
-        />
-      </Form>
+      <Form.TextArea
+        value={proposal}
+        autoHeight
+        onChange={stateTextAreaHandler<Props, State>(this, 'newMotion', 'proposal')}
+        rows={1}
+        label="Text"
+        placeholder="Text"
+      />
     );
 
     const boxForNames = (
-      <Input 
+      <Form.Input 
+        label="Name"
+        placeholder="Name"
         value={proposal}
         onChange={stateFieldHandler<Props, State>(this, 'newMotion', 'proposal')} 
         fluid 
@@ -536,13 +537,20 @@ export default class Motions extends React.Component<Props, State> {
     );
 
     const description = (
-      <Card.Description>
+      <Form.Group widths="equal">
         {newMotion.type === MotionType.IntroduceAmendment ? boxForAmmendments : boxForNames}
-      </Card.Description>
+      </Form.Group>
     );
+
+    const speakerSeconds = (speakerDuration || 0) * (speakerUnit === Unit.Minutes ? 60 : 1);
+    const caucusSeconds = (caucusDuration || 0) * (caucusUnit === Unit.Minutes ? 60 : 1);
+
+    const doesNotEvenlyDivide = (caucusSeconds % speakerSeconds) !== 0;
+    const hasDivisibilityError = hasSpeakers(type) && hasDuration(type) && doesNotEvenlyDivide;
 
     const speakerSetter = (
       <TimerSetter
+        error={hasDivisibilityError}
         unitValue={speakerUnit}
         durationValue={speakerDuration ? speakerDuration.toString() : undefined}
         onUnitChange={stateDropdownHandler<Props, State>(this, 'newMotion', 'speakerUnit')}
@@ -553,6 +561,7 @@ export default class Motions extends React.Component<Props, State> {
 
     const durationSetter = (
       <TimerSetter
+        error={hasDivisibilityError}
         unitValue={caucusUnit}
         durationValue={caucusDuration ? caucusDuration.toString() : undefined}
         onUnitChange={stateDropdownHandler<Props, State>(this, 'newMotion', 'caucusUnit')}
@@ -561,18 +570,11 @@ export default class Motions extends React.Component<Props, State> {
       />
     );
 
-    const speakerSeconds = (speakerDuration || 0) * (speakerUnit === Unit.Minutes ? 60 : 1);
-    const caucusSeconds = (caucusDuration || 0) * (caucusUnit === Unit.Minutes ? 60 : 1);
-
-    const doesNotEvenlyDivide = (caucusSeconds % speakerSeconds) !== 0;
-
-    const warning = (
-      <Card.Content extra>
-        <Message
-          error
-          content="Speaker time does not evenly divide the caucus time"
-        />
-      </Card.Content>
+    const divisibilityError = (
+      <Message
+        error
+        content="Speaker time does not evenly divide the caucus time"
+      />
     );
 
     const { caucuses, resolutions } = this.state.committee || { caucuses:  {}, resolutions: {} };
@@ -595,9 +597,11 @@ export default class Motions extends React.Component<Props, State> {
         search
         selection
         fluid
+        error={!caucusTarget}
         loading={!committee}
         onChange={stateDropdownHandler<Props, State>(this, 'newMotion', 'caucusTarget')}
         options={caucusOptions}
+        icon="search"
         label="Target Caucus"
       />
     );
@@ -609,25 +613,22 @@ export default class Motions extends React.Component<Props, State> {
         search
         selection
         fluid
+        error={!resolutionTarget}
         loading={!committee}
         onChange={stateDropdownHandler<Props, State>(this, 'newMotion', 'resolutionTarget')}
         options={resolutionOptions}
+        icon="search"
         label="Target Resolution"
       />
     );
 
-    const extra = (
-      <Card.Content extra>
-        <Form error={hasSpeakers(type) && hasDuration(type) && doesNotEvenlyDivide}>
-          <Form.Group widths="equal">
-            {hasCaucusTarget(type) && caucusTargetSetter}
-            {hasResolutionTarget(type) && resolutionTargetSetter}
-            {hasDuration(type) && durationSetter}
-            {hasSpeakers(type) && speakerSetter}
-          </Form.Group>
-          {warning}
-        </Form>
-      </Card.Content>
+    const setters = (
+      <Form.Group widths="equal">
+        {hasCaucusTarget(type) && caucusTargetSetter}
+        {hasResolutionTarget(type) && resolutionTargetSetter}
+        {hasDuration(type) && durationSetter}
+        {hasSpeakers(type) && speakerSetter}
+      </Form.Group>
     );
 
     const countryOptions = recoverCountryOptions(this.state.committee);
@@ -638,6 +639,7 @@ export default class Motions extends React.Component<Props, State> {
         key="proposer"
         value={nameToCountryOption(proposer).key}
         search
+        error={!proposer}
         selection
         fluid
         onChange={stateCountryDropdownHandler<Props, State>(this, 'newMotion', 'proposer', countryOptions)}
@@ -650,6 +652,7 @@ export default class Motions extends React.Component<Props, State> {
       <Form.Dropdown
         icon="search"
         key="seconder"
+        error={!seconder}
         value={nameToCountryOption(seconder).key}
         search
         selection
@@ -661,54 +664,38 @@ export default class Motions extends React.Component<Props, State> {
     );
 
     return (
-      <Card 
-        key="adder"
-      >
-        <Card.Content>
-          <Card.Header>
-            <Dropdown
-              placeholder="Select type"
-              search
-              selection
-              fluid
-              options={MOTION_TYPE_OPTIONS}
-              onChange={stateDropdownHandler<Props, State>(this, 'newMotion', 'type')}
-              value={type}
-            />
-            {hasDetail(type) && description}
-          </Card.Header>
-          <Card.Meta>
-            <Form>
-              <Form.Group widths="equal">
-                {proposerTree}
-                {hasSeconder(type) && seconderTree}
-              </Form.Group>
-            </Form>
-          </Card.Meta>
-        </Card.Content>
-        {(hasSpeakers(type) 
-          || hasDuration(type) 
-          || hasCaucusTarget(type) 
-          || hasResolutionTarget(type) 
-          ) && extra}
-        <Card.Content extra>
-          <Button.Group fluid>
-            {/* <Button 
-              basic 
-              onClick={this.handleClearAdder}
-            >
-              Clear
-            </Button> */}
-            <Button 
-              disabled={proposer === ''}
-              icon="plus"
-              basic
-              primary
-              onClick={this.handlePushMotion}
-            />
-          </Button.Group>
-        </Card.Content>
-      </Card>
+        <Form 
+          error={hasDivisibilityError}
+        >
+          <Form.Dropdown
+            placeholder="Select type"
+            search
+            selection
+            fluid
+            options={MOTION_TYPE_OPTIONS}
+            onChange={stateDropdownHandler<Props, State>(this, 'newMotion', 'type')}
+            value={type}
+          />
+          {hasDetail(type) && description}
+          <Form.Group widths="equal">
+            {proposerTree}
+            {hasSeconder(type) && seconderTree}
+          </Form.Group>
+          {(hasSpeakers(type) 
+            || hasDuration(type) 
+            || hasCaucusTarget(type) 
+            || hasResolutionTarget(type) 
+            ) && setters}
+          {divisibilityError}
+          <Button 
+            disabled={proposer === ''}
+            icon="plus"
+            basic
+            primary
+            fluid
+            onClick={this.handlePushMotion}
+          />
+        </Form>
     );
   }
 
@@ -756,12 +743,10 @@ export default class Motions extends React.Component<Props, State> {
 
     return (
       <Container text style={{ padding: '1em 0em' }}>
-        <Card.Group
-          itemsPerRow={1} 
-        >
-          {renderAdder(committee)}
-        </Card.Group>
+        {renderAdder(committee)}
+        <Divider />
         <Icon name="sort numeric descending" /> Sorted from most to least disruptive
+        <Divider />
         <Card.Group
           itemsPerRow={1} 
         >
