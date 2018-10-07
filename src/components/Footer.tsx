@@ -60,7 +60,7 @@ export default class Footer extends React.PureComponent<{}, State> {
 
     return (
       <div style={{ position: 'fixed', bottom: 5, left: 5, background: '#FFFFFF' }}>
-        Made with 💖 by <a href="https://github.com/MaxwellBo">Max Bo</a> &amp; <a href="https://www.facebook.com/UQUNSA/">UQUNSA</a>. {version}{latestVersion !== CLIENT_VERSION && refreshNudge}
+        {version} by <a href="https://github.com/MaxwellBo">Max Bo</a> &amp; <a href="https://www.facebook.com/UQUNSA/">UQUNSA</a>{latestVersion !== CLIENT_VERSION && refreshNudge}
       </div>
     );
   }
