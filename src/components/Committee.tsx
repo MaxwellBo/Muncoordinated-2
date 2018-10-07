@@ -171,29 +171,14 @@ interface ResponsiveContainerProps extends RouteComponentProps<URLParameters> {
 class ResponsiveNav extends React.Component<ResponsiveContainerProps, {}> {
   makeMenuItem = (name: string, icon: SemanticICONS) => {
     const committeeID: CommitteeID = this.props.match.params.committeeID;
+    const destination = `/committees/${committeeID}/${name.toLowerCase()}`;
 
     return (
       <Menu.Item
-        // link
         key={name}
         name={name.toLowerCase()}
-        active={false}
-        onClick={() => this.props.history.push(`/committees/${committeeID}/${name.toLowerCase()}`)}
-      >
-        {/* <Icon name={icon} /> */}
-        {name}
-      </Menu.Item>
-    );
-  }
-
-  makeMenuButton = (name: string, icon: SemanticICONS, f: () => void) => {
-    return (
-      <Menu.Item
-        // link
-        key={name}
-        name={name.toLowerCase()}
-        active={false}
-        onClick={f}
+        active={this.props.location.pathname === destination}
+        onClick={() => this.props.history.push(destination)}
       >
         {/* <Icon name={icon} /> */}
         {name}
@@ -204,7 +189,6 @@ class ResponsiveNav extends React.Component<ResponsiveContainerProps, {}> {
   makeSubmenuButton = (name: string, icon: SemanticICONS, f: () => void) => {
     return (
       <Dropdown.Item
-        // link
         key={name}
         name={name.toLowerCase()}
         active={false}
@@ -218,15 +202,15 @@ class ResponsiveNav extends React.Component<ResponsiveContainerProps, {}> {
 
   makeMenuIcon = (name: string, icon: SemanticICONS) => {
     const committeeID: CommitteeID = this.props.match.params.committeeID;
+    const destination = `/committees/${committeeID}/${name.toLowerCase()}`;
 
     return (
       <Menu.Item
-        // link
         key={name}
         name={name.toLowerCase()}
-        active={false}
+        active={this.props.location.pathname === destination}
         position="right"
-        onClick={() => this.props.history.push(`/committees/${committeeID}/${name.toLowerCase()}`)}
+        onClick={() => this.props.history.push(destination)}
       >
         <Icon name={icon} />
       </Menu.Item>
@@ -235,21 +219,14 @@ class ResponsiveNav extends React.Component<ResponsiveContainerProps, {}> {
 
   makeSubmenuItem = (id: string, name: string, type: 'caucuses' | 'resolutions') => {
     const { committeeID, caucusID, resolutionID } = this.props.match.params;
-
-    let active = false;
-
-    if (type === 'caucuses') {
-      active = (id === caucusID);
-    } else if (type === 'resolutions') {
-      active = (id === resolutionID);
-    }
+    const destination = `/committees/${committeeID}/${type}/${id}`;
 
     return (
       <Dropdown.Item
         key={id}
         name={name}
-        active={active}
-        onClick={() => this.props.history.push(`/committees/${committeeID}/${type}/${id}`)}
+        active={this.props.location.pathname === destination}
+        onClick={() => this.props.history.push(destination)}
       >
         {name}
       </Dropdown.Item>
@@ -285,7 +262,7 @@ class ResponsiveNav extends React.Component<ResponsiveContainerProps, {}> {
   }
 
   renderMenuItems = () => {
-    const { makeMenuItem, makeSubmenuItem, makeMenuIcon, makeSubmenuButton, makeMenuButton } = this;
+    const { makeMenuItem, makeSubmenuItem, makeMenuIcon, makeSubmenuButton } = this;
     const { committee } = this.props;
 
     const committeeID: CommitteeID = this.props.match.params.committeeID;
@@ -303,15 +280,6 @@ class ResponsiveNav extends React.Component<ResponsiveContainerProps, {}> {
       makeSubmenuItem(key, resolutions![key].name, 'resolutions')
     );
 
-    {/* <Button
-      icon="add"
-      size="mini"
-      primary
-      basic
-      floated="right"
-      onClick={this.pushCaucus}
-    /> */}
-
     // should really be a React.Fragment, but I couldn't be fucked upgrading to 16.2.0
     return (
       [
@@ -320,6 +288,7 @@ class ResponsiveNav extends React.Component<ResponsiveContainerProps, {}> {
             header 
             key="header"
             onClick={() => this.props.history.push(`/committees/${committeeID}`)}
+            active={this.props.location.pathname === `/committees/${committeeID}`}
           >
             {committee ? committee.name : <Loading small />}
           </Menu.Item>
