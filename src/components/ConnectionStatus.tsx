@@ -23,13 +23,16 @@ export default class ConnectionStatus extends React.Component<Props, State> {
   }
 
   firebaseCallback = (status: firebase.database.DataSnapshot | null) => {
-
     if (status) {
       this.setState((prevState: State, props: Props) => { 
 
+        if (!status.val()) {
+          console.debug('Firebase connection lost');
+        }
+
         return {
           connected: status.val(),
-          hasConnectedBefore: status.val() ? true : prevState.hasConnectedBefore
+          hasConnectedBefore: status.val() || prevState.hasConnectedBefore
         };
       });
     }
@@ -46,12 +49,13 @@ export default class ConnectionStatus extends React.Component<Props, State> {
   render() {
     const { connected, hasConnectedBefore } = this.state;
 
-    return !connected && hasConnectedBefore ? (
+    return (!connected && hasConnectedBefore) ? (
       <Message icon negative>
         <Icon name="circle notched" loading />
         <Message.Content>
           <Message.Header>Connection Lost</Message.Header>
-          Refresh the page; local changes are no longer being committed to the server. You will need to login again.
+          Changes are no longer being committed to the server. Either wait for a reconnection
+          or refresh the page. If you refresh the page, you will need to login again.
         </Message.Content>
       </Message>
     ) : <div />;
