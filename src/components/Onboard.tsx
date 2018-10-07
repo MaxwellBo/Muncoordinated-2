@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import * as firebase from 'firebase';
 import { CommitteeData, CommitteeID, DEFAULT_COMMITTEE } from './Committee';
 import { Segment, Button, Divider, Form, Grid, Header, InputOnChangeData, 
-  Message, Icon, Container } from 'semantic-ui-react';
+  Message, Icon, Container, List } from 'semantic-ui-react';
 import { Login } from './Auth';
 import { URLParameters } from '../types';
 import ConnectionStatus from './ConnectionStatus';
@@ -120,8 +120,10 @@ export default class Onboard extends React.Component<Props, State> {
             <Segment>
               {!user && (
                 <Message warning>
-                  <Icon name="warning" />
-                  Login to access your previously created committees, or to create a new committee.
+                  <List bulleted>
+                    <List.Item>Login to access your previously created committees, or to create a new committee.</List.Item>
+                    <List.Item>Muncoordinated officially supports Google Chrome. Use of other browsers may lead to bugs or data loss.</List.Item>
+                  </List>
                 </Message>
                 )
               }
