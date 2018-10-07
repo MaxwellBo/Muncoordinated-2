@@ -16,7 +16,6 @@ import { textAreaHandler, dropdownHandler, fieldHandler } from '../actions/handl
 import { makeDropdownOption } from '../utils';
 import { URLParameters } from '../types';
 import Loading from './Loading';
-import ConnectionStatus from './ConnectionStatus';
 import { CaucusNextSpeaking } from './caucus/CaucusNextSpeaking';
 import { SpeakerEvent, SpeakerFeedEntry } from './caucus/SpeakerFeed';
 import { DEFAULT_SETTINGS } from './Settings';
@@ -193,7 +192,6 @@ export default class Caucus extends React.Component<Props, State> {
       <Grid.Row>
         <Grid.Column>
           {renderHeader(caucus)}
-          <ConnectionStatus />
         </Grid.Column>
       </Grid.Row>
     );
