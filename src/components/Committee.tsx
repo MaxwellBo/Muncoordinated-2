@@ -421,6 +421,7 @@ export default class Committee extends React.Component<Props, State> {
           <Route exact={true} path="/committees/:committeeID/help" component={Help} />
           <Route path="/committees/:committeeID/caucuses/:caucusID" component={Caucus} />
           <Route path="/committees/:committeeID/resolutions/:resolutionID" component={Resolution} />
+          <Footer />
         </ResponsiveNav>
       </div>
     );

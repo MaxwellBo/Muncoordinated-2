@@ -53,18 +53,15 @@ export default class Footer extends React.PureComponent<{}, State> {
     );
 
     const refreshNudge = (
-      <Message.List>
-        <Message.Item>New version available</Message.Item>
-      </Message.List>
+      <span>
+        . New version available
+      </span>
     );
 
     return (
-      <Message compact size="mini">
-        {!latestVersion && <Loading />}
-        Made with 💖 by <a href="https://github.com/MaxwellBo">Max Bo</a> &amp; <a href="https://www.facebook.com/UQUNSA/">UQUNSA</a>. 
-        <br />{version}
-        {latestVersion !== CLIENT_VERSION && refreshNudge}
-      </Message>
+      <div style={{ position: 'fixed', bottom: 5, left: 5, background: '#FFFFFF' }}>
+        Made with 💖 by <a href="https://github.com/MaxwellBo">Max Bo</a> &amp; <a href="https://www.facebook.com/UQUNSA/">UQUNSA</a>. {version}{latestVersion !== CLIENT_VERSION && refreshNudge}
+      </div>
     );
   }
 }
