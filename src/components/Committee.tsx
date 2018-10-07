@@ -7,7 +7,7 @@ import Caucus, { CaucusData, CaucusID, DEFAULT_CAUCUS, CaucusStatus } from './Ca
 import Resolution, { ResolutionData, ResolutionID, DEFAULT_RESOLUTION } from './Resolution';
 import Admin from './Admin';
 import { Icon, Input, Menu, Sticky, Grid, Segment, SemanticICONS, Button, 
-  Dropdown, Container, Responsive, Sidebar } from 'semantic-ui-react';
+  Dropdown, Container, Responsive, Sidebar, Header } from 'semantic-ui-react';
 import Stats from './Stats';
 import { MotionID, MotionData } from './Motions';
 import { TimerData, DEFAULT_TIMER } from './Timer';
@@ -288,6 +288,7 @@ class ResponsiveNav extends React.Component<ResponsiveContainerProps, {}> {
     const { makeMenuItem, makeSubmenuItem, makeMenuIcon, makeSubmenuButton, makeMenuButton } = this;
     const { committee } = this.props;
 
+    const committeeID: CommitteeID = this.props.match.params.committeeID;
     const caucuses = committee ? committee.caucuses : undefined;
     const resolutions = committee ? committee.resolutions : undefined;
 
@@ -315,7 +316,11 @@ class ResponsiveNav extends React.Component<ResponsiveContainerProps, {}> {
     return (
       [
         (
-          <Menu.Item header key="header">
+          <Menu.Item 
+            header 
+            key="header"
+            onClick={() => this.props.history.push(`/committees/${committeeID}`)}
+          >
             {committee ? committee.name : <Loading small />}
           </Menu.Item>
         ),
@@ -399,18 +404,37 @@ export default class Committee extends React.Component<Props, State> {
       />
     );
   }
+
+  renderWelcome = () => {
+    const { committee } = this.state;
+
+    return committee ? (
+      <Container text style={{ padding: '1em 0em' }}>
+        <Header as="h1" dividing>
+          {committee.name}
+        </Header>
+        <Header as="h2">
+          {committee.topic}
+        </Header>
+        <Header as="h3">
+          {committee.chair}
+        </Header>
+        <ShareHint committeeID={this.props.match.params.committeeID} />
+      </Container>
+    ) : <Loading />;
+  }
     
   render() {
-    const { renderAdmin } = this;
+    const { renderAdmin, renderWelcome } = this;
 
     return (
       <div>
         <Notifications {...this.props} />
         <ResponsiveNav {...this.props} committee={this.state.committee} >
           <Container text>
-            <ShareHint committeeID={this.props.match.params.committeeID} />
             <ConnectionStatus />
           </Container>
+          <Route exact={true} path="/committees/:committeeID" render={renderWelcome} />
           <Route exact={true} path="/committees/:committeeID/admin" render={renderAdmin} />
           <Route exact={true} path="/committees/:committeeID/stats" component={Stats} />
           <Route exact={true} path="/committees/:committeeID/unmod" component={Unmod} />

@@ -33,7 +33,7 @@ export default class ShareHint extends React.Component<Props, State> {
     if (this.state.visible) {
       return (
         <Message
-          onDismiss={this.handleDismiss}
+          // onDismiss={this.handleDismiss}
           color="blue"
         >
           Send <a href={`/committees/${committeeID}`}><b>{url}</b></a> to delegates so that they may upload files, 
