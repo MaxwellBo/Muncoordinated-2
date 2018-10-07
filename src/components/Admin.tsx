@@ -11,7 +11,7 @@ import { makeDropdownOption } from '../utils';
 import * as _ from 'lodash';
 
 export const canVote = (x: MemberData) => (x.rank === Rank.Veto || x.rank === Rank.Standard);
-export const nonNGO = (x: MemberData) => (x.rank === Rank.NGO);
+export const nonNGO = (x: MemberData) => (x.rank !== Rank.NGO);
 
 interface Props {
   committee: CommitteeData;
