@@ -44,7 +44,7 @@ export default class Notes extends React.Component<Props, State> {
   render() {
     const { committee, committeeFref } = this.state;
 
-    const trigger = <Button icon="question" size="mini" basic floated="right" />;
+    // const trigger = <Button icon="question" size="mini" basic floated="right" />;
 
     return committee ? (
       <Container text style={{ padding: '1em 0em' }}>
@@ -55,11 +55,11 @@ export default class Notes extends React.Component<Props, State> {
             autoHeight
             placeholder="Notes"
           />
-          <Popup
+          {/* <Popup
             trigger={trigger}
             content="Shift + Enter to add a new line"
             basic
-          />
+          /> */}
         </Form>
       </Container> 
     ) : <Loading />;
