@@ -121,20 +121,17 @@ export default class Onboard extends React.Component<Props, State> {
             Muncoordinated
             </Header>
             <Segment>
-              {!user && (
-                <Message warning>
-                  <List bulleted>
-                    <List.Item>Login to access your previously created committees, 
-                      or to create a new committee.</List.Item>
-                    <List.Item>Multiple directors may use the same account concurrently from 
-                      different computers.
-                    </List.Item>
-                    <List.Item>Muncoordinated officially supports Google Chrome. 
-                      Use of other browsers may lead to bugs or data loss.</List.Item>
-                  </List>
-                </Message>
-                )
-              }
+              <Message warning>
+                <List bulleted>
+                  {!user && <List.Item>Login to access your previously created committees, 
+                    or to create a new committee.</List.Item>}
+                  <List.Item>Multiple directors may use the same account concurrently from 
+                    different computers.
+                  </List.Item>
+                  <List.Item>Muncoordinated officially supports Google Chrome. 
+                    Use of other browsers may lead to bugs or data loss.</List.Item>
+                </List>
+              </Message>
               <Login allowSignup={true} allowNewCommittee={false}/>
               {user && <Divider horizontal>Or</Divider>}
               {user && this.renderNewCommitteeForm()}
