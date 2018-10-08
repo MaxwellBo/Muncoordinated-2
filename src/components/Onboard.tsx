@@ -84,9 +84,9 @@ export default class Onboard extends React.Component<Props, State> {
     };
 
     const handleChange = (event: React.SyntheticEvent<HTMLInputElement>, data: InputOnChangeData): void => {
-      // @ts-ignore
       // XXX: Don't do stupid shit and choose form input names that don't
       // map to valid state properties
+      // @ts-ignore
       this.setState({ [data.name]: data.value });
     };
 
@@ -126,6 +126,9 @@ export default class Onboard extends React.Component<Props, State> {
                   <List bulleted>
                     <List.Item>Login to access your previously created committees, 
                       or to create a new committee.</List.Item>
+                    <List.Item>Multiple directors may use the same login concurrently from 
+                      different computers.
+                    </List.Item>
                     <List.Item>Muncoordinated officially supports Google Chrome. 
                       Use of other browsers may lead to bugs or data loss.</List.Item>
                   </List>
