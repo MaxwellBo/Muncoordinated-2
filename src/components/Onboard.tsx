@@ -126,7 +126,7 @@ export default class Onboard extends React.Component<Props, State> {
                   <List bulleted>
                     <List.Item>Login to access your previously created committees, 
                       or to create a new committee.</List.Item>
-                    <List.Item>Multiple directors may use the same login concurrently from 
+                    <List.Item>Multiple directors may use the same account concurrently from 
                       different computers.
                     </List.Item>
                     <List.Item>Muncoordinated officially supports Google Chrome. 
