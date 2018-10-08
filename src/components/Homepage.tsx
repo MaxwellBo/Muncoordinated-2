@@ -1,5 +1,4 @@
 import * as React from 'react';
-import * as firebase from 'firebase';
 import {
   Button,
   Container,
@@ -255,7 +254,7 @@ export default class Homepage extends React.Component<{}, {
                   so you can start sessions with all data available from the day before.
                 </p>
                 <Header as="h3" style={{ fontSize: '2em' }}>A comprehensive feature set</Header>
-                <p style={{ fontSize: '1.33em' }}>
+                <div style={{ fontSize: '1.33em' }}>
                   Muncoordinated supports <br />
 
                   <List as="ul">
@@ -273,7 +272,7 @@ export default class Homepage extends React.Component<{}, {
                     <List.Item as="li">File uploads</List.Item>
                     <List.Item as="li">Notes</List.Item>
                   </List>
-                </p>
+                </div>
                 <Header as="h3" style={{ fontSize: '2em' }}>Free and open-source</Header>
                 <p style={{ fontSize: '1.33em' }}>
                   All of Muncoordinated's features are available for free, not locked behind paywalls.
