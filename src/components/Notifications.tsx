@@ -98,7 +98,7 @@ export default class Notifications extends React.Component<Props, State> {
       >
         <Card.Group 
           itemsPerRow={1} 
-          style={{ left: '80%', position: 'fixed', top: '3%', zIndex: 1000 }}
+          style={{ left: '78%', position: 'fixed', top: '7%', zIndex: 1000 }}
         >
           {renderedNotifications}
         </Card.Group>
