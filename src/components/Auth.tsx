@@ -1,7 +1,6 @@
 import * as React from 'react';
 import * as firebase from 'firebase';
-import { Card, Button, Form, Message, Modal, Header, Icon, List, Container } from 'semantic-ui-react';
-import { error } from 'util';
+import { Card, Button, Form, Message, Modal, Icon, List } from 'semantic-ui-react';
 import { CommitteeID, CommitteeData } from './Committee';
 import * as _ from 'lodash';
 import Loading from './Loading';
@@ -27,6 +26,7 @@ interface State {
 
 interface Props {
   allowSignup: boolean | undefined;
+  allowNewCommittee: boolean | undefined;
 }
 
 export class Login extends React.Component<Props, State> {
@@ -205,6 +205,7 @@ export class Login extends React.Component<Props, State> {
   renderLoggedIn = (u: firebase.User) => {
     const { logOutHandler, renderCommittees, renderSuccess } = this;
     const { committees } = this.state;
+    const { allowNewCommittee } = this.props;
 
     const succ = this.state.success;
     
@@ -222,6 +223,13 @@ export class Login extends React.Component<Props, State> {
           </Card.Content>
           <Card.Content key="committees">
             {committees ? renderCommittees(u) : <Loading />}
+            {allowNewCommittee && <List.Item key={'add'}>
+              <List.Content>
+                 <List.Header as="a" href={'/onboard'}>
+                  <Icon name="plus" />Create new committee
+                </List.Header>
+              </List.Content>
+            </List.Item>}
           </Card.Content>
           <Card.Content extra key="extra">
             <Button basic color="red" fluid onClick={logOutHandler}>Logout</Button>
@@ -369,7 +377,7 @@ export class ModalLogin extends React.Component<{},
         basic={!!user} // strip away the outer window when we know we have a card
       >
         <Modal.Content>
-          <Login allowSignup={false}/>
+          <Login allowSignup={false} allowNewCommittee={true}/>
         </Modal.Content>
       </Modal>
     );

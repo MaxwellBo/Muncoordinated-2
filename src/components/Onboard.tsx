@@ -135,7 +135,7 @@ export default class Onboard extends React.Component<Props, State> {
                 </Message>
                 )
               }
-              <Login allowSignup={true}/>
+              <Login allowSignup={true} allowNewCommittee={false}/>
               {user && <Divider horizontal>Or</Divider>}
               {user && this.renderNewCommitteeForm()}
             </Segment>
