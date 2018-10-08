@@ -87,7 +87,7 @@ export default class Onboard extends React.Component<Props, State> {
       // @ts-ignore
       // XXX: Don't do stupid shit and choose form input names that don't
       // map to valid state properties
-      this.setState({ [target]: data.value });
+      this.setState({ [data.name]: data.value });
     };
 
     return (
