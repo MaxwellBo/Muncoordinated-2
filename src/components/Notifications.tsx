@@ -35,7 +35,7 @@ export default class Notifications extends React.Component<Props, State> {
       this.setState(prevState => {
         const newNotification: Notification = {
           header: 'Permission denied',
-          message: 'Please login as the owner of this committee in order to perform that action'
+          message: 'Please login as the owner of this committee in order to perform that action. You may be seeing this due to a recently lost connection'
         };
 
         // Debounce unique
