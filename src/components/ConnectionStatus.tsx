@@ -5,7 +5,7 @@ import { Message, Icon } from 'semantic-ui-react';
 interface Props {
 }
 
-interface State {
+export interface State {
   connected: boolean;
   hasConnectedBefore: boolean;
   fref: firebase.database.Reference;
@@ -26,13 +26,15 @@ export default class ConnectionStatus extends React.Component<Props, State> {
     if (status) {
       this.setState((prevState: State, props: Props) => { 
 
-        if (!status.val()) {
+        const connected = status.val();
+
+        if (!connected) {
           console.debug('Firebase connection lost');
         }
 
         return {
-          connected: status.val(),
-          hasConnectedBefore: status.val() || prevState.hasConnectedBefore
+          connected: connected,
+          hasConnectedBefore: connected || prevState.hasConnectedBefore
         };
       });
     }
