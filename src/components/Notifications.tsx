@@ -2,30 +2,43 @@ import * as React from 'react';
 import * as firebase from 'firebase';
 import * as _ from 'lodash';
 import { TransitionablePortal, Button, Card } from 'semantic-ui-react';
+import { State as ConnectionStatusState } from './ConnectionStatus';
 
 interface Props {
 }
 
-interface State {
+interface State extends ConnectionStatusState {
   open: boolean;
   notifications: Notification[];
-  hasConnectedBefore: boolean;
-  fref: firebase.database.Reference;
 }
 
 interface Notification {
-  message: string;
+  message?: string;
   header: string;
+  disposition: 'positive' | 'negative';
 }
 
-const PERMISSION_DENIED_NOTIFICATION =  {
+const PERMISSION_DENIED_NOTIFICATION: Notification =  {
   header: 'Permission denied',
-  message: 'Please login as the owner of this committee in order to perform that action'
+  message: 'Please login as the owner of this committee in order to perform that action',
+  disposition: 'negative'
 };
 
-const CONNECTION_LOST_NOTIFICATION =  {
+const CONNECTION_LOST_NOTIFICATION: Notification =  {
   header: 'Connection lost',
-  message: 'The connection to the server was lost. You may have been logged out'
+  message: 'The connection to the server was lost. You may have been logged out',
+  disposition: 'negative'
+};
+
+const CONNECTION_REGAINED_NOTIFICATION: Notification =  {
+  header: 'Connection regained',
+  message: 'The connection to the server was regained',
+  disposition: 'positive'
+};
+
+const CONNECTED_NOTIFICATION: Notification =  {
+  header: 'Connected',
+  disposition: 'positive'
 };
 
 export default class Notifications extends React.Component<Props, State> {
@@ -35,12 +48,14 @@ export default class Notifications extends React.Component<Props, State> {
     this.state = {
       open: true,
       notifications: [],
+      connected: false,
       hasConnectedBefore: false,
       fref: firebase.database().ref('.info/connected')
     };
   }
 
-  computeNewNotificationState = (prevState: State, notification: Notification): Pick<State, 'notifications'> => {
+  computeNewNotificationState = 
+  (prevState: Pick<State, 'notifications'>, notification: Notification): Pick<State, 'notifications'> => {
       // Debounce unique
       if (!_.some(prevState.notifications, notification)) {
         console.debug(notification);
@@ -57,16 +72,22 @@ export default class Notifications extends React.Component<Props, State> {
     const { computeNewNotificationState } = this;
 
     if (status) {
-      this.setState((prevState: State, props: Props) => { 
+      this.setState((prevState: State) => { 
 
         const connected = status.val();
 
-        const addedNotification = connected && prevState.hasConnectedBefore 
-            ?  computeNewNotificationState(prevState, CONNECTION_LOST_NOTIFICATION)
-            : {} as Pick<State, never>;
+        let acc: Pick<State, | 'notifications'> = prevState;
+
+        acc = (!connected && prevState.hasConnectedBefore)
+            ?  computeNewNotificationState(acc, CONNECTION_LOST_NOTIFICATION)
+            : acc;
+
+        acc = (!prevState.connected && connected && prevState.hasConnectedBefore)
+            ?  computeNewNotificationState(acc, CONNECTION_REGAINED_NOTIFICATION)
+            : acc;
 
         return {
-          ...addedNotification,
+          ...acc,
           hasConnectedBefore: connected || prevState.hasConnectedBefore
         };
       });
@@ -105,14 +126,19 @@ export default class Notifications extends React.Component<Props, State> {
 
   renderNotification = (notification: Notification, key: number) => {
     return (
-      <Card style={{ 'max-width': 275 }} color="red" key={key} raised>
+      <Card style={{ 'max-width': 275 }} key={key} raised>
         <Card.Content>
           <Card.Header>{notification.header}</Card.Header>
-          {/* <Card.Meta>Co-Worker</Card.Meta> */}
-          <Card.Description>{notification.message}</Card.Description>
+          {notification.message && <Card.Description>{notification.message}</Card.Description>}
         </Card.Content>
         <Card.Content extra>
-          <Button basic fluid color="red" onClick={this.dismiss(key)}>
+          <Button 
+            basic 
+            fluid 
+            positive={notification.disposition === 'positive'} 
+            negative={notification.disposition === 'negative'} 
+            onClick={this.dismiss(key)}
+          >
               Dismiss
           </Button>
         </Card.Content>
