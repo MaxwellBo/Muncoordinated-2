@@ -1,8 +1,8 @@
 import * as React from 'react';
 import * as firebase from 'firebase';
-import Committee, { CommitteeData, CommitteeID, DEFAULT_COMMITTEE } from './Committee';
+import { CommitteeData, CommitteeID, DEFAULT_COMMITTEE } from './Committee';
 import { RouteComponentProps } from 'react-router';
-import { Icon, Input, Dropdown, Button, Card, Form, Message, Flag, Label, TextArea, 
+import { Icon, Button, Card, Form, Message, Flag, Label, 
   Container, Divider } from 'semantic-ui-react';
 import { stateFieldHandler,
   stateDropdownHandler,
@@ -18,7 +18,6 @@ import { postCaucus, closeCaucus } from '../actions/caucusActions';
 import { TimerData } from './Timer';
 import { putUnmodTimer, extendUnmodTimer, extendModTimer } from '../actions/committeeActions';
 import { URLParameters } from '../types';
-import Loading from './Loading';
 import { ResolutionData, DEFAULT_RESOLUTION, ResolutionID } from './Resolution';
 import { Stance } from './caucus/SpeakerFeed';
 import { AmendmentData, DEFAULT_AMENDMENT } from './Amendment';
@@ -151,6 +150,21 @@ const hasDuration = (motionType: MotionType): boolean => {
       return true;
     default:
       return false;
+  }
+};
+
+const interpolateTime = (motionType: MotionType, time: string): string => {
+  switch (motionType) {
+    case MotionType.ExtendUnmoderatedCaucus:
+      return `Extend unmoderated caucus by ${time}`;
+    case MotionType.ExtendModeratedCaucus:
+      return `Extend unmoderated caucus by ${time}`;
+    case MotionType.OpenModeratedCaucus:
+      return `${time} Moderated Caucus`;
+    case MotionType.OpenUnmoderatedCaucus:
+      return `${time} Unmoderated Caucus`;
+    default:
+      return motionType.toString();
   }
 };
 
@@ -476,7 +490,7 @@ export default class Motions extends React.Component<Props, State> {
       >
         <Card.Content>
           <Card.Header>
-            {time}{type}
+            {interpolateTime(type, time)}
             {hasDetail(type) && description}
           </Card.Header>
           <Card.Meta>
@@ -555,7 +569,7 @@ export default class Motions extends React.Component<Props, State> {
         durationValue={speakerDuration ? speakerDuration.toString() : undefined}
         onUnitChange={stateDropdownHandler<Props, State>(this, 'newMotion', 'speakerUnit')}
         onDurationChange={stateValidatedNumberFieldHandler<Props, State>(this, 'newMotion', 'speakerDuration')}
-        label={'Speaker'}
+        label="Speaking Time"
       />
     );
 
@@ -566,7 +580,7 @@ export default class Motions extends React.Component<Props, State> {
         durationValue={caucusDuration ? caucusDuration.toString() : undefined}
         onUnitChange={stateDropdownHandler<Props, State>(this, 'newMotion', 'caucusUnit')}
         onDurationChange={stateValidatedNumberFieldHandler<Props, State>(this, 'newMotion', 'caucusDuration')}
-        label={'Duration'}
+        label="Duration"
       />
     );
 
