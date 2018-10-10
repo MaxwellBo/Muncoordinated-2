@@ -139,9 +139,8 @@ function MemberItem(props: { data: MemberData, fref: firebase.database.Reference
       <Table.Cell collapsing>
         <Checkbox 
           toggle 
-          checked={props.data.present && props.data.voting} 
+          checked={props.data.voting} 
           onChange={checkboxHandler<MemberData>(props.fref, 'voting')} 
-          disabled={!props.data.present}
         />
       </Table.Cell>
       <Table.Cell collapsing>
