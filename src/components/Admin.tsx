@@ -40,10 +40,11 @@ function CommitteeStats(props: { data: CommitteeData }) {
 
   const delegatesNo: number     = members.length;
   const presentNo: number       = present.length;
+  const absCanVote: number       = members.filter(canVote).length;
   const canVoteNo: number       = present.filter(canVote).length;
   const nonNGONo: number        = present.filter(nonNGO).length;
 
-  const quorum: number          = Math.ceil(canVoteNo * 0.25);
+  const quorum: number          = Math.ceil(absCanVote * 0.25);
   const procedural: number      = Math.ceil(nonNGONo * 0.5);
   const operative: number       = Math.ceil(canVoteNo * 0.5);
   const hasQuorum: boolean      = presentNo >= quorum;
