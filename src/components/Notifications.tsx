@@ -105,7 +105,7 @@ export default class Notifications extends React.Component<Props, State> {
 
   renderNotification = (notification: Notification, key: number) => {
     return (
-      <Card color="red" key={key}>
+      <Card style={{ 'max-width': 275 }} color="red" key={key} raised>
         <Card.Content>
           <Card.Header>{notification.header}</Card.Header>
           {/* <Card.Meta>Co-Worker</Card.Meta> */}
@@ -133,7 +133,7 @@ export default class Notifications extends React.Component<Props, State> {
       >
         <Card.Group 
           itemsPerRow={1} 
-          style={{ left: '78%', position: 'fixed', top: '7%', zIndex: 1000 }}
+          style={{ right: 5, position: 'fixed', top: '7%', zIndex: 1000 }}
         >
           {renderedNotifications}
         </Card.Group>
