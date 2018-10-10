@@ -112,49 +112,6 @@ function CommitteeStats(props: { data: CommitteeData }) {
   );
 }
 
-function MemberItem(props: { data: MemberData, fref: firebase.database.Reference }) {
-  return (
-    <Table.Row>
-      <Table.Cell>
-        <Flag name={parseFlagName(props.data.name)} />
-        {props.data.name}
-      </Table.Cell>
-      <Table.Cell>
-        <Dropdown
-          search
-          selection
-          fluid
-          options={RANK_OPTIONS}
-          onChange={dropdownHandler<MemberData>(props.fref, 'rank')}
-          value={props.data.rank}
-        />
-      </Table.Cell>
-      <Table.Cell collapsing>
-        <Checkbox 
-          toggle 
-          checked={props.data.present} 
-          onChange={checkboxHandler<MemberData>(props.fref, 'present')} 
-        />
-      </Table.Cell>
-      <Table.Cell collapsing>
-        <Checkbox 
-          toggle 
-          checked={props.data.voting} 
-          onChange={checkboxHandler<MemberData>(props.fref, 'voting')} 
-        />
-      </Table.Cell>
-      <Table.Cell collapsing>
-        <Button
-          icon="trash"
-          negative
-          basic
-          onClick={() => props.fref.remove()}
-        />
-      </Table.Cell>
-    </Table.Row>
-  );
-}
-
 export default class Admin extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
@@ -166,6 +123,49 @@ export default class Admin extends React.Component<Props, State> {
       newMemberVoting: true,
       newMemberPresent: true
     };
+  }
+
+  renderMemberItem = (id: MemberID, member: MemberData, fref: firebase.database.Reference) => {
+    return (
+      <Table.Row key={id}>
+        <Table.Cell>
+          <Flag name={parseFlagName(member.name)} />
+          {member.name}
+        </Table.Cell>
+        <Table.Cell>
+          <Dropdown
+            search
+            selection
+            fluid
+            options={RANK_OPTIONS}
+            onChange={dropdownHandler<MemberData>(fref, 'rank')}
+            value={member.rank}
+          />
+        </Table.Cell>
+        <Table.Cell collapsing>
+          <Checkbox 
+            toggle 
+            checked={member.present} 
+            onChange={checkboxHandler<MemberData>(fref, 'present')} 
+          />
+        </Table.Cell>
+        <Table.Cell collapsing>
+          <Checkbox 
+            toggle 
+            checked={member.voting} 
+            onChange={checkboxHandler<MemberData>(fref, 'voting')} 
+          />
+        </Table.Cell>
+        <Table.Cell collapsing>
+          <Button
+            icon="trash"
+            negative
+            basic
+            onClick={() => fref.remove()}
+          />
+        </Table.Cell>
+      </Table.Row>
+    );
   }
 
   pushMember = (event: React.MouseEvent<HTMLButtonElement>, data: ButtonProps) => {
@@ -265,14 +265,8 @@ export default class Admin extends React.Component<Props, State> {
   CommitteeMembers = (props: { data: CommitteeData, fref: firebase.database.Reference }) => {
 
     const members = this.props.committee.members || {};
-    const memberItems = Object.keys(members).map(key =>
-      (
-        <MemberItem
-          key={key}
-          data={members[key]}
-          fref={props.fref.child('members').child(key)}
-        />
-      )
+    const memberItems = Object.keys(members).map(id => 
+      this.renderMemberItem(id, members[id], props.fref.child('members').child(id))
     );
 
     return (
