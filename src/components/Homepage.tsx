@@ -206,18 +206,12 @@ const ResponsiveContainer = ({ children }: ResponsiveContainerProps) => (
 
 export default class Homepage extends React.Component<{}, { 
   committeeNo?: number,
-  delegeateNo?: number
+  delegateNo?: number
 }> {
   constructor(props: {}) {
     super(props);
     this.state = {};
   }
-
-  // componentDidMount() {
-  //   firebase.database().ref('committees').once('value').then(committees => {
-  //     this.setState({ committeeNo: Object.keys(committees.val() || {}).length });
-  //   });
-  // }
 
   renderStatistics() {
     return (
@@ -227,7 +221,7 @@ export default class Homepage extends React.Component<{}, {
           <Statistic.Label>Committees created</Statistic.Label>
         </Statistic>
         <Statistic>
-          <Statistic.Value>{this.state.committeeNo || <Loading small />}</Statistic.Value>
+          <Statistic.Value>{this.state.delegateNo || <Loading small />}</Statistic.Value>
           <Statistic.Label>Delegates participating</Statistic.Label>
         </Statistic>
       </Statistic.Group>
