@@ -253,10 +253,28 @@ export default class Homepage extends React.Component<{}, {
                   You won't have to worry about data loss ever again. All committee activity is automatically saved to the server, 
                   so you can start sessions with all data available from the day before.
                 </p>
+                <Header as="h3" style={{ fontSize: '2em' }}>Free and open-source</Header>
+                <p style={{ fontSize: '1.33em' }}>
+                  All of Muncoordinated's features are available for free, not locked behind paywalls.
+                </p>
+                <p style={{ fontSize: '1.33em' }}>
+                  It's also <a href="https://github.com/MaxwellBo/Muncoordinated-2">open-source</a>, so you're free to customize it to your needs and liking.
+                </p>
+              </Grid.Column>
+              <Grid.Column floated="right" width={8}>
+                <Image
+                  bordered
+                  rounded
+                  size="massive"
+                  src="/promo.png"
+                />
+              </Grid.Column>
+            </Grid.Row>
+            <Grid.Row>
+              <Grid.Column width={8}>
                 <Header as="h3" style={{ fontSize: '2em' }}>A comprehensive feature set</Header>
                 <div style={{ fontSize: '1.33em' }}>
                   Muncoordinated supports <br />
-
                   <List as="ul">
                     <List.Item as="li">Custom delegations</List.Item>
                     <List.Item as="li">Committee statistics</List.Item>
@@ -273,20 +291,19 @@ export default class Homepage extends React.Component<{}, {
                     <List.Item as="li">Notes</List.Item>
                   </List>
                 </div>
-                <Header as="h3" style={{ fontSize: '2em' }}>Free and open-source</Header>
+                <Header as="h3" style={{ fontSize: '2em' }}>Mobile friendly</Header>
                 <p style={{ fontSize: '1.33em' }}>
-                  All of Muncoordinated's features are available for free, not locked behind paywalls.
-                </p>
-                <p style={{ fontSize: '1.33em' }}>
-                  It's also <a href="https://github.com/MaxwellBo/Muncoordinated-2">open-source</a>, so you're free to customize it to your needs and liking.
+                  Prefer to pack light? We know the pain of not having a laptop while in committee; 
+                  that's why we've built Muncoordinated to be as mobile friendly as possible.
                 </p>
               </Grid.Column>
               <Grid.Column floated="right" width={8}>
                 <Image
+                  centered
                   bordered
                   rounded
-                  size="massive"
-                  src="/promo.png"
+                  size="medium"
+                  src="/mobile6.png"
                 />
               </Grid.Column>
             </Grid.Row>
