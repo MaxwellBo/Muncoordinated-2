@@ -2,14 +2,15 @@ import * as React from 'react';
 import * as firebase from 'firebase';
 import * as _ from 'lodash';
 import { TransitionablePortal, Button, Card } from 'semantic-ui-react';
-import { State as ConnectionStatusState } from './ConnectionStatus';
 
 interface Props {
 }
 
-interface State extends ConnectionStatusState {
+interface State {
   open: boolean;
   notifications: Notification[];
+  hasConnectedBefore: boolean;
+  fref: firebase.database.Reference;
 }
 
 interface Notification {
@@ -19,12 +20,12 @@ interface Notification {
 
 const PERMISSION_DENIED_NOTIFICATION =  {
   header: 'Permission denied',
-  message: 'Please login as the owner of this committee in order to perform that action.'
+  message: 'Please login as the owner of this committee in order to perform that action'
 };
 
 const CONNECTION_LOST_NOTIFICATION =  {
   header: 'Connection lost',
-  message: 'The connection to the server was lost. You may have been logged out, and will need to log in again'
+  message: 'The connection to the server was lost. You may have been logged out'
 };
 
 export default class Notifications extends React.Component<Props, State> {
@@ -35,7 +36,6 @@ export default class Notifications extends React.Component<Props, State> {
       open: true,
       notifications: [],
       hasConnectedBefore: false,
-      connected: false,
       fref: firebase.database().ref('.info/connected')
     };
   }
@@ -67,7 +67,6 @@ export default class Notifications extends React.Component<Props, State> {
 
         return {
           ...addedNotification,
-          connected: connected,
           hasConnectedBefore: connected || prevState.hasConnectedBefore
         };
       });

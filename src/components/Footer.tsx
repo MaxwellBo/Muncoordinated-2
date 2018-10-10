@@ -1,8 +1,5 @@
 import * as React from 'react';
 
-import { Message } from 'semantic-ui-react';
-import Loading from './Loading';
-
 interface State {
   latestVersion?: string;
   timerId?: NodeJS.Timer;
