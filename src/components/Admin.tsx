@@ -91,7 +91,7 @@ function CommitteeStats(props: { data: CommitteeData }) {
         </Table.Row>
         <Table.Row>
           <Table.Cell>Operative threshold</Table.Cell>
-          <Table.Cell>{procedural.toString()}</Table.Cell>
+          <Table.Cell>{operative.toString()}</Table.Cell>
           <Table.Cell>Required votes for operative matters, such as amendments and resolutions</Table.Cell>
           <Table.Cell>50% of present delegates with voting rights</Table.Cell>
         </Table.Row>
