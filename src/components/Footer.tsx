@@ -51,7 +51,7 @@ export default class Footer extends React.PureComponent<{}, State> {
 
     const refreshNudge = (
       <span>
-        . New version available
+        . New version available; refresh the page twice
       </span>
     );
 
