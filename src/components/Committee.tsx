@@ -6,7 +6,8 @@ import { MemberData, MemberID } from './Member';
 import Caucus, { CaucusData, CaucusID, DEFAULT_CAUCUS, CaucusStatus } from './Caucus';
 import Resolution, { ResolutionData, ResolutionID, DEFAULT_RESOLUTION } from './Resolution';
 import Admin from './Admin';
-import { Icon, Menu, SemanticICONS, Dropdown, Container, Responsive, Sidebar, Header } from 'semantic-ui-react';
+import { Icon, Menu, SemanticICONS, Dropdown, Container, Responsive, Sidebar, Header, Label, Divider, 
+  List } from 'semantic-ui-react';
 import Stats from './Stats';
 import { MotionID, MotionData } from './Motions';
 import { TimerData, DEFAULT_TIMER } from './Timer';
@@ -40,6 +41,7 @@ export interface CommitteeData {
   name: string;
   chair: string;
   topic: string;
+  conference?: string; // TODO: Migrate
   creatorUid: firebase.UserInfo['uid'];
   members?: Map<MemberID, MemberData>;
   caucuses?: Map<CaucusID, CaucusData>;
@@ -55,6 +57,7 @@ export const DEFAULT_COMMITTEE: CommitteeData = {
   name: '',
   chair: '',
   topic: '',
+  conference: '',
   creatorUid: '',
   members: {} as Map<MemberID, MemberData>,
   caucuses: {} as Map<CaucusID, CaucusData>,
@@ -100,7 +103,7 @@ class DesktopContainer extends React.Component<DesktopContainerProps, DesktopCon
         <Menu fluid size="small">
           {menu}
         </Menu>
-      {body}
+        {body}
       </Responsive>
     );
   }
@@ -282,8 +285,8 @@ class ResponsiveNav extends React.Component<ResponsiveContainerProps, {}> {
     return (
       [
         (
-          <Menu.Item 
-            header 
+          <Menu.Item
+            header
             key="header"
             onClick={() => this.props.history.push(`/committees/${committeeID}`)}
             active={this.props.location.pathname === `/committees/${committeeID}`}
@@ -380,17 +383,23 @@ export default class Committee extends React.Component<Props, State> {
         <Header as="h1" dividing>
           {committee.name}
         </Header>
-        <Header as="h2">
-          {committee.topic}
-        </Header>
-        <Header as="h3">
-          {committee.chair}
-        </Header>
+        <List>
+          <List.Item>
+            <Label horizontal>Topic</Label>{committee.topic}
+          </List.Item>
+          <List.Item>
+            <Label horizontal>Chairpeople</Label>{committee.chair}
+          </List.Item>
+          <List.Item>
+            <Label horizontal>Conference</Label>{committee.conference || ''}
+          </List.Item>
+        </List>
+        <Divider />
         <ShareHint committeeID={this.props.match.params.committeeID} />
       </Container>
     ) : <Loading />;
   }
-    
+
   render() {
     const { renderAdmin, renderWelcome } = this;
 

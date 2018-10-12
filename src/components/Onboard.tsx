@@ -15,7 +15,8 @@ interface State {
   committees: Map<string, CommitteeData>;
   name: string;
   topic: string;
-  chairperson: string;
+  chair: string;
+  conference: string;
   user: firebase.User | null;
   committeesFref: firebase.database.Reference;
   unsubscribe?: () => void;
@@ -31,7 +32,8 @@ export default class Onboard extends React.Component<Props, State> {
       committees: {} as Map<string, CommitteeData>,
       name: '',
       topic: '',
-      chairperson: '',
+      chair: '',
+      conference: '',
       user: null,
       committeesFref: firebase.database().ref('committees')
     };
@@ -68,11 +70,12 @@ export default class Onboard extends React.Component<Props, State> {
   renderNewCommitteeForm = () => {
     const submitHandler = () => {
       if (this.state.user) {
-        const newCommittee = {
+        const newCommittee: CommitteeData = {
           ...DEFAULT_COMMITTEE,
           name: this.state.name,
           topic: this.state.topic,
-          chair: this.state.chairperson,
+          chair: this.state.chair,
+          conference: this.state.conference,
           creatorUid: this.state.user.uid
         };
 
@@ -93,12 +96,28 @@ export default class Onboard extends React.Component<Props, State> {
     return (
       <Form onSubmit={submitHandler}>
         <Form.Group widths="equal">
-          <Form.Input label="Name" name="name" placeholder="Committee name" onChange={handleChange} />
-          <Form.Input label="Topic" name="topic" placeholder="Committee topic" onChange={handleChange} />
+          <Form.Input 
+            label="Name" 
+            name="name" 
+            placeholder="Committee name" 
+            onChange={handleChange} 
+          />
+          <Form.Input 
+            label="Topic" 
+            name="topic" 
+            placeholder="Committee topic" 
+            onChange={handleChange} 
+          />
           <Form.Input
             label="Chairpeople"
-            name="chairperson"
+            name="chair"
             placeholder="Name(s) of chairperson or chairpeople"
+            onChange={handleChange}
+          />
+          <Form.Input
+            label="Conference"
+            name="conference"
+            placeholder="Conference name"
             onChange={handleChange}
           />
         </Form.Group>
