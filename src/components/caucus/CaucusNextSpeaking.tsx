@@ -40,7 +40,9 @@ export class CaucusNextSpeaking extends React.Component<Props, {}> {
     const { autoNextSpeaker } = this.props;
     const { remaining, ticking } = prevProps.speakerTimer;
 
-    if (remaining === 0 && ticking && autoNextSpeaker) {
+    // FIXME
+    if (false) {
+    // if (remaining === 0 && ticking && autoNextSpeaker) {
       console.debug('Next speaker action triggered due to elapsed time and committee setting');
       this.nextSpeaker();
     }
