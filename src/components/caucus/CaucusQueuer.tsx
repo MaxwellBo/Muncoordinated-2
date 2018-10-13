@@ -1,12 +1,12 @@
 import * as React from 'react';
 import * as firebase from 'firebase';
-import { MemberData } from '../Member';
+import { MemberData, nameToCountryOption } from '../Member';
 import { CaucusData } from '../Caucus';
 import { COUNTRY_OPTIONS, CountryOption } from '../../constants';
 import { Header, Segment, Button, Form, DropdownProps, Label } from 'semantic-ui-react';
 import { TimerSetter, Unit } from '../TimerSetter';
 import { SpeakerEvent, Stance } from '..//caucus/SpeakerFeed';
-import { checkboxHandler } from '../../actions/handlers';
+import { checkboxHandler, stateCountryDropdownHandler } from '../../actions/handlers';
 import { membersToOptions } from '../../utils';
 
 interface Props {
@@ -16,7 +16,7 @@ interface Props {
 }
 
 interface State {
-  queueCountry: CountryOption;
+  queueCountry?: CountryOption;
   unitDropdown: Unit;
   durationField: string;
 }
@@ -26,19 +26,18 @@ export default class CaucusQueuer extends React.Component<Props, State> {
     super(props);
 
     this.state = {
-      queueCountry: COUNTRY_OPTIONS[0],
       unitDropdown: Unit.Seconds,
       durationField: '60'
     };
-
   }
 
   stanceHandler = (stance: Stance) => () => {
+    const { queueCountry } = this.state;
     const duration = Number(this.state.durationField);
 
-    if (duration) {
+    if (duration && queueCountry) {
       const newEvent: SpeakerEvent = {
-        who: this.state.queueCountry.text,
+        who: queueCountry.text,
         stance: stance,
         duration: this.state.unitDropdown === Unit.Minutes ? duration * 60 : duration,
       };
@@ -60,8 +59,8 @@ export default class CaucusQueuer extends React.Component<Props, State> {
 
   render() {
     const { stanceHandler, countryHandler, unitHandler } = this;
-
     const { members, caucus, caucusFref } = this.props;
+    const { queueCountry } = this.state;
 
     const countryOptions = membersToOptions(members);
 
@@ -69,14 +68,15 @@ export default class CaucusQueuer extends React.Component<Props, State> {
       this.setState({ durationField: e.currentTarget.value });
 
     return (
-      <Segment textAlign="center" loading={!members}>
+      <Segment textAlign="center">
         <Label attached="top left" size="large">Queue</Label>
         <Form>
           <Form.Dropdown
             icon="search"
-            value={this.state.queueCountry.value}
+            value={queueCountry ? queueCountry.value : undefined}
             search
             selection
+            error={!queueCountry}
             onChange={countryHandler}
             options={countryOptions}
           />
@@ -96,20 +96,20 @@ export default class CaucusQueuer extends React.Component<Props, State> {
           <Button.Group size="large" fluid>
             <Button
               content="For"
+              disabled={!queueCountry}
               // labelPosition="left"
               // icon
               onClick={stanceHandler(Stance.For)}
             />
-            {/* <Icon name="thumbs outline up" />
-              For
-            </Button> */}
             <Button.Or />
             <Button
+              disabled={!queueCountry}
               content="Neutral"
               onClick={stanceHandler(Stance.Neutral)}
             />
             <Button.Or />
             <Button
+              disabled={!queueCountry}
               content="Against"
               // labelPosition="right"
               // icon

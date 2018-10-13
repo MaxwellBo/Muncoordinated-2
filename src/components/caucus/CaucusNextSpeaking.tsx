@@ -137,7 +137,7 @@ export class CaucusNextSpeaking extends React.Component<Props, {}> {
     );
 
     return (
-      <Segment textAlign="center">
+      <Segment textAlign="center" loading={!caucus}>
         <Label attached="top left" size="large">Next Speaking</Label>
         {hasNowSpeaking && !hasNextSpeaking ? endButton : nextButton}
         <Button
