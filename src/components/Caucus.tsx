@@ -258,7 +258,7 @@ export default class Caucus extends React.Component<Props, State> {
 
     return (
       <Container>
-        <Grid columns="equal">
+        <Grid columns="equal" stackable>
           {header}
           {body}
         </Grid >
