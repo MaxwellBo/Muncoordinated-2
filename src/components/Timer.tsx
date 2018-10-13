@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as firebase from 'firebase';
 import { Form, Checkbox, Segment, Header, Statistic, Button, Input, Select, 
-  Divider, Progress, DropdownProps, ButtonProps, Icon } from 'semantic-ui-react';
+  Divider, Progress, DropdownProps, ButtonProps, Icon, Label } from 'semantic-ui-react';
 import { makeDropdownOption } from '../utils';
 import { Unit, TimerSetter } from './TimerSetter';
 import * as _ from 'lodash';
@@ -220,47 +220,44 @@ export default class Timer extends React.Component<Props, State> {
     const percentage = (remaining / (remaining + elapsed)) * 100;
 
     return (
-      <div>
-        <Header as="h3" attached="top">{this.props.name}</Header>
-        <Segment attached="bottom" textAlign="center" >
-          <Button
-            loading={!timer}
-            active={timer ? !!timer.ticking : false}
-            negative={timer ? timer.remaining < 0 : false}
-            size="massive"
-            onClick={toggleHandler}
-          >
-            {formatted}
-          </Button>
+      <Segment textAlign="center" >
+        <Label attached="top left" size="large">{this.props.name}</Label>
+        <Button
+          loading={!timer}
+          active={timer ? !!timer.ticking : false}
+          negative={timer ? timer.remaining < 0 : false}
+          size="massive"
+          onClick={toggleHandler}
+        >
+          {formatted}
+        </Button>
 
-          <Button
-            icon
-            active={!mute}
-            onClick={this.toggleMute}
-            negative={timer ? timer.remaining === 0 && !!timer.ticking : false}
-            loading={timer ? timer.remaining === 0 && !!timer.ticking : false}
-          >
-            <Icon name={mute ? 'alarm mute' : 'alarm'} />
-          </Button>
+        <Button
+          icon
+          active={!mute}
+          onClick={this.toggleMute}
+          negative={timer ? timer.remaining === 0 && !!timer.ticking : false}
+          loading={timer ? timer.remaining === 0 && !!timer.ticking : false}
+        >
+          <Icon name={mute ? 'alarm mute' : 'alarm'} />
+        </Button>
 
-          <Progress percent={percentage} active={false} indicating={true}/>
-
-          {/* <Statistic>
-            <Statistic.Value>{this.state.timer.remaining}</Statistic.Value>
-          </Statistic>
-          <Checkbox toggle checked={this.state.timer.ticking} onChange={this.toggleHandler} /> */}
-          <Divider />
-          <Form>
-            <TimerSetter
-              unitValue={this.state.unitDropdown}
-              durationValue={this.state.durationField}
-              onDurationChange={durationHandler}
-              onUnitChange={unitHandler}
-              onSet={this.set}
-            />
-          </Form>
-        </Segment>
-      </div>
+        <Progress percent={percentage} active={false} indicating={true}/>
+        {/* <Statistic>
+          <Statistic.Value>{this.state.timer.remaining}</Statistic.Value>
+        </Statistic>
+        <Checkbox toggle checked={this.state.timer.ticking} onChange={this.toggleHandler} /> */}
+        <Divider />
+        <Form>
+          <TimerSetter
+            unitValue={this.state.unitDropdown}
+            durationValue={this.state.durationField}
+            onDurationChange={durationHandler}
+            onUnitChange={unitHandler}
+            onSet={this.set}
+          />
+        </Form>
+      </Segment>
     );
   }
 }

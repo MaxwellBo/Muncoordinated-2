@@ -148,14 +148,12 @@ export default class Caucus extends React.Component<Props, State> {
     const entryData = caucus ? caucus.speaking : undefined;
 
     return (
-      <div>
-        <Header as="h3" attached="top">Now Speaking</Header>
-        <Segment attached="bottom" loading={!caucus}>
-          <Feed size="large">
-            <SpeakerFeedEntry data={entryData} fref={caucusFref.child('speaking')} speakerTimer={speakerTimer}/>
-          </Feed>
-        </Segment>
-      </div>
+      <Segment loading={!caucus}>
+        <Label attached="top left" size="large">Next Speaking</Label>
+        <Feed size="large">
+          <SpeakerFeedEntry data={entryData} fref={caucusFref.child('speaking')} speakerTimer={speakerTimer}/>
+        </Feed>
+      </Segment>
     );
   }
 

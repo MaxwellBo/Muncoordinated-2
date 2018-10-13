@@ -3,7 +3,7 @@ import * as firebase from 'firebase';
 import { MemberData } from '../Member';
 import { CaucusData } from '../Caucus';
 import { COUNTRY_OPTIONS, CountryOption } from '../../constants';
-import { Header, Segment, Button, Form, DropdownProps } from 'semantic-ui-react';
+import { Header, Segment, Button, Form, DropdownProps, Label } from 'semantic-ui-react';
 import { TimerSetter, Unit } from '../TimerSetter';
 import { SpeakerEvent, Stance } from '..//caucus/SpeakerFeed';
 import { checkboxHandler } from '../../actions/handlers';
@@ -69,60 +69,58 @@ export default class CaucusQueuer extends React.Component<Props, State> {
       this.setState({ durationField: e.currentTarget.value });
 
     return (
-      <div>
-        <Header as="h3" attached="top">Queue</Header>
-        <Segment attached textAlign="center" loading={!members}>
-          <Form>
-            <Form.Dropdown
-              icon="search"
-              value={this.state.queueCountry.value}
-              search
-              selection
-              onChange={countryHandler}
-              options={countryOptions}
+      <Segment textAlign="center" loading={!members}>
+        <Label attached="top left" size="large">Queue</Label>
+        <Form>
+          <Form.Dropdown
+            icon="search"
+            value={this.state.queueCountry.value}
+            search
+            selection
+            onChange={countryHandler}
+            options={countryOptions}
+          />
+          <TimerSetter
+            unitValue={this.state.unitDropdown}
+            durationValue={this.state.durationField}
+            onDurationChange={durationHandler}
+            onUnitChange={unitHandler}
+          />
+          <Form.Checkbox
+            label="Delegates can queue"
+            indeterminate={!caucus}
+            toggle
+            checked={caucus ? (caucus.queueIsPublic || false) : false} // zoo wee mama
+            onChange={checkboxHandler<CaucusData>(caucusFref, 'queueIsPublic')}
+          />
+          <Button.Group size="large" fluid>
+            <Button
+              content="For"
+              // labelPosition="left"
+              // icon
+              onClick={stanceHandler(Stance.For)}
             />
-            <TimerSetter
-              unitValue={this.state.unitDropdown}
-              durationValue={this.state.durationField}
-              onDurationChange={durationHandler}
-              onUnitChange={unitHandler}
+            {/* <Icon name="thumbs outline up" />
+              For
+            </Button> */}
+            <Button.Or />
+            <Button
+              content="Neutral"
+              onClick={stanceHandler(Stance.Neutral)}
             />
-            <Form.Checkbox
-              label="Delegates can queue"
-              indeterminate={!caucus}
-              toggle
-              checked={caucus ? (caucus.queueIsPublic || false) : false} // zoo wee mama
-              onChange={checkboxHandler<CaucusData>(caucusFref, 'queueIsPublic')}
+            <Button.Or />
+            <Button
+              content="Against"
+              // labelPosition="right"
+              // icon
+              onClick={stanceHandler(Stance.Against)}
             />
-            <Button.Group size="large" fluid>
-              <Button
-                content="For"
-                // labelPosition="left"
-                // icon
-                onClick={stanceHandler(Stance.For)}
-              />
-              {/* <Icon name="thumbs outline up" />
-                For
-              </Button> */}
-              <Button.Or />
-              <Button
-                content="Neutral"
-                onClick={stanceHandler(Stance.Neutral)}
-              />
-              <Button.Or />
-              <Button
-                content="Against"
-                // labelPosition="right"
-                // icon
-                onClick={stanceHandler(Stance.Against)}
-              />
-              {/* <Icon name="thumbs outline down" />
-                Against
-              </Button> */}
-            </Button.Group>
-          </Form>
-        </Segment>
-      </div>
+            {/* <Icon name="thumbs outline down" />
+              Against
+            </Button> */}
+          </Button.Group>
+        </Form>
+      </Segment>
     );
   }
 }

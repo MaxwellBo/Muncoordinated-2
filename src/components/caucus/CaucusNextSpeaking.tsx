@@ -137,32 +137,26 @@ export class CaucusNextSpeaking extends React.Component<Props, {}> {
     );
 
     return (
-      <div>
-        <Header as="h3" attached="top">
-          Next Speaking
-        </Header>
-        <Segment attached textAlign="center">
-          {hasNowSpeaking && !hasNextSpeaking ? endButton : nextButton}
-          <Button
-            icon
-            disabled={!interlaceable}
-            basic
-            color="purple"
-            onClick={interlace}
-          >
-            <Icon name="random" />
-            Interlace
-          </Button>
-        </Segment>
-        <Segment attached="bottom" loading={!caucus}>
-          <SpeakerFeed 
-            data={caucus ? caucus.queue : undefined}
-            fref={props.fref.child('queue')} 
-            speaking={caucus ? caucus.speaking : undefined}
-            speakerTimer={props.speakerTimer} 
-          />
-        </Segment>
-      </div>
+      <Segment textAlign="center">
+        <Label attached="top left" size="large">Next Speaking</Label>
+        {hasNowSpeaking && !hasNextSpeaking ? endButton : nextButton}
+        <Button
+          icon
+          disabled={!interlaceable}
+          basic
+          color="purple"
+          onClick={interlace}
+        >
+          <Icon name="random" />
+          Interlace
+        </Button>
+        <SpeakerFeed 
+          data={caucus ? caucus.queue : undefined}
+          fref={props.fref.child('queue')} 
+          speaking={caucus ? caucus.speaking : undefined}
+          speakerTimer={props.speakerTimer} 
+        />
+      </Segment>
     );
   }
 }
