@@ -61,7 +61,7 @@ export enum Vote {
 type Votes = Map<string, Vote>;
 
 export const DEFAULT_RESOLUTION: ResolutionData = {
-  name: '',
+  name: 'untitled resolution',
   link: '',
   proposer: '',
   seconder: '',
@@ -114,7 +114,7 @@ export default class Resolution extends React.Component<Props, State> {
 
     const newCaucus: CaucusData = {
       ...DEFAULT_CAUCUS,
-      name: 'Amendment',
+      name: `Amendment by ${amendment.proposer}`,
       topic: text,
       speaking: {
         duration: DEFAULT_CAUCUS.speakerTimer.remaining,

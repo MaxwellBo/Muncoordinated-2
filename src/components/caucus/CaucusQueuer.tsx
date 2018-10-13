@@ -1,12 +1,12 @@
 import * as React from 'react';
 import * as firebase from 'firebase';
-import { MemberData, nameToCountryOption } from '../Member';
+import { MemberData } from '../Member';
 import { CaucusData } from '../Caucus';
-import { COUNTRY_OPTIONS, CountryOption } from '../../constants';
-import { Header, Segment, Button, Form, DropdownProps, Label } from 'semantic-ui-react';
+import { CountryOption } from '../../constants';
+import { Segment, Button, Form, DropdownProps, Label } from 'semantic-ui-react';
 import { TimerSetter, Unit } from '../TimerSetter';
 import { SpeakerEvent, Stance } from '..//caucus/SpeakerFeed';
-import { checkboxHandler, stateCountryDropdownHandler } from '../../actions/handlers';
+import { checkboxHandler } from '../../actions/handlers';
 import { membersToOptions } from '../../utils';
 
 interface Props {

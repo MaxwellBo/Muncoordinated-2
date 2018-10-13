@@ -4,12 +4,10 @@ import * as FileSaver from 'file-saver';
 import { CommitteeData, CommitteeID } from './Committee';
 import { RouteComponentProps } from 'react-router';
 import { URLParameters } from '../types';
-import { TextArea, Segment, Form, Button, Popup, InputOnChangeData, Progress, 
-  List, DropdownProps, ListDescription, Flag, Container } from 'semantic-ui-react';
-import { textAreaHandler } from '../actions/handlers';
-import { nameToCountryOption, parseFlagName } from './Member';
+import { Form, Button, Progress, List, DropdownProps, Flag, Container } from 'semantic-ui-react';
+import { parseFlagName } from './Member';
 import Loading from './Loading';
-import { membersToOptions, recoverCountryOptions } from '../utils';
+import { recoverCountryOptions } from '../utils';
 import { CountryOption, COUNTRY_OPTIONS } from '../constants';
 
 interface Props extends RouteComponentProps<URLParameters> {
@@ -71,7 +69,6 @@ export default class Files extends React.Component<Props, State> {
   }
 
   handleComplete = (uploadTask: firebase.storage.UploadTask) => () => {
-
     const fileData: FileData = {
       filename: uploadTask.snapshot.ref.name,
       uploader: this.state.uploader.text

@@ -52,7 +52,7 @@ const CAUCUS_STATUS_OPTIONS = [
 ].map(makeDropdownOption);
 
 export const DEFAULT_CAUCUS: CaucusData = {
-  name: 'Genearal Speaker\'s List',
+  name: 'untitled caucus',
   topic: '',
   status: CaucusStatus.Open,
   speakerTimer: { ...DEFAULT_TIMER, remaining: 60 },

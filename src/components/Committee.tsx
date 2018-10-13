@@ -236,13 +236,7 @@ class ResponsiveNav extends React.Component<ResponsiveContainerProps, {}> {
 
   pushCaucus = () => {
     const committeeID: CommitteeID = this.props.match.params.committeeID;
-
-    const newCaucus: CaucusData = {
-      ...DEFAULT_CAUCUS,
-      name: 'untitled caucus',
-    };
-
-    const ref = postCaucus(committeeID, newCaucus);
+    const ref = postCaucus(committeeID, DEFAULT_CAUCUS);
 
     this.props.history
       .push(`/committees/${committeeID}/caucuses/${ref.key}`);
@@ -250,13 +244,7 @@ class ResponsiveNav extends React.Component<ResponsiveContainerProps, {}> {
 
   pushResolution = () => {
     const committeeID: CommitteeID = this.props.match.params.committeeID;
-
-    const newResolution: ResolutionData = {
-      ...DEFAULT_RESOLUTION,
-      name: 'untitled resolution',
-    };
-
-    const ref = postResolution(committeeID, newResolution);
+    const ref = postResolution(committeeID, DEFAULT_RESOLUTION);
 
     this.props.history
       .push(`/committees/${committeeID}/resolutions/${ref.key}`);
