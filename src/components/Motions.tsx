@@ -10,7 +10,7 @@ import { stateFieldHandler,
   stateCountryDropdownHandler,
   stateTextAreaHandler
 } from '../actions/handlers';
-import { makeDropdownOption, membersToOptions, recoverCountryOptions } from '../utils';
+import { makeDropdownOption, recoverCountryOptions } from '../utils';
 import { TimerSetter, Unit } from './TimerSetter';
 import { nameToCountryOption, parseFlagName } from './Member';
 import { DEFAULT_CAUCUS, CaucusData, CaucusID, CaucusStatus } from './Caucus';
@@ -190,15 +190,15 @@ const hasResolutionTarget = (motionType: MotionType): boolean => {
 
 export interface MotionData {
   proposal: string;
-  proposer: string;
-  seconder: string;
+  proposer?: string;
+  seconder?: string;
   speakerDuration?: number;
   speakerUnit: Unit;
   caucusDuration?: number;
   caucusUnit: Unit;
   type: MotionType;
-  caucusTarget: CaucusID;
-  resolutionTarget: ResolutionID;
+  caucusTarget?: CaucusID;
+  resolutionTarget?: ResolutionID;
 }
 
 interface Props extends RouteComponentProps<URLParameters> {
@@ -228,15 +228,11 @@ const MOTION_TYPE_OPTIONS = [
 
 const DEFAULT_MOTION: MotionData = {
   proposal: '',
-  proposer: '',
-  seconder: '',
   speakerDuration: 60,
   speakerUnit: Unit.Seconds,
   caucusDuration: 10,
   caucusUnit: Unit.Minutes,
-  type: MotionType.OpenUnmoderatedCaucus, // this will force it to the top of the list
-  caucusTarget: '',
-  resolutionTarget: ''
+  type: MotionType.OpenUnmoderatedCaucus // this will force it to the top of the list
 };
 
 export default class Motions extends React.Component<Props, State> {
@@ -275,11 +271,13 @@ export default class Motions extends React.Component<Props, State> {
       : newMotion.caucusDuration;
 
     this.setState(prevState => {
+      const { proposer, seconder, ...rest } = {
+        ...prevState.newMotion,
+        caucusDuration: duration
+      };
+
       return {
-        newMotion: {
-          ...prevState.newMotion,
-          caucusDuration: duration
-        }
+        newMotion: rest
       };
     });
   }
@@ -300,7 +298,10 @@ export default class Motions extends React.Component<Props, State> {
     const { proposer, speakerDuration, speakerUnit, 
       caucusDuration, caucusUnit, seconder, proposal } = motionData;
 
-    if (motionData.type === MotionType.OpenModeratedCaucus && speakerDuration && caucusDuration) {
+    const caucusID = motionData.caucusTarget;
+    const resolutionID = motionData.resolutionTarget;
+
+    if (motionData.type === MotionType.OpenModeratedCaucus && speakerDuration && caucusDuration && proposer) {
 
       const speakerSeconds = speakerDuration * (speakerUnit === Unit.Minutes ? 60 : 1);
       const caucusSeconds = caucusDuration * (caucusUnit === Unit.Minutes ? 60 : 1);
@@ -329,7 +330,6 @@ export default class Motions extends React.Component<Props, State> {
         .push(`/committees/${committeeID}/caucuses/${caucusRef.key}`);
 
     } else if (motionData.type === MotionType.OpenUnmoderatedCaucus && caucusDuration) {
-
       this.props.history
         .push(`/committees/${committeeID}/unmod`);
 
@@ -342,8 +342,7 @@ export default class Motions extends React.Component<Props, State> {
 
       putUnmodTimer(committeeID, newTimer);
 
-    } else if (motionData.type === MotionType.IntroduceDraftResolution) {
-
+    } else if (motionData.type === MotionType.IntroduceDraftResolution && proposer && seconder) {
       const newResolution: ResolutionData = {
         ...DEFAULT_RESOLUTION,
         name: proposal,
@@ -357,7 +356,6 @@ export default class Motions extends React.Component<Props, State> {
         .push(`/committees/${committeeID}/resolutions/${resolutionRef.key}`);
 
     } else if (motionData.type === MotionType.ExtendUnmoderatedCaucus && caucusDuration) {
-
       this.props.history
         .push(`/committees/${committeeID}/unmod`);
 
@@ -369,10 +367,7 @@ export default class Motions extends React.Component<Props, State> {
       // when this gets fired off
       extendUnmodTimer(committeeID, caucusSeconds);
 
-    } else if (motionData.type === MotionType.ExtendModeratedCaucus && caucusDuration) {
-
-      const caucusID = motionData.caucusTarget;
-
+    } else if (motionData.type === MotionType.ExtendModeratedCaucus && caucusDuration && caucusID) {
       this.props.history
         .push(`/committees/${committeeID}/caucuses/${caucusID}`);
 
@@ -380,18 +375,12 @@ export default class Motions extends React.Component<Props, State> {
       
       extendModTimer(committeeID, caucusID, caucusSeconds);
 
-    } else if (motionData.type === MotionType.CloseModeratedCaucus) {
-
-      const caucusID = motionData.caucusTarget;
-
+    } else if (motionData.type === MotionType.CloseModeratedCaucus && caucusID) {
       this.props.history
         .push(`/committees/${committeeID}/caucuses/${caucusID}`);
 
       closeCaucus(committeeID, caucusID);
-    } else if (motionData.type === MotionType.IntroduceAmendment) {
-
-      const resolutionID = motionData.resolutionTarget;
-
+    } else if (motionData.type === MotionType.IntroduceAmendment && resolutionID && proposer) {
       this.props.history
         .push(`/committees/${committeeID}/resolutions/${resolutionID}`);
 
@@ -424,7 +413,7 @@ export default class Motions extends React.Component<Props, State> {
         <Label horizontal>
           Proposer
         </Label>
-        <Flag name={parseFlagName(proposer)} /> {proposer}
+        <Flag name={parseFlagName(proposer || '')} /> {proposer}
       </div>
     );
 
@@ -433,7 +422,7 @@ export default class Motions extends React.Component<Props, State> {
         <Label horizontal>
           Seconder
         </Label>
-        <Flag name={parseFlagName(seconder)} /> {seconder}
+        <Flag name={parseFlagName(seconder || '')} /> {seconder}
       </div>
     );
 
@@ -443,20 +432,18 @@ export default class Motions extends React.Component<Props, State> {
 
     if (committee 
       && committee.caucuses 
-      && committee.caucuses[caucusTarget] 
-      && committee.caucuses[caucusTarget].name
+      && committee.caucuses[caucusTarget || ''] 
     ) {
-      caucusTargetText = committee.caucuses[caucusTarget].name;
+      caucusTargetText = committee.caucuses[caucusTarget || ''].name;
     }
 
     let resolutionTargetText = resolutionTarget;
 
     if (committee 
       && committee.resolutions 
-      && committee.resolutions[resolutionTarget] 
-      && committee.resolutions[resolutionTarget].name
+      && committee.resolutions[resolutionTarget || ''] 
     ) {
-      resolutionTargetText = committee.resolutions[resolutionTarget].name;
+      resolutionTargetText = committee.resolutions[resolutionTarget || ''].name;
     }
 
     // TODO: we definately can add links here
@@ -651,7 +638,7 @@ export default class Motions extends React.Component<Props, State> {
       <Form.Dropdown
         icon="search"
         key="proposer"
-        value={nameToCountryOption(proposer).key}
+        value={proposer ? nameToCountryOption(proposer).key : undefined}
         search
         error={!proposer}
         selection
@@ -667,7 +654,7 @@ export default class Motions extends React.Component<Props, State> {
         icon="search"
         key="seconder"
         error={!seconder}
-        value={nameToCountryOption(seconder).key}
+        value={seconder ? nameToCountryOption(seconder).key : undefined}
         search
         selection
         fluid
@@ -676,6 +663,8 @@ export default class Motions extends React.Component<Props, State> {
         label="Seconder"
       />
     );
+
+    const implies = (a: boolean, b: boolean) => a ? b : true;
 
     return (
         <Form 
@@ -702,11 +691,14 @@ export default class Motions extends React.Component<Props, State> {
             ) && setters}
           {divisibilityError}
           <Button 
-            disabled={proposer === ''}
             icon="plus"
             basic
             primary
             fluid
+            disabled={!proposer 
+              || !implies(hasSeconder(type), !!seconder)
+              || !implies(hasCaucusTarget(type), !!caucusTarget)
+              || !implies(hasResolutionTarget(type), !!resolutionTarget)}
             onClick={this.handlePushMotion}
           />
         </Form>
