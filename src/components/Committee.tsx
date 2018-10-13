@@ -13,7 +13,7 @@ import { MotionID, MotionData } from './Motions';
 import { TimerData, DEFAULT_TIMER } from './Timer';
 import Unmod from './Unmod';
 import Notes from './Notes';
-import Help from './Help';
+import Help, { KEYBOARD_SHORTCUT_LIST } from './Help';
 import Motions from './Motions';
 import { postCaucus } from '../actions/caucusActions';
 import { URLParameters } from '../types';
@@ -396,6 +396,9 @@ export default class Committee extends React.Component<Props, State> {
         </List>
         <Divider />
         <ShareHint committeeID={this.props.match.params.committeeID} />
+        <Divider />
+        <Header as="h3">Keyboard Shortcuts</Header>
+        {KEYBOARD_SHORTCUT_LIST}
       </Container>
     ) : <Loading />;
   }

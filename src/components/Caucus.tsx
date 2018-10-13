@@ -2,20 +2,17 @@ import * as React from 'react';
 import * as firebase from 'firebase';
 import * as _ from 'lodash';
 import {
-  Segment, Dimmer, Header, Dropdown, TextArea, Input, Button, Icon, Grid, Feed, Flag,
-  Label, Form, Message, Container
+  Segment, Dropdown, TextArea, Input, Grid, Feed,
+  Label, Form, Container
 } from 'semantic-ui-react';
 import Timer, { TimerData, DEFAULT_TIMER } from './Timer';
 import { RouteComponentProps } from 'react-router';
-import { MemberID, MemberData, nameToCountryOption, parseFlagName } from './Member';
-import { CommitteeID, CommitteeData } from './Committee';
+import { MemberData } from './Member';
+import { CommitteeData } from './Committee';
 import CaucusQueuer from './caucus/CaucusQueuer';
-import * as Utils from '../utils';
-import { COUNTRY_OPTIONS, CountryOption } from '../constants';
 import { textAreaHandler, dropdownHandler, fieldHandler } from '../actions/handlers';
 import { makeDropdownOption } from '../utils';
 import { URLParameters } from '../types';
-import Loading from './Loading';
 import { CaucusNextSpeaking } from './caucus/CaucusNextSpeaking';
 import { SpeakerEvent, SpeakerFeedEntry } from './caucus/SpeakerFeed';
 import { DEFAULT_SETTINGS } from './Settings';

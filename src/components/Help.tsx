@@ -1,6 +1,38 @@
 import * as React from 'react';
 import { Button, Segment, Header, List, Container } from 'semantic-ui-react';
 
+export const KEYBOARD_SHORTCUT_LIST = (
+  <List>
+    <List.Item>
+      <Button size="mini">
+        Alt
+      </Button>
+      <Button size="mini">
+        N
+      </Button>
+      Next Speaker
+    </List.Item>
+    <List.Item>
+      <Button size="mini">
+        Alt
+      </Button>
+      <Button size="mini">
+        S
+      </Button>
+      Toggle Speaker Timer
+    </List.Item>
+    <List.Item>
+      <Button size="mini">
+        Alt
+      </Button>
+      <Button size="mini">
+        C
+      </Button>
+      Toggle Caucus Timer
+    </List.Item>
+  </List>
+);
+
 export default class Help extends React.PureComponent<{}, {}> {
 
   edge = ( 
@@ -34,35 +66,7 @@ export default class Help extends React.PureComponent<{}, {}> {
       <Container text style={{ padding: '1em 0em' }}>
         <Header as="h3" attached="top">Keyboard Shortcuts</Header>
         <Segment attached="bottom">
-          <List>
-            <List.Item>
-              <Button size="mini">
-                Alt
-              </Button>
-              <Button size="mini">
-                N
-              </Button>
-              Next Speaker
-            </List.Item>
-            <List.Item>
-              <Button size="mini">
-                Alt
-              </Button>
-              <Button size="mini">
-                S
-              </Button>
-              Toggle Speaker Timer
-            </List.Item>
-            <List.Item>
-              <Button size="mini">
-                Alt
-              </Button>
-              <Button size="mini">
-                C
-              </Button>
-              Toggle Caucus Timer
-            </List.Item>
-          </List>
+        {KEYBOARD_SHORTCUT_LIST}
         </Segment>
         <Header as="h3" attached="top">Bug Reporting &amp; Help Requests</Header>
         <Segment attached="bottom">
