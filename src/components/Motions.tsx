@@ -141,6 +141,19 @@ const hasDetail = (motionType: MotionType): boolean => {
   }
 };
 
+const detailLabel = (motionType: MotionType): string => {
+  switch (motionType) {
+    case MotionType.OpenModeratedCaucus:
+      return 'Topic';
+    case MotionType.IntroduceDraftResolution:
+      return 'Name';
+    case MotionType.IntroduceAmendment:
+      return 'Text';
+    default:
+      return '';
+  }
+};
+
 const hasDuration = (motionType: MotionType): boolean => {
   switch (motionType) {
     case MotionType.ExtendUnmoderatedCaucus:
@@ -402,12 +415,6 @@ export default class Motions extends React.Component<Props, State> {
     const { proposer, proposal, type, caucusUnit, caucusDuration, speakerUnit, 
       speakerDuration, seconder, caucusTarget, resolutionTarget } = motionData;
 
-    const description = (
-      <Card.Description>
-        {proposal}
-      </Card.Description>
-    );
-
     const proposerTree = (
       <div>
         <Label horizontal>
@@ -427,7 +434,6 @@ export default class Motions extends React.Component<Props, State> {
     );
 
     // this is absolutely batshit insane, surely there's a better option here
-
     let caucusTargetText = caucusTarget;
 
     if (committee 
@@ -445,6 +451,15 @@ export default class Motions extends React.Component<Props, State> {
     ) {
       resolutionTargetText = committee.resolutions[resolutionTarget || ''].name;
     }
+
+    const descriptionTree = (
+      <Card.Description>
+        <Label horizontal>
+          {detailLabel(type)}
+        </Label>
+        {proposal}
+      </Card.Description>
+    );
 
     // TODO: we definately can add links here
     const caucusTargetTree = (
@@ -478,7 +493,6 @@ export default class Motions extends React.Component<Props, State> {
         <Card.Content>
           <Card.Header>
             {interpolateTime(type, time)}
-            {hasDetail(type) && description}
           </Card.Header>
           <Card.Meta>
               {proposerTree}
@@ -486,6 +500,7 @@ export default class Motions extends React.Component<Props, State> {
               {hasCaucusTarget(type) && caucusTargetTree}
               {hasResolutionTarget(type) && resolutionTargetTree}
           </Card.Meta>
+          {hasDetail(type) && descriptionTree}
         </Card.Content>
         <Card.Content extra>
           <Button.Group fluid>
