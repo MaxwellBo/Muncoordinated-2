@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Button, Segment, Header, List, Container } from 'semantic-ui-react';
+import { CLIENT_VERSION } from './Footer';
 
 export const KEYBOARD_SHORTCUT_LIST = (
   <List>
@@ -88,7 +89,7 @@ export default class Help extends React.PureComponent<{}, {}> {
               List the browser you are using
             </List.Item>
             <List.Item>
-              List the version of the app you're using (displayed under the sidebar)
+              List the version of the app you're using ({CLIENT_VERSION})
             </List.Item>
             <List.Item>
               Copy-paste everything from the {firefox}, {chrome}, or {edge} developer 
