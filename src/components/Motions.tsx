@@ -487,7 +487,7 @@ export default class Motions extends React.Component<Props, State> {
       : '';
 
     return (
-      <Card 
+      <Card
         key={id}
       >
         <Card.Content>
@@ -495,33 +495,31 @@ export default class Motions extends React.Component<Props, State> {
             {interpolateTime(type, time)}
           </Card.Header>
           <Card.Meta>
-              {proposerTree}
-              {hasSeconder(type) && seconderTree}
-              {hasCaucusTarget(type) && caucusTargetTree}
-              {hasResolutionTarget(type) && resolutionTargetTree}
+            {proposerTree}
+            {hasSeconder(type) && seconderTree}
+            {hasCaucusTarget(type) && caucusTargetTree}
+            {hasResolutionTarget(type) && resolutionTargetTree}
           </Card.Meta>
           {hasDetail(type) && descriptionTree}
         </Card.Content>
-        <Card.Content extra>
-          <Button.Group fluid>
-            <Button 
-              basic 
-              negative
-              onClick={() => motionFref.remove()}
-            >
-              Delete
-            </Button>
-            {approvable(type) && <Button.Or />}
-            {approvable(type) && <Button 
-              disabled={motionData.proposer === ''}
-              basic
-              positive
-              onClick={() => handleApproveMotion(motionData)}
-            >
-              {actionName(type)}
-            </Button>}
-          </Button.Group>
-        </Card.Content>
+        <Button.Group fluid attached="bottom">
+          <Button
+            basic
+            negative
+            onClick={() => motionFref.remove()}
+          >
+            Delete
+          </Button>
+          {approvable(type) && <Button.Or />}
+          {approvable(type) && <Button
+            disabled={motionData.proposer === ''}
+            basic
+            positive
+            onClick={() => handleApproveMotion(motionData)}
+          >
+            {actionName(type)}
+          </Button>}
+        </Button.Group>
       </Card>
     );
   }
