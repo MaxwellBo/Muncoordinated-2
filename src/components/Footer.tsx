@@ -6,6 +6,11 @@ interface State {
 }
 
 export const CLIENT_VERSION = 'v2.10.0';
+export const CLIENT_VERSION_LINK = (
+  <a href="https://github.com/MaxwellBo/Muncoordinated-2/releases">
+    {CLIENT_VERSION}
+  </a>
+);
 const RELEASES_LATEST = 'https://api.github.com/repos/MaxwellBo/Muncoordinated-2/releases/latest';
 
 export default class Footer extends React.PureComponent<{}, State> {
@@ -43,12 +48,6 @@ export default class Footer extends React.PureComponent<{}, State> {
   render() {
     const { latestVersion } = this.state;
 
-    const version = (
-      <a href="https://github.com/MaxwellBo/Muncoordinated-2/releases">
-        {CLIENT_VERSION}
-      </a>
-    );
-
     const refreshNudge = (
       <span>
         . New version available; refresh the page twice
@@ -57,7 +56,7 @@ export default class Footer extends React.PureComponent<{}, State> {
 
     return (
       <div style={{ position: 'fixed', bottom: 5, left: 5, background: '#FFFFFF' }}>
-        {version} by <a href="https://github.com/MaxwellBo">Max Bo</a> &amp; <a href="https://www.facebook.com/UQUNSA/">UQUNSA</a>{latestVersion !== CLIENT_VERSION && refreshNudge}
+        {CLIENT_VERSION_LINK} by <a href="https://github.com/MaxwellBo">Max Bo</a> &amp; <a href="https://www.facebook.com/UQUNSA/">UQUNSA</a>{latestVersion !== CLIENT_VERSION && refreshNudge}
       </div>
     );
   }
