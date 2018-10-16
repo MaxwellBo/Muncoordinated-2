@@ -22,7 +22,7 @@ interface State {
   file?: any;
   state?: firebase.storage.TaskState;
   errorCode?: string;
-  uploader: CountryOption;
+  uploader?: CountryOption;
 }
 
 export interface FileData {
@@ -38,8 +38,7 @@ export default class Files extends React.Component<Props, State> {
 
     this.state = {
       committeeFref: firebase.database().ref('committees')
-        .child(match.params.committeeID),
-      uploader: COUNTRY_OPTIONS[0]
+        .child(match.params.committeeID)
     };
   }
 
@@ -69,9 +68,11 @@ export default class Files extends React.Component<Props, State> {
   }
 
   handleComplete = (uploadTask: firebase.storage.UploadTask) => () => {
+    const { uploader } = this.state;
+
     const fileData: FileData = {
       filename: uploadTask.snapshot.ref.name,
-      uploader: this.state.uploader.text
+      uploader: uploader ? uploader.text : 'Unknown'
     };
 
     this.state.committeeFref.child('files').push().set(fileData);
@@ -112,7 +113,7 @@ export default class Files extends React.Component<Props, State> {
   }
 
   render() {
-    const { progress, state, errorCode, committee, file } = this.state;
+    const { progress, state, errorCode, committee, file, uploader } = this.state;
 
     const { committeeID } = this.props.match.params;
 
@@ -137,9 +138,10 @@ export default class Files extends React.Component<Props, State> {
             <Form.Dropdown
               icon="search"
               key="uploader"
-              value={this.state.uploader.key}
+              value={uploader ? uploader.key : undefined}
               search
               selection
+              error={!uploader}
               onChange={this.countryHandler}
               options={countryOptions}
               label="Uploader"
@@ -147,7 +149,7 @@ export default class Files extends React.Component<Props, State> {
             <Button 
               type="submit" 
               loading={state === firebase.storage.TaskState.RUNNING}
-              disabled={!file}
+              disabled={!file || !uploader}
             >
                 Upload
             </Button>
