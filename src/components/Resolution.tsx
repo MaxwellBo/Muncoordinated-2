@@ -5,7 +5,7 @@ import { MemberID, nameToCountryOption, MemberData } from './Member';
 import { AmendmentID, AmendmentData, DEFAULT_AMENDMENT, AMENDMENT_STATUS_OPTIONS } from './Amendment';
 import {
   Card, Button, Form, Dropdown, Segment, Input, TextArea,
-  List, SemanticICONS, Icon, Tab, Grid, SemanticCOLORS, Container
+  List, SemanticICONS, Icon, Tab, Grid, SemanticCOLORS, Container, Message
 } from 'semantic-ui-react';
 import { CommitteeData } from './Committee';
 import { CaucusID, DEFAULT_CAUCUS, CaucusData } from './Caucus';
@@ -18,6 +18,13 @@ import { canVote } from './Admin';
 import { voteOnResolution } from '../actions/resolutionActions';
 import { postCaucus } from '../actions/caucusActions';
 import { Stance } from './caucus/SpeakerFeed';
+
+export const IDENTITCAL_PROPOSER_SECONDER = (
+  <Message
+    error
+    content="A resolution's proposer and seconder cannot be the same"
+  />
+);
 
 interface Props extends RouteComponentProps<URLParameters> {
 }
@@ -417,12 +424,14 @@ export default class Resolution extends React.Component<Props, State> {
       ? resolution.seconder
       : undefined;
 
+    const hasIdenticalProposerSeconder = proposer && seconder ? proposer === seconder : false;
+
     const proposerTree = (
       <Form.Dropdown
         key="proposer"
         icon="search"
         value={proposer ? nameToCountryOption(proposer).key : undefined}
-        error={!proposer}
+        error={!proposer || hasIdenticalProposerSeconder}
         search
         selection
         fluid
@@ -437,7 +446,7 @@ export default class Resolution extends React.Component<Props, State> {
         key="seconder"
         icon="search"
         value={seconder ? nameToCountryOption(seconder).key : undefined}
-        error={!seconder}
+        error={!seconder || hasIdenticalProposerSeconder}
         search
         selection
         fluid
@@ -447,10 +456,12 @@ export default class Resolution extends React.Component<Props, State> {
       />
     );
 
+    const hasError = hasIdenticalProposerSeconder;
+
     const provisionTree = !((resolution || { caucus: undefined }).caucus) ? (
       // if there's no linked caucus
       <Form.Button
-        disabled={!resolution || !resolution.proposer || !resolution.seconder}
+        disabled={!resolution || !resolution.proposer || !resolution.seconder || hasError} 
         content="Provision Caucus"
         onClick={() => handleProvisionResolution(resolution!)}
       />
@@ -473,7 +484,7 @@ export default class Resolution extends React.Component<Props, State> {
           fluid
           placeholder="Resolution Name"
         />
-        <Form>
+        <Form error={hasError}>
           <TextArea
             value={resolution ? resolution.link : ''}
             autoHeight
@@ -486,6 +497,7 @@ export default class Resolution extends React.Component<Props, State> {
             {proposerTree}
             {seconderTree}
           </Form.Group>
+          {IDENTITCAL_PROPOSER_SECONDER}
           {provisionTree}
         </Form>
       </Segment>

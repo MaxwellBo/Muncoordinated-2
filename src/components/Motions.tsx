@@ -18,12 +18,19 @@ import { postCaucus, closeCaucus } from '../actions/caucusActions';
 import { TimerData } from './Timer';
 import { putUnmodTimer, extendUnmodTimer, extendModTimer } from '../actions/committeeActions';
 import { URLParameters } from '../types';
-import { ResolutionData, DEFAULT_RESOLUTION, ResolutionID } from './Resolution';
+import { ResolutionData, DEFAULT_RESOLUTION, ResolutionID, IDENTITCAL_PROPOSER_SECONDER } from './Resolution';
 import { Stance } from './caucus/SpeakerFeed';
 import { AmendmentData, DEFAULT_AMENDMENT } from './Amendment';
 import { postAmendment, postResolution } from '../actions/resolutionActions';
 
 export type MotionID = string;
+
+const DIVISIBILITY_ERROR = (
+  <Message
+    error
+    content="Speaker time does not evenly divide the caucus time"
+  />
+);
 
 enum MotionType {
   OpenUnmoderatedCaucus = 'Open Unmoderated Caucus',
@@ -583,13 +590,6 @@ export default class Motions extends React.Component<Props, State> {
       />
     );
 
-    const divisibilityError = (
-      <Message
-        error
-        content="Speaker time does not evenly divide the caucus time"
-      />
-    );
-
     const { caucuses, resolutions } = this.state.committee || { caucuses:  {}, resolutions: {} };
 
     // BADCODE: Filter predicate shared with menu in Committee, also update when changing
@@ -645,6 +645,7 @@ export default class Motions extends React.Component<Props, State> {
     );
 
     const countryOptions = recoverCountryOptions(this.state.committee);
+    const hasIdenticalProposerSeconder = proposer && seconder ? proposer === seconder : false;
 
     const proposerTree = (
       <Form.Dropdown
@@ -652,7 +653,7 @@ export default class Motions extends React.Component<Props, State> {
         key="proposer"
         value={proposer ? nameToCountryOption(proposer).key : undefined}
         search
-        error={!proposer}
+        error={!proposer || hasIdenticalProposerSeconder}
         selection
         fluid
         onChange={stateCountryDropdownHandler<Props, State>(this, 'newMotion', 'proposer', countryOptions)}
@@ -665,7 +666,7 @@ export default class Motions extends React.Component<Props, State> {
       <Form.Dropdown
         icon="search"
         key="seconder"
-        error={!seconder}
+        error={!seconder || hasIdenticalProposerSeconder} 
         value={seconder ? nameToCountryOption(seconder).key : undefined}
         search
         selection
@@ -678,9 +679,11 @@ export default class Motions extends React.Component<Props, State> {
 
     const implies = (a: boolean, b: boolean) => a ? b : true;
 
+    const hasError = hasDivisibilityError || hasIdenticalProposerSeconder;
+
     return (
         <Form 
-          error={hasDivisibilityError}
+          error={hasError}
         >
           <Form.Dropdown
             placeholder="Select type"
@@ -701,7 +704,8 @@ export default class Motions extends React.Component<Props, State> {
             || hasCaucusTarget(type) 
             || hasResolutionTarget(type) 
             ) && setters}
-          {divisibilityError}
+          {hasDivisibilityError && DIVISIBILITY_ERROR}
+          {hasIdenticalProposerSeconder && IDENTITCAL_PROPOSER_SECONDER}
           <Button 
             icon="plus"
             basic
@@ -710,7 +714,9 @@ export default class Motions extends React.Component<Props, State> {
             disabled={!proposer 
               || !implies(hasSeconder(type), !!seconder)
               || !implies(hasCaucusTarget(type), !!caucusTarget)
-              || !implies(hasResolutionTarget(type), !!resolutionTarget)}
+              || !implies(hasResolutionTarget(type), !!resolutionTarget)
+              || hasError
+            }
             onClick={this.handlePushMotion}
           />
         </Form>
