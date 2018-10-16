@@ -44,8 +44,8 @@ export type ResolutionID = string;
 export interface ResolutionData {
   name: string;
   link: string;
-  proposer: MemberID;
-  seconder: MemberID;
+  proposer?: MemberID;
+  seconder?: MemberID;
   status: ResolutionStatus;
   caucus?: CaucusID;
   amendments?: Map<AmendmentID, AmendmentData>;
@@ -63,10 +63,7 @@ type Votes = Map<string, Vote>;
 export const DEFAULT_RESOLUTION: ResolutionData = {
   name: 'untitled resolution',
   link: '',
-  proposer: '',
-  seconder: '',
   status: ResolutionStatus.Introduced,
-  caucus: '',
   amendments: {} as Map<AmendmentID, AmendmentData>,
   votes: {} as Votes
 };
@@ -148,7 +145,7 @@ export default class Resolution extends React.Component<Props, State> {
       name: name,
       speaking: {
         duration: DEFAULT_CAUCUS.speakerTimer.remaining,
-        who: proposer,
+        who: proposer || '', // defend against undefined proposers
         stance: Stance.For,
       }
     };
@@ -405,16 +402,27 @@ export default class Resolution extends React.Component<Props, State> {
         value={resolution ? resolution.status : ResolutionStatus.Introduced}
         options={RESOLUTION_STATUS_OPTIONS}
         onChange={dropdownHandler<ResolutionData>(resolutionFref, 'status')}
+        loading={!resolution}
       />
     );
 
     const countryOptions = recoverCountryOptions(this.state.committee);
 
+    // TFW no null coalescing operator 
+    const proposer = resolution 
+      ? resolution.proposer
+      : undefined;
+
+    const seconder = resolution 
+      ? resolution.seconder
+      : undefined;
+
     const proposerTree = (
       <Form.Dropdown
         key="proposer"
         icon="search"
-        value={nameToCountryOption(resolution ? resolution.proposer : '').key}
+        value={proposer ? nameToCountryOption(proposer).key : undefined}
+        error={!proposer}
         search
         selection
         fluid
@@ -428,7 +436,8 @@ export default class Resolution extends React.Component<Props, State> {
       <Form.Dropdown
         key="seconder"
         icon="search"
-        value={nameToCountryOption(resolution ? resolution.seconder : '').key}
+        value={seconder ? nameToCountryOption(seconder).key : undefined}
+        error={!seconder}
         search
         selection
         fluid
@@ -441,7 +450,7 @@ export default class Resolution extends React.Component<Props, State> {
     const provisionTree = !((resolution || { caucus: undefined }).caucus) ? (
       // if there's no linked caucus
       <Form.Button
-        disabled={!resolution || resolution.proposer === '' || resolution.seconder === ''}
+        disabled={!resolution || !resolution.proposer || !resolution.seconder}
         content="Provision Caucus"
         onClick={() => handleProvisionResolution(resolution!)}
       />
