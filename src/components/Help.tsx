@@ -92,8 +92,7 @@ export default class Help extends React.PureComponent<{}, {}> {
               List the version of the app you're using ({CLIENT_VERSION_LINK})
             </List.Item>
             <List.Item>
-              Copy-paste everything from the {firefox}, {chrome}, or {edge} developer 
-              console debugging logs
+              List the time, date, and browser that you were using when this occured
             </List.Item>
           </List>
           <br />
