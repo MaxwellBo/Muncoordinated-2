@@ -121,7 +121,7 @@ export default class Admin extends React.Component<Props, State> {
       newCountry: COUNTRY_OPTIONS[0],
       newOptions: [],
       newMemberRank: Rank.Standard,
-      newMemberVoting: true,
+      newMemberVoting: false,
       newMemberPresent: true
     };
   }
