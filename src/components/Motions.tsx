@@ -510,7 +510,6 @@ export default class Motions extends React.Component<Props, State> {
           >
             Delete
           </Button>
-          {approvable(type) && <Button.Or />}
           {approvable(type) && <Button
             disabled={motionData.proposer === ''}
             basic
