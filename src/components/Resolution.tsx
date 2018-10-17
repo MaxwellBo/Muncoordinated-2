@@ -4,15 +4,16 @@ import * as _ from 'lodash';
 import { MemberID, nameToCountryOption, MemberData } from './Member';
 import { AmendmentID, AmendmentData, DEFAULT_AMENDMENT, AMENDMENT_STATUS_OPTIONS } from './Amendment';
 import {
-  Card, Button, Form, Dropdown, Segment, Input, TextArea,
+  Card, Button, Form, Dropdown, Segment, Input, TextArea, Checkbox,
   List, SemanticICONS, Icon, Tab, Grid, SemanticCOLORS, Container, Message
 } from 'semantic-ui-react';
 import { CommitteeData } from './Committee';
 import { CaucusID, DEFAULT_CAUCUS, CaucusData } from './Caucus';
 import { RouteComponentProps } from 'react-router';
 import { URLParameters } from '../types';
-import { dropdownHandler, fieldHandler, textAreaHandler, countryDropdownHandler } from '../actions/handlers';
-import { makeDropdownOption, membersToOptions, recoverCountryOptions } from '../utils';
+import { dropdownHandler, fieldHandler, textAreaHandler, countryDropdownHandler, 
+  checkboxHandler } from '../actions/handlers';
+import { makeDropdownOption, recoverCountryOptions } from '../utils';
 import Loading from './Loading';
 import { canVote } from './Admin';
 import { voteOnResolution } from '../actions/resolutionActions';
@@ -57,6 +58,7 @@ export interface ResolutionData {
   caucus?: CaucusID;
   amendments?: Map<AmendmentID, AmendmentData>;
   votes?: Votes;
+  amendmentsArePublic?: boolean; // TODO: Migrate
 }
 
 export enum Vote {
@@ -72,7 +74,8 @@ export const DEFAULT_RESOLUTION: ResolutionData = {
   link: '',
   status: ResolutionStatus.Introduced,
   amendments: {} as Map<AmendmentID, AmendmentData>,
-  votes: {} as Votes
+  votes: {} as Votes,
+  amendmentsArePublic: false
 };
 
 export default class Resolution extends React.Component<Props, State> {
@@ -516,8 +519,9 @@ export default class Resolution extends React.Component<Props, State> {
 
   renderAmendmentsGroup = (resolution?: ResolutionData) => {
     const { renderAmendments, handlePushAmendment } = this;
-
     const amendments = resolution ? resolution.amendments : undefined;
+
+    const resolutionFref = this.recoverResolutionFref();
 
     const adder = (
       <Card>
@@ -528,6 +532,13 @@ export default class Resolution extends React.Component<Props, State> {
           fluid
           basic
           onClick={handlePushAmendment}
+        />
+        <Checkbox
+          label="Delegates can amend"
+          indeterminate={!resolution}
+          toggle
+          checked={resolution ? (resolution.amendmentsArePublic || false) : false}
+          onChange={checkboxHandler<ResolutionData>(resolutionFref, 'amendmentsArePublic')}
         />
         {/* </Card.Content> */}
       </Card>
