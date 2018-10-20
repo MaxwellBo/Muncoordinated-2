@@ -7,7 +7,7 @@ import Caucus, { CaucusData, CaucusID, DEFAULT_CAUCUS, CaucusStatus } from './Ca
 import Resolution, { ResolutionData, ResolutionID, DEFAULT_RESOLUTION } from './Resolution';
 import Admin from './Admin';
 import { Icon, Menu, SemanticICONS, Dropdown, Container, Responsive, Sidebar, Header, Label, Divider, 
-  List } from 'semantic-ui-react';
+  List, Input } from 'semantic-ui-react';
 import Stats from './Stats';
 import { MotionID, MotionData } from './Motions';
 import { TimerData, DEFAULT_TIMER } from './Timer';
@@ -26,6 +26,7 @@ import ShareHint from './ShareHint';
 import Notifications from './Notifications';
 import { postResolution } from '../actions/resolutionActions';
 import ConnectionStatus from './ConnectionStatus';
+import { fieldHandler } from 'src/actions/handlers';
 
 interface Props extends RouteComponentProps<URLParameters> {
 }
@@ -364,22 +365,50 @@ export default class Committee extends React.Component<Props, State> {
   }
 
   renderWelcome = () => {
-    const { committee } = this.state;
+    const { committee, committeeFref } = this.state;
 
     return committee ? (
       <Container text style={{ padding: '1em 0em' }}>
-        <Header as="h1" dividing>
-          {committee.name}
+        <Header as="h1">
+          <Input
+            label="Name"
+            value={committee ? committee.name : ''}
+            onChange={fieldHandler<CommitteeData>(committeeFref, 'name')}
+            fluid
+            loading={!committee}
+            placeholder="Committee Name"
+          />
         </Header>
         <List>
           <List.Item>
-            <Label horizontal>Topic</Label>{committee.topic}
+            <Input
+              label="Topic"
+              value={committee ? committee.topic : ''}
+              onChange={fieldHandler<CommitteeData>(committeeFref, 'topic')}
+              fluid
+              loading={!committee}
+              placeholder="Committee Topic"
+            />
           </List.Item>
           <List.Item>
-            <Label horizontal>Chairpeople</Label>{committee.chair}
+            <Input
+              label="Chairpeople"
+              value={committee ? committee.chair : ''}
+              onChange={fieldHandler<CommitteeData>(committeeFref, 'chair')}
+              fluid
+              loading={!committee}
+              placeholder="Committee Chairpeople"
+            />
           </List.Item>
           <List.Item>
-            <Label horizontal>Conference</Label>{committee.conference || ''}
+            <Input
+              label="Conference"
+              value={committee ? (committee.conference || '') : ''}
+              onChange={fieldHandler<CommitteeData>(committeeFref, 'conference')}
+              fluid
+              loading={!committee}
+              placeholder="Conference Name"
+            />
           </List.Item>
         </List>
         <Divider />
