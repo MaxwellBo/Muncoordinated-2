@@ -371,7 +371,6 @@ export default class Committee extends React.Component<Props, State> {
       <Container text style={{ padding: '1em 0em' }}>
         <Header as="h1">
           <Input
-            label="Committee"
             value={committee ? committee.name : ''}
             onChange={fieldHandler<CommitteeData>(committeeFref, 'name')}
             fluid
