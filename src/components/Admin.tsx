@@ -33,8 +33,11 @@ const RANK_OPTIONS = [
   Rank.Observer
 ].map(makeDropdownOption);
 
-function CommitteeStats(props: { data: CommitteeData }) {
-  const membersMap = props.data.members ? props.data.members : {} as Map<MemberID, MemberData>;
+export const CommitteeStats = (props: { data?: CommitteeData, verbose: boolean }) => {
+  const { data, verbose } = props;
+
+  const defaultMap = {} as Map<MemberID, MemberData>;
+  const membersMap: Map<MemberID, MemberData> = data ? (data.members || defaultMap) : defaultMap;
   const members: MemberData[] = Utils.objectToList(membersMap);
   const present = members.filter(x => x.present);
 
@@ -58,7 +61,7 @@ function CommitteeStats(props: { data: CommitteeData }) {
           <Table.HeaderCell />
           <Table.HeaderCell>Number</Table.HeaderCell>
           <Table.HeaderCell>Description</Table.HeaderCell>
-          <Table.HeaderCell>Threshold</Table.HeaderCell>
+          {verbose && <Table.HeaderCell>Threshold</Table.HeaderCell>}
         </Table.Row>
       </Table.Header>
 
@@ -78,40 +81,40 @@ function CommitteeStats(props: { data: CommitteeData }) {
           <Table.Cell>{canVoteNo.toString()}</Table.Cell>
           <Table.Cell>Present delegates with voting rights</Table.Cell>
         </Table.Row>
-        <Table.Row>
+        {verbose && <Table.Row>
           <Table.Cell error={!hasQuorum}>Debate</Table.Cell>
           <Table.Cell error={!hasQuorum}>{quorum.toString()}</Table.Cell>
           <Table.Cell error={!hasQuorum}>Delegates needed for debate</Table.Cell>
           <Table.Cell error={!hasQuorum}>25% of of members with voting rights</Table.Cell>
-        </Table.Row>
-        <Table.Row>
+        </Table.Row>}
+        {verbose && <Table.Row>
           <Table.Cell>Procedural threshold</Table.Cell>
           <Table.Cell>{procedural.toString()}</Table.Cell>
           <Table.Cell>Required votes for procedural matters</Table.Cell>
           <Table.Cell>50% of present non-NGO delegates</Table.Cell>
-        </Table.Row>
+        </Table.Row>}
         <Table.Row>
           <Table.Cell>Operative threshold</Table.Cell>
           <Table.Cell>{operative.toString()}</Table.Cell>
           <Table.Cell>Required votes for operative matters, such as amendments and resolutions</Table.Cell>
-          <Table.Cell>50% of present delegates with voting rights</Table.Cell>
+          {verbose && <Table.Cell>50% of present delegates with voting rights</Table.Cell>}
         </Table.Row>
-        <Table.Row>
+        {verbose && <Table.Row>
           <Table.Cell>Draft resolution</Table.Cell>
           <Table.Cell>{draftResolution.toString()}</Table.Cell>
           <Table.Cell>Delegates needed to table a draft resolution</Table.Cell>
           <Table.Cell>25% of present delegates with voting rights</Table.Cell>
-        </Table.Row>
-        <Table.Row>
+        </Table.Row>}
+        {verbose && <Table.Row>
           <Table.Cell>Amendment</Table.Cell>
           <Table.Cell>{amendment.toString()}</Table.Cell>
           <Table.Cell>Delegates needed to table an amendment</Table.Cell>
           <Table.Cell>10% of present delegates with voting rights</Table.Cell>
-        </Table.Row>
+        </Table.Row>}
       </Table.Body>
     </Table>
   );
-}
+};
 
 export default class Admin extends React.Component<Props, State> {
   constructor(props: Props) {
@@ -318,7 +321,7 @@ export default class Admin extends React.Component<Props, State> {
       },
       { 
         menuItem: 'Stats', 
-        render: () => <Tab.Pane><CommitteeStats data={committee} /></Tab.Pane>
+        render: () => <Tab.Pane><CommitteeStats verbose={true} data={committee} /></Tab.Pane>
       }
     ];
 

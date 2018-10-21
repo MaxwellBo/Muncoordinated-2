@@ -14,7 +14,7 @@ import { URLParameters } from '../types';
 import { dropdownHandler, fieldHandler, textAreaHandler, countryDropdownHandler } from '../actions/handlers';
 import { makeDropdownOption, membersToOptions, recoverCountryOptions } from '../utils';
 import Loading from './Loading';
-import { canVote } from './Admin';
+import { canVote, CommitteeStats } from './Admin';
 import { voteOnResolution } from '../actions/resolutionActions';
 import { postCaucus } from '../actions/caucusActions';
 import { Stance } from './caucus/SpeakerFeed';
@@ -345,7 +345,24 @@ export default class Resolution extends React.Component<Props, State> {
       .value();
   }
 
+  renderStats = () => {
+    const { committee } = this.state;
+
+    return <CommitteeStats verbose={false} data={committee} />;
+  }
+
   renderCount = (key: string, color: SemanticCOLORS, icon: SemanticICONS, count: number) => {
+    const trigger = (
+      <Button
+        key={'count' + key}
+        color={color}
+        icon
+        fluid
+      >
+        {key.toUpperCase()}: {count}
+      </Button>
+    );
+
     return (
       <Grid.Column key={key}>
         {/* <Button
@@ -358,14 +375,9 @@ export default class Resolution extends React.Component<Props, State> {
             color={color === 'yellow' ? 'black' : undefined}
           />
         </Button> */}
-        <Button
-          key={'count' + key}
-          color={color}
-          icon
-          fluid
-        >
-          {key.toUpperCase()}: {count}
-        </Button>
+        <Popup trigger={trigger}>
+          {this.renderStats()}
+        </Popup>
       </Grid.Column>
     );
   }
