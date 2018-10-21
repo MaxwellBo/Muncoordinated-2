@@ -70,30 +70,14 @@ export const DEFAULT_COMMITTEE: CommitteeData = {
 };
 
 interface DesktopContainerProps {
-  menu?: any;
-  body?: any;
+  menu?: React.ReactNode;
+  body?: React.ReactNode;
 }
 
 interface DesktopContainerState {
 }
 
 class DesktopContainer extends React.Component<DesktopContainerProps, DesktopContainerState> {
-  constructor(props: DesktopContainerProps) {
-    super(props);
-
-    this.state = {
-      fixed: false
-    };
-  }
-
-  hideFixedMenu = () => {
-    this.setState({ fixed: false });
-  }
-
-  showFixedMenu = () => {
-    this.setState({ fixed: true });
-  }
-
   render() {
     const { body, menu } = this.props;
 
@@ -111,8 +95,8 @@ class DesktopContainer extends React.Component<DesktopContainerProps, DesktopCon
 }
 
 interface MobileContainerProps {
-  menu?: any;
-  body?: any;
+  menu?: React.ReactNode;
+  body?: React.ReactNode;
 }
 
 interface MobileContainerState {
@@ -166,7 +150,7 @@ class MobileContainer extends React.Component<MobileContainerProps, MobileContai
 }
 
 interface ResponsiveContainerProps extends RouteComponentProps<URLParameters> {
-  children?: any;
+  children?: React.ReactNode;
   committee?: CommitteeData;
 }
 

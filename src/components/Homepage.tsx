@@ -61,7 +61,7 @@ const HomepageHeading = ({ mobile }: HomepageHeadingProps) => (
 );
 
 interface DesktopContainerProps {
-  children?: any;
+  children?: React.ReactNode;
 }
 
 interface DesktopContainerState {
@@ -128,7 +128,7 @@ class DesktopContainer extends React.Component<DesktopContainerProps, DesktopCon
 }
 
 interface MobileContainerProps {
-  children?: any;
+  children?: React.ReactNode;
 }
 
 interface MobileContainerState {
@@ -194,7 +194,7 @@ class MobileContainer extends React.Component<MobileContainerProps, MobileContai
 }
 
 interface ResponsiveContainerProps {
-  children?: any;
+  children?: React.ReactNode;
 }
 
 const ResponsiveContainer = ({ children }: ResponsiveContainerProps) => (
