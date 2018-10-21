@@ -420,7 +420,7 @@ export default class Resolution extends React.Component<Props, State> {
         </Grid>
         <Grid columns="equal">
           {renderCount('yes', 'green', 'plus', fors)}
-          {renderCount('no', 'red', 'minus', againsts)}
+          {renderCount('no', 'red', 'remove', againsts)}
           {renderCount('abstaining', 'yellow', 'minus', abstains)}
         </Grid>
       </Segment>
