@@ -422,24 +422,6 @@ export default class Motions extends React.Component<Props, State> {
     const { proposer, proposal, type, caucusUnit, caucusDuration, speakerUnit, 
       speakerDuration, seconder, caucusTarget, resolutionTarget } = motionData;
 
-    const proposerTree = (
-      <div>
-        <Label horizontal>
-          Proposer
-        </Label>
-        <Flag name={parseFlagName(proposer || '')} /> {proposer}
-      </div>
-    );
-
-    const seconderTree = (
-      <div>
-        <Label horizontal>
-          Seconder
-        </Label>
-        <Flag name={parseFlagName(seconder || '')} /> {seconder}
-      </div>
-    );
-
     // this is absolutely batshit insane, surely there's a better option here
     let caucusTargetText = caucusTarget;
 
@@ -469,6 +451,25 @@ export default class Motions extends React.Component<Props, State> {
     );
 
     // TODO: we definately can add links here
+
+    const proposerTree = (
+      <div>
+        <Label horizontal>
+          Proposer
+        </Label>
+        <Flag name={parseFlagName(proposer || '')} /> {proposer}
+      </div>
+    );
+
+    const seconderTree = (
+      <div>
+        <Label horizontal>
+          Seconder
+        </Label>
+        <Flag name={parseFlagName(seconder || '')} /> {seconder}
+      </div>
+    );
+
     const caucusTargetTree = (
       <div>
         <Label horizontal>

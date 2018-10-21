@@ -210,7 +210,7 @@ export class Login extends React.Component<Props, State> {
     const succ = this.state.success;
     
     return (
-      <div>
+      <React.Fragment>
         {succ && renderSuccess()}
         <Card centered>
           <Card.Content key="main">
@@ -235,7 +235,7 @@ export class Login extends React.Component<Props, State> {
             <Button basic color="red" fluid onClick={logOutHandler}>Logout</Button>
           </Card.Content>
         </Card>
-      </div>
+      </React.Fragment>
     );
   }
 

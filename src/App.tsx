@@ -22,12 +22,12 @@ import Committee from './components/Committee';
 class App extends React.Component {
   render() {
     return (
-      <div>
+      <React.Fragment>
         <Route exact path="/" component={Homepage} />
         <Route exact path="/onboard" component={Onboard} />
         <Route exact path="/committees" component={Onboard} />
         <Route path="/committees/:committeeID" component={Committee} />
-      </div>
+      </React.Fragment>
     );
   }
 }

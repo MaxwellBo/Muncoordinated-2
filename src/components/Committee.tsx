@@ -306,10 +306,10 @@ class ResponsiveNav extends React.Component<ResponsiveContainerProps, {}> {
 
   render() {
     return (
-      <div>
+      <React.Fragment>
         <DesktopContainer body={this.props.children} menu={this.renderMenuItems()} />
         <MobileContainer body={this.props.children} menu={this.renderMenuItems()} />
-      </div>
+      </React.Fragment>
     );
   }
 }
@@ -407,7 +407,7 @@ export default class Committee extends React.Component<Props, State> {
     const { renderAdmin, renderWelcome } = this;
 
     return (
-      <div>
+      <React.Fragment>
         <Notifications {...this.props} />
         <ResponsiveNav {...this.props} committee={this.state.committee} >
           <Container text>
@@ -426,7 +426,7 @@ export default class Committee extends React.Component<Props, State> {
           <Route path="/committees/:committeeID/resolutions/:resolutionID" component={Resolution} />
           <Footer />
         </ResponsiveNav>
-      </div>
+      </React.Fragment>
     );
   }
 }

@@ -198,10 +198,10 @@ interface ResponsiveContainerProps {
 }
 
 const ResponsiveContainer = ({ children }: ResponsiveContainerProps) => (
-  <div>
+  <React.Fragment>
     <DesktopContainer>{children}</DesktopContainer>
     <MobileContainer>{children}</MobileContainer>
-  </div>
+  </React.Fragment>
 );
 
 export default class Homepage extends React.Component<{}, { 
