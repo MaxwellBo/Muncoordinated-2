@@ -5,7 +5,7 @@ import { MemberID, nameToCountryOption, MemberData } from './Member';
 import { AmendmentID, AmendmentData, DEFAULT_AMENDMENT, AMENDMENT_STATUS_OPTIONS } from './Amendment';
 import {
   Card, Button, Form, Dropdown, Segment, Input, TextArea,
-  List, SemanticICONS, Icon, Tab, Grid, SemanticCOLORS, Container, Message
+  List, SemanticICONS, Icon, Tab, Grid, SemanticCOLORS, Container, Message, Label, Popup
 } from 'semantic-ui-react';
 import { CommitteeData } from './Committee';
 import { CaucusID, DEFAULT_CAUCUS, CaucusData } from './Caucus';
@@ -313,11 +313,22 @@ export default class Resolution extends React.Component<Props, State> {
     //   </List.Description>
     // );
 
+    const voting = (
+      <Popup
+        trigger={<Label style={{ marginLeft: 5 }} circular size="mini" color="purple">V</Label>}
+        content="Voting"
+      />
+    );
+
     return (
       <List.Item key={key}>
         {button}
         <List.Content verticalAlign="middle">
-          <List.Header>{member.name.toUpperCase()}</List.Header>
+          <List.Header>
+            {member.name.toUpperCase()}
+            {member.voting && voting}
+            {/* {!member.present && <Label circular color="red" size="mini">NP</Label>} */}
+          </List.Header>
         </List.Content>
       </List.Item>
     );
