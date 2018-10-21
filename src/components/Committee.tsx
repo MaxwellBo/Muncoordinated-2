@@ -254,53 +254,42 @@ class ResponsiveNav extends React.Component<ResponsiveContainerProps, {}> {
       makeSubmenuItem(key, resolutions![key].name, 'resolutions')
     );
 
-    // should really be a React.Fragment, but I couldn't be fucked upgrading to 16.2.0
     return (
-      [
-        (
-          <Menu.Item
-            header
-            key="header"
-            onClick={() => this.props.history.push(`/committees/${committeeID}`)}
-            active={this.props.location.pathname === `/committees/${committeeID}`}
-          >
-            {committee ? committee.name : <Loading small />}
-          </Menu.Item>
-        ),
-        makeMenuItem('Admin', 'users'),
-        makeMenuItem('Motions', 'sort numeric descending'),
-        makeMenuItem('Unmod', 'discussions'),
-        (
-          <Dropdown key="caucuses" item text="Caucuses" loading={!committee} icon={committee ? 'add' : undefined}>
-            <Dropdown.Menu>
-              {makeSubmenuButton('New caucus', 'add', this.pushCaucus)}
-              {caucusItems}
-            </Dropdown.Menu>
-          </Dropdown>
-        ),
-        (
-          <Dropdown key="resolutions" item text="Resolutions" loading={!committee} icon={committee ? 'add' : undefined}>
-            <Dropdown.Menu>
-              {makeSubmenuButton('New resolution', 'add', this.pushResolution)}
-              {resolutionItems}
-            </Dropdown.Menu>
-          </Dropdown>
-        ),
-        makeMenuItem('Notes', 'sticky note outline'),
-        makeMenuItem('Files', 'file outline'),
-        makeMenuItem('Stats', 'chart bar'),
-        (
-          <Menu.Menu key="icon-submenu" position="right">
-            {makeMenuIcon('Settings', 'settings')}
-            {makeMenuIcon('Help', 'help')}
-          </Menu.Menu>
-        ),
-        (
-          <Menu.Item key="login">
-            <ModalLogin />
-          </Menu.Item>
-        )
-      ]
+      <React.Fragment>
+        <Menu.Item
+          header
+          key="header"
+          onClick={() => this.props.history.push(`/committees/${committeeID}`)}
+          active={this.props.location.pathname === `/committees/${committeeID}`}
+        >
+          {committee ? committee.name : <Loading small />}
+        </Menu.Item>
+        {makeMenuItem('Admin', 'users')}
+        {makeMenuItem('Motions', 'sort numeric descending')}
+        {makeMenuItem('Unmod', 'discussions')}
+        <Dropdown key="caucuses" item text="Caucuses" loading={!committee} icon={committee ? 'add' : undefined}>
+          <Dropdown.Menu>
+            {makeSubmenuButton('New caucus', 'add', this.pushCaucus)}
+            {caucusItems}
+          </Dropdown.Menu>
+        </Dropdown>
+        <Dropdown key="resolutions" item text="Resolutions" loading={!committee} icon={committee ? 'add' : undefined}>
+          <Dropdown.Menu>
+            {makeSubmenuButton('New resolution', 'add', this.pushResolution)}
+            {resolutionItems}
+          </Dropdown.Menu>
+        </Dropdown>
+        {makeMenuItem('Notes', 'sticky note outline')}
+        {makeMenuItem('Files', 'file outline')}
+        {makeMenuItem('Stats', 'chart bar')}
+        <Menu.Menu key="icon-submenu" position="right">
+          {makeMenuIcon('Settings', 'settings')}
+          {makeMenuIcon('Help', 'help')}
+        </Menu.Menu>
+        <Menu.Item key="login">
+          <ModalLogin />
+        </Menu.Item>
+      </React.Fragment>
     );
   }
 
