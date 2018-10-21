@@ -8,20 +8,23 @@ export const voteOnResolution = (
   committeeID: CommitteeID, 
   resolutionID: ResolutionID,
   memberID: MemberID, 
-  vote: Vote
+  vote?: Vote
   // tslint:disable-next-line
 ): Promise<any> => {
 
-  const ref = firebase.database()
+  const target = firebase.database()
     .ref('committees')
     .child(committeeID)
     .child('resolutions')
     .child(resolutionID)
     .child('votes')
-    .child(memberID)
-    .set(vote);
+    .child(memberID);
 
-  return ref;
+  if (vote) {
+    return target.set(vote);
+  } else {
+    return target.remove();
+  }
 };
 
 export const postAmendment = (

@@ -254,9 +254,11 @@ export default class Resolution extends React.Component<Props, State> {
     const { resolutionID, committeeID } = this.props.match.params;
 
     // leave this be in the case of undefined and Against
-    let newVote: Vote = Vote.For;
+    let newVote = undefined;
 
-    if (currentVote === Vote.For) {
+    if (currentVote === undefined) {
+      newVote = Vote.For;
+    } else if (currentVote === Vote.For) {
       if (member.voting) {
         newVote = Vote.Against;
       } else {
@@ -264,6 +266,8 @@ export default class Resolution extends React.Component<Props, State> {
       }
     } else if (currentVote === Vote.Abstaining) {
       newVote = Vote.Against;
+    } else if (currentVote === Vote.Against) {
+      // delete the vote
     }
 
     voteOnResolution(committeeID, resolutionID, memberID, newVote);
