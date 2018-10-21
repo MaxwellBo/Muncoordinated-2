@@ -34,7 +34,7 @@ const RANK_OPTIONS = [
 ].map(makeDropdownOption);
 
 function CommitteeStats(props: { data: CommitteeData }) {
-  const membersMap = props.data.members ? props.data.members : {} as Map<string, MemberData>;
+  const membersMap = props.data.members ? props.data.members : {} as Map<MemberID, MemberData>;
   const members: MemberData[] = Utils.objectToList(membersMap);
   const present = members.filter(x => x.present);
 
@@ -169,6 +169,17 @@ export default class Admin extends React.Component<Props, State> {
     );
   }
 
+  canPush = () => { 
+    const { newCountry } = this.state;
+
+    const members = this.props.committee.members || {};
+    const memberNames = Object.keys(members).map(id => 
+      members[id].name
+    );
+
+    return !_.includes(memberNames, newCountry.text);
+  }
+
   pushMember = (event: React.MouseEvent<HTMLButtonElement>, data: ButtonProps) => {
     event.preventDefault();
 
@@ -229,6 +240,7 @@ export default class Admin extends React.Component<Props, State> {
             selection
             fluid
             allowAdditions
+            error={!this.canPush()}
             options={[...newOptions, ...COUNTRY_OPTIONS]}
             onAddItem={additionHandler}
             onChange={countryHandler}
@@ -256,6 +268,7 @@ export default class Admin extends React.Component<Props, State> {
             icon="plus"
             primary
             basic
+            disabled={!this.canPush()}
             onClick={this.pushMember}
           />
         </Table.HeaderCell>
