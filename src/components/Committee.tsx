@@ -347,6 +347,7 @@ export default class Committee extends React.Component<Props, State> {
             value={committee ? committee.name : ''}
             onChange={fieldHandler<CommitteeData>(committeeFref, 'name')}
             fluid
+            error={committee ? !committee.name : false}
             loading={!committee}
             placeholder="Committee Name"
           />
