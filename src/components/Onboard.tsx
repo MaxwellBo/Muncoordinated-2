@@ -99,24 +99,28 @@ export default class Onboard extends React.Component<Props, State> {
           <Form.Input 
             label="Name" 
             name="name" 
+            fluid
             placeholder="Committee name" 
             onChange={handleChange} 
           />
           <Form.Input 
             label="Topic" 
             name="topic" 
+            fluid
             placeholder="Committee topic" 
             onChange={handleChange} 
           />
           <Form.Input
             label="Chairpeople"
             name="chair"
+            fluid
             placeholder="Name(s) of chairperson or chairpeople"
             onChange={handleChange}
           />
           <Form.Input
             label="Conference"
             name="conference"
+            fluid
             placeholder="Conference name"
             onChange={handleChange}
           />
