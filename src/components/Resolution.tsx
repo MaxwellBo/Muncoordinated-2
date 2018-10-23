@@ -33,6 +33,8 @@ interface Props extends RouteComponentProps<URLParameters> {
 interface State {
   committeeFref: firebase.database.Reference;
   committee?: CommitteeData;
+  authUnsubscribe?: () => void;
+  user?: firebase.User | null;
 }
 
 export enum ResolutionStatus {
@@ -89,6 +91,10 @@ export default class Resolution extends React.Component<Props, State> {
     };
   }
 
+  authStateChangedCallback = (user: firebase.User | null) => {
+    this.setState({ user: user });
+  }
+
   firebaseCallback = (committee: firebase.database.DataSnapshot | null) => {
     if (committee) {
       this.setState({ committee: committee.val() });
@@ -97,10 +103,20 @@ export default class Resolution extends React.Component<Props, State> {
 
   componentDidMount() {
     this.state.committeeFref.on('value', this.firebaseCallback);
+
+    const authUnsubscribe = firebase.auth().onAuthStateChanged(
+      this.authStateChangedCallback,
+    );
+
+    this.setState({ authUnsubscribe });
   }
 
   componentWillUnmount() {
     this.state.committeeFref.off('value', this.firebaseCallback);
+
+    if (this.state.authUnsubscribe) {
+      this.state.authUnsubscribe();
+    }
   }
 
   recoverResolutionFref = () => {
@@ -176,6 +192,7 @@ export default class Resolution extends React.Component<Props, State> {
   renderAmendment = (id: AmendmentID, amendment: AmendmentData, amendmentFref: firebase.database.Reference) => {
     const { handleProvisionAmendment } = this;
     const { proposer, text, status } = amendment;
+    const { user } = this.state;
 
     const textArea = (
       <TextArea
@@ -189,6 +206,7 @@ export default class Resolution extends React.Component<Props, State> {
 
     const statusDropdown = (
       <Dropdown
+        disabled={!user}
         value={status}
         options={AMENDMENT_STATUS_OPTIONS}
         onChange={dropdownHandler<AmendmentData>(amendmentFref, 'status')}
@@ -202,9 +220,11 @@ export default class Resolution extends React.Component<Props, State> {
         key="proposer"
         icon="search"
         value={nameToCountryOption(proposer).key}
+        error={!proposer}
         search
         selection
         fluid
+        label="Proposer"
         placeholder="Proposer"
         onChange={countryDropdownHandler<AmendmentData>(amendmentFref, 'proposer', countryOptions)}
         options={countryOptions}
@@ -214,7 +234,7 @@ export default class Resolution extends React.Component<Props, State> {
     const provisionTree = !((amendment || { caucus: undefined }).caucus) ? (
       <Button
         floated="right"
-        disabled={!amendment || amendment.proposer === ''}
+        disabled={!amendment || amendment.proposer === '' || !user}
         content="Provision Caucus"
         onClick={() => handleProvisionAmendment(id, amendment!)}
       />
@@ -237,6 +257,7 @@ export default class Resolution extends React.Component<Props, State> {
               floated="right"
               icon="trash"
               negative
+              disabled={!user}
               basic
               onClick={() => amendmentFref.remove()}
             />
@@ -501,7 +522,16 @@ export default class Resolution extends React.Component<Props, State> {
             {seconderTree}
           </Form.Group>
           {IDENTITCAL_PROPOSER_SECONDER}
-          {provisionTree}
+          <Form.Group>
+            {provisionTree}
+            <Form.Checkbox
+              label="Delegates can amend"
+              indeterminate={!resolution}
+              toggle
+              checked={resolution ? (resolution.amendmentsArePublic || false) : false}
+              onChange={checkboxHandler<ResolutionData>(resolutionFref, 'amendmentsArePublic')}
+            />
+          </Form.Group>
         </Form>
       </Segment>
     );
@@ -521,8 +551,6 @@ export default class Resolution extends React.Component<Props, State> {
     const { renderAmendments, handlePushAmendment } = this;
     const amendments = resolution ? resolution.amendments : undefined;
 
-    const resolutionFref = this.recoverResolutionFref();
-
     const adder = (
       <Card>
         {/* <Card.Content> */}
@@ -532,13 +560,6 @@ export default class Resolution extends React.Component<Props, State> {
           fluid
           basic
           onClick={handlePushAmendment}
-        />
-        <Checkbox
-          label="Delegates can amend"
-          indeterminate={!resolution}
-          toggle
-          checked={resolution ? (resolution.amendmentsArePublic || false) : false}
-          onChange={checkboxHandler<ResolutionData>(resolutionFref, 'amendmentsArePublic')}
         />
         {/* </Card.Content> */}
       </Card>
