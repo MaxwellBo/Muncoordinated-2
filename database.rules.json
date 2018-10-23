@@ -4,14 +4,21 @@
       ".read": true,
     	"$uid": {
         ".read": true,
-        ".write": "auth != null && 
-        	(newData.child('creatorUid').val() === auth.uid
-           || data.child('creatorUid').val() === auth.uid)",
+        ".write": "auth != null && (newData.child('creatorUid').val() === auth.uid || data.child('creatorUid').val() === auth.uid)",
         "caucuses": {
           "$cid" : {
             "queue": {
               "$qid": {
                 ".write": "!data.exists() && newData.exists() && data.parent().parent().child('queueIsPublic').val() === true"
+              }
+            }
+          }
+        },
+        "resolutions": {
+          "$rid" : {
+            "amendments": {
+              "$aid": {
+                ".write": "newData.exists() && data.parent().parent().child('amendmentsArePublic').val() === true"
               }
             }
           }

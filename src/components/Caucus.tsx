@@ -40,7 +40,7 @@ export interface CaucusData {
   status: CaucusStatus;
   speakerTimer: TimerData;
   caucusTimer: TimerData;
-  queueIsPublic?: boolean;
+  queueIsPublic?: boolean; // TODO: Migrate
   speaking?: SpeakerEvent;
   queue?: Map<string, SpeakerEvent>;
   history?: Map<string, SpeakerEvent>;
@@ -264,7 +264,7 @@ export default class Caucus extends React.Component<Props, State> {
   }
 
   render() {
-    const { committee, committeeFref } = this.state;
+    const { committee } = this.state;
     const caucusID: CaucusID = this.props.match.params.caucusID;
 
     const caucuses = committee ? committee.caucuses : {};
