@@ -237,7 +237,7 @@ export default class Homepage extends React.Component<{}, {
               <Grid.Column width={8}>
                 <Header as="h3" style={{ fontSize: '2em' }}>Collaborative</Header>
                 <p style={{ fontSize: '1.33em' }}>
-                  Using a shareable link, multiple directors can run the committee at once. Delegates can upload files and add themselves to selected speaker's lists. <br />
+                  Using a shareable link, multiple directors can run the committee at once. Delegates can upload files, add themselves to speaker's lists and propose resolution amendments.<br />
                 </p>
                 <p style={{ fontSize: '1.33em' }}>
                   Everyone will see all updates in real-time, without needing to refresh the page. It's like Google Docs, but for MUN.
