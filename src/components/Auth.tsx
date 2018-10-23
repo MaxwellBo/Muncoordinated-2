@@ -45,6 +45,16 @@ export class Login extends React.Component<Props, State> {
 
   authStateChangedCallback = (user: firebase.User | null) => {
     this.setState({ loggingIn: false, creating: false, user: user });
+
+    if (user) {
+      firebase.database()
+        .ref('committees')
+        .orderByChild('creatorUid')
+        .equalTo(user.uid)
+        .once('value').then(committees => {
+          this.setState({ committees: committees.val() });
+        });
+    }
   }
 
   componentDidMount() {
@@ -53,10 +63,6 @@ export class Login extends React.Component<Props, State> {
     );
 
     this.setState({ unsubscribe });
-
-    firebase.database().ref('committees').once('value').then(committees => {
-      this.setState({ committees: committees.val() });
-    });
   }
 
   componentWillUnmount() {
@@ -139,14 +145,12 @@ export class Login extends React.Component<Props, State> {
   passwordHandler = (e: React.FormEvent<HTMLInputElement>) =>
     this.setState({ password: e.currentTarget.value })
 
-  renderCommittees = (u: firebase.User) => {
+  renderCommittees = () => {
     const { renderCommittee } = this;
     const { committees } = this.state;
 
     const defaulted = committees || {} as Map<CommitteeID, CommitteeData>;
-
-    const owned = _.keys(defaulted).filter(k =>
-      defaulted[k].creatorUid === u.uid);
+    const owned = _.keys(defaulted);
 
     return (
       <List relaxed>
@@ -210,7 +214,7 @@ export class Login extends React.Component<Props, State> {
     const succ = this.state.success;
     
     return (
-      <div>
+      <React.Fragment>
         {succ && renderSuccess()}
         <Card centered>
           <Card.Content key="main">
@@ -222,7 +226,7 @@ export class Login extends React.Component<Props, State> {
             </Card.Meta>
           </Card.Content>
           <Card.Content key="committees">
-            {committees ? renderCommittees(u) : <Loading />}
+            {committees ? renderCommittees() : <Loading />}
             {allowNewCommittee && <List.Item key={'add'}>
               <List.Content>
                  <List.Header as="a" href={'/onboard'}>
@@ -235,7 +239,7 @@ export class Login extends React.Component<Props, State> {
             <Button basic color="red" fluid onClick={logOutHandler}>Logout</Button>
           </Card.Content>
         </Card>
-      </div>
+      </React.Fragment>
     );
   }
 

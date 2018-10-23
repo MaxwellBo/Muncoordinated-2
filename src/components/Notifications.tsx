@@ -8,7 +8,6 @@ interface Props {
 }
 
 interface State extends ConnectionStatusState {
-  open: boolean;
   notifications: Notification[];
 }
 
@@ -46,7 +45,6 @@ export default class Notifications extends React.Component<Props, State> {
     super(props);
 
     this.state = {
-      open: true,
       notifications: [],
       connected: false,
       hasConnectedBefore: false,

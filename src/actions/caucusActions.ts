@@ -18,6 +18,7 @@ export const postCaucus =
   return ref;
 };
 
+// tslint:disable-next-line
 export const closeCaucus = 
   (committeeID: CommitteeID, caucusID: CaucusID): Promise<any> => {
   return firebase.database()

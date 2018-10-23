@@ -7,7 +7,7 @@ import Caucus, { CaucusData, CaucusID, DEFAULT_CAUCUS, CaucusStatus } from './Ca
 import Resolution, { ResolutionData, ResolutionID, DEFAULT_RESOLUTION } from './Resolution';
 import Admin from './Admin';
 import { Icon, Menu, SemanticICONS, Dropdown, Container, Responsive, Sidebar, Header, Label, Divider, 
-  List } from 'semantic-ui-react';
+  List, Input } from 'semantic-ui-react';
 import Stats from './Stats';
 import { MotionID, MotionData } from './Motions';
 import { TimerData, DEFAULT_TIMER } from './Timer';
@@ -26,6 +26,7 @@ import ShareHint from './ShareHint';
 import Notifications from './Notifications';
 import { postResolution } from '../actions/resolutionActions';
 import ConnectionStatus from './ConnectionStatus';
+import { fieldHandler } from 'src/actions/handlers';
 
 interface Props extends RouteComponentProps<URLParameters> {
 }
@@ -69,30 +70,14 @@ export const DEFAULT_COMMITTEE: CommitteeData = {
 };
 
 interface DesktopContainerProps {
-  menu?: any;
-  body?: any;
+  menu?: React.ReactNode;
+  body?: React.ReactNode;
 }
 
 interface DesktopContainerState {
 }
 
 class DesktopContainer extends React.Component<DesktopContainerProps, DesktopContainerState> {
-  constructor(props: DesktopContainerProps) {
-    super(props);
-
-    this.state = {
-      fixed: false
-    };
-  }
-
-  hideFixedMenu = () => {
-    this.setState({ fixed: false });
-  }
-
-  showFixedMenu = () => {
-    this.setState({ fixed: true });
-  }
-
   render() {
     const { body, menu } = this.props;
 
@@ -110,8 +95,8 @@ class DesktopContainer extends React.Component<DesktopContainerProps, DesktopCon
 }
 
 interface MobileContainerProps {
-  menu?: any;
-  body?: any;
+  menu?: React.ReactNode;
+  body?: React.ReactNode;
 }
 
 interface MobileContainerState {
@@ -165,7 +150,7 @@ class MobileContainer extends React.Component<MobileContainerProps, MobileContai
 }
 
 interface ResponsiveContainerProps extends RouteComponentProps<URLParameters> {
-  children?: any;
+  children?: React.ReactNode;
   committee?: CommitteeData;
 }
 
@@ -269,62 +254,51 @@ class ResponsiveNav extends React.Component<ResponsiveContainerProps, {}> {
       makeSubmenuItem(key, resolutions![key].name, 'resolutions')
     );
 
-    // should really be a React.Fragment, but I couldn't be fucked upgrading to 16.2.0
     return (
-      [
-        (
-          <Menu.Item
-            header
-            key="header"
-            onClick={() => this.props.history.push(`/committees/${committeeID}`)}
-            active={this.props.location.pathname === `/committees/${committeeID}`}
-          >
-            {committee ? committee.name : <Loading small />}
-          </Menu.Item>
-        ),
-        makeMenuItem('Admin', 'users'),
-        makeMenuItem('Motions', 'sort numeric descending'),
-        makeMenuItem('Unmod', 'discussions'),
-        (
-          <Dropdown key="caucuses" item text="Caucuses" loading={!committee} icon={committee ? 'add' : undefined}>
-            <Dropdown.Menu>
-              {makeSubmenuButton('New caucus', 'add', this.pushCaucus)}
-              {caucusItems}
-            </Dropdown.Menu>
-          </Dropdown>
-        ),
-        (
-          <Dropdown key="resolutions" item text="Resolutions" loading={!committee} icon={committee ? 'add' : undefined}>
-            <Dropdown.Menu>
-              {makeSubmenuButton('New resolution', 'add', this.pushResolution)}
-              {resolutionItems}
-            </Dropdown.Menu>
-          </Dropdown>
-        ),
-        makeMenuItem('Notes', 'sticky note outline'),
-        makeMenuItem('Files', 'file outline'),
-        makeMenuItem('Stats', 'chart bar'),
-        (
-          <Menu.Menu key="icon-submenu" position="right">
-            {makeMenuIcon('Settings', 'settings')}
-            {makeMenuIcon('Help', 'help')}
-          </Menu.Menu>
-        ),
-        (
-          <Menu.Item key="login">
-            <ModalLogin />
-          </Menu.Item>
-        )
-      ]
+      <React.Fragment>
+        <Menu.Item
+          header
+          key="header"
+          onClick={() => this.props.history.push(`/committees/${committeeID}`)}
+          active={this.props.location.pathname === `/committees/${committeeID}`}
+        >
+          {committee ? committee.name : <Loading small />}
+        </Menu.Item>
+        {makeMenuItem('Admin', 'users')}
+        {makeMenuItem('Motions', 'sort numeric descending')}
+        {makeMenuItem('Unmod', 'discussions')}
+        <Dropdown key="caucuses" item text="Caucuses" loading={!committee} icon={committee ? 'add' : undefined}>
+          <Dropdown.Menu>
+            {makeSubmenuButton('New caucus', 'add', this.pushCaucus)}
+            {caucusItems}
+          </Dropdown.Menu>
+        </Dropdown>
+        <Dropdown key="resolutions" item text="Resolutions" loading={!committee} icon={committee ? 'add' : undefined}>
+          <Dropdown.Menu>
+            {makeSubmenuButton('New resolution', 'add', this.pushResolution)}
+            {resolutionItems}
+          </Dropdown.Menu>
+        </Dropdown>
+        {makeMenuItem('Notes', 'sticky note outline')}
+        {makeMenuItem('Files', 'file outline')}
+        {makeMenuItem('Stats', 'chart bar')}
+        <Menu.Menu key="icon-submenu" position="right">
+          {makeMenuIcon('Settings', 'settings')}
+          {makeMenuIcon('Help', 'help')}
+        </Menu.Menu>
+        <Menu.Item key="login">
+          <ModalLogin />
+        </Menu.Item>
+      </React.Fragment>
     );
   }
 
   render() {
     return (
-      <div>
+      <React.Fragment>
         <DesktopContainer body={this.props.children} menu={this.renderMenuItems()} />
         <MobileContainer body={this.props.children} menu={this.renderMenuItems()} />
-      </div>
+      </React.Fragment>
     );
   }
 }
@@ -364,22 +338,50 @@ export default class Committee extends React.Component<Props, State> {
   }
 
   renderWelcome = () => {
-    const { committee } = this.state;
+    const { committee, committeeFref } = this.state;
 
     return committee ? (
       <Container text style={{ padding: '1em 0em' }}>
-        <Header as="h1" dividing>
-          {committee.name}
+        <Header as="h1">
+          <Input
+            value={committee ? committee.name : ''}
+            onChange={fieldHandler<CommitteeData>(committeeFref, 'name')}
+            fluid
+            error={committee ? !committee.name : false}
+            loading={!committee}
+            placeholder="Committee Name"
+          />
         </Header>
         <List>
           <List.Item>
-            <Label horizontal>Topic</Label>{committee.topic}
+            <Input
+              label="Topic"
+              value={committee ? committee.topic : ''}
+              onChange={fieldHandler<CommitteeData>(committeeFref, 'topic')}
+              fluid
+              loading={!committee}
+              placeholder="Committee Topic"
+            />
           </List.Item>
           <List.Item>
-            <Label horizontal>Chairpeople</Label>{committee.chair}
+            <Input
+              label="Chairpeople"
+              value={committee ? committee.chair : ''}
+              onChange={fieldHandler<CommitteeData>(committeeFref, 'chair')}
+              fluid
+              loading={!committee}
+              placeholder="Committee Chairpeople"
+            />
           </List.Item>
           <List.Item>
-            <Label horizontal>Conference</Label>{committee.conference || ''}
+            <Input
+              label="Conference"
+              value={committee ? (committee.conference || '') : ''}
+              onChange={fieldHandler<CommitteeData>(committeeFref, 'conference')}
+              fluid
+              loading={!committee}
+              placeholder="Conference Name"
+            />
           </List.Item>
         </List>
         <Divider />
@@ -395,7 +397,7 @@ export default class Committee extends React.Component<Props, State> {
     const { renderAdmin, renderWelcome } = this;
 
     return (
-      <div>
+      <React.Fragment>
         <Notifications {...this.props} />
         <ResponsiveNav {...this.props} committee={this.state.committee} >
           <Container text>
@@ -414,7 +416,7 @@ export default class Committee extends React.Component<Props, State> {
           <Route path="/committees/:committeeID/resolutions/:resolutionID" component={Resolution} />
           <Footer />
         </ResponsiveNav>
-      </div>
+      </React.Fragment>
     );
   }
 }

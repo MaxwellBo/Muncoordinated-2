@@ -5,7 +5,7 @@ import { MemberID, nameToCountryOption, MemberData } from './Member';
 import { AmendmentID, AmendmentData, DEFAULT_AMENDMENT, AMENDMENT_STATUS_OPTIONS } from './Amendment';
 import {
   Card, Button, Form, Dropdown, Segment, Input, TextArea, Checkbox,
-  List, SemanticICONS, Icon, Tab, Grid, SemanticCOLORS, Container, Message
+  List, SemanticICONS, Icon, Tab, Grid, SemanticCOLORS, Container, Message, Label, Popup
 } from 'semantic-ui-react';
 import { CommitteeData } from './Committee';
 import { CaucusID, DEFAULT_CAUCUS, CaucusData } from './Caucus';
@@ -15,7 +15,7 @@ import { dropdownHandler, fieldHandler, textAreaHandler, countryDropdownHandler,
   checkboxHandler } from '../actions/handlers';
 import { makeDropdownOption, recoverCountryOptions } from '../utils';
 import Loading from './Loading';
-import { canVote } from './Admin';
+import { canVote, CommitteeStats } from './Admin';
 import { voteOnResolution } from '../actions/resolutionActions';
 import { postCaucus } from '../actions/caucusActions';
 import { Stance } from './caucus/SpeakerFeed';
@@ -285,9 +285,11 @@ export default class Resolution extends React.Component<Props, State> {
     const { resolutionID, committeeID } = this.props.match.params;
 
     // leave this be in the case of undefined and Against
-    let newVote: Vote = Vote.For;
+    let newVote = undefined;
 
-    if (currentVote === Vote.For) {
+    if (currentVote === undefined) {
+      newVote = Vote.For;
+    } else if (currentVote === Vote.For) {
       if (member.voting) {
         newVote = Vote.Against;
       } else {
@@ -295,6 +297,8 @@ export default class Resolution extends React.Component<Props, State> {
       }
     } else if (currentVote === Vote.Abstaining) {
       newVote = Vote.Against;
+    } else if (currentVote === Vote.Against) {
+      // delete the vote
     }
 
     voteOnResolution(committeeID, resolutionID, memberID, newVote);
@@ -340,11 +344,22 @@ export default class Resolution extends React.Component<Props, State> {
     //   </List.Description>
     // );
 
+    const voting = (
+      <Popup
+        trigger={<Label style={{ marginLeft: 5 }} circular size="mini" color="purple">V</Label>}
+        content="Voting"
+      />
+    );
+
     return (
       <List.Item key={key}>
         {button}
         <List.Content verticalAlign="middle">
-          <List.Header>{member.name.toUpperCase()}</List.Header>
+          <List.Header>
+            {member.name.toUpperCase()}
+            {member.voting && voting}
+            {/* {!member.present && <Label circular color="red" size="mini">NP</Label>} */}
+          </List.Header>
         </List.Content>
       </List.Item>
     );
@@ -361,7 +376,24 @@ export default class Resolution extends React.Component<Props, State> {
       .value();
   }
 
+  renderStats = () => {
+    const { committee } = this.state;
+
+    return <CommitteeStats verbose={false} data={committee} />;
+  }
+
   renderCount = (key: string, color: SemanticCOLORS, icon: SemanticICONS, count: number) => {
+    const trigger = (
+      <Button
+        key={'count' + key}
+        color={color}
+        icon
+        fluid
+      >
+        {key.toUpperCase()}: {count}
+      </Button>
+    );
+
     return (
       <Grid.Column key={key}>
         {/* <Button
@@ -374,14 +406,9 @@ export default class Resolution extends React.Component<Props, State> {
             color={color === 'yellow' ? 'black' : undefined}
           />
         </Button> */}
-        <Button
-          key={'count' + key}
-          color={color}
-          icon
-          fluid
-        >
-          {key.toUpperCase()}: {count}
-        </Button>
+        <Popup trigger={trigger}>
+          {this.renderStats()}
+        </Popup>
       </Grid.Column>
     );
   }
@@ -424,7 +451,7 @@ export default class Resolution extends React.Component<Props, State> {
         </Grid>
         <Grid columns="equal">
           {renderCount('yes', 'green', 'plus', fors)}
-          {renderCount('no', 'red', 'minus', againsts)}
+          {renderCount('no', 'red', 'remove', againsts)}
           {renderCount('abstaining', 'yellow', 'minus', abstains)}
         </Grid>
       </Segment>
