@@ -27,6 +27,12 @@ export const IDENTITCAL_PROPOSER_SECONDER = (
   />
 );
 
+export const DELEGATES_CAN_AMEND_NOTICE = (
+  <Message basic>
+    Delegates can create and edit, but not delete, amendments.
+  </Message>
+);
+
 interface Props extends RouteComponentProps<URLParameters> {
 }
 
@@ -197,6 +203,7 @@ export default class Resolution extends React.Component<Props, State> {
     const textArea = (
       <TextArea
         value={text}
+        label="Text"
         autoHeight
         onChange={textAreaHandler<AmendmentData>(amendmentFref, 'text')}
         rows={1}
@@ -263,12 +270,12 @@ export default class Resolution extends React.Component<Props, State> {
             />
             {provisionTree}
           </Card.Header>
-          <Form>
-            {textArea}
-          </Form>
           <Card.Meta>
             {proposerDropdown}
           </Card.Meta>
+          <Form>
+            {textArea}
+          </Form>
         </Card.Content>
       </Card>
     );
@@ -496,6 +503,11 @@ export default class Resolution extends React.Component<Props, State> {
         />
       );
 
+    // love to not have null coalescing operators
+    const amendmentsArePublic = resolution 
+      ? (resolution.amendmentsArePublic || false) 
+      : false;
+
     return (
       <Segment loading={!resolution}>
         <Input
@@ -509,14 +521,6 @@ export default class Resolution extends React.Component<Props, State> {
           placeholder="Resolution Name"
         />
         <Form error={hasError}>
-          <TextArea
-            value={resolution ? resolution.link : ''}
-            autoHeight
-            onChange={textAreaHandler<ResolutionData>(resolutionFref, 'link')}
-            attatched="top"
-            rows={1}
-            placeholder="Link"
-          />
           <Form.Group widths="equal">
             {proposerTree}
             {seconderTree}
@@ -528,10 +532,19 @@ export default class Resolution extends React.Component<Props, State> {
               label="Delegates can amend"
               indeterminate={!resolution}
               toggle
-              checked={resolution ? (resolution.amendmentsArePublic || false) : false}
+              checked={amendmentsArePublic}
               onChange={checkboxHandler<ResolutionData>(resolutionFref, 'amendmentsArePublic')}
             />
           </Form.Group>
+          {amendmentsArePublic && DELEGATES_CAN_AMEND_NOTICE}
+          <TextArea
+            value={resolution ? resolution.link : ''}
+            autoHeight
+            onChange={textAreaHandler<ResolutionData>(resolutionFref, 'link')}
+            attatched="top"
+            rows={1}
+            placeholder="Resolution text or link to resolution text"
+          />
         </Form>
       </Segment>
     );
