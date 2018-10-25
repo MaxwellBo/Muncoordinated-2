@@ -15,6 +15,96 @@ interface Props extends RouteComponentProps<URLParameters> {
 
 export type FileID = string;
 
+export interface FileData {
+  filename: string;
+  uploader: string;
+}
+
+interface FileEntryProps {
+  committeeID: CommitteeID;
+  file: FileData;
+}
+
+interface FileEntryState {
+  metadata?: any;
+}
+
+class FileEntry extends React.Component<FileEntryProps, FileEntryState> {
+  constructor(props: FileEntryProps) {
+    super(props);
+
+    this.state = {
+    };
+  }
+
+  recoverRef = () => {
+    const { committeeID, file } = this.props;
+
+    const storageRef = firebase.storage().ref();
+    return storageRef.child('committees').child(committeeID).child(file.filename);
+  }
+
+  componentDidMount() {
+    this.recoverRef().getMetadata().then((metadata: any) => {
+      this.setState({ metadata: metadata });
+    });
+  }
+
+  download = (filename: string) => () => {
+
+    this.recoverRef().getDownloadURL().then((url: any) => {
+      var xhr = new XMLHttpRequest();
+      xhr.responseType = 'blob';
+      xhr.onload = (event) => {
+        const blob = xhr.response;
+        FileSaver.saveAs(blob, filename);
+      };
+      xhr.open('GET', url);
+      xhr.send();
+    });
+  }
+
+  render() {
+    const { download } = this;
+    const { file } = this.props;
+    const { metadata } = this.state;
+
+    let description: undefined | JSX.Element;
+
+    if (metadata) {
+      const millis = new Date().getTime() - new Date(metadata.timeCreated).getTime();
+
+      const secondsSince = millis / 1000;
+
+      let sinceText: string;
+
+      if (secondsSince < 60) {
+        sinceText = `Uploaded ${Math.round(secondsSince)} seconds ago`;
+      } else if (secondsSince < 60 * 60) {
+        sinceText = `Uploaded ${Math.round(secondsSince / 60 )} minutes ago`;
+      } else if (secondsSince < 60 * 60 * 24) {
+        sinceText = `Uploaded ${Math.round(secondsSince / (60 * 60))} hours ago`;
+      } else {
+        sinceText = `Uploaded ${Math.round(secondsSince / (60 * 60 * 24))} days ago`;
+      }
+
+      description = <div>{sinceText}, by  <Flag name={parseFlagName(file.uploader)}/>{file.uploader}</div>;
+    }
+
+    return (
+      <List.Item>
+        <List.Icon name="file outline" verticalAlign="middle"/>
+        <List.Content>
+          <List.Header as="a" onClick={download(file.filename)}>{file.filename}</List.Header>
+          {description ? 
+            <List.Description as="a">{description}</List.Description>
+          : <List.Description as="a"><Loading small /></List.Description>}
+          </List.Content>
+      </List.Item>
+    );
+  }
+}
+
 interface State {
   committee?: CommitteeData;
   committeeFref: firebase.database.Reference;
@@ -23,11 +113,6 @@ interface State {
   state?: firebase.storage.TaskState;
   errorCode?: string;
   uploader?: CountryOption;
-}
-
-export interface FileData {
-  filename: string;
-  uploader: string;
 }
 
 export default class Files extends React.Component<Props, State> {
@@ -165,91 +250,6 @@ export default class Files extends React.Component<Props, State> {
           ) : <Loading />}
         </List>
       </Container>
-    );
-  }
-}
-
-interface FileEntryProps {
-  committeeID: CommitteeID;
-  file: FileData;
-}
-
-interface FileEntryState {
-  metadata?: any;
-}
-
-class FileEntry extends React.Component<FileEntryProps, FileEntryState> {
-  constructor(props: FileEntryProps) {
-    super(props);
-
-    this.state = {
-    };
-  }
-
-  recoverRef = () => {
-    const { committeeID, file } = this.props;
-
-    const storageRef = firebase.storage().ref();
-    return storageRef.child('committees').child(committeeID).child(file.filename);
-  }
-
-  componentDidMount() {
-    this.recoverRef().getMetadata().then((metadata: any) => {
-      this.setState({ metadata: metadata });
-    });
-  }
-
-  download = (filename: string) => () => {
-
-    this.recoverRef().getDownloadURL().then((url: any) => {
-      var xhr = new XMLHttpRequest();
-      xhr.responseType = 'blob';
-      xhr.onload = (event) => {
-        const blob = xhr.response;
-        FileSaver.saveAs(blob, filename);
-      };
-      xhr.open('GET', url);
-      xhr.send();
-    });
-  }
-
-  render() {
-    const { download } = this;
-    const { file } = this.props;
-    const { metadata } = this.state;
-
-    let description: undefined | JSX.Element;
-
-    if (metadata) {
-      const millis = new Date().getTime() - new Date(metadata.timeCreated).getTime();
-
-      const secondsSince = millis / 1000;
-
-      let sinceText: string;
-
-      if (secondsSince < 60) {
-        sinceText = `Uploaded ${Math.round(secondsSince)} seconds ago`;
-      } else if (secondsSince < 60 * 60) {
-        sinceText = `Uploaded ${Math.round(secondsSince / 60 )} minutes ago`;
-      } else if (secondsSince < 60 * 60 * 24) {
-        sinceText = `Uploaded ${Math.round(secondsSince / (60 * 60))} hours ago`;
-      } else {
-        sinceText = `Uploaded ${Math.round(secondsSince / (60 * 60 * 24))} days ago`;
-      }
-
-      description = <div>{sinceText}, by  <Flag name={parseFlagName(file.uploader)}/>{file.uploader}</div>;
-    }
-
-    return (
-      <List.Item>
-        <List.Icon name="file outline" verticalAlign="middle"/>
-        <List.Content>
-          <List.Header as="a" onClick={download(file.filename)}>{file.filename}</List.Header>
-          {description ? 
-            <List.Description as="a">{description}</List.Description>
-          : <List.Description as="a"><Loading small /></List.Description>}
-          </List.Content>
-      </List.Item>
     );
   }
 }

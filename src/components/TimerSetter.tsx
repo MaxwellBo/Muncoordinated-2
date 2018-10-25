@@ -48,7 +48,7 @@ export class TimerSetter extends React.Component<Props, {}> {
         onChange={props.onDurationChange}
         action
         fluid
-        error={isInvalid() || props.error }
+        error={isInvalid() || props.error}
         label={props.label}
       >
         {/* <input style={{ 'text-align': 'right' }} /> */}

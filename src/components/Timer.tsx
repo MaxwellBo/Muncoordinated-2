@@ -63,7 +63,7 @@ export default class Timer extends React.Component<Props, State> {
       const { mute } = this.state;
 
       if (newTimer.remaining === 0 && !mute) {
-        console.debug('[BEEP] Time elapsed');
+        console.info('[BEEP] Time elapsed');
         this.playSound();
       }
     }
@@ -103,7 +103,7 @@ export default class Timer extends React.Component<Props, State> {
 
   skewCallback = (skew: firebase.database.DataSnapshot | null) => {
     if (skew) {
-      console.debug('Detected clock skew is', skew.val(), 'millis');
+      console.info('Detected clock skew is', skew.val(), 'millis');
       this.setState({ skew: skew.val() });
     }
   }

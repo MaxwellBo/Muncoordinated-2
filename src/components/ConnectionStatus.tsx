@@ -29,7 +29,7 @@ export default class ConnectionStatus extends React.Component<Props, State> {
         const connected = status.val();
 
         if (!connected) {
-          console.debug('Firebase connection lost');
+          console.info('Firebase connection lost');
         }
 
         return {

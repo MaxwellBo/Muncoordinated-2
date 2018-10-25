@@ -56,7 +56,7 @@ export default class Notifications extends React.Component<Props, State> {
   (prevState: Pick<State, 'notifications'>, notification: Notification): Pick<State, 'notifications'> => {
       // Debounce unique
       if (!_.some(prevState.notifications, notification)) {
-        console.debug(notification);
+        console.info(notification);
 
         return {
           notifications: [...prevState.notifications, notification]
