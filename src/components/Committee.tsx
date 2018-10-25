@@ -245,7 +245,7 @@ class ResponsiveNav extends React.Component<ResponsiveContainerProps, {}> {
 
     // BADCODE: Filter predicate shared with caucus target in motions, also update when changing
     const caucusItems = Object.keys(caucuses || {}).filter(key =>
-      caucuses![key].status === CaucusStatus.Open.toString() && !caucuses![key].deleted
+      !caucuses![key].deleted
     ).map(key =>
       makeSubmenuItem(key, caucuses![key].name, 'caucuses')
     );
