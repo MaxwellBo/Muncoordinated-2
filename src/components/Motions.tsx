@@ -600,7 +600,9 @@ export default class Motions extends React.Component<Props, State> {
       ({ key: key, value: key, text: caucuses![key].name })
     );
 
-    const resolutionOptions = Object.keys(resolutions || {}).map(key =>
+    const resolutionOptions = Object.keys(resolutions || {}).filter(key =>
+      !resolutions![key].deleted
+    ).map(key =>
       ({ key: key, value: key, text: resolutions![key].name })
     );
 

@@ -44,6 +44,7 @@ export interface CaucusData {
   speaking?: SpeakerEvent;
   queue?: Map<string, SpeakerEvent>;
   history?: Map<string, SpeakerEvent>;
+  deleted?: boolean; // TODO: Migrate
 }
 
 const CAUCUS_STATUS_OPTIONS = [
