@@ -59,3 +59,31 @@ export const postResolution =
 
   return ref;
 };
+
+export const deleteResolution = (
+  committeeID: CommitteeID, 
+  resolutionID: ResolutionID
+): Promise<any> => {
+
+  return firebase.database()
+    .ref('committees')
+    .child(committeeID)
+    .child('resolutions')
+    .child(resolutionID)
+    .child('deleted')
+    .set(true);
+};
+
+export const undeleteResolution = (
+  committeeID: CommitteeID, 
+  resolutionID: ResolutionID
+): Promise<any> => {
+
+  return firebase.database()
+    .ref('committees')
+    .child(committeeID)
+    .child('resolutions')
+    .child(resolutionID)
+    .child('deleted')
+    .set(false);
+};

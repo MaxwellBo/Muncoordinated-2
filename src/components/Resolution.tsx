@@ -16,7 +16,7 @@ import { dropdownHandler, fieldHandler, textAreaHandler, countryDropdownHandler,
 import { makeDropdownOption, recoverCountryOptions } from '../utils';
 import Loading from './Loading';
 import { canVote, CommitteeStats } from './Admin';
-import { voteOnResolution } from '../actions/resolutionActions';
+import { voteOnResolution, deleteResolution, undeleteResolution } from '../actions/resolutionActions';
 import { postCaucus } from '../actions/caucusActions';
 import { Stance } from './caucus/SpeakerFeed';
 
@@ -67,6 +67,7 @@ export interface ResolutionData {
   amendments?: Map<AmendmentID, AmendmentData>;
   votes?: Votes;
   amendmentsArePublic?: boolean; // TODO: Migrate
+  deleted?: boolean; // TODO: Migrate
 }
 
 export enum Vote {
@@ -516,24 +517,24 @@ export default class Resolution extends React.Component<Props, State> {
 
     const hasError = hasIdenticalProposerSeconder;
 
-    const provisionTree = !((resolution || { caucus: undefined }).caucus) ? (
+    // love to not have null coalescing operators
+    const amendmentsArePublic = resolution 
+      ? (resolution.amendmentsArePublic || false) 
+      : false;
+
+    const provisionTree = this.hasLinkedCaucus(resolution) ? ( 
+      <Form.Button
+        content="Associated Caucus"
+        onClick={() => this.gotoCaucus(resolution!.caucus)}
+      />
+    ) : (
       // if there's no linked caucus
       <Form.Button
         disabled={!resolution || !resolution.proposer || !resolution.seconder || hasError} 
         content="Provision Caucus"
         onClick={() => handleProvisionResolution(resolution!)}
       />
-    ) : (
-        <Form.Button
-          content="Associated Caucus"
-          onClick={() => this.gotoCaucus(resolution!.caucus)}
-        />
-      );
-
-    // love to not have null coalescing operators
-    const amendmentsArePublic = resolution 
-      ? (resolution.amendmentsArePublic || false) 
-      : false;
+    );
 
     return (
       <Segment loading={!resolution}>
@@ -616,13 +617,50 @@ export default class Resolution extends React.Component<Props, State> {
     );
   }
 
-  renderOptions = () => {
-    const { recoverResolutionFref } = this;
-    return (<Button negative content="Delete" basic onClick={() => recoverResolutionFref().remove()} />);
+  isDeleted = (resolution?: ResolutionData): boolean => {
+    return !!(resolution ? resolution.deleted : false);
+  }
+
+  hasLinkedCaucus = (resolution?: ResolutionData): boolean => {
+    return !!(resolution ? resolution.caucus : false);
+  }
+
+  handleDelete = () => {
+    const { resolutionID, committeeID } = this.props.match.params;
+
+    deleteResolution(committeeID, resolutionID);
+  }
+
+  handleUndelete = () => {
+    const { resolutionID, committeeID } = this.props.match.params;
+
+    undeleteResolution(committeeID, resolutionID);
+  }
+
+  renderDeleteUndelete = (resolution?: ResolutionData) => {
+    return this.isDeleted(resolution) ? (
+        <Button 
+          positive
+          loading={!resolution}
+          icon="undo"
+          content="Undo" 
+          basic 
+          onClick={this.handleUndelete} 
+        />
+      ) : (
+      <Button 
+        negative
+        icon="trash"
+        loading={!resolution}
+        content="Delete" 
+        basic 
+        onClick={this.handleDelete} 
+      />
+    );
   }
 
   renderResolution = (resolution?: ResolutionData) => {
-    const { renderHeader, renderAmendmentsGroup, renderVoting, renderOptions } = this;
+    const { renderHeader, renderAmendmentsGroup, renderVoting, renderDeleteUndelete } = this;
 
     const panes = [
       {
@@ -634,7 +672,7 @@ export default class Resolution extends React.Component<Props, State> {
         render: () => <Tab.Pane>{renderVoting(resolution)}</Tab.Pane>
       }, {
         menuItem: 'Options',
-        render: () => <Tab.Pane>{renderOptions()}</Tab.Pane>
+        render: () => <Tab.Pane>{renderDeleteUndelete(resolution)}</Tab.Pane>
       }
     ];
 
