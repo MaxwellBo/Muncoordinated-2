@@ -243,16 +243,11 @@ class ResponsiveNav extends React.Component<ResponsiveContainerProps, {}> {
     const caucuses = committee ? committee.caucuses : undefined;
     const resolutions = committee ? committee.resolutions : undefined;
 
-    const caucusItems = Object.keys(caucuses || {}).filter(key =>
-      !caucuses![key].deleted
-    ).map(key =>
+    const caucusItems = Object.keys(caucuses || {}).map(key =>
       makeSubmenuItem(key, caucuses![key].name, 'caucuses')
     );
 
-    // BADCODE: Filter predicate shared with caucus target in motions, also update when changing
-    const resolutionItems = Object.keys(resolutions || {}).filter(key =>
-      !resolutions![key].deleted
-    ).map(key =>
+    const resolutionItems = Object.keys(resolutions || {}).map(key =>
       makeSubmenuItem(key, resolutions![key].name, 'resolutions')
     );
 

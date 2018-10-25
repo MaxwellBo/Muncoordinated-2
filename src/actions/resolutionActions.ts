@@ -63,6 +63,7 @@ export const postResolution =
 export const deleteResolution = (
   committeeID: CommitteeID, 
   resolutionID: ResolutionID
+  // tslint:disable-next-line
 ): Promise<any> => {
 
   return firebase.database()
@@ -70,20 +71,6 @@ export const deleteResolution = (
     .child(committeeID)
     .child('resolutions')
     .child(resolutionID)
-    .child('deleted')
-    .set(true);
+    .remove()
 };
 
-export const undeleteResolution = (
-  committeeID: CommitteeID, 
-  resolutionID: ResolutionID
-): Promise<any> => {
-
-  return firebase.database()
-    .ref('committees')
-    .child(committeeID)
-    .child('resolutions')
-    .child(resolutionID)
-    .child('deleted')
-    .set(false);
-};
