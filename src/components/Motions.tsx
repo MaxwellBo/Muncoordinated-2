@@ -595,14 +595,12 @@ export default class Motions extends React.Component<Props, State> {
 
     // BADCODE: Filter predicate shared with menu in Committee, also update when changing
     const caucusOptions = Object.keys(caucuses || {}).filter(key =>
-      caucuses![key].status === CaucusStatus.Open.toString() && !caucuses![key].deleted
+      caucuses![key].status === CaucusStatus.Open.toString()
     ).map(key =>
       ({ key: key, value: key, text: caucuses![key].name })
     );
 
-    const resolutionOptions = Object.keys(resolutions || {}).filter(key =>
-      !resolutions![key].deleted
-    ).map(key =>
+    const resolutionOptions = Object.keys(resolutions || {}).map(key =>
       ({ key: key, value: key, text: resolutions![key].name })
     );
 

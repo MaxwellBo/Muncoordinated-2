@@ -16,7 +16,7 @@ import { dropdownHandler, fieldHandler, textAreaHandler, countryDropdownHandler,
 import { makeDropdownOption, recoverCountryOptions } from '../utils';
 import Loading from './Loading';
 import { canVote, CommitteeStats } from './Admin';
-import { voteOnResolution, deleteResolution, undeleteResolution } from '../actions/resolutionActions';
+import { voteOnResolution, deleteResolution } from '../actions/resolutionActions';
 import { postCaucus } from '../actions/caucusActions';
 import { Stance } from './caucus/SpeakerFeed';
 
@@ -41,6 +41,7 @@ interface State {
   committee?: CommitteeData;
   authUnsubscribe?: () => void;
   user?: firebase.User | null;
+  loading: boolean;
 }
 
 export enum ResolutionStatus {
@@ -67,7 +68,6 @@ export interface ResolutionData {
   amendments?: Map<AmendmentID, AmendmentData>;
   votes?: Votes;
   amendmentsArePublic?: boolean; // TODO: Migrate
-  deleted?: boolean; // TODO: Migrate
 }
 
 export enum Vote {
@@ -94,7 +94,8 @@ export default class Resolution extends React.Component<Props, State> {
     const { match } = props;
 
     this.state = {
-      committeeFref: firebase.database().ref('committees').child(match.params.committeeID)
+      committeeFref: firebase.database().ref('committees').child(match.params.committeeID),
+      loading: true
     };
   }
 
@@ -104,7 +105,7 @@ export default class Resolution extends React.Component<Props, State> {
 
   firebaseCallback = (committee: firebase.database.DataSnapshot | null) => {
     if (committee) {
-      this.setState({ committee: committee.val() });
+      this.setState({ committee: committee.val(), loading: false });
     }
   }
 
@@ -461,7 +462,7 @@ export default class Resolution extends React.Component<Props, State> {
 
   renderHeader = (resolution?: ResolutionData) => {
     const resolutionFref = this.recoverResolutionFref();
-    const { handleProvisionResolution } = this;
+    const { handleProvisionResolution, amendmentsArePublic } = this;
 
     const statusDropdown = (
       <Dropdown
@@ -491,6 +492,7 @@ export default class Resolution extends React.Component<Props, State> {
         icon="search"
         value={proposer ? nameToCountryOption(proposer).key : undefined}
         error={!proposer || hasIdenticalProposerSeconder}
+        loading={!resolution}
         search
         selection
         fluid
@@ -503,6 +505,7 @@ export default class Resolution extends React.Component<Props, State> {
     const seconderTree = (
       <Form.Dropdown
         key="seconder"
+        loading={!resolution}
         icon="search"
         value={seconder ? nameToCountryOption(seconder).key : undefined}
         error={!seconder || hasIdenticalProposerSeconder}
@@ -517,19 +520,17 @@ export default class Resolution extends React.Component<Props, State> {
 
     const hasError = hasIdenticalProposerSeconder;
 
-    // love to not have null coalescing operators
-    const amendmentsArePublic = resolution 
-      ? (resolution.amendmentsArePublic || false) 
-      : false;
-
     const provisionTree = this.hasLinkedCaucus(resolution) ? ( 
       <Form.Button
+        loading={!resolution}
+        disabled={!resolution}
         content="Associated Caucus"
         onClick={() => this.gotoCaucus(resolution!.caucus)}
       />
     ) : (
       // if there's no linked caucus
       <Form.Button
+        loading={!resolution}
         disabled={!resolution || !resolution.proposer || !resolution.seconder || hasError} 
         content="Provision Caucus"
         onClick={() => handleProvisionResolution(resolution!)}
@@ -537,10 +538,11 @@ export default class Resolution extends React.Component<Props, State> {
     );
 
     return (
-      <Segment loading={!resolution}>
+      <Segment>
         <Input
           value={resolution ? resolution.name : ''}
           label={statusDropdown}
+          loading={!resolution}
           labelPosition="right"
           onChange={fieldHandler<ResolutionData>(resolutionFref, 'name')}
           attatched="top"
@@ -560,11 +562,11 @@ export default class Resolution extends React.Component<Props, State> {
               label="Delegates can amend"
               indeterminate={!resolution}
               toggle
-              checked={amendmentsArePublic}
+              checked={amendmentsArePublic(resolution)}
               onChange={checkboxHandler<ResolutionData>(resolutionFref, 'amendmentsArePublic')}
             />
           </Form.Group>
-          {amendmentsArePublic && DELEGATES_CAN_AMEND_NOTICE}
+          {amendmentsArePublic(resolution) && DELEGATES_CAN_AMEND_NOTICE}
           <TextArea
             value={resolution ? resolution.link : ''}
             autoHeight
@@ -611,18 +613,21 @@ export default class Resolution extends React.Component<Props, State> {
         itemsPerRow={1}
       >
         {adder}
-        {!resolution && <Loading />}
         {renderAmendments(amendments || {} as Map<string, AmendmentData>)}
       </Card.Group>
     );
   }
 
-  isDeleted = (resolution?: ResolutionData): boolean => {
-    return !!(resolution ? resolution.deleted : false);
+  hasLinkedCaucus = (resolution?: ResolutionData): boolean => {
+    return resolution 
+      ? !!resolution.caucus
+      : false;
   }
 
-  hasLinkedCaucus = (resolution?: ResolutionData): boolean => {
-    return !!(resolution ? resolution.caucus : false);
+  amendmentsArePublic = (resolution?: ResolutionData): boolean => {
+    return resolution 
+      ? resolution.amendmentsArePublic || false
+      : false;
   }
 
   handleDelete = () => {
@@ -631,27 +636,11 @@ export default class Resolution extends React.Component<Props, State> {
     deleteResolution(committeeID, resolutionID);
   }
 
-  handleUndelete = () => {
-    const { resolutionID, committeeID } = this.props.match.params;
-
-    undeleteResolution(committeeID, resolutionID);
-  }
-
-  renderDeleteUndelete = (resolution?: ResolutionData) => {
-    return this.isDeleted(resolution) ? (
-        <Button 
-          positive
-          loading={!resolution}
-          icon="undo"
-          content="Undo" 
-          basic 
-          onClick={this.handleUndelete} 
-        />
-      ) : (
+  renderDelete = () => {
+    return (
       <Button 
         negative
         icon="trash"
-        loading={!resolution}
         content="Delete" 
         basic 
         onClick={this.handleDelete} 
@@ -660,7 +649,7 @@ export default class Resolution extends React.Component<Props, State> {
   }
 
   renderResolution = (resolution?: ResolutionData) => {
-    const { renderHeader, renderAmendmentsGroup, renderVoting, renderDeleteUndelete } = this;
+    const { renderHeader, renderAmendmentsGroup, renderVoting, renderDelete } = this;
 
     const panes = [
       {
@@ -672,7 +661,7 @@ export default class Resolution extends React.Component<Props, State> {
         render: () => <Tab.Pane>{renderVoting(resolution)}</Tab.Pane>
       }, {
         menuItem: 'Options',
-        render: () => <Tab.Pane>{renderDeleteUndelete(resolution)}</Tab.Pane>
+        render: () => <Tab.Pane>{renderDelete()}</Tab.Pane>
       }
     ];
 
@@ -685,12 +674,16 @@ export default class Resolution extends React.Component<Props, State> {
   }
 
   render() {
-    const { committee } = this.state;
+    const { committee, loading } = this.state;
     const resolutionID: ResolutionID = this.props.match.params.resolutionID;
 
     const resolutions = committee ? committee.resolutions : {};
     const resolution = (resolutions || {})[resolutionID];
 
-    return this.renderResolution(resolution);
+    if (!loading && !resolution) {
+      return <div>404</div>
+    } else {
+      return this.renderResolution(resolution);
+    }
   }
 }
