@@ -16,6 +16,7 @@ import { URLParameters } from '../types';
 import { CaucusNextSpeaking } from './caucus/CaucusNextSpeaking';
 import { SpeakerEvent, SpeakerFeedEntry } from './caucus/SpeakerFeed';
 import { DEFAULT_SETTINGS } from './Settings';
+import { NotFound } from './NotFound';
 
 interface Props extends RouteComponentProps<URLParameters> {
 }
@@ -25,6 +26,7 @@ interface State {
   caucusTimer: TimerData;
   committee?: CommitteeData;
   committeeFref: firebase.database.Reference;
+  loading: boolean;
 }
 
 export type CaucusID = string;
@@ -71,13 +73,14 @@ export default class Caucus extends React.Component<Props, State> {
     this.state = {
       committeeFref: firebase.database().ref('committees').child(match.params.committeeID),
       caucusTimer: DEFAULT_CAUCUS.caucusTimer,
-      speakerTimer: DEFAULT_CAUCUS.speakerTimer
+      speakerTimer: DEFAULT_CAUCUS.speakerTimer,
+      loading: true
     };
   }
 
   firebaseCallback = (committee: firebase.database.DataSnapshot | null) => {
     if (committee) {
-      this.setState({ committee: committee.val() });
+      this.setState({ committee: committee.val(), loading: false });
     }
   }
 
@@ -264,12 +267,20 @@ export default class Caucus extends React.Component<Props, State> {
   }
 
   render() {
-    const { committee } = this.state;
+    const { committee, loading } = this.state;
     const caucusID: CaucusID = this.props.match.params.caucusID;
 
     const caucuses = committee ? committee.caucuses : {};
     const caucus = (caucuses || {})[caucusID];
 
-    return this.renderCaucus(caucus);
+    if (!loading && !caucus) {
+      return (
+        <Container text>
+          <NotFound item="caucus" id={caucusID} />
+        </Container>
+      );
+    } else {
+      return this.renderCaucus(caucus);
+    }
   }
 }
