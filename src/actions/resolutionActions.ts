@@ -71,6 +71,5 @@ export const deleteResolution = (
     .child(committeeID)
     .child('resolutions')
     .child(resolutionID)
-    .remove()
+    .remove();
 };
-
