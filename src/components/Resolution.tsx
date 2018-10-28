@@ -4,15 +4,16 @@ import * as _ from 'lodash';
 import { MemberID, nameToCountryOption, MemberData } from './Member';
 import { AmendmentID, AmendmentData, DEFAULT_AMENDMENT, AMENDMENT_STATUS_OPTIONS } from './Amendment';
 import {
-  Card, Button, Form, Dropdown, Segment, Input, TextArea,
+  Card, Button, Form, Dropdown, Segment, Input, TextArea, Checkbox,
   List, SemanticICONS, Icon, Tab, Grid, SemanticCOLORS, Container, Message, Label, Popup
 } from 'semantic-ui-react';
 import { CommitteeData } from './Committee';
 import { CaucusID, DEFAULT_CAUCUS, CaucusData } from './Caucus';
 import { RouteComponentProps } from 'react-router';
 import { URLParameters } from '../types';
-import { dropdownHandler, fieldHandler, textAreaHandler, countryDropdownHandler } from '../actions/handlers';
-import { makeDropdownOption, membersToOptions, recoverCountryOptions } from '../utils';
+import { dropdownHandler, fieldHandler, textAreaHandler, countryDropdownHandler, 
+  checkboxHandler } from '../actions/handlers';
+import { makeDropdownOption, recoverCountryOptions } from '../utils';
 import Loading from './Loading';
 import { canVote, CommitteeStats } from './Admin';
 import { voteOnResolution } from '../actions/resolutionActions';
@@ -26,12 +27,20 @@ export const IDENTITCAL_PROPOSER_SECONDER = (
   />
 );
 
+export const DELEGATES_CAN_AMEND_NOTICE = (
+  <Message basic>
+    Delegates can create and edit, but not delete, amendments.
+  </Message>
+);
+
 interface Props extends RouteComponentProps<URLParameters> {
 }
 
 interface State {
   committeeFref: firebase.database.Reference;
   committee?: CommitteeData;
+  authUnsubscribe?: () => void;
+  user?: firebase.User | null;
 }
 
 export enum ResolutionStatus {
@@ -57,6 +66,7 @@ export interface ResolutionData {
   caucus?: CaucusID;
   amendments?: Map<AmendmentID, AmendmentData>;
   votes?: Votes;
+  amendmentsArePublic?: boolean; // TODO: Migrate
 }
 
 export enum Vote {
@@ -72,7 +82,8 @@ export const DEFAULT_RESOLUTION: ResolutionData = {
   link: '',
   status: ResolutionStatus.Introduced,
   amendments: {} as Map<AmendmentID, AmendmentData>,
-  votes: {} as Votes
+  votes: {} as Votes,
+  amendmentsArePublic: false
 };
 
 export default class Resolution extends React.Component<Props, State> {
@@ -86,6 +97,10 @@ export default class Resolution extends React.Component<Props, State> {
     };
   }
 
+  authStateChangedCallback = (user: firebase.User | null) => {
+    this.setState({ user: user });
+  }
+
   firebaseCallback = (committee: firebase.database.DataSnapshot | null) => {
     if (committee) {
       this.setState({ committee: committee.val() });
@@ -94,10 +109,20 @@ export default class Resolution extends React.Component<Props, State> {
 
   componentDidMount() {
     this.state.committeeFref.on('value', this.firebaseCallback);
+
+    const authUnsubscribe = firebase.auth().onAuthStateChanged(
+      this.authStateChangedCallback,
+    );
+
+    this.setState({ authUnsubscribe });
   }
 
   componentWillUnmount() {
     this.state.committeeFref.off('value', this.firebaseCallback);
+
+    if (this.state.authUnsubscribe) {
+      this.state.authUnsubscribe();
+    }
   }
 
   recoverResolutionFref = () => {
@@ -173,10 +198,12 @@ export default class Resolution extends React.Component<Props, State> {
   renderAmendment = (id: AmendmentID, amendment: AmendmentData, amendmentFref: firebase.database.Reference) => {
     const { handleProvisionAmendment } = this;
     const { proposer, text, status } = amendment;
+    const { user } = this.state;
 
     const textArea = (
       <TextArea
         value={text}
+        label="Text"
         autoHeight
         onChange={textAreaHandler<AmendmentData>(amendmentFref, 'text')}
         rows={1}
@@ -186,6 +213,7 @@ export default class Resolution extends React.Component<Props, State> {
 
     const statusDropdown = (
       <Dropdown
+        disabled={!user}
         value={status}
         options={AMENDMENT_STATUS_OPTIONS}
         onChange={dropdownHandler<AmendmentData>(amendmentFref, 'status')}
@@ -199,9 +227,11 @@ export default class Resolution extends React.Component<Props, State> {
         key="proposer"
         icon="search"
         value={nameToCountryOption(proposer).key}
+        error={!proposer}
         search
         selection
         fluid
+        label="Proposer"
         placeholder="Proposer"
         onChange={countryDropdownHandler<AmendmentData>(amendmentFref, 'proposer', countryOptions)}
         options={countryOptions}
@@ -211,7 +241,7 @@ export default class Resolution extends React.Component<Props, State> {
     const provisionTree = !((amendment || { caucus: undefined }).caucus) ? (
       <Button
         floated="right"
-        disabled={!amendment || amendment.proposer === ''}
+        disabled={!amendment || amendment.proposer === '' || !user}
         content="Provision Caucus"
         onClick={() => handleProvisionAmendment(id, amendment!)}
       />
@@ -234,17 +264,18 @@ export default class Resolution extends React.Component<Props, State> {
               floated="right"
               icon="trash"
               negative
+              disabled={!user}
               basic
               onClick={() => amendmentFref.remove()}
             />
             {provisionTree}
           </Card.Header>
-          <Form>
-            {textArea}
-          </Form>
           <Card.Meta>
             {proposerDropdown}
           </Card.Meta>
+          <Form>
+            {textArea}
+          </Form>
         </Card.Content>
       </Card>
     );
@@ -499,6 +530,11 @@ export default class Resolution extends React.Component<Props, State> {
         />
       );
 
+    // love to not have null coalescing operators
+    const amendmentsArePublic = resolution 
+      ? (resolution.amendmentsArePublic || false) 
+      : false;
+
     return (
       <Segment loading={!resolution}>
         <Input
@@ -512,20 +548,30 @@ export default class Resolution extends React.Component<Props, State> {
           placeholder="Resolution Name"
         />
         <Form error={hasError}>
+          <Form.Group widths="equal">
+            {proposerTree}
+            {seconderTree}
+          </Form.Group>
+          {IDENTITCAL_PROPOSER_SECONDER}
+          <Form.Group>
+            {provisionTree}
+            <Form.Checkbox
+              label="Delegates can amend"
+              indeterminate={!resolution}
+              toggle
+              checked={amendmentsArePublic}
+              onChange={checkboxHandler<ResolutionData>(resolutionFref, 'amendmentsArePublic')}
+            />
+          </Form.Group>
+          {amendmentsArePublic && DELEGATES_CAN_AMEND_NOTICE}
           <TextArea
             value={resolution ? resolution.link : ''}
             autoHeight
             onChange={textAreaHandler<ResolutionData>(resolutionFref, 'link')}
             attatched="top"
             rows={1}
-            placeholder="Link"
+            placeholder="Resolution text or link to resolution text"
           />
-          <Form.Group widths="equal">
-            {proposerTree}
-            {seconderTree}
-          </Form.Group>
-          {IDENTITCAL_PROPOSER_SECONDER}
-          {provisionTree}
         </Form>
       </Segment>
     );
@@ -543,7 +589,6 @@ export default class Resolution extends React.Component<Props, State> {
 
   renderAmendmentsGroup = (resolution?: ResolutionData) => {
     const { renderAmendments, handlePushAmendment } = this;
-
     const amendments = resolution ? resolution.amendments : undefined;
 
     const adder = (

@@ -56,7 +56,7 @@ export default class Notifications extends React.Component<Props, State> {
   (prevState: Pick<State, 'notifications'>, notification: Notification): Pick<State, 'notifications'> => {
       // Debounce unique
       if (!_.some(prevState.notifications, notification)) {
-        console.debug(notification);
+        console.info(notification);
 
         return {
           notifications: [...prevState.notifications, notification]
@@ -124,7 +124,7 @@ export default class Notifications extends React.Component<Props, State> {
 
   renderNotification = (notification: Notification, key: number) => {
     return (
-      <Card style={{ 'max-width': 275 }} key={key} raised>
+      <Card style={{ 'maxWidth': 275 }} key={key} raised>
         <Card.Content>
           <Card.Header>{notification.header}</Card.Header>
           {notification.message && <Card.Description>{notification.message}</Card.Description>}

@@ -24,7 +24,7 @@
         "jsx-no-multiline-js": false,
         "jsx-boolean-value": false,
         "label-position": true,
-        "max-line-length": [ true, 120 ],
+        "max-line-length": [ false, 120 ],
         "member-ordering": [
             true,
             "public-before-private",
@@ -39,7 +39,6 @@
             "log",
             "error",
             "debug",
-            "info",
             "time",
             "timeEnd",
             "trace"
