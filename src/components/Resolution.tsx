@@ -14,11 +14,11 @@ import { URLParameters } from '../types';
 import { dropdownHandler, fieldHandler, textAreaHandler, countryDropdownHandler, 
   checkboxHandler } from '../actions/handlers';
 import { makeDropdownOption, recoverCountryOptions } from '../utils';
-import Loading from './Loading';
 import { canVote, CommitteeStats } from './Admin';
 import { voteOnResolution, deleteResolution } from '../actions/resolutionActions';
 import { postCaucus } from '../actions/caucusActions';
 import { Stance } from './caucus/SpeakerFeed';
+import { NotFound } from './NotFound';
 
 export const IDENTITCAL_PROPOSER_SECONDER = (
   <Message
@@ -681,7 +681,11 @@ export default class Resolution extends React.Component<Props, State> {
     const resolution = (resolutions || {})[resolutionID];
 
     if (!loading && !resolution) {
-      return <div>404</div>
+      return (
+        <Container text>
+          <NotFound item="resolution" id={resolutionID} />
+        </Container>
+      );
     } else {
       return this.renderResolution(resolution);
     }
