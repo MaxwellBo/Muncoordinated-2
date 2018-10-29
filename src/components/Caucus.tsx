@@ -124,7 +124,7 @@ export default class Caucus extends React.Component<Props, State> {
           attatched="top"
           size="massive"
           fluid
-          placeholder="Caucus Name"
+          placeholder="Set caucus name"
         />
         <Form>
           <TextArea
@@ -133,7 +133,7 @@ export default class Caucus extends React.Component<Props, State> {
             onChange={textAreaHandler<CaucusData>(caucusFref, 'topic')}
             attatched="top"
             rows={1}
-            placeholder="Caucus Topic"
+            placeholder="Set caucus details"
           />
         </Form>
       </Segment>
