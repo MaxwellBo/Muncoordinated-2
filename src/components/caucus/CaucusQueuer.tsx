@@ -76,6 +76,7 @@ export default class CaucusQueuer extends React.Component<Props, State> {
             value={queueCountry ? queueCountry.value : undefined}
             search
             selection
+            loading={!caucus}
             error={!queueCountry}
             onChange={countryHandler}
             options={countryOptions}
