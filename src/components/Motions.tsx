@@ -693,6 +693,7 @@ export default class Motions extends React.Component<Props, State> {
             search
             selection
             fluid
+            label="Type"
             options={MOTION_TYPE_OPTIONS}
             onChange={stateDropdownHandler<Props, State>(this, 'newMotion', 'type')}
             value={type}
