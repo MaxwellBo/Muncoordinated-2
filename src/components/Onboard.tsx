@@ -159,8 +159,8 @@ export default class Onboard extends React.Component<Props, State> {
               Muncoordinated
               </Header>
               <Divider hidden/>
-              Muncoordinated officially supports Google Chrome. 
-                Use of other browsers may lead to bugs or data loss.
+              Muncoordinated officially supports recent versions of Google Chrome. 
+                Use of older and other browsers has been known to cause bugs and data loss.
             </Grid.Column>
           </Grid.Row>
           <Divider />
