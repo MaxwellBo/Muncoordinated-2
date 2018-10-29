@@ -337,7 +337,7 @@ export default class Committee extends React.Component<Props, State> {
   renderWelcome = () => {
     const { committee, committeeFref } = this.state;
 
-    return committee ? (
+    return (
       <Container text style={{ padding: '1em 0em' }}>
         <Header as="h1">
           <Input
@@ -345,7 +345,6 @@ export default class Committee extends React.Component<Props, State> {
             onChange={fieldHandler<CommitteeData>(committeeFref, 'name')}
             fluid
             error={committee ? !committee.name : false}
-            loading={!committee}
             placeholder="Committee Name"
           />
         </Header>
@@ -387,7 +386,7 @@ export default class Committee extends React.Component<Props, State> {
         <Header as="h3">Keyboard Shortcuts</Header>
         {KEYBOARD_SHORTCUT_LIST}
       </Container>
-    ) : <Loading />;
+    );
   }
 
   render() {

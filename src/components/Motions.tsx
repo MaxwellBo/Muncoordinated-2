@@ -655,6 +655,7 @@ export default class Motions extends React.Component<Props, State> {
         value={proposer ? nameToCountryOption(proposer).key : undefined}
         search
         error={!proposer || hasIdenticalProposerSeconder}
+        loading={!committee}
         selection
         fluid
         onChange={stateCountryDropdownHandler<Props, State>(this, 'newMotion', 'proposer', countryOptions)}
@@ -669,6 +670,7 @@ export default class Motions extends React.Component<Props, State> {
         key="seconder"
         error={!seconder || hasIdenticalProposerSeconder} 
         value={seconder ? nameToCountryOption(seconder).key : undefined}
+        loading={!committee}
         search
         selection
         fluid
