@@ -108,9 +108,10 @@ export class CaucusNextSpeaking extends React.Component<Props, {}> {
 
     const queue = caucus ? caucus.queue : {}; 
     const hasNowSpeaking = caucus ? !!caucus.speaking : false;
-    const hasNextSpeaking = _.values(queue).length > 0;
+    const queueLength = _.values(queue).length;
+    const hasNextSpeaking = queueLength > 0;
+    const interlaceable = queueLength > 1;
     const nextable = hasNowSpeaking || hasNextSpeaking;
-    const interlaceable = _.values(queue).length > 1;
 
     const endButton = (
       <Button
@@ -122,6 +123,19 @@ export class CaucusNextSpeaking extends React.Component<Props, {}> {
       >
         <Icon name="hourglass end" />
         End
+      </Button>
+    );
+
+    const startButton = (
+      <Button
+        basic
+        icon
+        positive
+        disabled={!nextable}
+        onClick={nextSpeaker}
+      >
+        <Icon name="arrow up" />
+        Stage
       </Button>
     );
 
@@ -151,10 +165,18 @@ export class CaucusNextSpeaking extends React.Component<Props, {}> {
       </Button>
     );
 
+    let button = nextButton;
+
+    if (!hasNowSpeaking) {
+      button = startButton;
+    } else if (hasNowSpeaking && !hasNextSpeaking) {
+      button = endButton;
+    }
+
     return (
       <Segment textAlign="center" loading={!caucus}>
         <Label attached="top left" size="large">Next Speaking</Label>
-        {hasNowSpeaking && !hasNextSpeaking ? endButton : nextButton}
+        {button}
         <Popup
           trigger={interlaceButton}
           content="Orders the list so that speakers are 
