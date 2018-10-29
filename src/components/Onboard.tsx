@@ -93,9 +93,16 @@ export default class Onboard extends React.Component<Props, State> {
   }
 
   renderNewCommitteeForm = () => {
+    const { user } = this.state;
+
     return (
       <React.Fragment>
-        <Segment attached="top">
+        {!user && <Message
+          error 
+          attached="top"
+          content="Please login or create an account before creating a committee"
+        />}
+        <Segment attached={!user ? 'bottom' : undefined} >
           <Form onSubmit={this.handleSubmit}>
             <Form.Input 
               label="Name" 
@@ -134,19 +141,11 @@ export default class Onboard extends React.Component<Props, State> {
             </Form.Button>
           </Form>
         </Segment>
-        {!this.state.user && <Message
-          error 
-          attached="bottom"
-          header="Need authorization"
-          content="Please login or create an account before creating a committee"
-        />}
       </React.Fragment>
     );
   }
 
   render() {
-    const { user } = this.state;
-
     return (
       <Container style={{ padding: '1em 0em' }}>
         <ConnectionStatus />
@@ -159,15 +158,9 @@ export default class Onboard extends React.Component<Props, State> {
               <Header as="h1" dividing>
               Muncoordinated
               </Header>
-              <List bulleted>
-                {!user && <List.Item>Login to access your previously created committees, 
-                  or to create a new committee.</List.Item>}
-                <List.Item>Multiple directors may use the same account concurrently from 
-                  different computers.
-                </List.Item>
-                <List.Item>Muncoordinated officially supports Google Chrome. 
-                  Use of other browsers may lead to bugs or data loss.</List.Item>
-              </List>
+              <Divider hidden/>
+              Muncoordinated officially supports Google Chrome. 
+                Use of other browsers may lead to bugs or data loss.
             </Grid.Column>
           </Grid.Row>
           <Divider />

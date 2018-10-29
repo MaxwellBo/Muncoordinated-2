@@ -207,40 +207,46 @@ export class Login extends React.Component<Props, State> {
     );
   }
 
+  renderNotice = () => {
+    const list = [
+      'Login to access your previously created committees, or to create a new committee',
+      'Multiple directors may use the same account concurrently from different computers'
+    ];
+
+    return (
+      <Message attached="top" info list={list} />
+    );
+  }
+
   renderLoggedIn = (u: firebase.User) => {
     const { logOutHandler, renderCommittees, renderSuccess } = this;
     const { committees } = this.state;
     const { allowNewCommittee } = this.props;
 
-    const succ = this.state.success;
-    
     return (
-      <React.Fragment>
-        {succ && renderSuccess()}
-        <Card centered>
-          <Card.Content key="main">
-            <Card.Header>
-              {u.email}
-            </Card.Header>
-            <Card.Meta>
-              Logged in
-            </Card.Meta>
-          </Card.Content>
-          <Card.Content key="committees">
-            {committees ? renderCommittees() : <Loading />}
-            {allowNewCommittee && <List.Item key={'add'}>
-              <List.Content>
-                 <List.Header as="a" href={'/onboard'}>
-                  <Icon name="plus" />Create new committee
-                </List.Header>
-              </List.Content>
-            </List.Item>}
-          </Card.Content>
-          <Card.Content extra key="extra">
-            <Button basic color="red" fluid onClick={logOutHandler}>Logout</Button>
-          </Card.Content>
-        </Card>
-      </React.Fragment>
+      <Card centered>
+        <Card.Content key="main">
+          <Card.Header>
+            {u.email}
+          </Card.Header>
+          <Card.Meta>
+            Logged in
+          </Card.Meta>
+        </Card.Content>
+        <Card.Content key="committees">
+          {committees ? renderCommittees() : <Loading />}
+          {allowNewCommittee && <List.Item key={'add'}>
+            <List.Content>
+                <List.Header as="a" href={'/onboard'}>
+                <Icon name="plus" />Create new committee
+              </List.Header>
+            </List.Content>
+          </List.Item>}
+        </Card.Content>
+        <Card.Content extra key="extra">
+          <Button basic color="red" fluid onClick={logOutHandler}>Logout</Button>
+        </Card.Content>
+      </Card>
     );
   }
 
@@ -262,7 +268,7 @@ export class Login extends React.Component<Props, State> {
     const succ = this.state.success;
     
     return (
-      <Segment>
+      <Segment attached="bottom">
         <Form error={!!err} success={!!succ} loading={user === undefined}>
           <Form.Input
             key="email"
@@ -322,13 +328,15 @@ export class Login extends React.Component<Props, State> {
   }
 
   render() {
-    const { user } = this.state;
+    const { user, success } = this.state;
 
-    if (user) {
-      return this.renderLoggedIn(user);
-    } else {
-      return this.renderLogin();
-   }
+    return (
+      <React.Fragment>
+        {success && this.renderSuccess()}
+        {!user && this.renderNotice()}
+        {user ? this.renderLoggedIn(user) : this.renderLogin()}
+      </React.Fragment>
+    );
   }
 }
 
