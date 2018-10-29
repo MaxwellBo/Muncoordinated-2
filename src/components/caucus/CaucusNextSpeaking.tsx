@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { CaucusData } from '../Caucus';
 import { TimerData } from '../Timer';
-import { Header, Segment, Button, Icon, Feed, Label, Flag } from 'semantic-ui-react';
+import { Segment, Button, Icon, Label, Popup } from 'semantic-ui-react';
 import { runLifecycle, Lifecycle } from '../../actions/caucusActions';
 import { SpeakerEvent, Stance } from './SpeakerFeed';
 import { SpeakerFeed } from './SpeakerFeed';
@@ -138,20 +138,28 @@ export class CaucusNextSpeaking extends React.Component<Props, {}> {
       </Button>
     );
 
+    const interlaceButton = (
+      <Button
+        icon
+        disabled={!interlaceable}
+        basic
+        color="purple"
+        onClick={interlace}
+      >
+        <Icon name="random" />
+        Order
+      </Button>
+    );
+
     return (
       <Segment textAlign="center" loading={!caucus}>
         <Label attached="top left" size="large">Next Speaking</Label>
         {hasNowSpeaking && !hasNextSpeaking ? endButton : nextButton}
-        <Button
-          icon
-          disabled={!interlaceable}
-          basic
-          color="purple"
-          onClick={interlace}
-        >
-          <Icon name="random" />
-          Interlace
-        </Button>
+        <Popup
+          trigger={interlaceButton}
+          content="Orders the list so that speakers are 
+          'For', then 'Against', then 'Neutral', then 'For', etc."
+        />
         <SpeakerFeed 
           data={caucus ? caucus.queue : undefined}
           fref={props.fref.child('queue')} 
