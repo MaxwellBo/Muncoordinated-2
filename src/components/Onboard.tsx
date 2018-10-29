@@ -108,6 +108,8 @@ export default class Onboard extends React.Component<Props, State> {
               label="Name" 
               name="name" 
               fluid
+              required
+              error={this.state.name === ''}
               placeholder="Committee name" 
               onChange={this.handleChange} 
             />
@@ -135,7 +137,7 @@ export default class Onboard extends React.Component<Props, State> {
             <Form.Button 
               primary 
               fluid 
-              disabled={!this.state.user}
+              disabled={!this.state.user || this.state.name === ''}
             >
               Create Committee
             </Form.Button>
