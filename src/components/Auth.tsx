@@ -208,7 +208,7 @@ export class Login extends React.Component<Props, State> {
   renderNotice = () => {
     const list = [
       'Login to access your previously created committees, or to create a new committee',
-      'Multiple directors may use the same account concurrently from different computers'
+      'Multiple directors may use the same account concurrently from different computers - use a password you\'re willing to share'
     ];
 
     return (
