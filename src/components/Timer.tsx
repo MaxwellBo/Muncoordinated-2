@@ -1,8 +1,6 @@
 import * as React from 'react';
 import * as firebase from 'firebase';
-import { Form, Checkbox, Segment, Header, Statistic, Button, Input, Select, 
-  Divider, Progress, DropdownProps, ButtonProps, Icon, Label } from 'semantic-ui-react';
-import { makeDropdownOption } from '../utils';
+import { Form, Segment, Button, Divider, Progress, DropdownProps, ButtonProps, Icon, Label } from 'semantic-ui-react';
 import { Unit, TimerSetter } from './TimerSetter';
 import * as _ from 'lodash';
 
@@ -11,6 +9,8 @@ interface Props {
   timerFref: firebase.database.Reference;
   onChange: (timer: TimerData) => void;
   toggleKeyCode?: number;
+  defaultUnit?: Unit;
+  defaultDuration?: string;
 }
 
 interface State {
@@ -39,10 +39,12 @@ export default class Timer extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
 
+    const { defaultUnit, defaultDuration } = this.props;
+
     this.state = {
       offsetRef: firebase.database().ref('/.info/serverTimeOffset'),
-      unitDropdown: Unit.Seconds,
-      durationField: '60',
+      unitDropdown: defaultUnit || Unit.Minutes,
+      durationField: defaultDuration || '1',
       mute: true
     };
   }

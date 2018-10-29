@@ -17,6 +17,7 @@ import { CaucusNextSpeaking } from './caucus/CaucusNextSpeaking';
 import { SpeakerEvent, SpeakerFeedEntry } from './caucus/SpeakerFeed';
 import { DEFAULT_SETTINGS } from './Settings';
 import { NotFound } from './NotFound';
+import { Unit } from './TimerSetter';
 
 interface Props extends RouteComponentProps<URLParameters> {
 }
@@ -173,6 +174,8 @@ export default class Caucus extends React.Component<Props, State> {
         key={caucusID + 'speakerTimer'}
         onChange={(timer) => this.setState({ speakerTimer: timer })}
         toggleKeyCode={83} // S - if changing this, update Help
+        defaultUnit={Unit.Minutes}
+        defaultDuration={'1'}
       />
     );
 
@@ -183,6 +186,8 @@ export default class Caucus extends React.Component<Props, State> {
         key={caucusID + 'caucusTimer'}
         onChange={(timer) => this.setState({ caucusTimer: timer })}
         toggleKeyCode={67} // C - if changing this, update Help
+        defaultUnit={Unit.Minutes}
+        defaultDuration={'10'}
       />
     );
 
