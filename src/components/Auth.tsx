@@ -74,7 +74,6 @@ export class Login extends React.Component<Props, State> {
 
   logOutHandler = () => {
     firebase.auth().signOut().then(() => {
-      this.setState({ user: null });
     }).catch(err => {
       this.setState({ error: err });
     });
