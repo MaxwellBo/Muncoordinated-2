@@ -26,8 +26,8 @@ export default class CaucusQueuer extends React.Component<Props, State> {
     super(props);
 
     this.state = {
-      unitDropdown: Unit.Seconds,
-      durationField: '60'
+      unitDropdown: Unit.Minutes,
+      durationField: '1'
     };
   }
 
