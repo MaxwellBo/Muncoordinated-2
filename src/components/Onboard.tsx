@@ -94,48 +94,53 @@ export default class Onboard extends React.Component<Props, State> {
 
   renderNewCommitteeForm = () => {
     return (
-      <Form onSubmit={this.handleSubmit} error={!this.state.user}>
-        <Form.Input 
-          label="Name" 
-          name="name" 
-          fluid
-          placeholder="Committee name" 
-          onChange={this.handleChange} 
-        />
-        <Form.Input 
-          label="Topic" 
-          name="topic" 
-          fluid
-          placeholder="Committee topic" 
-          onChange={this.handleChange} 
-        />
-        <Form.Input
-          label="Chairpeople"
-          name="chair"
-          fluid
-          placeholder="Name(s) of chairperson or chairpeople"
-          onChange={this.handleChange}
-        />
-        <Form.Input
-          label="Conference"
-          name="conference"
-          fluid
-          placeholder="Conference name"
-          onChange={this.handleChange}
-        />
-        <Message
-          error
+      <React.Fragment>
+        <Segment attached="top">
+          <Form onSubmit={this.handleSubmit}>
+            <Form.Input 
+              label="Name" 
+              name="name" 
+              fluid
+              placeholder="Committee name" 
+              onChange={this.handleChange} 
+            />
+            <Form.Input 
+              label="Topic" 
+              name="topic" 
+              fluid
+              placeholder="Committee topic" 
+              onChange={this.handleChange} 
+            />
+            <Form.Input
+              label="Chairpeople"
+              name="chair"
+              fluid
+              placeholder="Name(s) of chairperson or chairpeople"
+              onChange={this.handleChange}
+            />
+            <Form.Input
+              label="Conference"
+              name="conference"
+              fluid
+              placeholder="Conference name"
+              onChange={this.handleChange}
+            />
+            <Form.Button 
+              primary 
+              fluid 
+              disabled={!this.state.user}
+            >
+              Create Committee
+            </Form.Button>
+          </Form>
+        </Segment>
+        {!this.state.user && <Message
+          error 
+          attached="bottom"
           header="Need authorization"
           content="Please login or create an account before creating a committee"
-        />
-        <Form.Button 
-          primary 
-          fluid 
-          disabled={!this.state.user}
-        >
-          Create Committee
-        </Form.Button>
-      </Form>
+        />}
+      </React.Fragment>
     );
   }
 
@@ -171,9 +176,7 @@ export default class Onboard extends React.Component<Props, State> {
               <Login allowSignup={true} allowNewCommittee={false}/>
             </Grid.Column>
             <Grid.Column>
-              <Segment>
-                {this.renderNewCommitteeForm()}
-              </Segment>
+              {this.renderNewCommitteeForm()}
             </Grid.Column>
           </Grid.Row>
         </Grid>
