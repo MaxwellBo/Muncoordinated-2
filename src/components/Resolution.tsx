@@ -11,8 +11,10 @@ import { CommitteeData } from './Committee';
 import { CaucusID, DEFAULT_CAUCUS, CaucusData } from './Caucus';
 import { RouteComponentProps } from 'react-router';
 import { URLParameters } from '../types';
-import { dropdownHandler, fieldHandler, textAreaHandler, countryDropdownHandler, 
-  checkboxHandler } from '../actions/handlers';
+import {
+  dropdownHandler, fieldHandler, textAreaHandler, countryDropdownHandler,
+  checkboxHandler
+} from '../actions/handlers';
 import { makeDropdownOption, recoverCountryOptions } from '../utils';
 import { canVote, CommitteeStats } from './Admin';
 import { voteOnResolution, deleteResolution } from '../actions/resolutionActions';
@@ -28,7 +30,10 @@ export const IDENTITCAL_PROPOSER_SECONDER = (
 );
 
 export const DELEGATES_CAN_AMEND_NOTICE = (
-  <Message basic>
+  <Message
+    basic
+    attached="bottom"
+  >
     Delegates can create and edit, but not delete, amendments.
   </Message>
 );
@@ -476,11 +481,11 @@ export default class Resolution extends React.Component<Props, State> {
     const countryOptions = recoverCountryOptions(this.state.committee);
 
     // TFW no null coalescing operator 
-    const proposer = resolution 
+    const proposer = resolution
       ? resolution.proposer
       : undefined;
 
-    const seconder = resolution 
+    const seconder = resolution
       ? resolution.seconder
       : undefined;
 
@@ -520,7 +525,7 @@ export default class Resolution extends React.Component<Props, State> {
 
     const hasError = hasIdenticalProposerSeconder;
 
-    const provisionTree = this.hasLinkedCaucus(resolution) ? ( 
+    const provisionTree = this.hasLinkedCaucus(resolution) ? (
       <Form.Button
         loading={!resolution}
         disabled={!resolution}
@@ -528,55 +533,57 @@ export default class Resolution extends React.Component<Props, State> {
         onClick={() => this.gotoCaucus(resolution!.caucus)}
       />
     ) : (
-      // if there's no linked caucus
-      <Form.Button
-        loading={!resolution}
-        disabled={!resolution || !resolution.proposer || !resolution.seconder || hasError} 
-        content="Provision Caucus"
-        onClick={() => handleProvisionResolution(resolution!)}
-      />
-    );
+        // if there's no linked caucus
+        <Form.Button
+          loading={!resolution}
+          disabled={!resolution || !resolution.proposer || !resolution.seconder || hasError}
+          content="Provision Caucus"
+          onClick={() => handleProvisionResolution(resolution!)}
+        />
+      );
 
     return (
-      <Segment>
-        <Input
-          value={resolution ? resolution.name : ''}
-          label={statusDropdown}
-          loading={!resolution}
-          labelPosition="right"
-          onChange={fieldHandler<ResolutionData>(resolutionFref, 'name')}
-          attatched="top"
-          size="massive"
-          fluid
-          placeholder="Resolution Name"
-        />
-        <Form error={hasError}>
-          <Form.Group widths="equal">
-            {proposerTree}
-            {seconderTree}
-          </Form.Group>
-          {IDENTITCAL_PROPOSER_SECONDER}
-          <Form.Group>
-            {provisionTree}
-            <Form.Checkbox
-              label="Delegates can amend"
-              indeterminate={!resolution}
-              toggle
-              checked={amendmentsArePublic(resolution)}
-              onChange={checkboxHandler<ResolutionData>(resolutionFref, 'amendmentsArePublic')}
-            />
-          </Form.Group>
-          {amendmentsArePublic(resolution) && DELEGATES_CAN_AMEND_NOTICE}
-          <TextArea
-            value={resolution ? resolution.link : ''}
-            autoHeight
-            onChange={textAreaHandler<ResolutionData>(resolutionFref, 'link')}
+      <React.Fragment>
+        <Segment attached={amendmentsArePublic(resolution) ? 'top' : undefined}>
+          <Input
+            value={resolution ? resolution.name : ''}
+            label={statusDropdown}
+            loading={!resolution}
+            labelPosition="right"
+            onChange={fieldHandler<ResolutionData>(resolutionFref, 'name')}
             attatched="top"
-            rows={1}
-            placeholder="Resolution text or link to resolution text"
+            size="massive"
+            fluid
+            placeholder="Resolution Name"
           />
-        </Form>
-      </Segment>
+          <Form error={hasError}>
+            <Form.Group widths="equal">
+              {proposerTree}
+              {seconderTree}
+            </Form.Group>
+            {IDENTITCAL_PROPOSER_SECONDER}
+            <Form.Group>
+              {provisionTree}
+              <Form.Checkbox
+                label="Delegates can amend"
+                indeterminate={!resolution}
+                toggle
+                checked={amendmentsArePublic(resolution)}
+                onChange={checkboxHandler<ResolutionData>(resolutionFref, 'amendmentsArePublic')}
+              />
+            </Form.Group>
+            <TextArea
+              value={resolution ? resolution.link : ''}
+              autoHeight
+              onChange={textAreaHandler<ResolutionData>(resolutionFref, 'link')}
+              attatched="top"
+              rows={1}
+              placeholder="Resolution text or link to resolution text"
+            />
+          </Form>
+        </Segment>
+        {amendmentsArePublic(resolution) && DELEGATES_CAN_AMEND_NOTICE}
+      </React.Fragment>
     );
   }
 
@@ -619,13 +626,13 @@ export default class Resolution extends React.Component<Props, State> {
   }
 
   hasLinkedCaucus = (resolution?: ResolutionData): boolean => {
-    return resolution 
+    return resolution
       ? !!resolution.caucus
       : false;
   }
 
   amendmentsArePublic = (resolution?: ResolutionData): boolean => {
-    return resolution 
+    return resolution
       ? resolution.amendmentsArePublic || false
       : false;
   }
@@ -638,12 +645,12 @@ export default class Resolution extends React.Component<Props, State> {
 
   renderDelete = () => {
     return (
-      <Button 
+      <Button
         negative
         icon="trash"
-        content="Delete" 
-        basic 
-        onClick={this.handleDelete} 
+        content="Delete"
+        basic
+        onClick={this.handleDelete}
       />
     );
   }
