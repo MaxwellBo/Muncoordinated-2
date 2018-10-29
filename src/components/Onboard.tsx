@@ -3,7 +3,7 @@ import { RouteComponentProps } from 'react-router';
 import * as firebase from 'firebase';
 import { CommitteeData, DEFAULT_COMMITTEE } from './Committee';
 import { Form, Grid, Header, InputOnChangeData, Divider,
-  Message, Container, List } from 'semantic-ui-react';
+  Message, Container, List, Segment } from 'semantic-ui-react';
 import { Login } from './Auth';
 import { URLParameters } from '../types';
 import ConnectionStatus from './ConnectionStatus';
@@ -171,7 +171,9 @@ export default class Onboard extends React.Component<Props, State> {
               <Login allowSignup={true} allowNewCommittee={false}/>
             </Grid.Column>
             <Grid.Column>
-              {this.renderNewCommitteeForm()}
+              <Segment>
+                {this.renderNewCommitteeForm()}
+              </Segment>
             </Grid.Column>
           </Grid.Row>
         </Grid>

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as firebase from 'firebase';
-import { Card, Button, Form, Message, Modal, Icon, List } from 'semantic-ui-react';
+import { Card, Button, Form, Message, Modal, Icon, List, Segment } from 'semantic-ui-react';
 import { CommitteeID, CommitteeData } from './Committee';
 import * as _ from 'lodash';
 import Loading from './Loading';
@@ -52,7 +52,8 @@ export class Login extends React.Component<Props, State> {
         .orderByChild('creatorUid')
         .equalTo(user.uid)
         .once('value').then(committees => {
-          this.setState({ committees: committees.val() });
+          // we need to || {} because this returns undefined when it can't find anything
+          this.setState({ committees: committees.val() || {} });
         });
     }
   }
@@ -261,60 +262,62 @@ export class Login extends React.Component<Props, State> {
     const succ = this.state.success;
     
     return (
-      <Form error={!!err} success={!!succ} loading={user === undefined}>
-        <Form.Input
-          key="email"
-          label="Email"
-          placeholder="joe@schmoe.com"
-          value={email}
-          onChange={emailHandler}
-        >
-          {usernameInput}
-        </Form.Input>
-        {mode === Mode.Login && <Form.Input
-          key="password"
-          label="Password"
-          type="password"
-          placeholder="correct horse battery staple"
-          value={password}
-          onChange={passwordHandler}
-        >
-          {passwordInput}
-        </Form.Input>}
-        {this.renderSuccess()}
-        {this.renderError()}
-        <Button.Group fluid>
-          {mode === Mode.Login && 
-            <Button 
-              primary 
-              onClick={loginHandler} 
-              loading={loggingIn} 
-            >
-              Login
-            </Button>
-          }
-          {mode === Mode.ForgotPassword &&
-            <Button 
-              primary
-              onClick={passwordResetHandler} 
-              loading={resetting} 
-              disabled={!email}
-            >
-              Reset Password
-            </Button>
-          }
-        {allowSignup && mode === Mode.Login && <Button.Or />}
-        {allowSignup && mode === Mode.Login && signupButton}
-        {mode === Mode.ForgotPassword && cancelButton}
-        </Button.Group>
-        {mode === Mode.Login && 
-          <a 
-            onClick={handleForgotPassword} 
-            style={{'cursor': 'pointer'}}
+      <Segment>
+        <Form error={!!err} success={!!succ} loading={user === undefined}>
+          <Form.Input
+            key="email"
+            label="Email"
+            placeholder="joe@schmoe.com"
+            value={email}
+            onChange={emailHandler}
           >
-            Forgot password?
-          </a>}
-      </Form>
+            {usernameInput}
+          </Form.Input>
+          {mode === Mode.Login && <Form.Input
+            key="password"
+            label="Password"
+            type="password"
+            placeholder="correct horse battery staple"
+            value={password}
+            onChange={passwordHandler}
+          >
+            {passwordInput}
+          </Form.Input>}
+          {this.renderSuccess()}
+          {this.renderError()}
+          <Button.Group fluid>
+            {mode === Mode.Login && 
+              <Button 
+                primary 
+                onClick={loginHandler} 
+                loading={loggingIn} 
+              >
+                Login
+              </Button>
+            }
+            {mode === Mode.ForgotPassword &&
+              <Button 
+                primary
+                onClick={passwordResetHandler} 
+                loading={resetting} 
+                disabled={!email}
+              >
+                Reset Password
+              </Button>
+            }
+          {allowSignup && mode === Mode.Login && <Button.Or />}
+          {allowSignup && mode === Mode.Login && signupButton}
+          {mode === Mode.ForgotPassword && cancelButton}
+          </Button.Group>
+          {mode === Mode.Login && 
+            <a 
+              onClick={handleForgotPassword} 
+              style={{'cursor': 'pointer'}}
+            >
+              Forgot password?
+            </a>}
+        </Form>
+      </Segment>
     );
   }
 
@@ -371,14 +374,12 @@ export class ModalLogin extends React.Component<{},
   }
 
   render() {
-    const { user } = this.state;
-
     return (
       <Modal 
         trigger={this.renderModalTrigger()}
         size="tiny"
         dimmer
-        basic={!!user} // strip away the outer window when we know we have a card
+        basic={true} // strip out the outer window
       >
         <Modal.Content>
           <Login allowSignup={false} allowNewCommittee={true}/>
