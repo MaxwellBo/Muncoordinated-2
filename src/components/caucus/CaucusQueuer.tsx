@@ -57,8 +57,8 @@ export default class CaucusQueuer extends React.Component<Props, State> {
 
     const countryOptions = membersToOptions(members);
 
-    const disableButtons = !queueCountry || !recoverDuration(caucus);
     const duration = recoverDuration(caucus);
+    const disableButtons = !queueCountry || !duration;
 
     return (
       <Segment textAlign="center">
