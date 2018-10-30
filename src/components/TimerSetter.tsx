@@ -20,6 +20,7 @@ interface Props {
   onSet?: () => void;
   label?: string;
   error?: boolean;
+  placeholder?: string;
   loading?: boolean;
 }
 
@@ -45,7 +46,7 @@ export class TimerSetter extends React.Component<Props, {}> {
     return (
       <Form.Input
         value={props.durationValue || ''}
-        placeholder="Duration"
+        placeholder={props.placeholder || 'Duration'}
         onChange={props.onDurationChange}
         action
         loading={props.loading}

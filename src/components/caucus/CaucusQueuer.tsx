@@ -77,6 +77,7 @@ export default class CaucusQueuer extends React.Component<Props, State> {
           <TimerSetter
             loading={!caucus}
             unitValue={recoverUnit(caucus)}
+            placeholder="Speaking time"
             durationValue={duration ? duration.toString() : undefined}
             onDurationChange={validatedNumberFieldHandler(caucusFref, 'speakerDuration')}
             onUnitChange={dropdownHandler(caucusFref, 'speakerUnit')}
