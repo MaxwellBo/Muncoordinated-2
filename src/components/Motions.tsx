@@ -22,6 +22,7 @@ import { ResolutionData, DEFAULT_RESOLUTION, ResolutionID, IDENTITCAL_PROPOSER_S
 import { Stance } from './caucus/SpeakerFeed';
 import { AmendmentData, DEFAULT_AMENDMENT } from './Amendment';
 import { postAmendment, postResolution } from '../actions/resolutionActions';
+import * as _ from 'lodash';
 
 export type MotionID = string;
 
@@ -769,11 +770,23 @@ export default class Motions extends React.Component<Props, State> {
       ? renderMotions(committee.motions || {} as Map<string, MotionData>)
       : <div />; // TODO: This could probably do with a nice spinner
 
+    const motionsCount = committee ? _.values(committee.motions || {}) : 0;
+
     return (
       <Container text style={{ padding: '1em 0em' }}>
         {renderAdder(committee)}
         <Divider />
         <Icon name="sort numeric descending" /> Sorted from most to least disruptive
+        <Button
+          negative
+          disabled={motionsCount <= 0}
+          floated="right"
+          icon="eraser"
+          content="Clear"
+          compact
+          basic
+          onClick={this.handleClearMotions}
+        />
         <Divider />
         <Card.Group
           itemsPerRow={1} 
