@@ -342,7 +342,9 @@ export default class Motions extends React.Component<Props, State> {
           who: proposer,
           stance: Stance.For,
           duration: speakerSeconds
-        }
+        },
+        speakerDuration: speakerDuration,
+        speakerUnit: speakerUnit
       };
 
       const caucusRef = postCaucus(committeeID, newCaucus);

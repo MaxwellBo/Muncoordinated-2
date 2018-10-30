@@ -10,7 +10,7 @@ interface Props {
   onChange: (timer: TimerData) => void;
   toggleKeyCode?: number;
   defaultUnit?: Unit;
-  defaultDuration?: string;
+  defaultDuration?: number;
 }
 
 interface State {
@@ -44,7 +44,7 @@ export default class Timer extends React.Component<Props, State> {
     this.state = {
       offsetRef: firebase.database().ref('/.info/serverTimeOffset'),
       unitDropdown: defaultUnit || Unit.Minutes,
-      durationField: defaultDuration || '1',
+      durationField: defaultDuration ? defaultDuration.toString() : '1',
       mute: true
     };
   }

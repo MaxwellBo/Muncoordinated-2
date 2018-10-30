@@ -64,7 +64,7 @@ export const DEFAULT_COMMITTEE: CommitteeData = {
   caucuses: {} as Map<CaucusID, CaucusData>,
   resolutions: {} as Map<ResolutionID, ResolutionData>,
   files: {} as Map<FileID, FileData>,
-  timer: DEFAULT_TIMER,
+  timer: { ...DEFAULT_TIMER, remaining: 60 * 10 },
   notes: '',
   settings: DEFAULT_SETTINGS
 };
