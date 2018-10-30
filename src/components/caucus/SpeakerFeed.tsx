@@ -56,6 +56,7 @@ export const SpeakerFeedEntry = (props: {
       timerData: speakerTimer,
       timer: caucusRef.child('speakerTimer'),
       yielding: true,
+      timerResetSeconds: 0 // this shouldn't ever be used when yielding
     };
 
     runLifecycle({ ...lifecycle, ...queueHeadDetails });
@@ -63,7 +64,6 @@ export const SpeakerFeedEntry = (props: {
 
   return data ? (
     <Feed.Event>
-      {/* <Feed.Label image='/assets/images/avatar/small/helen.jpg' /> */}
       <Feed.Content>
         <Feed.Summary>
           <Feed.User>

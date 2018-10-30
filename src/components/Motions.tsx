@@ -249,8 +249,8 @@ const MOTION_TYPE_OPTIONS = [
 
 const DEFAULT_MOTION: MotionData = {
   proposal: '',
-  speakerDuration: 1,
-  speakerUnit: Unit.Minutes,
+  speakerDuration: 60,
+  speakerUnit: Unit.Seconds,
   caucusDuration: 10,
   caucusUnit: Unit.Minutes,
   type: MotionType.OpenUnmoderatedCaucus // this will force it to the top of the list
@@ -342,7 +342,9 @@ export default class Motions extends React.Component<Props, State> {
           who: proposer,
           stance: Stance.For,
           duration: speakerSeconds
-        }
+        },
+        speakerDuration: speakerDuration,
+        speakerUnit: speakerUnit
       };
 
       const caucusRef = postCaucus(committeeID, newCaucus);

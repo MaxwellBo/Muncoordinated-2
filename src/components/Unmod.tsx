@@ -36,7 +36,7 @@ export default class Unmod extends React.Component<Props, State> {
           name="Unmoderated Caucus" 
           timerFref={committeeFref} 
           onChange={(x: TimerData) => x} 
-          defaultDuration={'10'}
+          defaultDuration={10}
           defaultUnit={Unit.Minutes}
         />
       </Container>

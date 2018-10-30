@@ -19,6 +19,18 @@ import { DEFAULT_SETTINGS } from './Settings';
 import { NotFound } from './NotFound';
 import { Unit } from './TimerSetter';
 
+export const recoverUnit = (caucus?: CaucusData): Unit => {
+  return caucus ? (caucus.speakerUnit || Unit.Seconds) : Unit.Seconds;
+};
+
+export const recoverDuration = (caucus?: CaucusData): number | undefined => {
+  return caucus
+    ? caucus.speakerDuration
+      ? caucus.speakerDuration
+      : undefined
+    : undefined;
+};
+
 interface Props extends RouteComponentProps<URLParameters> {
 }
 
@@ -42,6 +54,8 @@ export interface CaucusData {
   topic: string;
   status: CaucusStatus;
   speakerTimer: TimerData;
+  speakerDuration?: number; // TODO: Migrate
+  speakerUnit?: Unit; // TODO: Migrate
   caucusTimer: TimerData;
   queueIsPublic?: boolean; // TODO: Migrate
   speaking?: SpeakerEvent;
@@ -59,6 +73,8 @@ export const DEFAULT_CAUCUS: CaucusData = {
   topic: '',
   status: CaucusStatus.Open,
   speakerTimer: { ...DEFAULT_TIMER, remaining: 60 },
+  speakerDuration: 60,
+  speakerUnit: Unit.Seconds,
   caucusTimer: { ...DEFAULT_TIMER, remaining: 60 * 10 },
   queueIsPublic: false,
   queue: {} as Map<string, SpeakerEvent>,
@@ -174,8 +190,8 @@ export default class Caucus extends React.Component<Props, State> {
         key={caucusID + 'speakerTimer'}
         onChange={(timer) => this.setState({ speakerTimer: timer })}
         toggleKeyCode={83} // S - if changing this, update Help
-        defaultUnit={Unit.Minutes}
-        defaultDuration={'1'}
+        defaultUnit={recoverUnit(caucus)}
+        defaultDuration={recoverDuration(caucus) || 60}
       />
     );
 
@@ -187,7 +203,7 @@ export default class Caucus extends React.Component<Props, State> {
         onChange={(timer) => this.setState({ caucusTimer: timer })}
         toggleKeyCode={67} // C - if changing this, update Help
         defaultUnit={Unit.Minutes}
-        defaultDuration={'10'}
+        defaultDuration={10}
       />
     );
 

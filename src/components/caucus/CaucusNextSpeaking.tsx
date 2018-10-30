@@ -1,11 +1,12 @@
 import * as React from 'react';
-import { CaucusData } from '../Caucus';
+import { CaucusData, recoverUnit, recoverDuration } from '../Caucus';
 import { TimerData } from '../Timer';
 import { Segment, Button, Icon, Label, Popup } from 'semantic-ui-react';
 import { runLifecycle, Lifecycle } from '../../actions/caucusActions';
 import { SpeakerEvent, Stance } from './SpeakerFeed';
 import { SpeakerFeed } from './SpeakerFeed';
 import * as _ from 'lodash';
+import { Unit } from '../TimerSetter';
 
 interface Props {
   caucus?: CaucusData;
@@ -89,6 +90,12 @@ export class CaucusNextSpeaking extends React.Component<Props, {}> {
         };
       }
 
+      const duration = recoverDuration(props.caucus);
+
+      const speakerSeconds: number = duration 
+        ? duration * (recoverUnit(props.caucus) === Unit.Minutes ? 60 : 1)
+        : 60;
+
       const lifecycle: Lifecycle = {
         history: props.fref.child('history'),
         speakingData: props.caucus.speaking,
@@ -96,6 +103,7 @@ export class CaucusNextSpeaking extends React.Component<Props, {}> {
         timerData: props.speakerTimer,
         timer: props.fref.child('speakerTimer'),
         yielding: false,
+        timerResetSeconds: speakerSeconds
       };
 
       runLifecycle({ ...lifecycle, ...queueHeadDetails });
