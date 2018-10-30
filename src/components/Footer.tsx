@@ -5,7 +5,7 @@ interface State {
   timerId?: NodeJS.Timer;
 }
 
-export const CLIENT_VERSION = 'v2.12.0';
+export const CLIENT_VERSION = 'v2.12.1';
 
 export const CLIENT_VERSION_LINK = (
   <a href="https://github.com/MaxwellBo/Muncoordinated-2/releases">

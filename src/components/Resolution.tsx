@@ -205,7 +205,7 @@ export default class Resolution extends React.Component<Props, State> {
   renderAmendment = (id: AmendmentID, amendment: AmendmentData, amendmentFref: firebase.database.Reference) => {
     const { handleProvisionAmendment } = this;
     const { proposer, text, status } = amendment;
-    const { user } = this.state;
+    const { user, committee } = this.state;
 
     const textArea = (
       <TextArea
@@ -218,9 +218,15 @@ export default class Resolution extends React.Component<Props, State> {
       />
     );
 
+    let hasAuth = false;
+
+    if (committee && user) {
+      hasAuth = committee.creatorUid === user.uid;
+    }
+
     const statusDropdown = (
       <Dropdown
-        disabled={!user}
+        disabled={!hasAuth}
         value={status}
         options={AMENDMENT_STATUS_OPTIONS}
         onChange={dropdownHandler<AmendmentData>(amendmentFref, 'status')}
@@ -248,7 +254,7 @@ export default class Resolution extends React.Component<Props, State> {
     const provisionTree = !((amendment || { caucus: undefined }).caucus) ? (
       <Button
         floated="right"
-        disabled={!amendment || amendment.proposer === '' || !user}
+        disabled={!amendment || amendment.proposer === '' || !hasAuth}
         content="Provision Caucus"
         onClick={() => handleProvisionAmendment(id, amendment!)}
       />
@@ -271,7 +277,7 @@ export default class Resolution extends React.Component<Props, State> {
               floated="right"
               icon="trash"
               negative
-              disabled={!user}
+              disabled={!hasAuth}
               basic
               onClick={() => amendmentFref.remove()}
             />
