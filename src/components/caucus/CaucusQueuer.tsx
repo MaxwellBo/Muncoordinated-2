@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as firebase from 'firebase';
 import { MemberData } from '../Member';
-import { CaucusData } from '../Caucus';
+import { CaucusData, recoverDuration, recoverUnit } from '../Caucus';
 import { CountryOption } from '../../constants';
 import { Segment, Button, Form, DropdownProps, Label } from 'semantic-ui-react';
 import { TimerSetter, Unit } from '../TimerSetter';
@@ -26,31 +26,17 @@ export default class CaucusQueuer extends React.Component<Props, State> {
     this.state = {};
   }
 
-  recoverUnit = () => {
-    const { caucus } = this.props;
-
-    return caucus ? (caucus.speakerUnit || Unit.Seconds) : Unit.Seconds;
-  }
-
-  recoverDuration = () => {
-    const { caucus } = this.props;
-
-    return caucus 
-      ? caucus.speakerDuration 
-        ? caucus.speakerDuration.toString() 
-        : undefined
-      : undefined;
-  }
-
   stanceHandler = (stance: Stance) => () => {
     const { queueCountry } = this.state;
-    const duration = Number(this.recoverDuration());
+    const { caucus } = this.props;
+
+    const duration = Number(recoverDuration(caucus));
 
     if (duration && queueCountry) {
       const newEvent: SpeakerEvent = {
         who: queueCountry.text,
         stance: stance,
-        duration: this.recoverUnit() === Unit.Minutes ? duration * 60 : duration,
+        duration: recoverUnit(caucus) === Unit.Minutes ? duration * 60 : duration,
       };
 
       this.props.caucusFref.child('queue').push().set(newEvent);
@@ -71,7 +57,8 @@ export default class CaucusQueuer extends React.Component<Props, State> {
 
     const countryOptions = membersToOptions(members);
 
-    const disableButtons = !queueCountry || !this.recoverDuration();
+    const disableButtons = !queueCountry || !recoverDuration(caucus);
+    const duration = recoverDuration(caucus);
 
     return (
       <Segment textAlign="center">
@@ -89,8 +76,8 @@ export default class CaucusQueuer extends React.Component<Props, State> {
           />
           <TimerSetter
             loading={!caucus}
-            unitValue={this.recoverUnit()}
-            durationValue={this.recoverDuration()}
+            unitValue={recoverUnit(caucus)}
+            durationValue={duration ? duration.toString() : undefined}
             onDurationChange={validatedNumberFieldHandler(caucusFref, 'speakerDuration')}
             onUnitChange={dropdownHandler(caucusFref, 'speakerUnit')}
           />

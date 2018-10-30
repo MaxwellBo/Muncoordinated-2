@@ -39,10 +39,12 @@ export interface Lifecycle {
   yielding: boolean;
   queueHeadData?: SpeakerEvent;
   queueHead?: firebase.database.Reference;
+  timerResetSeconds: number;
 }
 
 export const runLifecycle = (lifecycle: Lifecycle) => {
-  const { history, speakingData, speaking, timerData, timer, yielding, queueHeadData, queueHead } = lifecycle;
+  const { history, speakingData, speaking, timerData, timer, 
+    timerResetSeconds, yielding, queueHeadData, queueHead } = lifecycle;
 
   let additionalYieldTime = 0;
 
@@ -57,7 +59,7 @@ export const runLifecycle = (lifecycle: Lifecycle) => {
 
     timer.update({
       elapsed: 0,
-      remaining: 60,
+      remaining: timerResetSeconds,
       ticking: false // and stop it
     });
   } // do nothing if no-one is currently speaking

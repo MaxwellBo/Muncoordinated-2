@@ -249,8 +249,8 @@ const MOTION_TYPE_OPTIONS = [
 
 const DEFAULT_MOTION: MotionData = {
   proposal: '',
-  speakerDuration: 1,
-  speakerUnit: Unit.Minutes,
+  speakerDuration: 60,
+  speakerUnit: Unit.Seconds,
   caucusDuration: 10,
   caucusUnit: Unit.Minutes,
   type: MotionType.OpenUnmoderatedCaucus // this will force it to the top of the list
