@@ -1,5 +1,5 @@
 import { TextAreaProps, DropdownProps, CheckboxProps } from 'semantic-ui-react';
-import { CountryOption } from '../constants';
+import { MemberOption } from '../constants';
 
 // Ideally we'd be able to give this a type parameter to constrain the field
 export function fieldHandler<T>
@@ -78,14 +78,14 @@ export function checkboxHandler<T>
     fref.child(field.toString()).set(data.checked);
 }
 
-export function countryDropdownHandler<T>
-  (fref: firebase.database.Reference, field: keyof T, countryOptions: CountryOption[]) {
+export function memberDropdownHandler<T>
+  (fref: firebase.database.Reference, field: keyof T, memberOptions: MemberOption[]) {
   return (event: React.SyntheticEvent<HTMLElement>, data: DropdownProps) =>
-    fref.child(field.toString()).set(countryOptions.filter(c => c.value === data.value)[0].text);
+    fref.child(field.toString()).set(memberOptions.filter(c => c.value === data.value)[0].text);
 }
 
-export function stateCountryDropdownHandler<P, S>
-  (comp: React.Component<P, S>, field: keyof S, target: string, countryOptions: CountryOption[]) {
+export function stateMemberDropdownHandler<P, S>
+  (comp: React.Component<P, S>, field: keyof S, target: string, memberOptions: MemberOption[]) {
   return (event: React.SyntheticEvent<HTMLElement>, data: DropdownProps) =>
-    lens(comp, field, target, countryOptions.filter(c => c.value === data.value)[0].text);
+    lens(comp, field, target, memberOptions.filter(c => c.value === data.value)[0].text);
 }

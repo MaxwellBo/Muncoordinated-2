@@ -25,8 +25,8 @@ interface State {
 }
 
 interface Props {
-  allowSignup: boolean | undefined;
-  allowNewCommittee: boolean | undefined;
+  allowSignup?: boolean; 
+  allowNewCommittee?: boolean;
 }
 
 export class Login extends React.Component<Props, State> {
@@ -72,13 +72,13 @@ export class Login extends React.Component<Props, State> {
     }
   }
 
-  logOutHandler = () => {
+  handleLogout = () => {
     firebase.auth().signOut().catch(err => {
       this.setState({ error: err });
     });
   }
 
-  loginHandler = () => {
+  handleLogin = () => {
     const { email, password } = this.state;
 
     this.setState({ loggingIn: true });
@@ -90,7 +90,7 @@ export class Login extends React.Component<Props, State> {
     });
   }
 
-  createHandler = () => {
+  handleCreate = () => {
     const { email, password } = this.state;
     this.setState({ creating: true });
 
@@ -106,7 +106,7 @@ export class Login extends React.Component<Props, State> {
     });
   }
 
-  passwordResetHandler = () => {
+  handlePasswordReset = () => {
     const { email } = this.state;
     this.setState({ resetting: true });
 
@@ -138,10 +138,10 @@ export class Login extends React.Component<Props, State> {
     this.setState( { mode: Mode.Login });
   }
 
-  emailHandler = (e: React.FormEvent<HTMLInputElement>) =>
+  setEmail = (e: React.FormEvent<HTMLInputElement>) =>
     this.setState({ email: e.currentTarget.value })
 
-  passwordHandler = (e: React.FormEvent<HTMLInputElement>) =>
+  setPassword = (e: React.FormEvent<HTMLInputElement>) =>
     this.setState({ password: e.currentTarget.value })
 
   renderCommittees = () => {
@@ -217,7 +217,7 @@ export class Login extends React.Component<Props, State> {
   }
 
   renderLoggedIn = (u: firebase.User) => {
-    const { logOutHandler, renderCommittees, renderSuccess } = this;
+    const { handleLogout, renderCommittees, renderSuccess } = this;
     const { committees } = this.state;
     const { allowNewCommittee } = this.props;
 
@@ -242,19 +242,19 @@ export class Login extends React.Component<Props, State> {
           </List.Item>}
         </Card.Content>
         <Card.Content extra key="extra">
-          <Button basic color="red" fluid onClick={logOutHandler}>Logout</Button>
+          <Button basic color="red" fluid onClick={handleLogout}>Logout</Button>
         </Card.Content>
       </Card>
     );
   }
 
   renderLogin = () => {
-    const { emailHandler, passwordHandler, createHandler, 
-      loginHandler, passwordResetHandler, handleForgotPassword, handleResetPasswordCancel } = this;
+    const { setEmail, setPassword, handleCreate, 
+      handleLogin, handlePasswordReset, handleForgotPassword, handleResetPasswordCancel } = this;
     const { loggingIn, creating, user, resetting, email, password, mode } = this.state;
     const { allowSignup } = this.props;
 
-    const signupButton = <Button onClick={createHandler} loading={creating} >Create Account</Button>;
+    const signupButton = <Button onClick={handleCreate} loading={creating} >Create Account</Button>;
 
     const cancelButton = <Button onClick={handleResetPasswordCancel}>Cancel</Button>;
 
@@ -273,7 +273,7 @@ export class Login extends React.Component<Props, State> {
             label="Email"
             placeholder="joe@schmoe.com"
             value={email}
-            onChange={emailHandler}
+            onChange={setEmail}
           >
             {usernameInput}
           </Form.Input>
@@ -283,7 +283,7 @@ export class Login extends React.Component<Props, State> {
             type="password"
             placeholder="correct horse battery staple"
             value={password}
-            onChange={passwordHandler}
+            onChange={setPassword}
           >
             {passwordInput}
           </Form.Input>}
@@ -293,7 +293,7 @@ export class Login extends React.Component<Props, State> {
             {mode === Mode.Login && 
               <Button 
                 primary 
-                onClick={loginHandler} 
+                onClick={handleLogin} 
                 loading={loggingIn} 
               >
                 Login
@@ -302,7 +302,7 @@ export class Login extends React.Component<Props, State> {
             {mode === Mode.ForgotPassword &&
               <Button 
                 primary
-                onClick={passwordResetHandler} 
+                onClick={handlePasswordReset} 
                 loading={resetting} 
                 disabled={!email}
               >

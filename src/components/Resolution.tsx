@@ -1,21 +1,21 @@
 import * as React from 'react';
 import * as firebase from 'firebase';
 import * as _ from 'lodash';
-import { MemberID, nameToCountryOption, MemberData } from './Member';
-import { AmendmentID, AmendmentData, DEFAULT_AMENDMENT, AMENDMENT_STATUS_OPTIONS } from './Amendment';
+import { MemberID, nameToMemberOption, MemberData } from './Member';
+import { AmendmentID, AmendmentData, DEFAULT_AMENDMENT, AMENDMENT_STATUS_OPTIONS, recoverLinkedCaucus } from './Amendment';
 import {
   Card, Button, Form, Dropdown, Segment, Input, TextArea, Checkbox,
   List, SemanticICONS, Icon, Tab, Grid, SemanticCOLORS, Container, Message, Label, Popup
 } from 'semantic-ui-react';
-import { CommitteeData } from './Committee';
+import { CommitteeData, recoverMemberOptions } from './Committee';
 import { CaucusID, DEFAULT_CAUCUS, CaucusData } from './Caucus';
 import { RouteComponentProps } from 'react-router';
 import { URLParameters } from '../types';
 import {
-  dropdownHandler, fieldHandler, textAreaHandler, countryDropdownHandler,
+  dropdownHandler, fieldHandler, textAreaHandler, memberDropdownHandler,
   checkboxHandler
 } from '../actions/handlers';
-import { makeDropdownOption, recoverCountryOptions } from '../utils';
+import { makeDropdownOption } from '../utils';
 import { canVote, CommitteeStats } from './Admin';
 import { voteOnResolution, deleteResolution } from '../actions/resolutionActions';
 import { postCaucus } from '../actions/caucusActions';
@@ -233,25 +233,25 @@ export default class Resolution extends React.Component<Props, State> {
       />
     );
 
-    const countryOptions = recoverCountryOptions(this.state.committee);
+    const memberOptions = recoverMemberOptions(this.state.committee);
 
     const proposerDropdown = (
       <Form.Dropdown
         key="proposer"
         icon="search"
-        value={nameToCountryOption(proposer).key}
+        value={nameToMemberOption(proposer).key}
         error={!proposer}
         search
         selection
         fluid
         label="Proposer"
         placeholder="Proposer"
-        onChange={countryDropdownHandler<AmendmentData>(amendmentFref, 'proposer', countryOptions)}
-        options={countryOptions}
+        onChange={memberDropdownHandler<AmendmentData>(amendmentFref, 'proposer', memberOptions)}
+        options={memberOptions}
       />
     );
 
-    const provisionTree = !((amendment || { caucus: undefined }).caucus) ? (
+    const provisionTree = recoverLinkedCaucus(amendment) ? (
       <Button
         floated="right"
         disabled={!amendment || amendment.proposer === '' || !hasAuth}
@@ -264,7 +264,7 @@ export default class Resolution extends React.Component<Props, State> {
           content="Associated Caucus"
           onClick={() => this.gotoCaucus(amendment!.caucus)}
         />
-      );
+    );
 
     return (
       <Card
@@ -484,7 +484,7 @@ export default class Resolution extends React.Component<Props, State> {
       />
     );
 
-    const countryOptions = recoverCountryOptions(this.state.committee);
+    const memberOptions = recoverMemberOptions(this.state.committee);
 
     // TFW no null coalescing operator 
     const proposer = resolution
@@ -501,14 +501,14 @@ export default class Resolution extends React.Component<Props, State> {
       <Form.Dropdown
         key="proposer"
         icon="search"
-        value={proposer ? nameToCountryOption(proposer).key : undefined}
+        value={proposer ? nameToMemberOption(proposer).key : undefined}
         error={!proposer || hasIdenticalProposerSeconder}
         loading={!resolution}
         search
         selection
         fluid
-        onChange={countryDropdownHandler<ResolutionData>(resolutionFref, 'proposer', countryOptions)}
-        options={countryOptions}
+        onChange={memberDropdownHandler<ResolutionData>(resolutionFref, 'proposer', memberOptions)}
+        options={memberOptions}
         label="Proposer"
       />
     );
@@ -518,13 +518,13 @@ export default class Resolution extends React.Component<Props, State> {
         key="seconder"
         loading={!resolution}
         icon="search"
-        value={seconder ? nameToCountryOption(seconder).key : undefined}
+        value={seconder ? nameToMemberOption(seconder).key : undefined}
         error={!seconder || hasIdenticalProposerSeconder}
         search
         selection
         fluid
-        onChange={countryDropdownHandler<ResolutionData>(resolutionFref, 'seconder', countryOptions)}
-        options={countryOptions}
+        onChange={memberDropdownHandler<ResolutionData>(resolutionFref, 'seconder', memberOptions)}
+        options={memberOptions}
         label="Seconder"
       />
     );

@@ -67,7 +67,7 @@ export default class Onboard extends React.Component<Props, State> {
     }
   }
 
-  handleChange = (event: React.SyntheticEvent<HTMLInputElement>, data: InputOnChangeData): void => {
+  handleInput = (event: React.SyntheticEvent<HTMLInputElement>, data: InputOnChangeData): void => {
     // XXX: Don't do stupid shit and choose form input names that don't
     // map to valid state properties
     // @ts-ignore
@@ -111,28 +111,28 @@ export default class Onboard extends React.Component<Props, State> {
               required
               error={this.state.name === ''}
               placeholder="Committee name" 
-              onChange={this.handleChange} 
+              onChange={this.handleInput} 
             />
             <Form.Input 
               label="Topic" 
               name="topic" 
               fluid
               placeholder="Committee topic" 
-              onChange={this.handleChange} 
+              onChange={this.handleInput} 
             />
             <Form.Input
               label="Chairpeople"
               name="chair"
               fluid
               placeholder="Name(s) of chairperson or chairpeople"
-              onChange={this.handleChange}
+              onChange={this.handleInput}
             />
             <Form.Input
               label="Conference"
               name="conference"
               fluid
               placeholder="Conference name"
-              onChange={this.handleChange}
+              onChange={this.handleInput}
             />
             <Form.Button 
               primary 

@@ -1,5 +1,8 @@
 import * as React from 'react';
 
+interface Props {
+}
+
 interface State {
   latestVersion?: string;
   timerId?: NodeJS.Timer;
@@ -15,8 +18,8 @@ export const CLIENT_VERSION_LINK = (
 
 const RELEASES_LATEST = 'https://api.github.com/repos/MaxwellBo/Muncoordinated-2/releases/latest';
 
-export default class Footer extends React.PureComponent<{}, State> {
-  constructor(props: {}) {
+export default class Footer extends React.PureComponent<Props, State> {
+  constructor(props: Props) {
     super(props);
 
     this.state = {};

@@ -27,3 +27,7 @@ export const DEFAULT_AMENDMENT = {
   status: AmendmentStatus.Proposed,
   text: ''
 };
+
+export function recoverLinkedCaucus(amendment?: AmendmentData) {
+  return amendment ? amendment.caucus : undefined;
+}

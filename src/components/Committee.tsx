@@ -3,7 +3,7 @@ import * as firebase from 'firebase';
 import { RouteComponentProps } from 'react-router';
 import { Route } from 'react-router-dom';
 import { MemberData, MemberID } from './Member';
-import Caucus, { CaucusData, CaucusID, DEFAULT_CAUCUS, CaucusStatus } from './Caucus';
+import Caucus, { CaucusData, CaucusID, DEFAULT_CAUCUS, CaucusStatus, DEFAULT_CAUCUS_TIME_SECONDS } from './Caucus';
 import Resolution, { ResolutionData, ResolutionID, DEFAULT_RESOLUTION } from './Resolution';
 import Admin from './Admin';
 import { Icon, Menu, SemanticICONS, Dropdown, Container, Responsive, Sidebar, Header, Label, Divider, 
@@ -27,6 +27,73 @@ import Notifications from './Notifications';
 import { postResolution } from '../actions/resolutionActions';
 import ConnectionStatus from './ConnectionStatus';
 import { fieldHandler } from 'src/actions/handlers';
+import { membersToOptions } from 'src/utils';
+import { MemberOption } from 'src/constants';
+
+export function recoverMemberOptions(committee?: CommitteeData): MemberOption[] {
+  if (committee) {
+    return membersToOptions(committee.members);
+  } else {
+    return [];
+  }
+}
+
+export function recoverMembers(committee?: CommitteeData): Map<MemberID, MemberData> | undefined {
+  return committee ? (committee.members || {} as Map<MemberID, MemberData>) : undefined;
+}
+
+export function recoverSettings(committee?: CommitteeData): SettingsData {
+  let timersInSeparateColumns: boolean = DEFAULT_SETTINGS.timersInSeparateColumns;
+  let moveQueueUp: boolean = DEFAULT_SETTINGS.moveQueueUp;
+  let autoNextSpeaker: boolean = DEFAULT_SETTINGS.autoNextSpeaker;
+
+  if (committee) {
+    if (committee.settings.timersInSeparateColumns !== undefined) {
+      timersInSeparateColumns = committee.settings.timersInSeparateColumns;
+    }
+
+    if (committee.settings.moveQueueUp !== undefined) {
+      moveQueueUp = committee.settings.moveQueueUp;
+    }
+
+    if (committee.settings.autoNextSpeaker !== undefined) {
+      autoNextSpeaker = committee.settings.autoNextSpeaker;
+    }
+  }
+
+  return {
+    timersInSeparateColumns, moveQueueUp, autoNextSpeaker
+  };
+}
+
+export function recoverCaucus(committee: CommitteeData | undefined, caucusID: CaucusID): CaucusData | undefined {
+  const caucuses = committee ? committee.caucuses : {};
+  
+  return (caucuses || {})[caucusID];
+}
+
+export function recoverResolution(committee: CommitteeData | undefined, resolutionID: ResolutionID): ResolutionData | undefined {
+  const resolutions = committee ? committee.resolutions : {};
+  
+  return (resolutions || {})[resolutionID];
+}
+
+interface DesktopContainerProps {
+  menu?: React.ReactNode;
+  body?: React.ReactNode;
+}
+
+interface DesktopContainerState {
+}
+
+interface MobileContainerProps {
+  menu?: React.ReactNode;
+  body?: React.ReactNode;
+}
+
+interface MobileContainerState {
+  sidebarOpened: boolean;
+}
 
 interface Props extends RouteComponentProps<URLParameters> {
 }
@@ -64,18 +131,10 @@ export const DEFAULT_COMMITTEE: CommitteeData = {
   caucuses: {} as Map<CaucusID, CaucusData>,
   resolutions: {} as Map<ResolutionID, ResolutionData>,
   files: {} as Map<FileID, FileData>,
-  timer: { ...DEFAULT_TIMER, remaining: 60 * 10 },
+  timer: { ...DEFAULT_TIMER, remaining: DEFAULT_CAUCUS_TIME_SECONDS },
   notes: '',
   settings: DEFAULT_SETTINGS
 };
-
-interface DesktopContainerProps {
-  menu?: React.ReactNode;
-  body?: React.ReactNode;
-}
-
-interface DesktopContainerState {
-}
 
 class DesktopContainer extends React.Component<DesktopContainerProps, DesktopContainerState> {
   render() {
@@ -83,8 +142,7 @@ class DesktopContainer extends React.Component<DesktopContainerProps, DesktopCon
 
     // Semantic-UI-React/src/addons/Responsive/Responsive.js
     return (
-      // @ts-ignore
-      <Responsive {...{ minWidth: Responsive.onlyMobile.maxWidth + 1 }}>
+      <Responsive {...{ minWidth: Responsive.onlyMobile.maxWidth as number + 1 }}>
         <Menu fluid size="small">
           {menu}
         </Menu>
@@ -92,15 +150,6 @@ class DesktopContainer extends React.Component<DesktopContainerProps, DesktopCon
       </Responsive>
     );
   }
-}
-
-interface MobileContainerProps {
-  menu?: React.ReactNode;
-  body?: React.ReactNode;
-}
-
-interface MobileContainerState {
-  sidebarOpened: boolean;
 }
 
 class MobileContainer extends React.Component<MobileContainerProps, MobileContainerState> {

@@ -1,12 +1,15 @@
 import * as React from 'react';
-import { Message, Header, Button, Icon } from 'semantic-ui-react';
+import { Message, Icon } from 'semantic-ui-react';
 
 interface Props {
   item: string;
   id: string;
 }
 
-export class NotFound extends React.PureComponent<Props, {}> {
+interface State {
+}
+
+export class NotFound extends React.PureComponent<Props, State> {
   componentDidMount() {
     const { item, id } = this.props;
     console.info(`${item} with ID ${id} could not be found`);

@@ -35,11 +35,6 @@ const CONNECTION_REGAINED_NOTIFICATION: Notification =  {
   disposition: 'positive'
 };
 
-const CONNECTED_NOTIFICATION: Notification =  {
-  header: 'Connected',
-  disposition: 'positive'
-};
-
 export default class Notifications extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);

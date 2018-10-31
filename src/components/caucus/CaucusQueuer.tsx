@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as firebase from 'firebase';
 import { MemberData } from '../Member';
 import { CaucusData, recoverDuration, recoverUnit } from '../Caucus';
-import { CountryOption } from '../../constants';
+import { MemberOption } from '../../constants';
 import { Segment, Button, Form, DropdownProps, Label } from 'semantic-ui-react';
 import { TimerSetter, Unit } from '../TimerSetter';
 import { SpeakerEvent, Stance } from '..//caucus/SpeakerFeed';
@@ -16,7 +16,7 @@ interface Props {
 }
 
 interface State {
-  queueCountry?: CountryOption;
+  queueMember?: MemberOption;
 }
 
 export default class CaucusQueuer extends React.Component<Props, State> {
@@ -26,15 +26,15 @@ export default class CaucusQueuer extends React.Component<Props, State> {
     this.state = {};
   }
 
-  stanceHandler = (stance: Stance) => () => {
-    const { queueCountry } = this.state;
+  setStance = (stance: Stance) => () => {
+    const { queueMember } = this.state;
     const { caucus } = this.props;
 
     const duration = Number(recoverDuration(caucus));
 
-    if (duration && queueCountry) {
+    if (duration && queueMember) {
       const newEvent: SpeakerEvent = {
-        who: queueCountry.text,
+        who: queueMember.text,
         stance: stance,
         duration: recoverUnit(caucus) === Unit.Minutes ? duration * 60 : duration,
       };
@@ -43,22 +43,22 @@ export default class CaucusQueuer extends React.Component<Props, State> {
     }
   }
 
-  countryHandler = (event: React.SyntheticEvent<HTMLElement>, data: DropdownProps): void => {
+  setMember = (event: React.SyntheticEvent<HTMLElement>, data: DropdownProps): void => {
     const { members } = this.props;
-    const countryOptions = membersToOptions(members);
+    const memberOptions = membersToOptions(members);
 
-    this.setState({ queueCountry: countryOptions.filter(c => c.value === data.value)[0] });
+    this.setState({ queueMember: memberOptions.filter(c => c.value === data.value)[0] });
   }
 
   render() {
-    const { stanceHandler, countryHandler } = this;
+    const { setStance, setMember } = this;
     const { members, caucus, caucusFref } = this.props;
-    const { queueCountry } = this.state;
+    const { queueMember } = this.state;
 
-    const countryOptions = membersToOptions(members);
+    const memberOptions = membersToOptions(members);
 
     const duration = recoverDuration(caucus);
-    const disableButtons = !queueCountry || !duration;
+    const disableButtons = !queueMember || !duration;
 
     return (
       <Segment textAlign="center">
@@ -66,13 +66,13 @@ export default class CaucusQueuer extends React.Component<Props, State> {
         <Form>
           <Form.Dropdown
             icon="search"
-            value={queueCountry ? queueCountry.value : undefined}
+            value={queueMember ? queueMember.value : undefined}
             search
             selection
             loading={!caucus}
-            error={!queueCountry}
-            onChange={countryHandler}
-            options={countryOptions}
+            error={!queueMember}
+            onChange={setMember}
+            options={memberOptions}
           />
           <TimerSetter
             loading={!caucus}
@@ -93,19 +93,19 @@ export default class CaucusQueuer extends React.Component<Props, State> {
             <Button
               content="For"
               disabled={disableButtons}
-              onClick={stanceHandler(Stance.For)}
+              onClick={setStance(Stance.For)}
             />
             <Button.Or />
             <Button
               disabled={disableButtons}
               content="Neutral"
-              onClick={stanceHandler(Stance.Neutral)}
+              onClick={setStance(Stance.Neutral)}
             />
             <Button.Or />
             <Button
               disabled={disableButtons}
               content="Against"
-              onClick={stanceHandler(Stance.Against)}
+              onClick={setStance(Stance.Against)}
             />
           </Button.Group>
         </Form>

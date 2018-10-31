@@ -35,25 +35,6 @@ export const KEYBOARD_SHORTCUT_LIST = (
 );
 
 export default class Help extends React.PureComponent<{}, {}> {
-
-  edge = ( 
-    <a href="https://docs.microsoft.com/en-us/microsoft-edge/devtools-guide/console">
-      Edge
-    </a>
-  );
-
-  chrome = ( 
-    <a href="https://developers.google.com/web/tools/chrome-devtools/console/">
-      Chrome
-    </a>
-  );
-
-  firefox = ( 
-    <a href="https://developer.mozilla.org/en-US/docs/Tools/Web_Console/Opening_the_Web_Console">
-      Firefox
-    </a>
-  );
-
   gpl = ( 
     <a href="https://github.com/MaxwellBo/Muncoordinated-2/blob/master/LICENSE">
       GNU GPLv3
@@ -61,7 +42,7 @@ export default class Help extends React.PureComponent<{}, {}> {
   );
 
   render() {
-    const { edge, firefox, chrome, gpl } = this;
+    const { gpl } = this;
 
     return (
       <Container text style={{ padding: '1em 0em' }}>
