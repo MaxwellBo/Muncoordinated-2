@@ -294,7 +294,8 @@ export default class Motions extends React.Component<Props, State> {
     this.setState(prevState => {
       const { proposer, seconder, ...rest } = {
         ...prevState.newMotion,
-        caucusDuration: duration
+        caucusDuration: duration,
+        proposal: ''
       };
 
       return {
@@ -499,6 +500,7 @@ export default class Motions extends React.Component<Props, State> {
 
     return (
       <Card
+        className="motion"
         key={id}
       >
         <Card.Content>
