@@ -560,7 +560,7 @@ export default class Resolution extends React.Component<Props, State> {
             attatched="top"
             size="massive"
             fluid
-            placeholder="Resolution Name"
+            placeholder="Set resolution name"
           />
           <Form error={hasError}>
             <Form.Group widths="equal">
