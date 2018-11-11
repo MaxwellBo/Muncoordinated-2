@@ -242,6 +242,9 @@ export default class Homepage extends React.Component<{}, {
                 <p style={{ fontSize: '1.33em' }}>
                   Everyone will see all updates in real-time, without needing to refresh the page. It's like Google Docs, but for MUN.
                 </p>
+                <p style={{ fontSize: '1.33em' }}>
+                 Using Muncoordinated along with <a href="https://classroom.google.com">Google Classroom</a> is a great paring, which allows you to share file, links, Google docs and strawpolls.
+                </p>
                 <Header as="h3" style={{ fontSize: '2em' }}>Cloud based</Header>
                 <p style={{ fontSize: '1.33em' }}>
                   You won't have to worry about data loss ever again. All committee activity is automatically saved to the server, 
