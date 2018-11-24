@@ -243,7 +243,7 @@ export default class Homepage extends React.Component<{}, {
                   Everyone will see all updates in real-time, without needing to refresh the page. It's like Google Docs, but for MUN.
                 </p>
                 <p style={{ fontSize: '1.33em' }}>
-                 Using Muncoordinated along with <a href="https://classroom.google.com">Google Classroom</a> is a great paring, which allows you to share file, links, Google docs and strawpolls.
+                 We recommend pairing Muncoordinated with <a href="https://classroom.google.com">Google Classroom</a>, which allows you to share files, links, Google docs and strawpolls.
                 </p>
                 <Header as="h3" style={{ fontSize: '2em' }}>Cloud based</Header>
                 <p style={{ fontSize: '1.33em' }}>
