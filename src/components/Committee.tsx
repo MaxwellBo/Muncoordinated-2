@@ -345,7 +345,7 @@ export default class Committee extends React.Component<Props, State> {
             onChange={fieldHandler<CommitteeData>(committeeFref, 'name')}
             fluid
             error={committee ? !committee.name : false}
-            placeholder="Committee Name"
+            placeholder="Committee name"
           />
         </Header>
         <List>
@@ -356,7 +356,7 @@ export default class Committee extends React.Component<Props, State> {
               onChange={fieldHandler<CommitteeData>(committeeFref, 'topic')}
               fluid
               loading={!committee}
-              placeholder="Committee Topic"
+              placeholder="Committee topic"
             />
           </List.Item>
           <List.Item>
@@ -366,7 +366,7 @@ export default class Committee extends React.Component<Props, State> {
               onChange={fieldHandler<CommitteeData>(committeeFref, 'chair')}
               fluid
               loading={!committee}
-              placeholder="Committee Chairpeople"
+              placeholder="Name(s) of chairperson or chairpeople"
             />
           </List.Item>
           <List.Item>
@@ -376,7 +376,7 @@ export default class Committee extends React.Component<Props, State> {
               onChange={fieldHandler<CommitteeData>(committeeFref, 'conference')}
               fluid
               loading={!committee}
-              placeholder="Conference Name"
+              placeholder="Conference name"
             />
           </List.Item>
         </List>

@@ -16,7 +16,8 @@
     "noImplicitAny": true,
     "strictNullChecks": true,
     "suppressImplicitAnyIndexErrors": true,
-    "noUnusedLocals": false
+    "noUnusedLocals": false,
+    "skipLibCheck": true // Workaround for https://github.com/cypress-io/cypress/issues/1087
   },
   "exclude": [
     "node_modules",

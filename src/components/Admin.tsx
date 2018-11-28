@@ -162,6 +162,7 @@ export default class Admin extends React.Component<Props, State> {
         </Table.Cell>
         <Table.Cell collapsing>
           <Button
+            className="members__button--remove-member"
             icon="trash"
             negative
             basic
@@ -239,6 +240,7 @@ export default class Admin extends React.Component<Props, State> {
           <Dropdown
             icon="search"
             placeholder="Select prepared member"
+            className="adder__dropdown--select-member"
             search
             selection
             fluid
@@ -254,6 +256,7 @@ export default class Admin extends React.Component<Props, State> {
           <Dropdown
             search
             selection
+            className="adder__dropdown--select-rank"
             fluid
             options={RANK_OPTIONS}
             onChange={rankHandler}
@@ -261,13 +264,24 @@ export default class Admin extends React.Component<Props, State> {
           />
         </Table.HeaderCell>
         <Table.HeaderCell collapsing >
-          <Checkbox toggle checked={newMemberPresent} onChange={presentHandler} />
+          <Checkbox 
+            toggle 
+            checked={newMemberPresent} 
+            onChange={presentHandler} 
+            className="adder__checkbox--toggle-present"
+          />
         </Table.HeaderCell>
         <Table.HeaderCell collapsing >
-          <Checkbox toggle checked={newMemberVoting} onChange={votingHandler} />
+          <Checkbox 
+            toggle 
+            checked={newMemberVoting} 
+            onChange={votingHandler} 
+            className="adder__checkbox--toggle-voting"
+          />
         </Table.HeaderCell>
         <Table.HeaderCell>
           <Button
+            className="adder__button--add-member"
             icon="plus"
             primary
             basic
@@ -320,7 +334,7 @@ export default class Admin extends React.Component<Props, State> {
         render: () => <Tab.Pane><CommitteeMembers data={committee} fref={fref} /></Tab.Pane> 
       },
       { 
-        menuItem: 'Stats', 
+        menuItem: 'Thresholds', 
         render: () => <Tab.Pane><CommitteeStats verbose={true} data={committee} /></Tab.Pane>
       }
     ];
