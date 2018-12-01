@@ -2,13 +2,13 @@ import { makeDropdownOption } from '../utils';
 import { Form, DropdownProps, Select, Button } from 'semantic-ui-react';
 import * as React from 'react';
 
-export function getSeconds(duration: number, unit: Unit): number {
-  return duration * (unit === Unit.Minutes ? 60 : 1);
-}
-
 export enum Unit {
   Minutes = 'min',
   Seconds = 'sec'
+}
+
+export function getSeconds(duration: number, unit: Unit): number {
+  return duration * (unit === Unit.Minutes ? 60 : 1);
 }
 
 export const UNIT_OPTIONS = [
