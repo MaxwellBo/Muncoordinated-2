@@ -4,54 +4,79 @@ import * as FileSaver from 'file-saver';
 import { CommitteeData, CommitteeID, recoverMemberOptions } from './Committee';
 import { RouteComponentProps } from 'react-router';
 import { URLParameters } from '../types';
-import { Form, Button, Progress, List, DropdownProps, Flag, Container } from 'semantic-ui-react';
+import { Form, Button, Progress, List, DropdownProps, Flag, Container, Tab, TextArea, TextAreaProps } from 'semantic-ui-react';
 import { parseFlagName } from './Member';
 import Loading from './Loading';
 import { MemberOption } from '../constants';
 
-interface Props extends RouteComponentProps<URLParameters> {
+enum Type {
+  Link = 'link',
+  File = 'file'
 }
 
-export type FileID = string;
+export type PostID = string;
 
-export interface FileData {
-  filename: string;
+export interface Post {
   uploader: string;
+  timestamp?: number; // we're just going to have to cop the undefined here
 }
 
-interface FileEntryProps {
+interface Link extends Post {
+  type: Type.Link;
+  url: string;
+  name: string;
+}
+
+interface File extends Post {
+  type: Type.File;
+  filename: string;
+}
+
+export type PostData = Link | File;
+
+interface FeedPostProps {
   committeeID: CommitteeID;
-  file: FileData;
+  post: PostData;
 }
 
-interface FileEntryState {
+interface FeedPostState {
   metadata?: any;
 }
 
-class FileEntry extends React.Component<FileEntryProps, FileEntryState> {
-  constructor(props: FileEntryProps) {
+class FeedEntry extends React.Component<FeedPostProps, FeedPostState> {
+  constructor(props: FeedPostProps) {
     super(props);
 
     this.state = {
     };
   }
 
-  recoverRef = () => {
-    const { committeeID, file } = this.props;
+  recoverStorageRef = (): firebase.storage.Reference | null => {
+    const { committeeID, post } = this.props;
 
-    const storageRef = firebase.storage().ref();
-    return storageRef.child('committees').child(committeeID).child(file.filename);
+    if (post.type === Type.File) {
+      const storageRef = firebase.storage().ref();
+      return storageRef.child('committees').child(committeeID).child(post.filename);
+    } else {
+      return null;
+    }
   }
 
   componentDidMount() {
-    this.recoverRef().getMetadata().then((metadata: any) => {
-      this.setState({ metadata: metadata });
-    });
+    const { post } = this.props;
+    const { timestamp } = this.props.post;
+
+    if (!timestamp && post.type === Type.File) {
+      this.recoverStorageRef()!.getMetadata().then((metadata: any) => {
+        this.setState({ metadata: metadata });
+      });
+    }
   }
 
   download = (filename: string) => () => {
-
-    this.recoverRef().getDownloadURL().then((url: any) => {
+    // We should never allow a download to be triggered for post types that 
+    // don't permit downloads
+    this.recoverStorageRef()!.getDownloadURL().then((url: any) => {
       var xhr = new XMLHttpRequest();
       xhr.responseType = 'blob';
       xhr.onload = (event) => {
@@ -63,44 +88,68 @@ class FileEntry extends React.Component<FileEntryProps, FileEntryState> {
     });
   }
 
-  render() {
-    const { download } = this;
-    const { file } = this.props;
-    const { metadata } = this.state;
+  renderDescription = () => {
+    const { post } = this.props;
 
-    let description: undefined | JSX.Element;
+    let sinceText = 'Posted';
 
-    if (metadata) {
-      const millis = new Date().getTime() - new Date(metadata.timeCreated).getTime();
+    if (post.timestamp) {
+      const millis = new Date().getTime() - new Date(post.timestamp).getTime();
 
       const secondsSince = millis / 1000;
 
-      let sinceText: string;
-
       if (secondsSince < 60) {
-        sinceText = `Uploaded ${Math.round(secondsSince)} seconds ago`;
+        sinceText = `Posted ${Math.round(secondsSince)} seconds ago`;
       } else if (secondsSince < 60 * 60) {
-        sinceText = `Uploaded ${Math.round(secondsSince / 60 )} minutes ago`;
+        sinceText = `Posted ${Math.round(secondsSince / 60 )} minutes ago`;
       } else if (secondsSince < 60 * 60 * 24) {
-        sinceText = `Uploaded ${Math.round(secondsSince / (60 * 60))} hours ago`;
+        sinceText = `Posted ${Math.round(secondsSince / (60 * 60))} hours ago`;
       } else {
-        sinceText = `Uploaded ${Math.round(secondsSince / (60 * 60 * 24))} days ago`;
+        sinceText = `Posted ${Math.round(secondsSince / (60 * 60 * 24))} days ago`;
       }
-
-      description = <div>{sinceText}, by  <Flag name={parseFlagName(file.uploader)}/>{file.uploader}</div>;
     }
 
+    return (
+      <List.Description as="a">
+        <div>{sinceText} by  <Flag name={parseFlagName(post.uploader)}/>{post.uploader}</div>
+      </List.Description>
+    );
+  }
+
+  renderFile = (post: File) => {
     return (
       <List.Item>
         <List.Icon name="file outline" verticalAlign="middle"/>
         <List.Content>
-          <List.Header as="a" onClick={download(file.filename)}>{file.filename}</List.Header>
-          {description ? 
-            <List.Description as="a">{description}</List.Description>
-          : <List.Description as="a"><Loading small /></List.Description>}
+          <List.Header as="a" onClick={this.download(post.filename)}>{post.filename}</List.Header>
+          {this.renderDescription()}
           </List.Content>
       </List.Item>
     );
+  }
+
+  renderLink = (post: Link) => {
+    return (
+      <List.Item>
+        <List.Icon name="linkify" verticalAlign="middle"/>
+        <List.Content>
+          <List.Header as="a" href={post.url}>{post.name || post.url}</List.Header>
+          {this.renderDescription()}
+          </List.Content>
+      </List.Item>
+    );
+  }
+
+  render() {
+    const { post } = this.props;
+
+    if (post.type === Type.File) {
+      return this.renderFile(post);
+    } else if (post.type === Type.Link) {
+      return this.renderLink(post);
+    } else {
+      return this.renderFile(post);
+    }
   }
 }
 
@@ -110,8 +159,13 @@ interface State {
   progress?: number;
   file?: any;
   state?: firebase.storage.TaskState;
+  link: string;
+  body: string;
   errorCode?: string;
   uploader?: MemberOption;
+}
+
+interface Props extends RouteComponentProps<URLParameters> {
 }
 
 export default class Files extends React.Component<Props, State> {
@@ -121,6 +175,8 @@ export default class Files extends React.Component<Props, State> {
     const { match } = props;
 
     this.state = {
+      link: '',
+      body: '',
       committeeFref: firebase.database().ref('committees')
         .child(match.params.committeeID)
     };
@@ -154,12 +210,14 @@ export default class Files extends React.Component<Props, State> {
   handleComplete = (uploadTask: firebase.storage.UploadTask) => () => {
     const { uploader } = this.state;
 
-    const fileData: FileData = {
+    const file: File = {
+      type: Type.File,
+      timestamp: new Date().getTime(),
       filename: uploadTask.snapshot.ref.name,
       uploader: uploader ? uploader.text : 'Unknown'
     };
 
-    this.state.committeeFref.child('files').push().set(fileData);
+    this.state.committeeFref.child('files').push().set(file);
 
     this.setState({ state: uploadTask.snapshot.state });
   }
@@ -168,9 +226,9 @@ export default class Files extends React.Component<Props, State> {
     this.setState({ file: event.target.files[0] });
   }
 
-  triggerUpload = () => {
+  postFile = () => {
     const { handleSnapshot, handleError, handleComplete } = this;
-    const { file, uploader } = this.state;
+    const { file } = this.state;
 
     const { committeeID } = this.props.match.params;
 
@@ -189,6 +247,20 @@ export default class Files extends React.Component<Props, State> {
       handleComplete(uploadTask)
     );
   }
+  
+  postLink = () => {
+    const { uploader, link, body } = this.state;
+
+    const linkData: Link = {
+      type: Type.Link,
+      timestamp: new Date().getTime(),
+      name: body,
+      url: link,
+      uploader: uploader ? uploader.text : 'Unknown'
+    };
+
+    this.state.committeeFref.child('files').push().set(linkData);
+  }
 
   setMember = (event: React.SyntheticEvent<HTMLElement>, data: DropdownProps): void => {
     const memberOptions = recoverMemberOptions(this.state.committee);
@@ -196,17 +268,13 @@ export default class Files extends React.Component<Props, State> {
     this.setState({ uploader: memberOptions.filter(c => c.value === data.value)[0] });
   }
 
-  render() {
+  renderUploader = () => {
     const { progress, state, errorCode, committee, file, uploader } = this.state;
-
-    const { committeeID } = this.props.match.params;
-
-    const files = committee ? (committee.files || {}) : {};
 
     const memberOptions = recoverMemberOptions(committee);
 
     return (
-      <Container text style={{ padding: '1em 0em' }}>
+      <React.Fragment>
         <Progress 
           percent={Math.round(progress || 0 )} 
           progress 
@@ -216,35 +284,110 @@ export default class Files extends React.Component<Props, State> {
           active={true} 
           label={errorCode} 
         />
-        <Form onSubmit={this.triggerUpload}>
-          <Form.Group>
-            <input type="file" onChange={this.onFileChange} />
-            <Form.Dropdown
-              icon="search"
-              key="uploader"
-              value={uploader ? uploader.key : undefined}
-              search
-              selection
-              error={!uploader}
-              onChange={this.setMember}
-              options={memberOptions}
-              label="Uploader"
-            />
-            <Button 
-              type="submit" 
-              loading={state === firebase.storage.TaskState.RUNNING}
-              disabled={!file || !uploader}
-            >
-                Upload
-            </Button>
-          </Form.Group>
-        </Form>
+      <Form onSubmit={this.postFile}>
+        <Form.Group>
+          <input type="file" onChange={this.onFileChange} />
+          <Form.Dropdown
+            icon="search"
+            key="uploader"
+            value={uploader ? uploader.key : undefined}
+            search
+            selection
+            error={!uploader}
+            onChange={this.setMember}
+            options={memberOptions}
+            label="Uploader"
+          />
+          <Button 
+            type="submit" 
+            loading={state === firebase.storage.TaskState.RUNNING}
+            disabled={!file || !uploader}
+          >
+              Upload
+          </Button>
+        </Form.Group>
+      </Form>
+      </React.Fragment>
+    );
+  }
+
+  setBody = (event: React.FormEvent<HTMLTextAreaElement>, data: TextAreaProps) => {
+    this.setState({ body: data.value!.toString() });
+  }
+
+  setLink = (e: React.FormEvent<HTMLInputElement>) => {
+    this.setState({ link: e.currentTarget.value });
+  }
+
+  renderLinker = () => {
+    const { committee, uploader, body, link } = this.state;
+
+    const memberOptions = recoverMemberOptions(committee);
+
+    return (
+      <Form onSubmit={this.postLink}>
+        <TextArea
+          value={body}
+          onChange={this.setBody}
+          autoHeight
+          rows={1}
+        />
+        <Form.Input 
+          label="Link"
+          error={!link}
+          value={link}
+          onChange={this.setLink}
+          placeholder="https://docs.google.com/document/x"
+        />
+        <Form.Group>
+          <Form.Dropdown
+            icon="search"
+            key="uploader"
+            value={uploader ? uploader.key : undefined}
+            search
+            selection
+            error={!uploader}
+            onChange={this.setMember}
+            options={memberOptions}
+            label="Uploader"
+          />
+          <Button 
+            type="submit" 
+            disabled={!link || !uploader}
+          >
+              Post
+          </Button>
+        </Form.Group>
+      </Form>
+    );
+  }
+
+  render() {
+    const { committee } = this.state;
+    const { committeeID } = this.props.match.params;
+    // TODO: rename
+    const files = committee ? (committee.files || {}) : {};
+
+    const panes = [
+      { 
+        menuItem: 'File', 
+        render: () => <Tab.Pane>{this.renderUploader()}</Tab.Pane> 
+      },
+      { 
+        menuItem: 'Link', 
+        render: () => <Tab.Pane>{this.renderLinker()}</Tab.Pane>
+      }
+    ];
+
+    return (
+      <Container text style={{ padding: '1em 0em' }}>
+        <Tab panes={panes} />
         <List divided relaxed>
           {committee ? Object.keys(files).reverse().map(key => 
-            <FileEntry 
+            <FeedEntry 
               key={key} 
               committeeID={committeeID}
-              file={files[key]}
+              post={files[key]}
             />
           ) : <Loading />}
         </List>
