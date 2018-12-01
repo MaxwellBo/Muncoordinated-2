@@ -110,8 +110,8 @@ class FeedEntry extends React.Component<FeedPostProps, FeedPostState> {
     }
 
     return (
-      <List.Description as="a">
-        <div>{sinceText} by  <Flag name={parseFlagName(post.uploader)}/>{post.uploader}</div>
+      <List.Description>
+        {sinceText} by  <Flag name={parseFlagName(post.uploader)}/>{post.uploader}
       </List.Description>
     );
   }
@@ -133,7 +133,10 @@ class FeedEntry extends React.Component<FeedPostProps, FeedPostState> {
       <List.Item>
         <List.Icon name="linkify" verticalAlign="middle"/>
         <List.Content>
-          <List.Header as="a" href={post.url}>{post.name || post.url}</List.Header>
+          <List.Header as="a" href={post.url}>{post.url}</List.Header>
+          {post.name && <List.Description>
+            {post.name}
+          </List.Description>}
           {this.renderDescription()}
           </List.Content>
       </List.Item>
