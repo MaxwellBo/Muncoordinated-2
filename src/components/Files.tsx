@@ -284,29 +284,30 @@ export default class Files extends React.Component<Props, State> {
           active={true} 
           label={errorCode} 
         />
-      <Form onSubmit={this.postFile}>
-        <Form.Group>
+        <Form onSubmit={this.postFile}>
           <input type="file" onChange={this.onFileChange} />
-          <Form.Dropdown
-            icon="search"
-            key="uploader"
-            value={uploader ? uploader.key : undefined}
-            search
-            selection
-            error={!uploader}
-            onChange={this.setMember}
-            options={memberOptions}
-            label="Uploader"
-          />
-          <Button 
-            type="submit" 
-            loading={state === firebase.storage.TaskState.RUNNING}
-            disabled={!file || !uploader}
-          >
+          <Form.Group widths="equal">
+            <Form.Dropdown
+              icon="search"
+              key="uploader"
+              value={uploader ? uploader.key : undefined}
+              search
+              fluid
+              selection
+              error={!uploader}
+              onChange={this.setMember}
+              options={memberOptions}
+              label="Uploader"
+            />
+            <Button
+              type="submit"
+              loading={state === firebase.storage.TaskState.RUNNING}
+              disabled={!file || !uploader}
+            >
               Upload
-          </Button>
-        </Form.Group>
-      </Form>
+            </Button>
+          </Form.Group>
+        </Form>
       </React.Fragment>
     );
   }
@@ -339,7 +340,7 @@ export default class Files extends React.Component<Props, State> {
           onChange={this.setLink}
           placeholder="https://docs.google.com/document/x"
         />
-        <Form.Group>
+        <Form.Group widths="equal">
           <Form.Dropdown
             icon="search"
             key="uploader"
@@ -349,7 +350,7 @@ export default class Files extends React.Component<Props, State> {
             error={!uploader}
             onChange={this.setMember}
             options={memberOptions}
-            label="Uploader"
+            label="Poster"
           />
           <Button 
             type="submit" 
@@ -370,7 +371,7 @@ export default class Files extends React.Component<Props, State> {
 
     const panes = [
       { 
-        menuItem: 'File', 
+        menuItem: 'Upload', 
         render: () => <Tab.Pane>{this.renderUploader()}</Tab.Pane> 
       },
       { 
