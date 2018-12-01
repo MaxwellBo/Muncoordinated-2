@@ -780,7 +780,7 @@ export default class Motions extends React.Component<Props, State> {
       <Container text style={{ padding: '1em 0em' }}>
         {renderAdder(committee)}
         <Divider />
-        <Icon name="sort numeric descending" /> Sorted from most to least disruptive
+        <Icon name="sort numeric ascending" /> Sorted from most to least disruptive
         <Button
           negative
           disabled={motionsCount <= 0}
