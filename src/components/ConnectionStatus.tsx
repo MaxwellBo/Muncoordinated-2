@@ -24,7 +24,7 @@ export default class ConnectionStatus extends React.Component<Props, State> {
 
   firebaseCallback = (status: firebase.database.DataSnapshot | null) => {
     if (status) {
-      this.setState((prevState: State, props: Props) => { 
+      this.setState((prevState: State) => { 
 
         const connected = status.val();
 

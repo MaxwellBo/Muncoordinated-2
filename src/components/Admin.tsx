@@ -1,11 +1,11 @@
 import * as React from 'react';
 import * as firebase from 'firebase';
-import { CommitteeData, CommitteeID } from './Committee';
-import { MemberData, MemberID, Rank, parseFlagName, nameToCountryOption } from './Member';
+import { CommitteeData } from './Committee';
+import { MemberData, MemberID, Rank, parseFlagName, nameToMemberOption } from './Member';
 import * as Utils from '../utils';
-import { Dropdown, Segment, Header, Flag, Table, List, Button, Checkbox, Icon, 
+import { Dropdown, Flag, Table, Button, Checkbox,
   CheckboxProps, DropdownProps, ButtonProps, Tab, Container } from 'semantic-ui-react';
-import { COUNTRY_OPTIONS, CountryOption } from '../constants';
+import { COUNTRY_OPTIONS, MemberOption } from '../constants';
 import { checkboxHandler, dropdownHandler } from '../actions/handlers';
 import { makeDropdownOption } from '../utils';
 import * as _ from 'lodash';
@@ -19,8 +19,8 @@ interface Props {
 }
 
 interface State {
-  newCountry: CountryOption;
-  newOptions: CountryOption[];
+  newMember: MemberOption;
+  newOptions: MemberOption[];
   newMemberRank: Rank;
   newMemberVoting: MemberData['voting'];
   newMemberPresent: MemberData['present'];
@@ -33,7 +33,7 @@ const RANK_OPTIONS = [
   Rank.Observer
 ].map(makeDropdownOption);
 
-export const CommitteeStats = (props: { data?: CommitteeData, verbose: boolean }) => {
+export function CommitteeStats(props: { data?: CommitteeData, verbose: boolean }) {
   const { data, verbose } = props;
 
   const defaultMap = {} as Map<MemberID, MemberData>;
@@ -69,7 +69,7 @@ export const CommitteeStats = (props: { data?: CommitteeData, verbose: boolean }
         <Table.Row>
           <Table.Cell>Total</Table.Cell>
           <Table.Cell>{delegatesNo.toString()}</Table.Cell>
-          <Table.Cell>Members in committee</Table.Cell>
+          <Table.Cell>Delegates in committee</Table.Cell>
         </Table.Row>
         <Table.Row>
           <Table.Cell>Present</Table.Cell>
@@ -114,14 +114,14 @@ export const CommitteeStats = (props: { data?: CommitteeData, verbose: boolean }
       </Table.Body>
     </Table>
   );
-};
+}
 
 export default class Admin extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
 
     this.state = {
-      newCountry: COUNTRY_OPTIONS[0],
+      newMember: COUNTRY_OPTIONS[0],
       newOptions: [],
       newMemberRank: Rank.Standard,
       newMemberVoting: false,
@@ -174,21 +174,21 @@ export default class Admin extends React.Component<Props, State> {
   }
 
   canPush = () => { 
-    const { newCountry } = this.state;
+    const { newMember } = this.state;
 
     const members = this.props.committee.members || {};
     const memberNames = Object.keys(members).map(id => 
       members[id].name
     );
 
-    return !_.includes(memberNames, newCountry.text);
+    return !_.includes(memberNames, newMember.text);
   }
 
   pushMember = (event: React.MouseEvent<HTMLButtonElement>, data: ButtonProps) => {
     event.preventDefault();
 
     const newMember: MemberData = {
-      name: this.state.newCountry.text,
+      name: this.state.newMember.text,
       rank: this.state.newMemberRank,
       present: this.state.newMemberPresent,
       voting: this.state.newMemberVoting
@@ -197,86 +197,86 @@ export default class Admin extends React.Component<Props, State> {
     this.props.fref.child('members').push().set(newMember);
   }
 
-  countryHandler = (event: React.SyntheticEvent<HTMLElement>, data: DropdownProps) => {
+  setMember = (event: React.SyntheticEvent<HTMLElement>, data: DropdownProps) => {
     const { newOptions } = this.state;
-    const newCountry = [...newOptions, ...COUNTRY_OPTIONS].filter(c => c.value === data.value)[0];
+    const newMember = [...newOptions, ...COUNTRY_OPTIONS].filter(c => c.value === data.value)[0];
 
-    if (newCountry) {
-      this.setState({ newCountry });
+    if (newMember) {
+      this.setState({ newMember });
     }
   }
 
-  presentHandler = (event: React.FormEvent<HTMLInputElement>, data: CheckboxProps) => {
+  setPresent = (event: React.FormEvent<HTMLInputElement>, data: CheckboxProps) => {
     this.setState({ newMemberPresent: data.checked || false });
   }
 
-  votingHandler = (event: React.FormEvent<HTMLInputElement>, data: CheckboxProps) => {
+  setVoting = (event: React.FormEvent<HTMLInputElement>, data: CheckboxProps) => {
     this.setState({ newMemberVoting: data.checked || false });
   }
 
-  rankHandler = (event: React.SyntheticEvent<HTMLElement>, data: DropdownProps) => {
+  setRank = (event: React.SyntheticEvent<HTMLElement>, data: DropdownProps) => {
     this.setState({ newMemberRank: data.value as Rank || Rank.Standard });
   }
 
-  additionHandler = (event: React.KeyboardEvent<HTMLElement>, data: DropdownProps) => {
+  handleAdd = (event: React.KeyboardEvent<HTMLElement>, data: DropdownProps) => {
     // FSM looks sorta like the UN flag
-    const newCountry = nameToCountryOption((data.value as number | string).toString());
+    const newMember = nameToMemberOption((data.value as number | string).toString());
 
-    if (_.includes(COUNTRY_OPTIONS, newCountry)) {
-      this.setState({ newCountry });
+    if (_.includes(COUNTRY_OPTIONS, newMember)) {
+      this.setState({ newMember });
     } else {
-      const newOptions = [ newCountry, ...this.state.newOptions ];
-      this.setState({ newCountry, newOptions });
+      const newOptions = [ newMember, ...this.state.newOptions ];
+      this.setState({ newMember, newOptions });
     }
   }
 
   renderAdder() {
-    const { additionHandler, countryHandler, rankHandler, presentHandler, votingHandler } = this;
-    const { newMemberPresent, newMemberVoting, newOptions, newCountry } = this.state;
+    const { handleAdd, setMember, setRank, setPresent, setVoting } = this;
+    const { newMemberPresent, newMemberVoting, newOptions, newMember } = this.state;
 
     return (
       <Table.Row>
         <Table.HeaderCell>
           <Dropdown
             icon="search"
-            placeholder="Select prepared member"
             className="adder__dropdown--select-member"
+            placeholder="Select preset member"
             search
             selection
             fluid
             allowAdditions
             error={!this.canPush()}
             options={[...newOptions, ...COUNTRY_OPTIONS]}
-            onAddItem={additionHandler}
-            onChange={countryHandler}
-            value={newCountry.key}
+            onAddItem={handleAdd}
+            onChange={setMember}
+            value={newMember.key}
           />
         </Table.HeaderCell>
         <Table.HeaderCell>
           <Dropdown
+            className="adder__dropdown--select-rank"
             search
             selection
-            className="adder__dropdown--select-rank"
             fluid
             options={RANK_OPTIONS}
-            onChange={rankHandler}
+            onChange={setRank}
             value={this.state.newMemberRank}
           />
         </Table.HeaderCell>
         <Table.HeaderCell collapsing >
           <Checkbox 
+            className="adder__checkbox--toggle-present"
             toggle 
             checked={newMemberPresent} 
-            onChange={presentHandler} 
-            className="adder__checkbox--toggle-present"
+            onChange={setPresent} 
           />
         </Table.HeaderCell>
         <Table.HeaderCell collapsing >
           <Checkbox 
+            className="adder__checkbox--toggle-voting"
             toggle 
             checked={newMemberVoting} 
-            onChange={votingHandler} 
-            className="adder__checkbox--toggle-voting"
+            onChange={setVoting} 
           />
         </Table.HeaderCell>
         <Table.HeaderCell>

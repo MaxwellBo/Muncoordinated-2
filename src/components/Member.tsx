@@ -1,15 +1,4 @@
-import * as React from 'react';
-import * as firebase from 'firebase';
-import { Label, Icon, Flag, SemanticICONS } from 'semantic-ui-react';
 import { COUNTRY_OPTIONS, FlagNames } from '../constants';
-
-interface Props { 
-  fref: firebase.database.Reference;
-}
-
-interface State {
-  member: MemberData;
-}
 
 export enum Rank {
     Veto = 'Veto',
@@ -37,18 +26,10 @@ export const parseFlagName = (name: string): FlagNames => {
   }
 };
 
-export const nameToCountryOption = (name: string) => {
+export const nameToMemberOption = (name: string) => {
   if (FLAG_NAME_SET.has(name)) {
     return COUNTRY_OPTIONS.filter(c => c.text === name)[0];
   } else {
     return { key: name, value: name, flag: 'fm', text: name };
   }
-};
-
-const DEFAULT_MEMBER = {
-  name: '',
-  present: true,
-  rank: Rank.Standard,
-  voting: true,
-  flag: 'fm' // Federated States of Micronesia
 };

@@ -52,14 +52,14 @@ export const STATE_OPTIONS = [
   { key: 'WY', value: 'WY', text: 'Wyoming' },
 ];
 
-export interface CountryOption {
+export interface MemberOption {
   key: string;
   value: string;
   flag: string;
   text: string;
 }
 
-export const COUNTRY_OPTIONS: CountryOption[] = [
+export const COUNTRY_OPTIONS: MemberOption[] = [
   { key: 'af', value: 'af', flag: 'af', text: 'Afghanistan' },
   { key: 'ax', value: 'ax', flag: 'ax', text: 'Aland Islands' },
   { key: 'al', value: 'al', flag: 'al', text: 'Albania' },

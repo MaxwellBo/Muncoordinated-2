@@ -7,29 +7,30 @@ import {
 } from 'semantic-ui-react';
 import Timer, { TimerData, DEFAULT_TIMER } from './Timer';
 import { RouteComponentProps } from 'react-router';
-import { MemberData } from './Member';
-import { CommitteeData } from './Committee';
+import { CommitteeData, recoverMembers, recoverSettings, recoverCaucus } from './Committee';
 import CaucusQueuer from './caucus/CaucusQueuer';
 import { textAreaHandler, dropdownHandler, fieldHandler } from '../actions/handlers';
 import { makeDropdownOption } from '../utils';
 import { URLParameters } from '../types';
 import { CaucusNextSpeaking } from './caucus/CaucusNextSpeaking';
 import { SpeakerEvent, SpeakerFeedEntry } from './caucus/SpeakerFeed';
-import { DEFAULT_SETTINGS } from './Settings';
 import { NotFound } from './NotFound';
 import { Unit } from './TimerSetter';
 
-export const recoverUnit = (caucus?: CaucusData): Unit => {
-  return caucus ? (caucus.speakerUnit || Unit.Seconds) : Unit.Seconds;
-};
+export const DEFAULT_CAUCUS_TIME_SECONDS = 10 * 60;
+export const DEFAULT_SPEAKER_TIME_SECONDS = 1 * 60;
 
-export const recoverDuration = (caucus?: CaucusData): number | undefined => {
+export function recoverUnit(caucus?: CaucusData): Unit {
+  return caucus ? (caucus.speakerUnit || Unit.Seconds) : Unit.Seconds;
+}
+
+export function recoverDuration(caucus?: CaucusData): number | undefined {
   return caucus
     ? caucus.speakerDuration
       ? caucus.speakerDuration
       : undefined
     : undefined;
-};
+}
 
 interface Props extends RouteComponentProps<URLParameters> {
 }
@@ -72,10 +73,10 @@ export const DEFAULT_CAUCUS: CaucusData = {
   name: 'untitled caucus',
   topic: '',
   status: CaucusStatus.Open,
-  speakerTimer: { ...DEFAULT_TIMER, remaining: 60 },
-  speakerDuration: 60,
+  speakerTimer: { ...DEFAULT_TIMER, remaining: DEFAULT_SPEAKER_TIME_SECONDS },
+  speakerDuration: DEFAULT_SPEAKER_TIME_SECONDS,
   speakerUnit: Unit.Seconds,
-  caucusTimer: { ...DEFAULT_TIMER, remaining: 60 * 10 },
+  caucusTimer: { ...DEFAULT_TIMER, remaining: DEFAULT_CAUCUS_TIME_SECONDS },
   queueIsPublic: false,
   queue: {} as Map<string, SpeakerEvent>,
   history: {} as Map<string, SpeakerEvent>,
@@ -174,6 +175,14 @@ export default class Caucus extends React.Component<Props, State> {
     );
   }
 
+  setSpeakerTimer = (timer: TimerData) => {
+    this.setState({ speakerTimer: timer });
+  }
+
+  setCaucusTimer = (timer: TimerData) => {
+    this.setState({ caucusTimer: timer });
+  }
+
   renderCaucus = (caucus?: CaucusData) => {
     const { renderNowSpeaking, renderHeader, recoverCaucusFref } = this;
     const { speakerTimer, committee } = this.state;
@@ -181,14 +190,14 @@ export default class Caucus extends React.Component<Props, State> {
     const { caucusID } = this.props.match.params;
     const caucusFref = recoverCaucusFref();
 
-    const members = committee ? (committee.members || {} as Map<string, MemberData>) : undefined;
+    const members = recoverMembers(committee);
 
     const renderedSpeakerTimer = (
       <Timer
         name="Speaker Timer"
         timerFref={caucusFref.child('speakerTimer')}
         key={caucusID + 'speakerTimer'}
-        onChange={(timer) => this.setState({ speakerTimer: timer })}
+        onChange={this.setSpeakerTimer}
         toggleKeyCode={83} // S - if changing this, update Help
         defaultUnit={recoverUnit(caucus)}
         defaultDuration={recoverDuration(caucus) || 60}
@@ -200,12 +209,18 @@ export default class Caucus extends React.Component<Props, State> {
         name="Caucus Timer"
         timerFref={caucusFref.child('caucusTimer')}
         key={caucusID + 'caucusTimer'}
-        onChange={(timer) => this.setState({ caucusTimer: timer })}
+        onChange={this.setCaucusTimer}
         toggleKeyCode={67} // C - if changing this, update Help
         defaultUnit={Unit.Minutes}
         defaultDuration={10}
       />
     );
+
+    const { 
+      autoNextSpeaker, 
+      timersInSeparateColumns, 
+      moveQueueUp 
+    } = recoverSettings(committee);
 
     const header = (
       <Grid.Row>
@@ -214,24 +229,6 @@ export default class Caucus extends React.Component<Props, State> {
         </Grid.Column>
       </Grid.Row>
     );
-
-    let timersInSeparateColumns: boolean = DEFAULT_SETTINGS.timersInSeparateColumns;
-    let moveQueueUp: boolean = DEFAULT_SETTINGS.moveQueueUp;
-    let autoNextSpeaker: boolean = DEFAULT_SETTINGS.autoNextSpeaker;
-
-    if (committee) {
-      if (committee.settings.timersInSeparateColumns !== undefined) {
-        timersInSeparateColumns = committee.settings.timersInSeparateColumns;
-      }
-
-      if (committee.settings.moveQueueUp !== undefined) {
-        moveQueueUp = committee.settings.moveQueueUp;
-      }
-
-      if (committee.settings.autoNextSpeaker !== undefined) {
-        autoNextSpeaker = committee.settings.autoNextSpeaker;
-      }
-    }
 
     const renderedCaucusQueuer = (
       <CaucusQueuer 
@@ -291,8 +288,7 @@ export default class Caucus extends React.Component<Props, State> {
     const { committee, loading } = this.state;
     const caucusID: CaucusID = this.props.match.params.caucusID;
 
-    const caucuses = committee ? committee.caucuses : {};
-    const caucus = (caucuses || {})[caucusID];
+    const caucus = recoverCaucus(committee, caucusID);
 
     if (!loading && !caucus) {
       return (

@@ -1,14 +1,13 @@
 import * as React from 'react';
 import * as firebase from 'firebase';
 import * as FileSaver from 'file-saver';
-import { CommitteeData, CommitteeID } from './Committee';
+import { CommitteeData, CommitteeID, recoverMemberOptions } from './Committee';
 import { RouteComponentProps } from 'react-router';
 import { URLParameters } from '../types';
 import { Form, Button, Progress, List, DropdownProps, Flag, Container } from 'semantic-ui-react';
 import { parseFlagName } from './Member';
 import Loading from './Loading';
-import { recoverCountryOptions } from '../utils';
-import { CountryOption, COUNTRY_OPTIONS } from '../constants';
+import { MemberOption } from '../constants';
 
 interface Props extends RouteComponentProps<URLParameters> {
 }
@@ -112,7 +111,7 @@ interface State {
   file?: any;
   state?: firebase.storage.TaskState;
   errorCode?: string;
-  uploader?: CountryOption;
+  uploader?: MemberOption;
 }
 
 export default class Files extends React.Component<Props, State> {
@@ -191,10 +190,10 @@ export default class Files extends React.Component<Props, State> {
     );
   }
 
-  countryHandler = (event: React.SyntheticEvent<HTMLElement>, data: DropdownProps): void => {
-    const countryOptions = recoverCountryOptions(this.state.committee);
+  setMember = (event: React.SyntheticEvent<HTMLElement>, data: DropdownProps): void => {
+    const memberOptions = recoverMemberOptions(this.state.committee);
 
-    this.setState({ uploader: countryOptions.filter(c => c.value === data.value)[0] });
+    this.setState({ uploader: memberOptions.filter(c => c.value === data.value)[0] });
   }
 
   render() {
@@ -204,7 +203,7 @@ export default class Files extends React.Component<Props, State> {
 
     const files = committee ? (committee.files || {}) : {};
 
-    const countryOptions = recoverCountryOptions(committee);
+    const memberOptions = recoverMemberOptions(committee);
 
     return (
       <Container text style={{ padding: '1em 0em' }}>
@@ -227,8 +226,8 @@ export default class Files extends React.Component<Props, State> {
               search
               selection
               error={!uploader}
-              onChange={this.countryHandler}
-              options={countryOptions}
+              onChange={this.setMember}
+              options={memberOptions}
               label="Uploader"
             />
             <Button 

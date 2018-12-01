@@ -1,18 +1,18 @@
 import * as React from 'react';
 import * as firebase from 'firebase';
-import { CommitteeData, CommitteeID, DEFAULT_COMMITTEE } from './Committee';
+import { CommitteeData, CommitteeID, DEFAULT_COMMITTEE, recoverCaucus, recoverResolution, recoverMemberOptions } from './Committee';
 import { RouteComponentProps } from 'react-router';
 import { Icon, Button, Card, Form, Message, Flag, Label, 
   Container, Divider } from 'semantic-ui-react';
 import { stateFieldHandler,
   stateDropdownHandler,
   stateValidatedNumberFieldHandler,
-  stateCountryDropdownHandler,
+  stateMemberDropdownHandler,
   stateTextAreaHandler
 } from '../actions/handlers';
-import { makeDropdownOption, recoverCountryOptions } from '../utils';
-import { TimerSetter, Unit } from './TimerSetter';
-import { nameToCountryOption, parseFlagName } from './Member';
+import { makeDropdownOption, implies } from '../utils';
+import { TimerSetter, Unit, getSeconds } from './TimerSetter';
+import { nameToMemberOption, parseFlagName } from './Member';
 import { DEFAULT_CAUCUS, CaucusData, CaucusID, CaucusStatus } from './Caucus';
 import { postCaucus, closeCaucus } from '../actions/caucusActions';
 import { TimerData } from './Timer';
@@ -325,8 +325,8 @@ export default class Motions extends React.Component<Props, State> {
 
     if (motionData.type === MotionType.OpenModeratedCaucus && speakerDuration && caucusDuration && proposer) {
 
-      const speakerSeconds = speakerDuration * (speakerUnit === Unit.Minutes ? 60 : 1);
-      const caucusSeconds = caucusDuration * (caucusUnit === Unit.Minutes ? 60 : 1);
+      const speakerSeconds = getSeconds(speakerDuration, speakerUnit);
+      const caucusSeconds = getSeconds(caucusDuration, caucusUnit);
 
       const newCaucus: CaucusData = {
         ...DEFAULT_CAUCUS,
@@ -357,7 +357,7 @@ export default class Motions extends React.Component<Props, State> {
       this.props.history
         .push(`/committees/${committeeID}/unmod`);
 
-      const caucusSeconds = caucusDuration * (caucusUnit === Unit.Minutes ? 60 : 1);
+      const caucusSeconds = getSeconds(caucusDuration, caucusUnit);
 
       const newTimer: TimerData = {
         ...DEFAULT_COMMITTEE.timer,
@@ -383,7 +383,7 @@ export default class Motions extends React.Component<Props, State> {
       this.props.history
         .push(`/committees/${committeeID}/unmod`);
 
-      const caucusSeconds = caucusDuration * (caucusUnit === Unit.Minutes ? 60 : 1);
+      const caucusSeconds = getSeconds(caucusDuration, caucusUnit);
 
       // TODO: Do I wait a second before extending so it looks sexy?
 
@@ -395,7 +395,7 @@ export default class Motions extends React.Component<Props, State> {
       this.props.history
         .push(`/committees/${committeeID}/caucuses/${caucusID}`);
 
-      const caucusSeconds = caucusDuration * (caucusUnit === Unit.Minutes ? 60 : 1);
+      const caucusSeconds = getSeconds(caucusDuration, caucusUnit);
       
       extendModTimer(committeeID, caucusID, caucusSeconds);
 
@@ -418,32 +418,19 @@ export default class Motions extends React.Component<Props, State> {
     }
     // remember to add the correct enum value to the approvable predicate when adding 
     // new cases
-
   } 
+
   renderMotion = (id: MotionID, motionData: MotionData, motionFref: firebase.database.Reference) => {
     const { handleApproveMotion } = this;
     const { committee } = this.state;
     const { proposer, proposal, type, caucusUnit, caucusDuration, speakerUnit, 
       speakerDuration, seconder, caucusTarget, resolutionTarget } = motionData;
 
-    // this is absolutely batshit insane, surely there's a better option here
-    let caucusTargetText = caucusTarget;
+    const caucus = recoverCaucus(committee, caucusTarget || '');
+    const caucusTargetText = caucus ? caucus.name : caucusTarget;
 
-    if (committee 
-      && committee.caucuses 
-      && committee.caucuses[caucusTarget || ''] 
-    ) {
-      caucusTargetText = committee.caucuses[caucusTarget || ''].name;
-    }
-
-    let resolutionTargetText = resolutionTarget;
-
-    if (committee 
-      && committee.resolutions 
-      && committee.resolutions[resolutionTarget || ''] 
-    ) {
-      resolutionTargetText = committee.resolutions[resolutionTarget || ''].name;
-    }
+    const resolution = recoverResolution(committee, resolutionTarget || '');
+    const resolutionTargetText = resolution ? resolution.name : resolutionTarget;
 
     const descriptionTree = (
       <Card.Description>
@@ -455,7 +442,6 @@ export default class Motions extends React.Component<Props, State> {
     );
 
     // TODO: we definately can add links here
-
     const proposerTree = (
       <div>
         <Label horizontal>
@@ -536,6 +522,23 @@ export default class Motions extends React.Component<Props, State> {
     );
   }
 
+  hasDivisiblityError = () => {
+    const { type, caucusDuration, caucusUnit, speakerDuration, speakerUnit} = this.state.newMotion;
+
+    const caucusSeconds = getSeconds(caucusDuration || 0, caucusUnit);
+    const speakerSeconds = getSeconds(speakerDuration || 0, speakerUnit);
+
+    const doesNotEvenlyDivide = (caucusSeconds % speakerSeconds) !== 0;
+
+    return hasSpeakers(type) && hasDuration(type) && doesNotEvenlyDivide;
+  }
+
+  hasIdenticalProposerSeconder = () => {
+    const { proposer, seconder } = this.state.newMotion;
+
+    return proposer && seconder ? proposer === seconder : false;
+  }
+
   renderAdder = (committee?: CommitteeData): JSX.Element => {
     const { newMotion } = this.state;
     const { proposer, proposal, type, caucusUnit, caucusDuration, speakerUnit, 
@@ -546,7 +549,7 @@ export default class Motions extends React.Component<Props, State> {
         value={proposal}
         autoHeight
         onChange={stateTextAreaHandler<Props, State>(this, 'newMotion', 'proposal')}
-        rows={1}
+        rows={2}
         label="Text"
         placeholder="Text"
       />
@@ -568,15 +571,9 @@ export default class Motions extends React.Component<Props, State> {
       </Form.Group>
     );
 
-    const speakerSeconds = (speakerDuration || 0) * (speakerUnit === Unit.Minutes ? 60 : 1);
-    const caucusSeconds = (caucusDuration || 0) * (caucusUnit === Unit.Minutes ? 60 : 1);
-
-    const doesNotEvenlyDivide = (caucusSeconds % speakerSeconds) !== 0;
-    const hasDivisibilityError = hasSpeakers(type) && hasDuration(type) && doesNotEvenlyDivide;
-
     const speakerSetter = (
       <TimerSetter
-        error={hasDivisibilityError}
+        error={this.hasDivisiblityError()}
         unitValue={speakerUnit}
         durationValue={speakerDuration ? speakerDuration.toString() : undefined}
         onUnitChange={stateDropdownHandler<Props, State>(this, 'newMotion', 'speakerUnit')}
@@ -587,7 +584,7 @@ export default class Motions extends React.Component<Props, State> {
 
     const durationSetter = (
       <TimerSetter
-        error={hasDivisibilityError}
+        error={this.hasDivisiblityError()}
         unitValue={caucusUnit}
         durationValue={caucusDuration ? caucusDuration.toString() : undefined}
         onUnitChange={stateDropdownHandler<Props, State>(this, 'newMotion', 'caucusUnit')}
@@ -650,21 +647,20 @@ export default class Motions extends React.Component<Props, State> {
       </Form.Group>
     );
 
-    const countryOptions = recoverCountryOptions(this.state.committee);
-    const hasIdenticalProposerSeconder = proposer && seconder ? proposer === seconder : false;
+    const memberOptions = recoverMemberOptions(this.state.committee);
 
     const proposerTree = (
       <Form.Dropdown
         icon="search"
         key="proposer"
-        value={proposer ? nameToCountryOption(proposer).key : undefined}
+        value={proposer ? nameToMemberOption(proposer).key : undefined}
         search
-        error={!proposer || hasIdenticalProposerSeconder}
+        error={!proposer || this.hasIdenticalProposerSeconder()}
         loading={!committee}
         selection
         fluid
-        onChange={stateCountryDropdownHandler<Props, State>(this, 'newMotion', 'proposer', countryOptions)}
-        options={countryOptions}
+        onChange={stateMemberDropdownHandler<Props, State>(this, 'newMotion', 'proposer', memberOptions)}
+        options={memberOptions}
         label="Proposer"
       />
     );
@@ -673,21 +669,19 @@ export default class Motions extends React.Component<Props, State> {
       <Form.Dropdown
         icon="search"
         key="seconder"
-        error={!seconder || hasIdenticalProposerSeconder} 
-        value={seconder ? nameToCountryOption(seconder).key : undefined}
+        error={!seconder || this.hasIdenticalProposerSeconder()} 
+        value={seconder ? nameToMemberOption(seconder).key : undefined}
         loading={!committee}
         search
         selection
         fluid
-        onChange={stateCountryDropdownHandler<Props, State>(this, 'newMotion', 'seconder', countryOptions)}
-        options={countryOptions}
+        onChange={stateMemberDropdownHandler<Props, State>(this, 'newMotion', 'seconder', memberOptions)}
+        options={memberOptions}
         label="Seconder"
       />
     );
 
-    const implies = (a: boolean, b: boolean) => a ? b : true;
-
-    const hasError = hasDivisibilityError || hasIdenticalProposerSeconder;
+    const hasError = this.hasDivisiblityError() || this.hasIdenticalProposerSeconder();
 
     return (
         <Form 
@@ -713,8 +707,8 @@ export default class Motions extends React.Component<Props, State> {
             || hasCaucusTarget(type) 
             || hasResolutionTarget(type) 
             ) && setters}
-          {hasDivisibilityError && DIVISIBILITY_ERROR}
-          {hasIdenticalProposerSeconder && IDENTITCAL_PROPOSER_SECONDER}
+          {this.hasDivisiblityError() && DIVISIBILITY_ERROR}
+          {this.hasIdenticalProposerSeconder() && IDENTITCAL_PROPOSER_SECONDER}
           <Button 
             icon="plus"
             basic
