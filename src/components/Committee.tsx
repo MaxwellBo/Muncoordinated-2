@@ -20,7 +20,7 @@ import { URLParameters } from '../types';
 import Loading from './Loading';
 import Footer from './Footer';
 import Settings, { SettingsData, DEFAULT_SETTINGS } from './Settings';
-import Files, { FileID, FileData } from './Files';
+import Files, { PostID, PostData } from './Files';
 import { ModalLogin } from './Auth';
 import ShareHint from './ShareHint';
 import Notifications from './Notifications';
@@ -115,7 +115,7 @@ export interface CommitteeData {
   caucuses?: Map<CaucusID, CaucusData>;
   resolutions?: Map<ResolutionID, ResolutionData>;
   motions?: Map<MotionID, MotionData>;
-  files?: Map<FileID, FileData>;
+  files?: Map<PostID, PostData>;
   timer: TimerData;
   notes: string;
   settings: SettingsData;
@@ -130,7 +130,7 @@ export const DEFAULT_COMMITTEE: CommitteeData = {
   members: {} as Map<MemberID, MemberData>,
   caucuses: {} as Map<CaucusID, CaucusData>,
   resolutions: {} as Map<ResolutionID, ResolutionData>,
-  files: {} as Map<FileID, FileData>,
+  files: {} as Map<PostID, PostData>,
   timer: { ...DEFAULT_TIMER, remaining: DEFAULT_CAUCUS_TIME_SECONDS },
   notes: '',
   settings: DEFAULT_SETTINGS
