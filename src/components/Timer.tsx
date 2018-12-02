@@ -36,6 +36,27 @@ export const DEFAULT_TIMER = {
   ticking: false
 };
 
+export function hhmmss(seconds: number): string {
+  let sign = '';
+
+  if (seconds < 0 ) {
+    sign = '-';
+    seconds = Math.abs(seconds);
+  }
+
+  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
+
+  const secondsFormatted = _.padStart((seconds % 60).toString(), 2, '0');
+  const minutesFormatted = _.padStart((minutes % 60).toString(), 2, '0');
+
+  if (hours !== 0) {
+    return sign + hours + ':' + minutesFormatted + ':' + secondsFormatted;
+  } else {
+    return sign + minutes + ':' + secondsFormatted;
+  }
+}
+
 export default class Timer extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
@@ -213,11 +234,7 @@ export default class Timer extends React.Component<Props, State> {
     const remaining = timer ? timer.remaining : DEFAULT_TIMER.remaining;
     const elapsed = timer ? timer.elapsed : DEFAULT_TIMER.elapsed;
 
-    const sign = (remaining < 0 ? '-' : '');
-    const minutes = Math.floor(Math.abs(remaining / 60)).toString();
-    const seconds = _.padStart(Math.abs(remaining % 60).toString(), 2, '0');
-
-    const formatted = sign + minutes + ':' + seconds;
+    const formatted = hhmmss(remaining);
 
     // For use with `indicating` on `Progress`
     const percentage = (remaining / (remaining + elapsed)) * 100;

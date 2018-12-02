@@ -9,8 +9,14 @@ import { CaucusID, CaucusData } from './Caucus';
 import { URLParameters, Dictionary } from '../types';
 import Loading from './Loading';
 import { SpeakerEvent } from './caucus/SpeakerFeed';
+import { hhmmss } from './Timer';
 
 interface Props extends RouteComponentProps<URLParameters> {
+}
+
+interface MemberStats {
+  duration: number;
+  times: number;
 }
 
 interface State {
@@ -46,10 +52,11 @@ export default class Stats extends React.Component<Props, State> {
     this.state.committeeFref.off('value', this.firebaseCallback);
   }
 
-  timesSpokenInCommitee(committee: CommitteeData, memberID: MemberID, member: MemberData) {
+  memberStats(committee: CommitteeData, memberID: MemberID, member: MemberData): MemberStats {
     const caucuses = committee.caucuses || {} as Dictionary<CaucusID, CaucusData>;
 
     let times = 0;
+    let duration = 0;
 
     Object.keys(caucuses).forEach(cid => {
       const caucus: CaucusData = caucuses[cid];
@@ -59,24 +66,26 @@ export default class Stats extends React.Component<Props, State> {
       Object.keys(history).map(hid => history[hid]).forEach((speakerEvent: SpeakerEvent) => {
         if (speakerEvent.who === member.name) { // I fucked up and used name in SpeakerEvent, not MemberID
           times += 1;
+          duration += speakerEvent.duration;
         }
       }
       );
     });
 
-    return times;
+    return { times, duration };
   }
 
   renderCommittee = (committee: CommitteeData) => {
-    const { timesSpokenInCommitee } = this;
+    const { memberStats } = this;
 
     const members = committee.members || {} as Dictionary<MemberID, MemberData>;
 
     const rows = _.sortBy(
       Object.keys(members), 
-      (mid) => timesSpokenInCommitee(committee, mid, members[mid])
+      (mid) => memberStats(committee, mid, members[mid]).times
     ).reverse().map(mid => {
       const member = members[mid];
+      const stats = memberStats(committee, mid, member);
 
       return (
         <Table.Row key={mid} >
@@ -84,8 +93,11 @@ export default class Stats extends React.Component<Props, State> {
             <Flag name={parseFlagName(member.name)} />
             {member.name}
           </Table.Cell>
-          <Table.Cell>
-            {timesSpokenInCommitee(committee, mid, member)}
+          <Table.Cell textAlign="right">
+            {stats.times}
+          </Table.Cell>
+          <Table.Cell textAlign="right">
+            {hhmmss(stats.duration)}
           </Table.Cell>
         </Table.Row>
       );
@@ -97,7 +109,8 @@ export default class Stats extends React.Component<Props, State> {
           <Table.Header>
             <Table.Row>
               <Table.HeaderCell />
-              <Table.HeaderCell>Times Spoken</Table.HeaderCell>
+              <Table.HeaderCell textAlign="right">Times Spoken</Table.HeaderCell>
+              <Table.HeaderCell textAlign="right">Total Speaking Time</Table.HeaderCell>
             </Table.Row>
           </Table.Header>
 
