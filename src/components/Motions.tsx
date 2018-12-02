@@ -46,7 +46,8 @@ enum MotionType {
   SuspendDebate = 'Suspend Debate',
   ResumeDebate = 'Resume Debate',
   CloseDebate = 'Close Debate',
-  ReorderDraftResolutions = 'Reorder Draft Resolutions'
+  ReorderDraftResolutions = 'Reorder Draft Resolutions',
+  ProposeStrawpoll = 'Propose Strawpoll'
 }
 
 const disruptiveness = (motionType: MotionType): number => {
@@ -60,19 +61,21 @@ const disruptiveness = (motionType: MotionType): number => {
       return 4;
     case MotionType.OpenModeratedCaucus:
       return 5;
-    case MotionType.IntroduceDraftResolution:
+    case MotionType.ProposeStrawpoll:
       return 6;
-    case MotionType.IntroduceAmendment:
+    case MotionType.IntroduceDraftResolution:
       return 7;
-    case MotionType.SuspendDraftResolutionSpeakersList:
+    case MotionType.IntroduceAmendment:
       return 8;
+    case MotionType.SuspendDraftResolutionSpeakersList:
+      return 9;
     case MotionType.OpenDebate:
     case MotionType.SuspendDebate:
     case MotionType.ResumeDebate:
     case MotionType.CloseDebate:
-      return 9;
-    case MotionType.ReorderDraftResolutions:
       return 10;
+    case MotionType.ReorderDraftResolutions:
+      return 11;
     default:
       return 69; // nice
   }
@@ -143,6 +146,17 @@ const hasDetail = (motionType: MotionType): boolean => {
     case MotionType.OpenModeratedCaucus:
     case MotionType.IntroduceDraftResolution:
     case MotionType.IntroduceAmendment:
+    case MotionType.ProposeStrawpoll:
+      return true;
+    default:
+      return false;
+  }
+};
+
+const hasTextArea = (motionType: MotionType): boolean => {
+  switch (motionType) {
+    case MotionType.IntroduceAmendment:
+    case MotionType.ProposeStrawpoll:
       return true;
     default:
       return false;
@@ -157,6 +171,8 @@ const detailLabel = (motionType: MotionType): string => {
       return 'Name';
     case MotionType.IntroduceAmendment:
       return 'Text';
+    case MotionType.ProposeStrawpoll:
+      return 'Options';
     default:
       return '';
   }
@@ -239,6 +255,7 @@ const MOTION_TYPE_OPTIONS = [
   MotionType.CloseModeratedCaucus, // implemented
   MotionType.IntroduceDraftResolution, // implemented
   MotionType.IntroduceAmendment, // implemented
+  MotionType.ProposeStrawpoll,
   MotionType.SuspendDraftResolutionSpeakersList, 
   MotionType.OpenDebate,
   MotionType.SuspendDebate,
@@ -550,8 +567,8 @@ export default class Motions extends React.Component<Props, State> {
         autoHeight
         onChange={stateTextAreaHandler<Props, State>(this, 'newMotion', 'proposal')}
         rows={2}
-        label="Text"
-        placeholder="Text"
+        label={detailLabel(newMotion.type)}
+        placeholder={detailLabel(newMotion.type)}
       />
     );
 
@@ -567,7 +584,10 @@ export default class Motions extends React.Component<Props, State> {
 
     const description = (
       <Form.Group widths="equal">
-        {newMotion.type === MotionType.IntroduceAmendment ? boxForAmmendments : boxForNames}
+        {hasTextArea(newMotion.type)
+          ? boxForAmmendments 
+          : boxForNames
+        }
       </Form.Group>
     );
 
