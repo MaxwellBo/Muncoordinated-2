@@ -34,9 +34,21 @@ const RANK_OPTIONS = [
   Rank.Observer
 ].map(makeDropdownOption);
 
-export function CommitteeStats(props: { data?: CommitteeData, verbose: boolean }) {
-  const { data, verbose } = props;
+interface CommitteeStats {
+  delegatesNo: number;
+  presentNo: number;
+  absCanVote: number;
+  canVoteNo: number;
+  nonNGONo: number;
+  quorum: number;
+  procedural: number;
+  operative: number;
+  hasQuorum: boolean;
+  draftResolution: number;
+  amendment: number;
+}
 
+export function makeCommitteeStats(data?: CommitteeData) {
   const defaultMap = {} as Dictionary<MemberID, MemberData>;
   const membersMap: Dictionary<MemberID, MemberData> = data ? (data.members || defaultMap) : defaultMap;
   const members: MemberData[] = Utils.objectToList(membersMap);
@@ -54,6 +66,16 @@ export function CommitteeStats(props: { data?: CommitteeData, verbose: boolean }
   const hasQuorum: boolean      = presentNo >= quorum;
   const draftResolution: number = Math.ceil(canVoteNo * 0.25);
   const amendment: number       = Math.ceil(canVoteNo * 0.1);
+
+  return { delegatesNo, presentNo, absCanVote, canVoteNo, nonNGONo, quorum, 
+    procedural, operative, hasQuorum, draftResolution, amendment };
+}
+
+export function CommitteeStats(props: { data?: CommitteeData, verbose: boolean }) {
+  const { data, verbose } = props;
+
+  const  { delegatesNo, presentNo, absCanVote, canVoteNo, nonNGONo, quorum, 
+    procedural, operative, hasQuorum, draftResolution, amendment } = makeCommitteeStats(data);
 
   return (
     <Table definition>
