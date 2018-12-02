@@ -1,4 +1,7 @@
 import * as React from 'react';
+import { appendNotification, NEW_VERSION_AVAILABLE_NOTIFICATION } from './Notifications';
+
+let displayedNotification = false;
 
 interface Props {
 }
@@ -8,7 +11,7 @@ interface State {
   timerId?: NodeJS.Timer;
 }
 
-export const CLIENT_VERSION = 'v2.13.2';
+export const CLIENT_VERSION = 'v2.13.3';
 
 export const CLIENT_VERSION_LINK = (
   <a href="https://github.com/MaxwellBo/Muncoordinated-2/releases">
@@ -22,7 +25,8 @@ export default class Footer extends React.PureComponent<Props, State> {
   constructor(props: Props) {
     super(props);
 
-    this.state = {};
+    this.state = {
+    };
   }
 
   fetchLatestVersion = (): Promise<void> => {
@@ -30,9 +34,15 @@ export default class Footer extends React.PureComponent<Props, State> {
 
     return fetch(RELEASES_LATEST).then(response =>
       response.json()
-    ).then(json => 
-      this.setState({ latestVersion: json.tag_name })
-    );
+    ).then(json => {
+      const latestVersion = json.tag_name;
+      this.setState({ latestVersion });
+
+      if (latestVersion !== CLIENT_VERSION && !displayedNotification) {
+        displayedNotification = true;
+        appendNotification(NEW_VERSION_AVAILABLE_NOTIFICATION);
+      }
+    });
   }
 
   componentDidMount() {

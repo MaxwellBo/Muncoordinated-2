@@ -1,14 +1,79 @@
 import * as React from 'react';
 import * as firebase from 'firebase';
 import * as _ from 'lodash';
+import * as Rx from 'rxjs';
 import { TransitionablePortal, Button, Card } from 'semantic-ui-react';
-import { State as ConnectionStatusState } from './ConnectionStatus';
+
+export const PERMISSION_DENIED_NOTIFICATION: Notification =  {
+  header: 'Permission denied',
+  message: 'Please login as the owner of this committee in order to perform that action',
+  disposition: 'negative'
+};
+
+export const CONNECTION_LOST_NOTIFICATION: Notification =  {
+  header: 'Connection lost',
+  message: 'The connection to the server was lost. You may have been logged out',
+  disposition: 'negative'
+};
+
+export const CONNECTION_REGAINED_NOTIFICATION: Notification =  {
+  header: 'Connection regained',
+  message: 'The connection to the server was regained',
+  disposition: 'positive'
+};
+
+export const NEW_VERSION_AVAILABLE_NOTIFICATION: Notification =  {
+  header: 'New version available',
+  message: 'Refresh the page twice to download a new version of Muncoordinated',
+  disposition: 'positive'
+};
+
+let connected = false;
+let hasConnectedBefore = false; 
+const $notifications = new Rx.BehaviorSubject<Notification[]>([]);
 
 interface Props {
 }
 
-interface State extends ConnectionStatusState {
-  notifications: Notification[];
+interface State {
+  latestNotifications: Notification[];
+  subscription?: Rx.Subscription;
+}
+
+function handleInfoConnected(status: firebase.database.DataSnapshot | null) {
+  if (status) {
+      const oldConnected = connected;
+      const newConnected = status.val();
+      connected = newConnected;
+
+      if (!newConnected && hasConnectedBefore) {
+        appendNotification(CONNECTION_LOST_NOTIFICATION);
+      }
+
+      if (!oldConnected && newConnected && hasConnectedBefore) {
+        appendNotification(CONNECTION_REGAINED_NOTIFICATION);
+      }
+
+      hasConnectedBefore = newConnected || hasConnectedBefore;
+  }
+}
+
+function handleUnhandledRejection(event: Event)  {
+  // @ts-ignore
+  const reason = event.reason as { code: string, message: string } | undefined; 
+
+  if (reason && reason.code === 'PERMISSION_DENIED') {
+    appendNotification(PERMISSION_DENIED_NOTIFICATION);
+  }
+}
+
+export function appendNotification(n: Notification): void {
+    const ns = $notifications.value;
+    // Don't permit duplicates
+    if (!_.some(ns, n)) {
+      console.info(n);
+      $notifications.next([...ns, n]);
+    }
 }
 
 interface Notification {
@@ -17,104 +82,45 @@ interface Notification {
   disposition: 'positive' | 'negative';
 }
 
-const PERMISSION_DENIED_NOTIFICATION: Notification =  {
-  header: 'Permission denied',
-  message: 'Please login as the owner of this committee in order to perform that action',
-  disposition: 'negative'
-};
-
-const CONNECTION_LOST_NOTIFICATION: Notification =  {
-  header: 'Connection lost',
-  message: 'The connection to the server was lost. You may have been logged out',
-  disposition: 'negative'
-};
-
-const CONNECTION_REGAINED_NOTIFICATION: Notification =  {
-  header: 'Connection regained',
-  message: 'The connection to the server was regained',
-  disposition: 'positive'
-};
-
 export default class Notifications extends React.Component<Props, State> {
+  infoConnected = firebase.database().ref('.info/connected');
+
   constructor(props: Props) {
     super(props);
 
     this.state = {
-      notifications: [],
-      connected: false,
-      hasConnectedBefore: false,
-      fref: firebase.database().ref('.info/connected')
+      latestNotifications: [] as Notification[]
     };
   }
 
-  computeNewNotificationState = 
-  (prevState: Pick<State, 'notifications'>, notification: Notification): Pick<State, 'notifications'> => {
-      // Debounce unique
-      if (!_.some(prevState.notifications, notification)) {
-        console.info(notification);
-
-        return {
-          notifications: [...prevState.notifications, notification]
-        };
-      } else {
-        return { notifications: prevState.notifications };
-      }
-  }
-
-  firebaseCallback = (status: firebase.database.DataSnapshot | null) => {
-    const { computeNewNotificationState } = this;
-
-    if (status) {
-      this.setState((prevState: State) => { 
-
-        const connected = status.val();
-
-        let acc: Pick<State, | 'notifications'> = prevState;
-
-        acc = (!connected && prevState.hasConnectedBefore)
-            ?  computeNewNotificationState(acc, CONNECTION_LOST_NOTIFICATION)
-            : acc;
-
-        acc = (!prevState.connected && connected && prevState.hasConnectedBefore)
-            ?  computeNewNotificationState(acc, CONNECTION_REGAINED_NOTIFICATION)
-            : acc;
-
-        return {
-          ...acc,
-          hasConnectedBefore: connected || prevState.hasConnectedBefore
-        };
-      });
-    }
-  }
-
-  listener: EventListener = (event: Event) => {
-    const { computeNewNotificationState } = this;
-    // @ts-ignore
-    const reason = event.reason as { code: string, message: string } | undefined; 
-
-    if (reason && reason.code === 'PERMISSION_DENIED') {
-      this.setState(prevState => {
-        return computeNewNotificationState(prevState, PERMISSION_DENIED_NOTIFICATION);
-      });
-    }
-  }
-
   componentDidMount() {
-    window.addEventListener('unhandledrejection', this.listener);
-    this.state.fref.on('value', this.firebaseCallback);
+    const subscription = $notifications.subscribe({
+      next: (v) => this.setState( { latestNotifications: v })
+    });
+
+    this.setState({ subscription });
+
+    window.addEventListener('unhandledrejection', handleUnhandledRejection);
+    this.infoConnected.on('value', handleInfoConnected);
   }
 
   componentWillUnmount() {
-    window.removeEventListener('unhandledrejection', this.listener);
-    this.state.fref.off('value', this.firebaseCallback);
+    const { subscription } = this.state;
+
+    if (subscription) {
+      subscription.unsubscribe();
+      this.setState({ subscription: undefined });
+    }
+
+    window.removeEventListener('unhandledrejection', handleUnhandledRejection);
+    this.infoConnected.off('value', handleInfoConnected);
   }
 
   dismiss = (key: number) => () => {
-    const target = [...this.state.notifications];
+    const spliced = [...$notifications.value];
+    spliced.splice(key, 1);
 
-    target.splice(key, 1);
-
-    this.setState({notifications: target});
+    $notifications.next(spliced);
   }
 
   renderNotification = (notification: Notification, key: number) => {
@@ -141,13 +147,13 @@ export default class Notifications extends React.Component<Props, State> {
 
   render() {
     const { renderNotification } = this;
-    const { notifications } = this.state;
+    const { latestNotifications } = this.state;
 
-    const renderedNotifications = notifications.map(renderNotification);
+    const renderedNotifications = latestNotifications.map(renderNotification);
 
     return (
       <TransitionablePortal
-        open={notifications.length > 0}
+        open={latestNotifications.length > 0}
         transition={{ animation: 'fly left', duration: 500 }}
       >
         <Card.Group 
