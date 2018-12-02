@@ -39,7 +39,9 @@ export const DEFAULT_TIMER = {
 export function hhmmss(seconds: number): string {
   let sign = '';
 
-  if (seconds < 0 ) {
+  seconds = seconds || 0;
+
+  if (seconds < 0) {
     sign = '-';
     seconds = Math.abs(seconds);
   }
