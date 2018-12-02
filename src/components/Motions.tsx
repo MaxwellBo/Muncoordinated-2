@@ -179,7 +179,7 @@ const interpolateTime = (motionType: MotionType, time: string): string => {
     case MotionType.ExtendUnmoderatedCaucus:
       return `Extend unmoderated caucus by ${time}`;
     case MotionType.ExtendModeratedCaucus:
-      return `Extend unmoderated caucus by ${time}`;
+      return `Extend moderated caucus by ${time}`;
     case MotionType.OpenModeratedCaucus:
       return `${time} Moderated Caucus`;
     case MotionType.OpenUnmoderatedCaucus:
