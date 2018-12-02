@@ -8,10 +8,11 @@ import { TimerSetter, Unit } from '../TimerSetter';
 import { SpeakerEvent, Stance } from '..//caucus/SpeakerFeed';
 import { checkboxHandler, validatedNumberFieldHandler, dropdownHandler } from '../../actions/handlers';
 import { membersToOptions } from '../../utils';
+import { Dictionary } from 'src/types';
 
 interface Props {
   caucus?: CaucusData;
-  members?: Map<string, MemberData>;
+  members?: Dictionary<string, MemberData>;
   caucusFref: firebase.database.Reference;
 }
 

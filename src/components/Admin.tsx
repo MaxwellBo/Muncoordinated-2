@@ -9,6 +9,7 @@ import { COUNTRY_OPTIONS, MemberOption } from '../constants';
 import { checkboxHandler, dropdownHandler } from '../actions/handlers';
 import { makeDropdownOption } from '../utils';
 import * as _ from 'lodash';
+import { Dictionary } from 'src/types';
 
 export const canVote = (x: MemberData) => (x.rank === Rank.Veto || x.rank === Rank.Standard);
 export const nonNGO = (x: MemberData) => (x.rank !== Rank.NGO);
@@ -36,14 +37,14 @@ const RANK_OPTIONS = [
 export function CommitteeStats(props: { data?: CommitteeData, verbose: boolean }) {
   const { data, verbose } = props;
 
-  const defaultMap = {} as Map<MemberID, MemberData>;
-  const membersMap: Map<MemberID, MemberData> = data ? (data.members || defaultMap) : defaultMap;
+  const defaultMap = {} as Dictionary<MemberID, MemberData>;
+  const membersMap: Dictionary<MemberID, MemberData> = data ? (data.members || defaultMap) : defaultMap;
   const members: MemberData[] = Utils.objectToList(membersMap);
   const present = members.filter(x => x.present);
 
   const delegatesNo: number     = members.length;
   const presentNo: number       = present.length;
-  const absCanVote: number       = members.filter(canVote).length;
+  const absCanVote: number      = members.filter(canVote).length;
   const canVoteNo: number       = present.filter(canVote).length;
   const nonNGONo: number        = present.filter(nonNGO).length;
 

@@ -7,3 +7,7 @@ export interface URLParameters {
   caucusID: CaucusID;
   resolutionID: ResolutionID;
 }
+
+export interface Dictionary<K, V> {
+  [key: string]: V;
+}

@@ -6,7 +6,7 @@ import { RouteComponentProps } from 'react-router';
 import { Table, Flag, Container } from 'semantic-ui-react';
 import { MemberData, MemberID, parseFlagName } from './Member';
 import { CaucusID, CaucusData } from './Caucus';
-import { URLParameters } from '../types';
+import { URLParameters, Dictionary } from '../types';
 import Loading from './Loading';
 import { SpeakerEvent } from './caucus/SpeakerFeed';
 
@@ -47,14 +47,14 @@ export default class Stats extends React.Component<Props, State> {
   }
 
   timesSpokenInCommitee(committee: CommitteeData, memberID: MemberID, member: MemberData) {
-    const caucuses = committee.caucuses || {} as Map<CaucusID, CaucusData>;
+    const caucuses = committee.caucuses || {} as Dictionary<CaucusID, CaucusData>;
 
     let times = 0;
 
     Object.keys(caucuses).forEach(cid => {
       const caucus: CaucusData = caucuses[cid];
 
-      const history = caucus.history || {} as Map<string, SpeakerEvent>;
+      const history = caucus.history || {} as Dictionary<string, SpeakerEvent>;
       
       Object.keys(history).map(hid => history[hid]).forEach((speakerEvent: SpeakerEvent) => {
         if (speakerEvent.who === member.name) { // I fucked up and used name in SpeakerEvent, not MemberID
@@ -70,7 +70,7 @@ export default class Stats extends React.Component<Props, State> {
   renderCommittee = (committee: CommitteeData) => {
     const { timesSpokenInCommitee } = this;
 
-    const members = committee.members || {} as Map<MemberID, MemberData>;
+    const members = committee.members || {} as Dictionary<MemberID, MemberData>;
 
     const rows = _.sortBy(
       Object.keys(members), 

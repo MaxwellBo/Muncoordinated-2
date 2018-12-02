@@ -3,6 +3,7 @@ import * as React from 'react';
 import { Feed, Icon, Flag, Label } from 'semantic-ui-react';
 import { runLifecycle, Lifecycle } from '../../actions/caucusActions';
 import { parseFlagName } from '../Member';
+import { Dictionary } from 'src/types';
 
 export enum Stance {
   For = 'For',
@@ -90,7 +91,7 @@ export const SpeakerFeedEntry = (props: {
 };
 
 export const SpeakerFeed = (props: {
-  data?: Map<string, SpeakerEvent>,
+  data?: Dictionary<string, SpeakerEvent>,
   fref: firebase.database.Reference,
   speaking?: SpeakerEvent,
   speakerTimer: TimerData

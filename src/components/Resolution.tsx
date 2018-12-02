@@ -10,7 +10,7 @@ import {
 import { CommitteeData, recoverMemberOptions } from './Committee';
 import { CaucusID, DEFAULT_CAUCUS, CaucusData } from './Caucus';
 import { RouteComponentProps } from 'react-router';
-import { URLParameters } from '../types';
+import { URLParameters, Dictionary } from '../types';
 import {
   dropdownHandler, fieldHandler, textAreaHandler, memberDropdownHandler,
   checkboxHandler
@@ -70,7 +70,7 @@ export interface ResolutionData {
   seconder?: MemberID;
   status: ResolutionStatus;
   caucus?: CaucusID;
-  amendments?: Map<AmendmentID, AmendmentData>;
+  amendments?: Dictionary<AmendmentID, AmendmentData>;
   votes?: Votes;
   amendmentsArePublic?: boolean; // TODO: Migrate
 }
@@ -81,13 +81,13 @@ export enum Vote {
   Against = 'Against'
 }
 
-type Votes = Map<string, Vote>;
+type Votes = Dictionary<string, Vote>;
 
 export const DEFAULT_RESOLUTION: ResolutionData = {
   name: 'untitled resolution',
   link: '',
   status: ResolutionStatus.Introduced,
-  amendments: {} as Map<AmendmentID, AmendmentData>,
+  amendments: {} as Dictionary<AmendmentID, AmendmentData>,
   votes: {} as Votes,
   amendmentsArePublic: false
 };
@@ -378,7 +378,7 @@ export default class Resolution extends React.Component<Props, State> {
     );
   }
 
-  renderVotingMembers = (members: Map<string, MemberData>, votes: Votes) => {
+  renderVotingMembers = (members: Dictionary<string, MemberData>, votes: Votes) => {
     const { renderVotingMember } = this;
 
     return _.chain(members)
@@ -434,7 +434,7 @@ export default class Resolution extends React.Component<Props, State> {
     const votes = resolution ? resolution.votes : undefined;
 
     const votingMembers = renderVotingMembers(
-      members || {} as Map<string, MemberData>,
+      members || {} as Dictionary<string, MemberData>,
       votes || {} as Votes
     );
 
@@ -593,7 +593,7 @@ export default class Resolution extends React.Component<Props, State> {
     );
   }
 
-  renderAmendments = (amendments: Map<AmendmentID, AmendmentData>) => {
+  renderAmendments = (amendments: Dictionary<AmendmentID, AmendmentData>) => {
     const { renderAmendment, recoverResolutionFref } = this;
 
     const resolutionRef = recoverResolutionFref();
@@ -626,7 +626,7 @@ export default class Resolution extends React.Component<Props, State> {
         itemsPerRow={1}
       >
         {adder}
-        {renderAmendments(amendments || {} as Map<string, AmendmentData>)}
+        {renderAmendments(amendments || {} as Dictionary<string, AmendmentData>)}
       </Card.Group>
     );
   }

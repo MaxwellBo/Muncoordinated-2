@@ -1,7 +1,6 @@
 import * as React from 'react';
 import * as firebase from 'firebase';
 import { Route } from 'react-router-dom';
-import { Container } from 'semantic-ui-react';
 import './App.css';
 
 const firebaseConfig = {

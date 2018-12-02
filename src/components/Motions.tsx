@@ -17,7 +17,7 @@ import { DEFAULT_CAUCUS, CaucusData, CaucusID, CaucusStatus } from './Caucus';
 import { postCaucus, closeCaucus } from '../actions/caucusActions';
 import { TimerData } from './Timer';
 import { putUnmodTimer, extendUnmodTimer, extendModTimer } from '../actions/committeeActions';
-import { URLParameters } from '../types';
+import { URLParameters, Dictionary } from '../types';
 import { ResolutionData, DEFAULT_RESOLUTION, ResolutionID, IDENTITCAL_PROPOSER_SECONDER } from './Resolution';
 import { Stance } from './caucus/SpeakerFeed';
 import { AmendmentData, DEFAULT_AMENDMENT } from './Amendment';
@@ -726,7 +726,7 @@ export default class Motions extends React.Component<Props, State> {
     );
   }
 
-  renderMotions = (motions: Map<MotionID, MotionData>) => {
+  renderMotions = (motions: Dictionary<MotionID, MotionData>) => {
     const { renderMotion } = this;
     const { committeeFref } = this.state;
 
@@ -765,7 +765,7 @@ export default class Motions extends React.Component<Props, State> {
     const { committee } = this.state;
 
     const renderedMotions = committee 
-      ? renderMotions(committee.motions || {} as Map<string, MotionData>)
+      ? renderMotions(committee.motions || {} as Dictionary<string, MotionData>)
       : <div />; // TODO: This could probably do with a nice spinner
 
     const motionsCount = committee ? _.values(committee.motions || {}) : 0;

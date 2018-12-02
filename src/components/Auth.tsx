@@ -4,6 +4,7 @@ import { Card, Button, Form, Message, Modal, Icon, List, Segment } from 'semanti
 import { CommitteeID, CommitteeData } from './Committee';
 import * as _ from 'lodash';
 import Loading from './Loading';
+import { Dictionary } from 'src/types';
 
 enum Mode {
   Login = 'Login',
@@ -21,7 +22,7 @@ interface State {
   mode: Mode;
   resetting: boolean;
   unsubscribe?: () => void;
-  committees?: Map<CommitteeID, CommitteeData>;
+  committees?: Dictionary<CommitteeID, CommitteeData>;
 }
 
 interface Props {
@@ -148,7 +149,7 @@ export class Login extends React.Component<Props, State> {
     const { renderCommittee } = this;
     const { committees } = this.state;
 
-    const defaulted = committees || {} as Map<CommitteeID, CommitteeData>;
+    const defaulted = committees || {} as Dictionary<CommitteeID, CommitteeData>;
     const owned = _.keys(defaulted);
 
     return (

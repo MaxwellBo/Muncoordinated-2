@@ -5,14 +5,14 @@ import { CommitteeData, DEFAULT_COMMITTEE } from './Committee';
 import { Form, Grid, Header, InputOnChangeData, Divider,
   Message, Container, List, Segment } from 'semantic-ui-react';
 import { Login } from './Auth';
-import { URLParameters } from '../types';
+import { URLParameters, Dictionary } from '../types';
 import ConnectionStatus from './ConnectionStatus';
 
 interface Props extends RouteComponentProps<URLParameters> {
 }
 
 interface State {
-  committees: Map<string, CommitteeData>;
+  committees: Dictionary<string, CommitteeData>;
   name: string;
   topic: string;
   chair: string;
@@ -29,7 +29,7 @@ export default class Onboard extends React.Component<Props, State> {
     super(props);
 
     this.state = {
-      committees: {} as Map<string, CommitteeData>,
+      committees: {} as Dictionary<string, CommitteeData>,
       name: '',
       topic: '',
       chair: '',

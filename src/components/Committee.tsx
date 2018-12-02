@@ -3,7 +3,7 @@ import * as firebase from 'firebase';
 import { RouteComponentProps } from 'react-router';
 import { Route } from 'react-router-dom';
 import { MemberData, MemberID } from './Member';
-import Caucus, { CaucusData, CaucusID, DEFAULT_CAUCUS, CaucusStatus, DEFAULT_CAUCUS_TIME_SECONDS } from './Caucus';
+import Caucus, { CaucusData, CaucusID, DEFAULT_CAUCUS, DEFAULT_CAUCUS_TIME_SECONDS } from './Caucus';
 import Resolution, { ResolutionData, ResolutionID, DEFAULT_RESOLUTION } from './Resolution';
 import Admin from './Admin';
 import { Icon, Menu, SemanticICONS, Dropdown, Container, Responsive, Sidebar, Header, Label, Divider, 
@@ -16,7 +16,7 @@ import Notes from './Notes';
 import Help, { KEYBOARD_SHORTCUT_LIST } from './Help';
 import Motions from './Motions';
 import { postCaucus } from '../actions/caucusActions';
-import { URLParameters } from '../types';
+import { URLParameters, Dictionary } from '../types';
 import Loading from './Loading';
 import Footer from './Footer';
 import Settings, { SettingsData, DEFAULT_SETTINGS } from './Settings';
@@ -38,8 +38,8 @@ export function recoverMemberOptions(committee?: CommitteeData): MemberOption[] 
   }
 }
 
-export function recoverMembers(committee?: CommitteeData): Map<MemberID, MemberData> | undefined {
-  return committee ? (committee.members || {} as Map<MemberID, MemberData>) : undefined;
+export function recoverMembers(committee?: CommitteeData): Dictionary<MemberID, MemberData> | undefined {
+  return committee ? (committee.members || {} as Dictionary<MemberID, MemberData>) : undefined;
 }
 
 export function recoverSettings(committee?: CommitteeData): SettingsData {
@@ -111,15 +111,19 @@ export interface CommitteeData {
   topic: string;
   conference?: string; // TODO: Migrate
   creatorUid: firebase.UserInfo['uid'];
-  members?: Map<MemberID, MemberData>;
-  caucuses?: Map<CaucusID, CaucusData>;
-  resolutions?: Map<ResolutionID, ResolutionData>;
-  motions?: Map<MotionID, MotionData>;
-  files?: Map<PostID, PostData>;
+  members?: Dictionary<MemberID, MemberData>;
+  caucuses?: Dictionary<CaucusID, CaucusData>;
+  resolutions?: Dictionary<ResolutionID, ResolutionData>;
+  motions?: Dictionary<MotionID, MotionData>;
+  files?: Dictionary<PostID, PostData>;
   timer: TimerData;
   notes: string;
   settings: SettingsData;
 }
+
+const GENERAL_SPEAKERS_LIST: CaucusData = {
+   ...DEFAULT_CAUCUS, name: 'General Speakers List' 
+};
 
 export const DEFAULT_COMMITTEE: CommitteeData = {
   name: '',
@@ -127,10 +131,12 @@ export const DEFAULT_COMMITTEE: CommitteeData = {
   topic: '',
   conference: '',
   creatorUid: '',
-  members: {} as Map<MemberID, MemberData>,
-  caucuses: {} as Map<CaucusID, CaucusData>,
-  resolutions: {} as Map<ResolutionID, ResolutionData>,
-  files: {} as Map<PostID, PostData>,
+  members: {} as Dictionary<MemberID, MemberData>,
+  caucuses: {
+    'gsl': GENERAL_SPEAKERS_LIST
+  } as Dictionary<string, CaucusData>,
+  resolutions: {} as Dictionary<ResolutionID, ResolutionData>,
+  files: {} as Dictionary<PostID, PostData>,
   timer: { ...DEFAULT_TIMER, remaining: DEFAULT_CAUCUS_TIME_SECONDS },
   notes: '',
   settings: DEFAULT_SETTINGS
