@@ -301,6 +301,7 @@ export default class Files extends React.Component<Props, State> {
               onChange={this.setMember}
               options={memberOptions}
               label="Uploader"
+              required
             />
             <Button
               type="submit"
@@ -319,6 +320,10 @@ export default class Files extends React.Component<Props, State> {
     this.setState({ body: data.value!.toString() });
   }
 
+  setName = (e: React.FormEvent<HTMLInputElement>) => {
+    this.setState({ body: e.currentTarget.value });
+  }
+
   setLink = (e: React.FormEvent<HTMLInputElement>) => {
     this.setState({ link: e.currentTarget.value });
   }
@@ -330,14 +335,16 @@ export default class Files extends React.Component<Props, State> {
 
     return (
       <Form onSubmit={this.postLink}>
-        <TextArea
+        <Form.Input
           value={body}
-          onChange={this.setBody}
+          onChange={this.setName}
           autoHeight
+          label="Name"
           rows={1}
         />
         <Form.Input 
           label="Link"
+          required
           error={!link}
           value={link}
           onChange={this.setLink}
@@ -347,6 +354,7 @@ export default class Files extends React.Component<Props, State> {
           <Form.Dropdown
             icon="search"
             key="uploader"
+            required
             value={uploader ? uploader.key : undefined}
             search
             selection
