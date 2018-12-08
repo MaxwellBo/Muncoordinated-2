@@ -331,7 +331,10 @@ export default class Motions extends React.Component<Props, State> {
     });
   }
 
-  handleApproveMotion = (motionData: MotionData): void => {
+  handleApproveMotion = (
+      motionFref: firebase.database.Reference, 
+      motionData: MotionData
+  ): void => {
     const committeeID: CommitteeID = this.props.match.params.committeeID;
 
     const { proposer, speakerDuration, speakerUnit, 
@@ -339,6 +342,8 @@ export default class Motions extends React.Component<Props, State> {
 
     const caucusID = motionData.caucusTarget;
     const resolutionID = motionData.resolutionTarget;
+
+    motionFref.remove();
 
     if (motionData.type === MotionType.OpenModeratedCaucus && speakerDuration && caucusDuration && proposer) {
 
@@ -530,7 +535,7 @@ export default class Motions extends React.Component<Props, State> {
             disabled={motionData.proposer === ''}
             basic
             positive
-            onClick={() => handleApproveMotion(motionData)}
+            onClick={() => handleApproveMotion(motionFref, motionData)}
           >
             {actionName(type)}
           </Button>}
