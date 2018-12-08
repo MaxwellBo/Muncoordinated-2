@@ -46,6 +46,7 @@ interface CommitteeStats {
   hasQuorum: boolean;
   draftResolution: number;
   amendment: number;
+  twoThirdsMajority: number;
 }
 
 export function makeCommitteeStats(data?: CommitteeData) {
@@ -63,19 +64,20 @@ export function makeCommitteeStats(data?: CommitteeData) {
   const quorum: number          = Math.ceil(absCanVote * 0.25);
   const procedural: number      = Math.ceil(nonNGONo * 0.5);
   const operative: number       = Math.ceil(canVoteNo * 0.5);
+  const twoThirdsMajority: number = Math.ceil(canVoteNo * (2 / 3));
   const hasQuorum: boolean      = presentNo >= quorum;
   const draftResolution: number = Math.ceil(canVoteNo * 0.25);
   const amendment: number       = Math.ceil(canVoteNo * 0.1);
 
   return { delegatesNo, presentNo, absCanVote, canVoteNo, nonNGONo, quorum, 
-    procedural, operative, hasQuorum, draftResolution, amendment };
+    procedural, operative, hasQuorum, draftResolution, amendment, twoThirdsMajority };
 }
 
 export function CommitteeStats(props: { data?: CommitteeData, verbose: boolean }) {
   const { data, verbose } = props;
 
   const  { delegatesNo, presentNo, absCanVote, canVoteNo, nonNGONo, quorum, 
-    procedural, operative, hasQuorum, draftResolution, amendment } = makeCommitteeStats(data);
+    procedural, operative, hasQuorum, draftResolution, amendment, twoThirdsMajority } = makeCommitteeStats(data);
 
   return (
     <Table definition>
@@ -119,8 +121,14 @@ export function CommitteeStats(props: { data?: CommitteeData, verbose: boolean }
         <Table.Row>
           <Table.Cell>Operative threshold</Table.Cell>
           <Table.Cell>{operative.toString()}</Table.Cell>
-          <Table.Cell>Required votes for operative matters, such as amendments and resolutions</Table.Cell>
+          <Table.Cell>Required votes for operative matters, such as amendments</Table.Cell>
           {verbose && <Table.Cell>50% of present delegates with voting rights</Table.Cell>}
+        </Table.Row>
+        <Table.Row>
+          <Table.Cell>Two-thirds majority</Table.Cell>
+          <Table.Cell>{twoThirdsMajority.toString()}</Table.Cell>
+          <Table.Cell>Required votes for passing resolutions</Table.Cell>
+          {verbose && <Table.Cell>2/3 of present delegates with voting rights</Table.Cell>}
         </Table.Row>
         {verbose && <Table.Row>
           <Table.Cell>Draft resolution</Table.Cell>

@@ -1,11 +1,11 @@
 import * as React from 'react';
 import * as firebase from 'firebase';
 import * as _ from 'lodash';
-import { MemberID, nameToMemberOption, MemberData } from './Member';
+import { MemberID, nameToMemberOption, MemberData, Rank } from './Member';
 import { AmendmentID, AmendmentData, DEFAULT_AMENDMENT, AMENDMENT_STATUS_OPTIONS, recoverLinkedCaucus } from './Amendment';
 import {
   Card, Button, Form, Dropdown, Segment, Input, TextArea, Checkbox,
-  List, SemanticICONS, Icon, Tab, Grid, SemanticCOLORS, Container, Message, Label, Popup
+  List, SemanticICONS, Icon, Tab, Grid, SemanticCOLORS, Container, Message, Label, Popup, Statistic
 } from 'semantic-ui-react';
 import { CommitteeData, recoverMemberOptions } from './Committee';
 import { CaucusID, DEFAULT_CAUCUS, CaucusData } from './Caucus';
@@ -16,7 +16,7 @@ import {
   checkboxHandler
 } from '../actions/handlers';
 import { makeDropdownOption } from '../utils';
-import { canVote, CommitteeStats } from './Admin';
+import { canVote, CommitteeStats, makeCommitteeStats } from './Admin';
 import { voteOnResolution, deleteResolution } from '../actions/resolutionActions';
 import { postCaucus } from '../actions/caucusActions';
 import { Stance } from './caucus/SpeakerFeed';
@@ -378,17 +378,6 @@ export default class Resolution extends React.Component<Props, State> {
     );
   }
 
-  renderVotingMembers = (members: Dictionary<string, MemberData>, votes: Votes) => {
-    const { renderVotingMember } = this;
-
-    return _.chain(members)
-      .keys()
-      .filter(key => canVote(members[key]) && members[key].present)
-      .sortBy((key: string) => [members[key].name])
-      .map((key: string) => renderVotingMember(key, members[key], votes[key]))
-      .value();
-  }
-
   renderStats = () => {
     const { committee } = this.state;
 
@@ -427,38 +416,54 @@ export default class Resolution extends React.Component<Props, State> {
   }
 
   renderVoting = (resolution?: ResolutionData) => {
-    const { renderVotingMembers, renderCount } = this;
+    const { renderVotingMember, renderCount } = this;
     const { committee } = this.state;
 
-    const members = committee ? committee.members : undefined;
-    const votes = resolution ? resolution.votes : undefined;
+    const members = (committee ? committee.members : undefined) || {};
+    const votes = (resolution ? resolution.votes : undefined) || {};
 
-    const votingMembers = renderVotingMembers(
-      members || {} as Dictionary<string, MemberData>,
-      votes || {} as Votes
-    );
+    const sortedPresentAndCanVote = _.chain(members)
+      .keys()
+      .filter(key => canVote(members[key]) && members[key].present)
+      .sortBy((key: string) => [members[key].name])
+      .value();
+
+    const rendered = sortedPresentAndCanVote
+      .map((key: string) => renderVotingMember(key, members[key], votes[key]));
+
+    const vetoes = _.chain(sortedPresentAndCanVote)
+      .filter((key: string) => members[key].rank === Rank.Veto && votes[key] === Vote.Against)
+      .map(key => members[key])
+      .value();
+
+    const resolutionVetoed = !!vetoes[0];
 
     const votesValues: Vote[] = _.values(votes || {});
-
     const fors = votesValues.filter(v => v === Vote.For).length;
     const abstains = votesValues.filter(v => v === Vote.Abstaining).length;
     const againsts = votesValues.filter(v => v === Vote.Against).length;
+    const remaining = sortedPresentAndCanVote.length - votesValues.length;
+
+    const threshold = makeCommitteeStats(committee).twoThirdsMajority;
+
+    const resolutionPassed: boolean = fors >= threshold && !resolutionVetoed; 
+    const resolutionFailed: boolean = fors + remaining < threshold && !resolutionVetoed;
 
     const COLUMNS = 3;
-    const ROWS = Math.ceil(votingMembers.length / COLUMNS);
+    const ROWS = Math.ceil(sortedPresentAndCanVote.length / COLUMNS);
 
     const columns = _.times(3, i => (
       <Grid.Column key={i}>
         <List
           inverted
         >
-          {_.chain(votingMembers).drop(ROWS * i).take(ROWS).value()}
+          {_.chain(rendered).drop(ROWS * i).take(ROWS).value()}
         </List>
       </Grid.Column>
     ));
 
     return (
-      <Segment inverted loading={!resolution}>
+      <Segment inverted loading={!resolution} textAlign="center">
         <Grid columns="equal">
           {columns}
         </Grid>
@@ -467,6 +472,18 @@ export default class Resolution extends React.Component<Props, State> {
           {renderCount('no', 'red', 'remove', againsts)}
           {renderCount('abstaining', 'yellow', 'minus', abstains)}
         </Grid>
+        {resolutionPassed && <Statistic inverted>
+          <Statistic.Value>Passed</Statistic.Value>
+          <Statistic.Label>{fors} exceeds the two-thirds majority of {threshold}</Statistic.Label>
+        </Statistic>} 
+        {resolutionFailed && <Statistic inverted>
+          <Statistic.Value>Failed</Statistic.Value>
+          <Statistic.Label>There are insufficient votes remaining to achieve a two-thirds majority</Statistic.Label>
+        </Statistic>} 
+        {resolutionVetoed && <Statistic inverted>
+          <Statistic.Value>Vetoed</Statistic.Value>
+          <Statistic.Label>{vetoes[0].name} was the first to veto the resolution</Statistic.Label>
+        </Statistic>} 
       </Segment>
     );
   }
