@@ -4,7 +4,7 @@ import { Card, Button, Form, Message, Modal, Icon, List, Segment } from 'semanti
 import { CommitteeID, CommitteeData } from './Committee';
 import * as _ from 'lodash';
 import Loading from './Loading';
-import { Dictionary } from 'src/types';
+import { Dictionary } from '../types';
 
 enum Mode {
   Login = 'Login',

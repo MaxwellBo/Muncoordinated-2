@@ -8,7 +8,7 @@ import { TimerSetter, Unit } from '../TimerSetter';
 import { SpeakerEvent, Stance } from '..//caucus/SpeakerFeed';
 import { checkboxHandler, validatedNumberFieldHandler, dropdownHandler } from '../../actions/handlers';
 import { membersToOptions } from '../../utils';
-import { Dictionary } from 'src/types';
+import { Dictionary } from '../../types';
 
 interface Props {
   caucus?: CaucusData;

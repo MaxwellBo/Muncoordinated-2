@@ -26,9 +26,9 @@ import ShareHint from './ShareHint';
 import Notifications from './Notifications';
 import { postResolution } from '../actions/resolutionActions';
 import ConnectionStatus from './ConnectionStatus';
-import { fieldHandler } from 'src/actions/handlers';
-import { membersToOptions } from 'src/utils';
-import { MemberOption } from 'src/constants';
+import { membersToOptions } from '../utils';
+import { fieldHandler } from '../actions/handlers';
+import { MemberOption } from '../constants';
 
 export function recoverMemberOptions(committee?: CommitteeData): MemberOption[] {
   if (committee) {

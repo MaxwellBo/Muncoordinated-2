@@ -3,7 +3,7 @@ import * as React from 'react';
 import { Feed, Icon, Flag, Label } from 'semantic-ui-react';
 import { runLifecycle, Lifecycle } from '../../actions/caucusActions';
 import { parseFlagName } from '../Member';
-import { Dictionary } from 'src/types';
+import { Dictionary } from '../../types';
 
 export enum Stance {
   For = 'For',

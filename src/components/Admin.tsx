@@ -9,7 +9,7 @@ import { COUNTRY_OPTIONS, MemberOption } from '../constants';
 import { checkboxHandler, dropdownHandler } from '../actions/handlers';
 import { makeDropdownOption } from '../utils';
 import * as _ from 'lodash';
-import { Dictionary } from 'src/types';
+import { Dictionary } from '../types';
 
 export const canVote = (x: MemberData) => (x.rank === Rank.Veto || x.rank === Rank.Standard);
 export const nonNGO = (x: MemberData) => (x.rank !== Rank.NGO);
