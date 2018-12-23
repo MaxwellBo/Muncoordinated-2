@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { RouteComponentProps } from 'react-router';
-import * as firebase from 'firebase';
+import * as firebase from 'firebase/app';
 import { CommitteeData, DEFAULT_COMMITTEE } from './Committee';
 import { Form, Grid, Header, InputOnChangeData, Divider,
   Message, Container, List, Segment } from 'semantic-ui-react';

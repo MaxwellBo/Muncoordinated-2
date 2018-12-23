@@ -1,5 +1,5 @@
 import * as React from 'react';
-import * as firebase from 'firebase';
+import * as firebase from 'firebase/app';
 import { MemberData } from '../Member';
 import { CaucusData, recoverDuration, recoverUnit } from '../Caucus';
 import { MemberOption } from '../../constants';

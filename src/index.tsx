@@ -21,6 +21,7 @@ history.listen((location, action) => {
 });
 
 ReactDOM.render(
+// @ts-ignore
   <Router history={history}>
     <App />
   </Router>,

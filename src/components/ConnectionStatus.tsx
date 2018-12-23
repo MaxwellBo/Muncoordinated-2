@@ -1,5 +1,5 @@
 import * as React from 'react';
-import * as firebase from 'firebase';
+import * as firebase from 'firebase/app';
 import { Message, Icon } from 'semantic-ui-react';
 
 interface Props {

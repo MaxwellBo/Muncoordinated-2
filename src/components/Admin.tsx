@@ -1,5 +1,5 @@
 import * as React from 'react';
-import * as firebase from 'firebase';
+import * as firebase from 'firebase/app';
 import { CommitteeData } from './Committee';
 import { MemberData, MemberID, Rank, parseFlagName, nameToMemberOption } from './Member';
 import * as Utils from '../utils';
