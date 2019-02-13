@@ -220,10 +220,9 @@ class ResponsiveNav extends React.Component<ResponsiveContainerProps, {}> {
         name={name.toLowerCase()}
         active={this.props.location.pathname === destination}
         onClick={() => this.props.history.push(destination)}
-      >
-        {/* <Icon name={icon} /> */}
-        {name}
-      </Menu.Item>
+        text={name}
+        // icon={icon}
+      />
     );
   }
 
@@ -234,10 +233,9 @@ class ResponsiveNav extends React.Component<ResponsiveContainerProps, {}> {
         name={name.toLowerCase()}
         active={false}
         onClick={f}
-      >
-        <Icon name={icon} />
-        {name}
-      </Dropdown.Item>
+        icon={icon}
+        text={name}
+      />
     );
   }
 
@@ -252,13 +250,12 @@ class ResponsiveNav extends React.Component<ResponsiveContainerProps, {}> {
         active={this.props.location.pathname === destination}
         position="right"
         onClick={() => this.props.history.push(destination)}
-      >
-        <Icon name={icon} />
-      </Menu.Item>
+        icon={icon}
+      />
     );
   }
 
-  makeSubmenuItem = (id: string, name: string, type: 'caucuses' | 'resolutions') => {
+  makeSubmenuItem = (id: string, name: string, description: string | undefined, type: 'caucuses' | 'resolutions') => {
     const { committeeID } = this.props.match.params;
     const destination = `/committees/${committeeID}/${type}/${id}`;
 
@@ -268,9 +265,8 @@ class ResponsiveNav extends React.Component<ResponsiveContainerProps, {}> {
         name={name}
         active={this.props.location.pathname === destination}
         onClick={() => this.props.history.push(destination)}
-      >
-        {name}
-      </Dropdown.Item>
+        text={name}
+      />
     );
   }
 
@@ -299,11 +295,11 @@ class ResponsiveNav extends React.Component<ResponsiveContainerProps, {}> {
     const resolutions = committee ? committee.resolutions : undefined;
 
     const caucusItems = Object.keys(caucuses || {}).map(key =>
-      makeSubmenuItem(key, caucuses![key].name, 'caucuses')
+      makeSubmenuItem(key, caucuses![key].name, caucuses![key].topic, 'caucuses')
     );
 
     const resolutionItems = Object.keys(resolutions || {}).map(key =>
-      makeSubmenuItem(key, resolutions![key].name, 'resolutions')
+      makeSubmenuItem(key, resolutions![key].name, undefined, 'resolutions')
     );
 
     return (
