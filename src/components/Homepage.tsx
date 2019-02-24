@@ -327,13 +327,13 @@ export default class Homepage extends React.Component<{}, {
             <Grid.Row textAlign="center">
               <Grid.Column style={{ paddingBottom: '5em', paddingTop: '5em' }}>
                 <Header as="h3" style={{ fontSize: '2em' }}>
-                  <a href="https://www.facebook.com/SYDMUN2017/">SydMUN 2017</a>
+                  <a href="https://www.facebook.com/SYDMUN2018/">SydMUN 2018</a>
                 </Header>
                 <Image 
                   centered 
                   size="small" 
                   rounded 
-                  src="/sydmun2017.jpg" 
+                  src="/sydmun2018.jpg" 
                 />
               </Grid.Column>
               <Grid.Column style={{ paddingBottom: '5em', paddingTop: '5em' }}>
@@ -381,6 +381,17 @@ export default class Homepage extends React.Component<{}, {
                   size="small" 
                   rounded 
                   src="/ncmun2018.jpg" 
+                />
+              </Grid.Column>
+              <Grid.Column style={{ paddingBottom: '5em', paddingTop: '5em' }}>
+                <Header as="h3" style={{ fontSize: '2em' }}>
+                <a href="https://www.facebook.com/VicMUNconf/">VicMUN 2019</a>
+                </Header>
+                <Image 
+                  centered 
+                  size="small" 
+                  rounded 
+                  src="/vicmun2019.jpg" 
                 />
               </Grid.Column>
             </Grid.Row>
