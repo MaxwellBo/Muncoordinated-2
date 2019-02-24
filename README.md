@@ -2,8 +2,6 @@
 
 [![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
 
-> Standard Readme Style
-
 Muncoordinated is a Model UN committee management service, (re)written with TypeScript, React, Semantic UI and Firebase.
 
 ![demo screenshot](public/promo.png)
