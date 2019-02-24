@@ -1,4 +1,4 @@
-import * as firebase from 'firebase';
+import * as firebase from 'firebase/app';
 import { CommitteeID } from '../components/Committee';
 import { TimerData, DEFAULT_TIMER } from '../components/Timer';
 import { CaucusID } from '../components/Caucus';

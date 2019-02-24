@@ -1,5 +1,5 @@
 import * as React from 'react';
-import * as firebase from 'firebase';
+import * as firebase from 'firebase/app';
 import { Container } from 'semantic-ui-react';
 import { RouteComponentProps } from 'react-router';
 import Timer, { TimerData } from './Timer';

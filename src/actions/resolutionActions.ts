@@ -1,4 +1,4 @@
-import * as firebase from 'firebase';
+import * as firebase from 'firebase/app';
 import { MemberData, MemberID } from '../components/Member';
 import { ResolutionID, Vote, ResolutionData } from '../components/Resolution';
 import { CommitteeID } from '../components/Committee';

@@ -1,10 +1,10 @@
 import * as React from 'react';
-import * as firebase from 'firebase';
+import * as firebase from 'firebase/app';
 import { Card, Button, Form, Message, Modal, Icon, List, Segment } from 'semantic-ui-react';
 import { CommitteeID, CommitteeData } from './Committee';
 import * as _ from 'lodash';
 import Loading from './Loading';
-import { Dictionary } from 'src/types';
+import { Dictionary } from '../types';
 
 enum Mode {
   Login = 'Login',

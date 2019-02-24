@@ -1,5 +1,5 @@
 import * as React from 'react';
-import * as firebase from 'firebase';
+import * as firebase from 'firebase/app';
 import { MemberData } from '../Member';
 import { CaucusData, recoverDuration, recoverUnit } from '../Caucus';
 import { MemberOption } from '../../constants';
@@ -8,7 +8,7 @@ import { TimerSetter, Unit } from '../TimerSetter';
 import { SpeakerEvent, Stance } from '..//caucus/SpeakerFeed';
 import { checkboxHandler, validatedNumberFieldHandler, dropdownHandler } from '../../actions/handlers';
 import { membersToOptions } from '../../utils';
-import { Dictionary } from 'src/types';
+import { Dictionary } from '../../types';
 
 interface Props {
   caucus?: CaucusData;

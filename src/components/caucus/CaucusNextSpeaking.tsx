@@ -65,7 +65,7 @@ export class CaucusNextSpeaking extends React.Component<Props, {}> {
 
       props.fref.child('queue').set({});
 
-      interlaced.forEach((se: SpeakerEvent) => {
+      interlaced.forEach((se: SpeakerEvent | undefined) => {
         if (se) {
           props.fref.child('queue').push().set(se);
         }
