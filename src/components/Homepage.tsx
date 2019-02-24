@@ -333,7 +333,7 @@ export default class Homepage extends React.Component<{}, {
                   centered 
                   size="small" 
                   rounded 
-                  src="/sydmun2018.jpg" 
+                  src="/sydmun2018.png" 
                 />
               </Grid.Column>
               <Grid.Column style={{ paddingBottom: '5em', paddingTop: '5em' }}>
@@ -391,7 +391,7 @@ export default class Homepage extends React.Component<{}, {
                   centered 
                   size="small" 
                   rounded 
-                  src="/vicmun2019.jpg" 
+                  src="/vicmun2019.png" 
                 />
               </Grid.Column>
             </Grid.Row>
