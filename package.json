@@ -8,20 +8,20 @@
     "@types/jest": "23.3.10",
     "@types/lodash": "^4.14.116",
     "@types/node": "10.12.12",
-    "@types/react": "16.7.17",
-    "@types/react-dom": "16.0.11",
+    "@types/react": "^16.8.4",
+    "@types/react-dom": "^16.8.2",
     "@types/react-router-dom": "^4.3.1",
     "file-saver": "^2.0.0-rc.3",
     "firebase": "^5.7.0",
     "lodash": "^4.17.11",
-    "react": "^16.7.0",
-    "react-dom": "^16.7.0",
+    "react": "16.8.3",
+    "react-dom": "16.8.3",
     "react-ga": "^2.5.3",
     "react-router-dom": "^4.3.1",
-    "react-scripts": "2.1.1",
+    "react-scripts": "2.1.5",
     "semantic-ui-css": "^2.4.0",
     "semantic-ui-react": "^0.82.5",
-    "typescript": "3.2.2"
+    "typescript": "3.3.3"
   },
   "devDependencies": {
     "cypress": "^3.1.0"
