@@ -3,7 +3,7 @@ import * as firebase from 'firebase/app';
 import { RouteComponentProps } from 'react-router';
 import { Route } from 'react-router-dom';
 import { MemberData, MemberID } from './Member';
-import Caucus, { CaucusData, CaucusID, DEFAULT_CAUCUS, DEFAULT_CAUCUS_TIME_SECONDS } from './Caucus';
+import Caucus, { CaucusData, CaucusID, DEFAULT_CAUCUS, DEFAULT_CAUCUS_TIME_SECONDS, CaucusStatus } from './Caucus';
 import Resolution, { ResolutionData, ResolutionID, DEFAULT_RESOLUTION } from './Resolution';
 import Admin from './Admin';
 import { Icon, Menu, SemanticICONS, Dropdown, Container, Responsive, Sidebar, Header, Label, Divider, 
@@ -294,8 +294,9 @@ class ResponsiveNav extends React.Component<ResponsiveContainerProps, {}> {
     const caucuses = committee ? committee.caucuses : undefined;
     const resolutions = committee ? committee.resolutions : undefined;
 
-    const caucusItems = Object.keys(caucuses || {}).map(key =>
-      makeSubmenuItem(key, caucuses![key].name, caucuses![key].topic, 'caucuses')
+    const caucusItems = Object.keys(caucuses || {})
+      .filter(key => caucuses![key].status !== CaucusStatus.Closed)
+      .map(key => makeSubmenuItem(key, caucuses![key].name, caucuses![key].topic, 'caucuses')
     );
 
     const resolutionItems = Object.keys(resolutions || {}).map(key =>
