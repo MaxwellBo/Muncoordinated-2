@@ -30,7 +30,7 @@ yarn test && yarn run cypress
 
 Feel free to dive in! [Open an issue](https://github.com/MaxwellBo/Muncoordinated-2/issues/new) or submit PRs.
 
-Standard Readme follows the [Contributor Covenant](http://contributor-covenant.org/version/1/3/0/) Code of Conduct.
+Muncoordinated follows the [Contributor Covenant](http://contributor-covenant.org/version/1/3/0/) Code of Conduct.
 
 ### Contributors
 
