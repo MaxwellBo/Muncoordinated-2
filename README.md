@@ -2,7 +2,7 @@
 
 [![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
 
-Muncoordinated is a Model UN committee management service, (re)written with TypeScript, React, Semantic UI and Firebase.
+Muncoordinated is a Model UN committee management service, (re)written with TypeScript, React, Semantic UI and Firebase, and available at [muncoordinated.io](muncoordinated.io).
 
 ![demo screenshot](public/promo.png)
 
