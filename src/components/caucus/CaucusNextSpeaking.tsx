@@ -192,7 +192,7 @@ export class CaucusNextSpeaking extends React.Component<Props, {}> {
         />
         <SpeakerFeed 
           data={caucus ? caucus.queue : undefined}
-          fref={props.fref.child('queue')} 
+          queueFref={props.fref.child('queue')} 
           speaking={caucus ? caucus.speaking : undefined}
           speakerTimer={props.speakerTimer} 
         />
