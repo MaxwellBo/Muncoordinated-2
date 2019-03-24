@@ -10,6 +10,9 @@ import { URLParameters, Dictionary } from '../types';
 import Loading from './Loading';
 import { SpeakerEvent } from './caucus/SpeakerFeed';
 import { hhmmss } from './Timer';
+import { ResolutionData, ResolutionID } from './Resolution';
+import { AmendmentData } from './Amendment';
+import { MotionID, MotionData } from './Motions';
 
 interface Props extends RouteComponentProps<URLParameters> {
 }
@@ -17,6 +20,8 @@ interface Props extends RouteComponentProps<URLParameters> {
 interface MemberStats {
   duration: number;
   times: number;
+  motionProposals: number;
+  amendmentProposals: number;
 }
 
 interface State {
@@ -57,6 +62,8 @@ export default class Stats extends React.Component<Props, State> {
 
     let times = 0;
     let duration = 0;
+    let motionProposals= 0;
+    let amendmentProposals = 0;
 
     Object.keys(caucuses).forEach(cid => {
       const caucus: CaucusData = caucuses[cid];
@@ -72,7 +79,32 @@ export default class Stats extends React.Component<Props, State> {
       );
     });
 
-    return { times, duration };
+    const motions = committee.motions || {} as Dictionary<MotionID, MotionData>;
+
+    Object.keys(motions).forEach(mid => {
+      const motion: MotionData = motions[mid];
+
+      if (motion.proposer === member.name) {
+        motionProposals += 1
+      }
+    });
+
+    const resolutions = committee.resolutions || {} as Dictionary<ResolutionID, ResolutionData>;
+
+    Object.keys(resolutions).forEach(rid => {
+      const resolution: ResolutionData = resolutions[rid];
+
+      const amendments = resolution.amendments || {} as Dictionary<AmendmentData, AmendmentData>;
+      
+      Object.keys(amendments).map(aid => amendments[aid]).forEach((amendment: AmendmentData) => {
+        if (amendment.proposer === member.name) { // I fucked up and used name in SpeakerEvent, not MemberID
+          amendmentProposals += 1;
+        }
+      }
+      );
+    });
+
+    return { times, duration, motionProposals, amendmentProposals };
   }
 
   renderCommittee = (committee: CommitteeData) => {
@@ -99,6 +131,12 @@ export default class Stats extends React.Component<Props, State> {
           <Table.Cell textAlign="right">
             {hhmmss(stats.duration)}
           </Table.Cell>
+          <Table.Cell textAlign="right">
+            {stats.motionProposals}
+          </Table.Cell>
+          <Table.Cell textAlign="right">
+            {stats.amendmentProposals}
+          </Table.Cell>
         </Table.Row>
       );
     });
@@ -111,6 +149,8 @@ export default class Stats extends React.Component<Props, State> {
               <Table.HeaderCell />
               <Table.HeaderCell textAlign="right">Times Spoken</Table.HeaderCell>
               <Table.HeaderCell textAlign="right">Total Speaking Time</Table.HeaderCell>
+              <Table.HeaderCell textAlign="right">Motion Proposals</Table.HeaderCell>
+              <Table.HeaderCell textAlign="right">Amendment Proposals</Table.HeaderCell>
             </Table.Row>
           </Table.Header>
 

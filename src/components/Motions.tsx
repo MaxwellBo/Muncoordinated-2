@@ -236,6 +236,7 @@ export interface MotionData {
   type: MotionType;
   caucusTarget?: CaucusID;
   resolutionTarget?: ResolutionID;
+  deleted?: boolean
 }
 
 interface Props extends RouteComponentProps<URLParameters> {
@@ -322,7 +323,21 @@ export default class Motions extends React.Component<Props, State> {
   }
 
   handleClearMotions = (): void => {
-    this.state.committeeFref.child('motions').set({});
+    const { committee } = this.state;
+
+    const { committeeFref } = this.state;
+
+    const motions = committee 
+      ? committee.motions || {} as Dictionary<string, MotionData> 
+      : {} as Dictionary<string, MotionData>;
+
+    Object.keys(motions).forEach(key => {
+      committeeFref
+        .child('motions')
+        .child(key)
+        .child('deleted')
+        .set(true)
+    })
   }
 
   handleClearAdder = () => {
@@ -527,7 +542,7 @@ export default class Motions extends React.Component<Props, State> {
           <Button
             basic
             negative
-            onClick={() => motionFref.remove()}
+            onClick={() => motionFref.child('deleted').set(true)}
           >
             Delete
           </Button>
@@ -756,7 +771,9 @@ export default class Motions extends React.Component<Props, State> {
     const { renderMotion } = this;
     const { committeeFref } = this.state;
 
-    return Object.keys(motions).sort((a, b) => {
+    return Object.keys(motions)
+      .filter(key => !motions[key].deleted)
+      .sort((a, b) => {
       const ma: MotionData = motions[a];
       const mb: MotionData = motions[b];
       const ca = disruptiveness(ma.type);
@@ -792,9 +809,7 @@ export default class Motions extends React.Component<Props, State> {
 
     const renderedMotions = committee 
       ? renderMotions(committee.motions || {} as Dictionary<string, MotionData>)
-      : <div />; // TODO: This could probably do with a nice spinner
-
-    const motionsCount = committee ? _.values(committee.motions || {}) : 0;
+      : []; // TODO: This could probably do with a nice spinner
 
     return (
       <Container text style={{ padding: '1em 0em' }}>
@@ -803,7 +818,7 @@ export default class Motions extends React.Component<Props, State> {
         <Icon name="sort numeric ascending" /> Sorted from most to least disruptive
         <Button
           negative
-          disabled={motionsCount <= 0}
+          disabled={renderedMotions.length <= 0}
           floated="right"
           icon="eraser"
           content="Clear"
