@@ -254,16 +254,16 @@ export default class Resolution extends React.Component<Props, State> {
     const provisionTree = recoverLinkedCaucus(amendment) ? (
       <Button
         floated="right"
+        content="Associated Caucus"
+        onClick={() => this.gotoCaucus(amendment!.caucus)}
+      />
+    ):(
+      <Button
+        floated="right"
         disabled={!amendment || amendment.proposer === '' || !hasAuth}
         content="Provision Caucus"
         onClick={() => handleProvisionAmendment(id, amendment!)}
       />
-    ) : (
-        <Button
-          floated="right"
-          content="Associated Caucus"
-          onClick={() => this.gotoCaucus(amendment!.caucus)}
-        />
     );
 
     return (
