@@ -3,6 +3,7 @@
  * Mercy up on all those who must modify this.
  */
 
+import * as firebase from 'firebase/app';
 import { TimerData } from '../Timer';
 import * as React from 'react';
 import { Feed, Icon, Flag, Label, FeedContent, FeedEvent } from 'semantic-ui-react';
@@ -10,6 +11,7 @@ import { runLifecycle, Lifecycle } from '../../actions/caucusActions';
 import { parseFlagName } from '../Member';
 import { Dictionary } from '../../types';
 import { DragDropContext, Droppable, Draggable, DraggableProvided, DropResult } from 'react-beautiful-dnd';
+import { useAuthState } from 'react-firebase-hooks/auth';
 
 export enum Stance {
   For = 'For',
@@ -130,6 +132,7 @@ export const SpeakerFeed = (props: {
   speakerTimer: TimerData
 }) => {
   const { data, queueFref, speaking, speakerTimer } = props;
+  const { initialising, user } = useAuthState(firebase.auth());
 
   const events = data || {};
 
@@ -153,6 +156,11 @@ export const SpeakerFeed = (props: {
   const onDragEnd = (result: DropResult) => {
     // dropped outside the list
     if (!result.destination) {
+      return;
+    }
+
+    // no auth
+    if (!user) {
       return;
     }
 
