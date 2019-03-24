@@ -61,16 +61,18 @@ export function makeCommitteeStats(data?: CommitteeData) {
   const canVoteNo: number       = present.filter(canVote).length;
   const nonNGONo: number        = present.filter(nonNGO).length;
 
+  const simpleMajority: number = Math.ceil(canVoteNo * 0.5);
+  const twoThirdsMajority: number = Math.ceil(canVoteNo * (2 / 3));
+
   const quorum: number          = Math.ceil(absCanVote * 0.25);
   const procedural: number      = Math.ceil(nonNGONo * 0.5);
   const operative: number       = Math.ceil(canVoteNo * 0.5);
-  const twoThirdsMajority: number = Math.ceil(canVoteNo * (2 / 3));
   const hasQuorum: boolean      = presentNo >= quorum;
   const draftResolution: number = Math.ceil(canVoteNo * 0.25);
   const amendment: number       = Math.ceil(canVoteNo * 0.1);
 
   return { delegatesNo, presentNo, absCanVote, canVoteNo, nonNGONo, quorum, 
-    procedural, operative, hasQuorum, draftResolution, amendment, twoThirdsMajority };
+    procedural, operative, hasQuorum, draftResolution, amendment, twoThirdsMajority, simpleMajority };
 }
 
 export function CommitteeStats(props: { data?: CommitteeData, verbose: boolean }) {
