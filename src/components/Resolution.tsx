@@ -5,7 +5,7 @@ import { MemberID, nameToMemberOption, MemberData, Rank } from './Member';
 import { AmendmentID, AmendmentData, DEFAULT_AMENDMENT, AMENDMENT_STATUS_OPTIONS, recoverLinkedCaucus } from './Amendment';
 import {
   Card, Button, Form, Dropdown, Segment, Input, TextArea, Checkbox,
-  List, SemanticICONS, Icon, Tab, Grid, SemanticCOLORS, Container, Message, Label, Popup, Statistic
+  List, SemanticICONS, Icon, Tab, Grid, SemanticCOLORS, Container, Message, Label, Popup, Statistic, DropdownProps, DropdownItemProps
 } from 'semantic-ui-react';
 import { CommitteeData, recoverMemberOptions } from './Committee';
 import { CaucusID, DEFAULT_CAUCUS, CaucusData } from './Caucus';
@@ -59,7 +59,17 @@ const RESOLUTION_STATUS_OPTIONS = [
   ResolutionStatus.Introduced,
   ResolutionStatus.Passed,
   ResolutionStatus.Failed
-].map(makeDropdownOption);
+].map(makeDropdownOption)
+
+enum Majority {
+  Simple = "Simple majority",
+  TwoThirds = "Two-thirds majority"
+}
+
+const MAJORITY_OPTIONS: DropdownItemProps[] = [
+  { key: Majority.Simple, value: Majority.Simple, text: "Simple (50%) majority required" },
+  { key: Majority.TwoThirds, value: Majority.TwoThirds, text: "Two-thirds majority required" }
+]
 
 export type ResolutionID = string;
 
@@ -73,6 +83,7 @@ export interface ResolutionData {
   amendments?: Dictionary<AmendmentID, AmendmentData>;
   votes?: Votes;
   amendmentsArePublic?: boolean; // TODO: Migrate
+  requiredMajority?: Majority; // TODO: Migrate
 }
 
 export enum Vote {
@@ -89,7 +100,8 @@ export const DEFAULT_RESOLUTION: ResolutionData = {
   status: ResolutionStatus.Introduced,
   amendments: {} as Dictionary<AmendmentID, AmendmentData>,
   votes: {} as Votes,
-  amendmentsArePublic: false
+  amendmentsArePublic: false,
+  requiredMajority: Majority.Simple
 };
 
 export default class Resolution extends React.Component<Props, State> {
@@ -415,6 +427,23 @@ export default class Resolution extends React.Component<Props, State> {
     );
   }
 
+  renderMajoritySelector = (resolution?: ResolutionData) => {
+    const resolutionFref = this.recoverResolutionFref();
+    const requiredMajority = resolution ? resolution.requiredMajority : undefined;
+
+    return (
+      <Dropdown
+        placeholder="Select majority type"
+        search
+        label="Type"
+        options={MAJORITY_OPTIONS}
+        onChange={dropdownHandler<ResolutionData>(resolutionFref, 'requiredMajority')}
+        value={requiredMajority || DEFAULT_RESOLUTION.requiredMajority}
+      />
+    )
+
+  }
+
   renderVoting = (resolution?: ResolutionData) => {
     const { renderVotingMember, renderCount } = this;
     const { committee } = this.state;
@@ -444,7 +473,17 @@ export default class Resolution extends React.Component<Props, State> {
     const againsts = votesValues.filter(v => v === Vote.Against).length;
     const remaining = sortedPresentAndCanVote.length - votesValues.length;
 
-    const threshold = makeCommitteeStats(committee).twoThirdsMajority;
+    const requiredMajority: Majority = resolution 
+      ? (resolution.requiredMajority || DEFAULT_RESOLUTION.requiredMajority as Majority)
+      : DEFAULT_RESOLUTION.requiredMajority as Majority;
+
+    const threshold = (requiredMajority === Majority.TwoThirds) 
+      ? makeCommitteeStats(committee).twoThirdsMajority
+      : makeCommitteeStats(committee).simpleMajority;
+
+    const thresholdName = (requiredMajority === Majority.TwoThirds)
+      ? "two-thirds majority"
+      : "simple majority"
 
     const resolutionPassed: boolean = fors >= threshold && !resolutionVetoed; 
     const resolutionFailed: boolean = fors + remaining < threshold && !resolutionVetoed;
@@ -474,16 +513,19 @@ export default class Resolution extends React.Component<Props, State> {
         </Grid>
         {resolutionPassed && <Statistic inverted>
           <Statistic.Value>Passed</Statistic.Value>
-          <Statistic.Label>{fors} exceeds the two-thirds majority of {threshold}</Statistic.Label>
+          <Statistic.Label>{fors} clears the required {thresholdName} of {threshold}</Statistic.Label>
         </Statistic>} 
         {resolutionFailed && <Statistic inverted>
           <Statistic.Value>Failed</Statistic.Value>
-          <Statistic.Label>There are insufficient votes remaining to achieve a two-thirds majority</Statistic.Label>
+          <Statistic.Label>There are insufficient votes remaining to achieve a {thresholdName}</Statistic.Label>
         </Statistic>} 
         {resolutionVetoed && <Statistic inverted>
           <Statistic.Value>Vetoed</Statistic.Value>
           <Statistic.Label>{vetoes[0].name} was the first to veto the resolution</Statistic.Label>
         </Statistic>} 
+        <Segment inverted>
+          {this.renderMajoritySelector(resolution)}
+        </Segment>
       </Segment>
     );
   }
