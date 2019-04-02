@@ -4,10 +4,14 @@ import * as FileSaver from 'file-saver';
 import { CommitteeData, CommitteeID, recoverMemberOptions } from './Committee';
 import { RouteComponentProps } from 'react-router';
 import { URLParameters } from '../types';
-import { Form, Button, Progress, List, DropdownProps, Flag, Container, Tab, TextArea, TextAreaProps } from 'semantic-ui-react';
+import { Form, Button, Progress, List, DropdownProps, Flag, Container, Tab, TextArea, TextAreaProps, Feed, SemanticICONS } from 'semantic-ui-react';
 import { parseFlagName } from './Member';
 import Loading from './Loading';
 import { MemberOption } from '../constants';
+
+const TEXT_ICON: SemanticICONS = 'align left';
+const FILE_ICON: SemanticICONS = 'file outline';
+const LINK_ICON: SemanticICONS = 'linkify';
 
 enum Type {
   Link = 'link',
@@ -95,10 +99,10 @@ class FeedEntry extends React.Component<FeedPostProps, FeedPostState> {
     });
   }
 
-  renderDescription = () => {
+  renderDate = (action: 'Posted' | 'Uploaded') => {
     const { post } = this.props;
 
-    let sinceText = 'Posted';
+    let sinceText: string = action;
 
     if (post.timestamp) {
       const millis = new Date().getTime() - new Date(post.timestamp).getTime();
@@ -106,59 +110,62 @@ class FeedEntry extends React.Component<FeedPostProps, FeedPostState> {
       const secondsSince = millis / 1000;
 
       if (secondsSince < 60) {
-        sinceText = `Posted ${Math.round(secondsSince)} seconds ago`;
+        sinceText = `${action} ${Math.round(secondsSince)} seconds ago`;
       } else if (secondsSince < 60 * 60) {
-        sinceText = `Posted ${Math.round(secondsSince / 60 )} minutes ago`;
+        sinceText = `${action} ${Math.round(secondsSince / 60 )} minutes ago`;
       } else if (secondsSince < 60 * 60 * 24) {
-        sinceText = `Posted ${Math.round(secondsSince / (60 * 60))} hours ago`;
+        sinceText = `${action} ${Math.round(secondsSince / (60 * 60))} hours ago`;
       } else {
-        sinceText = `Posted ${Math.round(secondsSince / (60 * 60 * 24))} days ago`;
+        sinceText = `${action} ${Math.round(secondsSince / (60 * 60 * 24))} days ago`;
       }
     }
 
-    return (
-      <List.Description>
-        {sinceText} by  <Flag name={parseFlagName(post.uploader)}/>{post.uploader}
-      </List.Description>
-    );
+    return sinceText;
   }
 
   renderText = (post: Text) => {
     return (
-      <List.Item>
-        <List.Icon name="align left" verticalAlign="middle"/>
-        <List.Content>
-          {post.body}
-          {this.renderDescription()}
-          </List.Content>
-      </List.Item>
+      <Feed.Event>
+        <Feed.Label icon={TEXT_ICON} />
+        <Feed.Content>
+          <Feed.Summary>
+            <Feed.User><Flag name={parseFlagName(post.uploader)}/> {post.uploader}</Feed.User>
+            <Feed.Date>{this.renderDate('Posted')}</Feed.Date>
+          </Feed.Summary>
+          <Feed.Extra text>{post.body}</Feed.Extra>
+        </Feed.Content>
+      </Feed.Event>
     );
   }
 
   renderFile = (post: File) => {
     return (
-      <List.Item>
-        <List.Icon name="file outline" verticalAlign="middle"/>
-        <List.Content>
-          <List.Header as="a" onClick={this.download(post.filename)}>{post.filename}</List.Header>
-          {this.renderDescription()}
-          </List.Content>
-      </List.Item>
+      <Feed.Event>
+        <Feed.Label icon={FILE_ICON} />
+        <Feed.Content>
+          <Feed.Summary>
+            <Feed.User><Flag name={parseFlagName(post.uploader)}/> {post.uploader}</Feed.User> uploaded a file
+            <Feed.Date>{this.renderDate('Uploaded')}</Feed.Date>
+          </Feed.Summary>
+          <Feed.Extra><a onClick={this.download(post.filename)}>{post.filename}</a></Feed.Extra>
+        </Feed.Content>
+      </Feed.Event>
     );
   }
 
   renderLink = (post: Link) => {
     return (
-      <List.Item>
-        <List.Icon name="linkify" verticalAlign="middle"/>
-        <List.Content>
-          <List.Header as="a" href={post.url}>{post.url}</List.Header>
-          {post.name && <List.Description>
-            {post.name}
-          </List.Description>}
-          {this.renderDescription()}
-          </List.Content>
-      </List.Item>
+      <Feed.Event>
+        <Feed.Label icon={LINK_ICON} />
+        <Feed.Content>
+          <Feed.Summary>
+            <Feed.User><Flag name={parseFlagName(post.uploader)}/> {post.uploader}</Feed.User> posted a link
+            <Feed.Date>{this.renderDate('Posted')}</Feed.Date>
+          </Feed.Summary>
+          <Feed.Extra><a href={post.url}>{post.name || post.url}</a></Feed.Extra>
+          {post.url && <Feed.Meta><a href={post.url}>{post.url}</a></Feed.Meta>}
+        </Feed.Content>
+      </Feed.Event>
     );
   }
 
@@ -473,15 +480,15 @@ export default class Files extends React.Component<Props, State> {
 
     const panes = [
       { 
-        menuItem: { key: 'Text', icon: 'align left', content: 'Text' }, 
+        menuItem: { key: 'Text', icon: TEXT_ICON, content: 'Text' }, 
         render: () => <Tab.Pane>{this.renderPoster()}</Tab.Pane> 
       },
       { 
-        menuItem: { key: 'Link', icon: 'linkify', content: 'Link' }, 
+        menuItem: { key: 'Link', icon: LINK_ICON, content: 'Link' }, 
         render: () => <Tab.Pane>{this.renderLinker()}</Tab.Pane>
       },
       { 
-        menuItem: { key: 'File', icon: 'file outline', content: 'File' }, 
+        menuItem: { key: 'File', icon: FILE_ICON, content: 'File' }, 
         render: () => <Tab.Pane>{this.renderUploader()}</Tab.Pane> 
       },
     ];
@@ -489,7 +496,7 @@ export default class Files extends React.Component<Props, State> {
     return (
       <Container text style={{ padding: '1em 0em' }}>
         <Tab panes={panes} />
-        <List divided relaxed>
+        <Feed size="large">
           {committee ? Object.keys(files).reverse().map(key => 
             <FeedEntry 
               key={key} 
@@ -497,7 +504,7 @@ export default class Files extends React.Component<Props, State> {
               post={files[key]}
             />
           ) : <Loading />}
-        </List>
+        </Feed>
       </Container>
     );
   }
