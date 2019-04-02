@@ -132,7 +132,7 @@ class FeedEntry extends React.Component<FeedPostProps, FeedPostState> {
             <Feed.User><Flag name={parseFlagName(post.uploader)}/> {post.uploader}</Feed.User>
             <Feed.Date>{this.renderDate('Posted')}</Feed.Date>
           </Feed.Summary>
-          <Feed.Extra text>{post.body}</Feed.Extra>
+          <Feed.Extra style={{'white-space': 'pre'}} text>{post.body}</Feed.Extra>
         </Feed.Content>
       </Feed.Event>
     );
