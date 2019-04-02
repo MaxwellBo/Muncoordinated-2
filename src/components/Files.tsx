@@ -163,7 +163,8 @@ class FeedEntry extends React.Component<FeedPostProps, FeedPostState> {
             <Feed.Date>{this.renderDate('Posted')}</Feed.Date>
           </Feed.Summary>
           <Feed.Extra><a href={post.url}>{post.name || post.url}</a></Feed.Extra>
-          {post.url && <Feed.Meta><a href={post.url}>{post.url}</a></Feed.Meta>}
+          {/* Show the URL too if the link has name */}
+          {post.name && <Feed.Meta><a href={post.url}>{post.url}</a></Feed.Meta>}
         </Feed.Content>
       </Feed.Event>
     );
