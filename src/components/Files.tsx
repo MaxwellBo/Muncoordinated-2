@@ -508,6 +508,12 @@ export default class Files extends React.Component<Props, State> {
       return true;
     }
 
+    // For custom members
+    if (filtered.includes(post.uploader)) {
+      return true;
+    }
+
+    // For default country members
     return COUNTRY_OPTIONS
       .filter(x => filtered.includes(x.key))
       .map(x => x.text)
