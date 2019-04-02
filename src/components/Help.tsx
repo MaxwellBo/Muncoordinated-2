@@ -37,7 +37,7 @@ export const KEYBOARD_SHORTCUT_LIST = (
 export default class Help extends React.PureComponent<{}, {}> {
   gpl = ( 
     <a href="https://github.com/MaxwellBo/Muncoordinated-2/blob/master/LICENSE">
-      GNU GPLv3
+      GNU AGPLv3
     </a>
   );
 
@@ -52,7 +52,7 @@ export default class Help extends React.PureComponent<{}, {}> {
         </Segment>
         <Header as="h3" attached="top">Bug Reporting &amp; Help Requests</Header>
         <Segment attached="bottom">
-          In the likely event that a bug crops up, follow these steps:
+          In the event that a bug or issue crops up, follow these steps:
           <br />
           <List ordered>
             <List.Item>
