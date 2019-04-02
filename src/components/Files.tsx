@@ -4,10 +4,10 @@ import * as FileSaver from 'file-saver';
 import { CommitteeData, CommitteeID, recoverMemberOptions } from './Committee';
 import { RouteComponentProps } from 'react-router';
 import { URLParameters } from '../types';
-import { Form, Button, Progress, List, DropdownProps, Flag, Container, Tab, TextArea, TextAreaProps, Feed, SemanticICONS } from 'semantic-ui-react';
+import { Form, Button, Progress, DropdownProps, Flag, Container, Tab, TextAreaProps, Feed, SemanticICONS } from 'semantic-ui-react';
 import { parseFlagName } from './Member';
 import Loading from './Loading';
-import { MemberOption } from '../constants';
+import { MemberOption, COUNTRY_OPTIONS } from '../constants';
 
 const TEXT_ICON: SemanticICONS = 'align left';
 const FILE_ICON: SemanticICONS = 'file outline';
@@ -195,6 +195,7 @@ interface State {
   body: string;
   errorCode?: string;
   uploader?: MemberOption;
+  filtered: MemberOption['key'][];
 }
 
 interface Props extends RouteComponentProps<URLParameters> {
@@ -210,7 +211,8 @@ export default class Files extends React.Component<Props, State> {
       link: '',
       body: '',
       committeeFref: firebase.database().ref('committees')
-        .child(match.params.committeeID)
+        .child(match.params.committeeID),
+      filtered: []
     };
   }
 
@@ -388,6 +390,32 @@ export default class Files extends React.Component<Props, State> {
     this.setState({ link: e.currentTarget.value });
   }
 
+  setFilter = (event: React.SyntheticEvent<HTMLElement>, data: DropdownProps) => {
+    // @ts-ignore
+    this.setState({ filtered: data.value });
+  }
+
+  renderFilter = () => {
+    const { committee } = this.state;
+
+    const memberOptions = recoverMemberOptions(committee);
+
+    return (
+      <Form>
+        <Form.Dropdown
+          icon="search"
+          value={this.state.filtered.map(x => x)}
+          search
+          multiple
+          selection
+          onChange={this.setFilter}
+          options={memberOptions}
+          label="View posts only by"
+        />
+      </Form>
+    )
+  }
+
   renderLinker = () => {
     const { committee, uploader, body, link } = this.state;
 
@@ -471,6 +499,19 @@ export default class Files extends React.Component<Props, State> {
       </Form>
     );
   }
+  
+  isFiltered = (post: PostData) => {
+    const { filtered } = this.state;
+
+    if (filtered.length === 0) {
+      return true;
+    }
+
+    return COUNTRY_OPTIONS
+      .filter(x => filtered.includes(x.key))
+      .map(x => x.text)
+      .includes(post.uploader)
+  }
 
   render() {
     const { committee } = this.state;
@@ -496,8 +537,11 @@ export default class Files extends React.Component<Props, State> {
     return (
       <Container text style={{ padding: '1em 0em' }}>
         <Tab panes={panes} />
+        {this.renderFilter()}
         <Feed size="large">
-          {committee ? Object.keys(files).reverse().map(key => 
+          {committee ? Object.keys(files).reverse()
+            .filter(key => this.isFiltered(files[key]))
+            .map(key =>
             <FeedEntry 
               key={key} 
               committeeID={committeeID}
