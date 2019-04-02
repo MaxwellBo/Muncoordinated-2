@@ -11,12 +11,14 @@ import { MemberOption } from '../constants';
 
 enum Type {
   Link = 'link',
-  File = 'file'
+  File = 'file',
+  Text = 'text'
 }
 
 export type PostID = string;
 
 export interface Post {
+  type: Type
   uploader: string;
   timestamp?: number; // we're just going to have to cop the undefined here
 }
@@ -32,7 +34,12 @@ interface File extends Post {
   filename: string;
 }
 
-export type PostData = Link | File;
+interface Text extends Post {
+  type: Type.Text;
+  body: string;
+}
+
+export type PostData = Link | File | Text;
 
 interface FeedPostProps {
   committeeID: CommitteeID;
@@ -116,6 +123,18 @@ class FeedEntry extends React.Component<FeedPostProps, FeedPostState> {
     );
   }
 
+  renderText = (post: Text) => {
+    return (
+      <List.Item>
+        <List.Icon name="align left" verticalAlign="middle"/>
+        <List.Content>
+          {post.body}
+          {this.renderDescription()}
+          </List.Content>
+      </List.Item>
+    );
+  }
+
   renderFile = (post: File) => {
     return (
       <List.Item>
@@ -146,12 +165,15 @@ class FeedEntry extends React.Component<FeedPostProps, FeedPostState> {
   render() {
     const { post } = this.props;
 
-    if (post.type === Type.File) {
-      return this.renderFile(post);
-    } else if (post.type === Type.Link) {
-      return this.renderLink(post);
-    } else {
-      return this.renderFile(post);
+    switch (post.type) {
+      case Type.File:
+        return this.renderFile(post);
+      case Type.Link:
+        return this.renderLink(post);
+      case Type.Text:
+        return this.renderText(post);
+      default:
+        return this.renderFile(post); // for backwards compat
     }
   }
 }
@@ -223,10 +245,20 @@ export default class Files extends React.Component<Props, State> {
     this.state.committeeFref.child('files').push().set(file);
 
     this.setState({ state: uploadTask.snapshot.state });
+
+    this.clear()
   }
 
   onFileChange = (event: any) => {
     this.setState({ file: event.target.files[0] });
+  }
+
+  clear = () => {
+    this.setState({
+      link: '',
+      body: '',
+      file: undefined
+    });
   }
 
   postFile = () => {
@@ -241,7 +273,11 @@ export default class Files extends React.Component<Props, State> {
       contentType: file.type
     };
 
-    var uploadTask = storageRef.child('committees').child(committeeID).child(file.name).put(file, metadata);
+    var uploadTask = storageRef
+      .child('committees')
+      .child(committeeID)
+      .child(file.name)
+      .put(file, metadata);
 
     uploadTask.on(
       firebase.storage.TaskEvent.STATE_CHANGED, 
@@ -263,6 +299,23 @@ export default class Files extends React.Component<Props, State> {
     };
 
     this.state.committeeFref.child('files').push().set(linkData);
+
+    this.clear()
+  }
+
+  postText = () => {
+    const { uploader, body } = this.state;
+
+    const linkData: Text = {
+      type: Type.Text,
+      timestamp: new Date().getTime(),
+      body: body,
+      uploader: uploader ? uploader.text : 'Unknown'
+    };
+
+    this.state.committeeFref.child('files').push().set(linkData);
+    
+    this.clear()
   }
 
   setMember = (event: React.SyntheticEvent<HTMLElement>, data: DropdownProps): void => {
@@ -374,6 +427,44 @@ export default class Files extends React.Component<Props, State> {
     );
   }
 
+  renderPoster = () => {
+    const { committee, uploader, body } = this.state;
+
+    const memberOptions = recoverMemberOptions(committee);
+
+    return (
+      <Form onSubmit={this.postText}>
+        <Form.TextArea
+          value={body}
+          onChange={this.setBody}
+          autoHeight
+          label="Body"
+          rows={3}
+        />
+        <Form.Group widths="equal">
+          <Form.Dropdown
+            icon="search"
+            key="uploader"
+            required
+            value={uploader ? uploader.key : undefined}
+            search
+            selection
+            error={!uploader}
+            onChange={this.setMember}
+            options={memberOptions}
+            label="Poster"
+          />
+          <Button 
+            type="submit" 
+            disabled={!body || !uploader}
+          >
+              Post
+          </Button>
+        </Form.Group>
+      </Form>
+    );
+  }
+
   render() {
     const { committee } = this.state;
     const { committeeID } = this.props.match.params;
@@ -382,13 +473,17 @@ export default class Files extends React.Component<Props, State> {
 
     const panes = [
       { 
-        menuItem: 'Upload', 
-        render: () => <Tab.Pane>{this.renderUploader()}</Tab.Pane> 
+        menuItem: { key: 'Text', icon: 'align left', content: 'Text' }, 
+        render: () => <Tab.Pane>{this.renderPoster()}</Tab.Pane> 
       },
       { 
-        menuItem: 'Link', 
+        menuItem: { key: 'Link', icon: 'linkify', content: 'Link' }, 
         render: () => <Tab.Pane>{this.renderLinker()}</Tab.Pane>
-      }
+      },
+      { 
+        menuItem: { key: 'File', icon: 'file outline', content: 'File' }, 
+        render: () => <Tab.Pane>{this.renderUploader()}</Tab.Pane> 
+      },
     ];
 
     return (
