@@ -1,12 +1,14 @@
 import * as React from 'react';
+import * as firebase from 'firebase/app';
 import { CaucusData, recoverUnit, recoverDuration } from '../Caucus';
-import { TimerData } from '../Timer';
+import { TimerData, toggleTicking } from '../Timer';
 import { Segment, Button, Icon, Label, Popup } from 'semantic-ui-react';
 import { runLifecycle, Lifecycle } from '../../actions/caucusActions';
 import { SpeakerEvent, Stance } from './SpeakerFeed';
 import { SpeakerFeed } from './SpeakerFeed';
 import * as _ from 'lodash';
 import { Unit } from '../TimerSetter';
+import { useObjectVal } from 'react-firebase-hooks/database';
 
 interface Props {
   caucus?: CaucusData;
@@ -15,43 +17,15 @@ interface Props {
   autoNextSpeaker: boolean;
 }
 
-export class CaucusNextSpeaking extends React.Component<Props, {}> {
-  constructor(props: Props) {
-    super(props);
-  }
-
-  handleKeyDown = (ev: KeyboardEvent) => {
+export function CaucusNextSpeaking(props: Props) {
+  const handleKeyDown = (ev: KeyboardEvent) => {
     // if changing this, update Help
     if (ev.keyCode === 78 && ev.altKey) {
-      this.nextSpeaker();
+      nextSpeaker();
     }
   }
 
-  componentDidMount() {
-    const { handleKeyDown } = this;
-    document.addEventListener<'keydown'>('keydown', handleKeyDown);
-  }
-
-  componentWillUnmount() {
-    const { handleKeyDown } = this;
-    document.removeEventListener('keydown', handleKeyDown);
-  }
-
-  componentDidUpdate(prevProps: Props) {
-    const { autoNextSpeaker } = this.props;
-    const { remaining, ticking } = prevProps.speakerTimer;
-
-    // FIXME
-    if (false) {
-    // if (remaining === 0 && ticking && autoNextSpeaker) {
-      console.info('Next speaker action triggered due to elapsed time and committee setting');
-      this.nextSpeaker();
-    }
-  }
-
-  interlace = () => {
-    const { props } = this;
-
+  const interlace = () => {
     if (props.caucus) {
       const q = props.caucus.queue || {};
 
@@ -73,9 +47,7 @@ export class CaucusNextSpeaking extends React.Component<Props, {}> {
     }
   }
 
-  nextSpeaker = () => {
-    const { props } = this;
-
+  const nextSpeaker = () => {
     if (props.caucus) {
       const queue = props.caucus.queue || {};
 
@@ -110,93 +82,124 @@ export class CaucusNextSpeaking extends React.Component<Props, {}> {
     }
   }
 
-  render() {
-    const { nextSpeaker, props, interlace } = this;
-    const { caucus } = this.props;
+  const skew = useObjectVal<number>(firebase.database().ref('/.info/serverTimeOffset'));
 
-    const queue = caucus ? caucus.queue : {}; 
-    const hasNowSpeaking = caucus ? !!caucus.speaking : false;
-    const queueLength = _.values(queue).length;
-    const hasNextSpeaking = queueLength > 0;
-    const interlaceable = queueLength > 1;
-    const nextable = hasNowSpeaking || hasNextSpeaking;
-
-    const endButton = (
-      <Button
-        basic
-        icon
-        negative
-        disabled={!nextable}
-        onClick={nextSpeaker}
-      >
-        <Icon name="hourglass end" />
-        End
-      </Button>
-    );
-
-    const startButton = (
-      <Button
-        basic
-        icon
-        positive
-        disabled={!nextable}
-        onClick={nextSpeaker}
-      >
-        <Icon name="arrow up" />
-        Stage
-      </Button>
-    );
-
-    const nextButton = (
-      <Button
-        basic
-        icon
-        primary
-        disabled={!nextable}
-        onClick={nextSpeaker}
-      >
-        <Icon name="arrow up" />
-        Next
-      </Button>
-    );
-
-    const interlaceButton = (
-      <Button
-        icon
-        disabled={!interlaceable}
-        basic
-        color="purple"
-        onClick={interlace}
-      >
-        <Icon name="random" />
-        Order
-      </Button>
-    );
-
-    let button = nextButton;
-
-    if (!hasNowSpeaking) {
-      button = startButton;
-    } else if (hasNowSpeaking && !hasNextSpeaking) {
-      button = endButton;
-    }
-
-    return (
-      <Segment textAlign="center" loading={!caucus}>
-        <Label attached="top left" size="large">Next Speaking</Label>
-        {button}
-        <Popup
-          trigger={interlaceButton}
-          content="Orders the list so that speakers are 
-          'For', then 'Against', then 'Neutral', then 'For', etc."
-        />
-        <SpeakerFeed 
-          data={caucus ? caucus.queue : undefined}
-          queueFref={props.fref.child('queue')} 
-          speaking={caucus ? caucus.speaking : undefined}
-          speakerTimer={props.speakerTimer} 
-        />
-      </Segment>
-    );
+  const startTimer = () => {
+    toggleTicking({
+      timerFref: props.fref.child('speakerTimer'),
+      timer: props.speakerTimer,
+      skew: skew.value
+    })
   }
+
+  const { caucus } = props;
+  const { ticking } = props.speakerTimer;
+
+  const queue = caucus ? caucus.queue : {}; 
+  const hasNowSpeaking = caucus ? !!caucus.speaking : false;
+  const queueLength = _.values(queue).length;
+  const hasNextSpeaking = queueLength > 0;
+  const interlaceable = queueLength > 1;
+  const nextable = hasNowSpeaking || hasNextSpeaking;
+
+  const stageButton = (
+    <Button
+      basic
+      icon
+      positive
+      disabled={!nextable}
+      onClick={nextSpeaker}
+    >
+      <Icon name="arrow up" />
+      Stage
+    </Button>
+  );
+
+  const startButton = (
+    <Button
+      basic
+      icon
+      positive
+      disabled={!nextable}
+      onClick={startTimer}
+    >
+      <Icon name="hourglass start" />
+      Start
+    </Button>
+  )
+
+  const nextButton = (
+    <Button
+      basic
+      icon
+      primary
+      disabled={!nextable}
+      onClick={nextSpeaker}
+    >
+      <Icon name="arrow up" />
+      Next
+    </Button>
+  );
+
+  const stopButton = (
+    <Button
+      basic
+      icon
+      negative
+      disabled={!nextable}
+      onClick={nextSpeaker}
+    >
+      <Icon name="hourglass end" />
+      Stop
+    </Button>
+  );
+
+  const interlaceButton = (
+    <Button
+      icon
+      disabled={!interlaceable}
+      basic
+      color="purple"
+      onClick={interlace}
+    >
+      <Icon name="random" />
+      Order
+    </Button>
+  );
+
+  let button = nextButton;
+  
+  if (!hasNowSpeaking) {
+    button = stageButton;
+  } else if (hasNowSpeaking && !ticking) {
+    button = startButton
+  } else if (hasNowSpeaking && ticking && hasNextSpeaking) {
+    button = nextButton;
+  } else if (hasNowSpeaking && ticking && !hasNextSpeaking) {
+    button = stopButton
+  }
+
+  React.useEffect(() => {
+    document.addEventListener<'keydown'>('keydown', handleKeyDown);
+
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  })
+
+  return (
+    <Segment textAlign="center" loading={!caucus}>
+      <Label attached="top left" size="large">Next Speaking</Label>
+      {button}
+      <Popup
+        trigger={interlaceButton}
+        content="Orders the list so that speakers are 
+        'For', then 'Against', then 'Neutral', then 'For', etc."
+      />
+      <SpeakerFeed 
+        data={caucus ? caucus.queue : undefined}
+        queueFref={props.fref.child('queue')} 
+        speaking={caucus ? caucus.speaking : undefined}
+        speakerTimer={props.speakerTimer} 
+      />
+    </Segment>
+  );
 }

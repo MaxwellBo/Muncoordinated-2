@@ -59,6 +59,32 @@ export function hhmmss(seconds: number): string {
   }
 }
 
+export function getTimeWithSkewCorrection(skew: number | undefined) {
+  const millis =  skew ? skew + (new Date).getTime() : (new Date).getTime();
+
+  return Math.floor(millis / 1000);
+}
+
+export function toggleTicking({
+  timer, 
+  timerFref,
+  skew
+}: {
+  timer?: TimerData,
+  timerFref: firebase.database.Reference
+  skew?: number,
+}) {
+  if (timer) {
+    const newTimer = {
+      elapsed: timer.elapsed,
+      remaining: timer.remaining,
+      ticking: timer.ticking ? false : getTimeWithSkewCorrection(skew)
+    };
+
+    timerFref.set(newTimer);
+  }
+}
+
 export default class Timer extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
@@ -95,35 +121,20 @@ export default class Timer extends React.Component<Props, State> {
     }
   }
 
-  getNow = () => {
-    const { skew } = this.state;
-
-    const millis =  skew ? skew + (new Date).getTime() : (new Date).getTime();
-
-    return Math.floor(millis / 1000);
-  }
-
-  toggleTicking = (event: React.MouseEvent<HTMLButtonElement> | {}, data: ButtonProps | {}) => {
-    const timer = this.state.timer;
-
-    if (timer) {
-      const newTimer = {
-        elapsed: timer.elapsed,
-        remaining: timer.remaining,
-        ticking: timer.ticking ? false : this.getNow()
-      };
-
-      this.props.timerFref.set(newTimer);
-    }
-  }
-
   toggleMute = () => {
     this.setState(prevState => ({ mute: !prevState.mute }));
   }
 
+  localToggleTicking = () => {
+    const { timer, skew } = this.state;
+    const { timerFref } = this.props;
+
+    toggleTicking({ timer, timerFref, skew });
+  }
+
   handleKeyDown = (ev: KeyboardEvent) => {
     if (this.props.toggleKeyCode === ev.keyCode && ev.altKey) {
-      this.toggleTicking({}, {});
+      this.localToggleTicking()
     }
   }
 
@@ -138,7 +149,9 @@ export default class Timer extends React.Component<Props, State> {
     if (timer && timer.val()) {
       let timerData = timer.val();
 
-      const now = this.getNow();
+      const { skew } = this.state;
+
+      const now = getTimeWithSkewCorrection(skew)
 
       if (timerData.ticking) {
         const remaining = timerData.remaining - (now - timerData.ticking);
@@ -229,9 +242,8 @@ export default class Timer extends React.Component<Props, State> {
     this.setState({ durationField: e.currentTarget.value })
 
   render() {
-    const { setUnit, setDuration, toggleTicking } = this;
-    const { mute } = this.state;
-    const timer = this.state.timer;
+    const { setUnit, setDuration } = this;
+    const { timer, mute } = this.state;
 
     const remaining = timer ? timer.remaining : DEFAULT_TIMER.remaining;
     const elapsed = timer ? timer.elapsed : DEFAULT_TIMER.elapsed;
@@ -249,7 +261,7 @@ export default class Timer extends React.Component<Props, State> {
           active={timer ? !!timer.ticking : false}
           negative={timer ? timer.remaining < 0 : false}
           size="massive"
-          onClick={toggleTicking}
+          onClick={() => this.localToggleTicking()}
         >
           {formatted}
         </Button>
