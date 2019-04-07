@@ -9,6 +9,7 @@ import { SpeakerFeed } from './SpeakerFeed';
 import * as _ from 'lodash';
 import { Unit } from '../TimerSetter';
 import { useObjectVal } from 'react-firebase-hooks/database';
+import { useAuthState } from 'react-firebase-hooks/auth';
 
 interface Props {
   caucus?: CaucusData;
@@ -18,69 +19,79 @@ interface Props {
 }
 
 export function CaucusNextSpeaking(props: Props) {
+  const { initialising, user } = useAuthState(firebase.auth());
+
   const handleKeyDown = (ev: KeyboardEvent) => {
     // if changing this, update Help
     if (ev.keyCode === 78 && ev.altKey) {
       nextSpeaker();
     }
-  }
+  };
 
   const interlace = () => {
-    if (props.caucus) {
-      const q = props.caucus.queue || {};
-
-      const vs: SpeakerEvent[] = _.values(q);
-
-      const fors     = vs.filter((se) => se.stance === Stance.For);
-      const againsts = vs.filter((se) => se.stance === Stance.Against);
-      const neutrals = vs.filter((se) => se.stance === Stance.Neutral);
-
-      const interlaced = _.flatten(_.zip(fors, againsts, neutrals));
-
-      props.fref.child('queue').set({});
-
-      interlaced.forEach((se: SpeakerEvent | undefined) => {
-        if (se) {
-          props.fref.child('queue').push().set(se);
-        }
-      });
+    if (!props.caucus) {
+      return;
     }
-  }
+
+    if (!user) {
+      return;
+    }
+
+    const q = props.caucus.queue || {};
+
+    const vs: SpeakerEvent[] = _.values(q);
+
+    const fors     = vs.filter((se) => se.stance === Stance.For);
+    const againsts = vs.filter((se) => se.stance === Stance.Against);
+    const neutrals = vs.filter((se) => se.stance === Stance.Neutral);
+
+    const interlaced = _.flatten(_.zip(fors, againsts, neutrals));
+
+    props.fref.child('queue').set({});
+
+    interlaced.forEach((se: SpeakerEvent | undefined) => {
+      if (se) {
+        props.fref.child('queue').push().set(se);
+      }
+    });
+  };
 
   const nextSpeaker = () => {
-    if (props.caucus) {
-      const queue = props.caucus.queue || {};
-
-      const queueHeadKey = Object.keys(queue)[0];
-
-      let queueHeadDetails = {};
-
-      if (queueHeadKey) {
-        queueHeadDetails = {
-          queueHeadData: queue[queueHeadKey],
-          queueHead: props.fref.child('queue').child(queueHeadKey)
-        };
-      }
-
-      const duration = recoverDuration(props.caucus);
-
-      const speakerSeconds: number = duration 
-        ? duration * (recoverUnit(props.caucus) === Unit.Minutes ? 60 : 1)
-        : 60;
-
-      const lifecycle: Lifecycle = {
-        history: props.fref.child('history'),
-        speakingData: props.caucus.speaking,
-        speaking: props.fref.child('speaking'),
-        timerData: props.speakerTimer,
-        timer: props.fref.child('speakerTimer'),
-        yielding: false,
-        timerResetSeconds: speakerSeconds
-      };
-
-      runLifecycle({ ...lifecycle, ...queueHeadDetails });
+    if (!props.caucus) {
+      return;
     }
-  }
+
+    const q = props.caucus.queue || {};
+
+    const queueHeadKey = Object.keys(q)[0];
+
+    let queueHeadDetails = {};
+
+    if (queueHeadKey) {
+      queueHeadDetails = {
+        queueHeadData: q[queueHeadKey],
+        queueHead: props.fref.child('queue').child(queueHeadKey)
+      };
+    }
+
+    const duration = recoverDuration(props.caucus);
+
+    const speakerSeconds: number = duration 
+      ? duration * (recoverUnit(props.caucus) === Unit.Minutes ? 60 : 1)
+      : 60;
+
+    const lifecycle: Lifecycle = {
+      history: props.fref.child('history'),
+      speakingData: props.caucus.speaking,
+      speaking: props.fref.child('speaking'),
+      timerData: props.speakerTimer,
+      timer: props.fref.child('speakerTimer'),
+      yielding: false,
+      timerResetSeconds: speakerSeconds
+    };
+
+    runLifecycle({ ...lifecycle, ...queueHeadDetails });
+  };
 
   const skew = useObjectVal<number>(firebase.database().ref('/.info/serverTimeOffset'));
 
@@ -89,8 +100,8 @@ export function CaucusNextSpeaking(props: Props) {
       timerFref: props.fref.child('speakerTimer'),
       timer: props.speakerTimer,
       skew: skew.value
-    })
-  }
+    });
+  };
 
   const { caucus } = props;
   const { ticking } = props.speakerTimer;
@@ -172,18 +183,18 @@ export function CaucusNextSpeaking(props: Props) {
   if (!hasNowSpeaking) {
     button = stageButton;
   } else if (hasNowSpeaking && !ticking) {
-    button = startButton
+    button = startButton;
   } else if (hasNowSpeaking && ticking && hasNextSpeaking) {
     button = nextButton;
   } else if (hasNowSpeaking && ticking && !hasNextSpeaking) {
-    button = stopButton
+    button = stopButton;
   }
 
   React.useEffect(() => {
     document.addEventListener<'keydown'>('keydown', handleKeyDown);
 
     return () => document.removeEventListener('keydown', handleKeyDown);
-  })
+  });
 
   return (
     <Segment textAlign="center" loading={!caucus}>
