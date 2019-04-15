@@ -313,7 +313,7 @@ class ResponsiveNav extends React.Component<ResponsiveContainerProps, {}> {
         >
           {committee ? committee.name : <Loading small />}
         </Menu.Item>
-        {makeMenuItem('Admin', 'users')}
+        {makeMenuItem('Setup', 'users')}
         {makeMenuItem('Motions', 'sort numeric descending')}
         {makeMenuItem('Unmod', 'discussions')}
         <Dropdown key="caucuses" item text="Caucuses" loading={!committee} icon={committee ? 'add' : undefined}>
@@ -452,7 +452,7 @@ export default class Committee extends React.Component<Props, State> {
             <ConnectionStatus />
           </Container>
           <Route exact={true} path="/committees/:committeeID" render={renderWelcome} />
-          <Route exact={true} path="/committees/:committeeID/admin" render={renderAdmin} />
+          <Route exact={true} path="/committees/:committeeID/setup" render={renderAdmin} />
           <Route exact={true} path="/committees/:committeeID/stats" component={Stats} />
           <Route exact={true} path="/committees/:committeeID/unmod" component={Unmod} />
           <Route exact={true} path="/committees/:committeeID/motions" component={Motions} />
