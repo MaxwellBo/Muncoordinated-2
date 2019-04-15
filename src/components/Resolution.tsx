@@ -436,7 +436,6 @@ export default class Resolution extends React.Component<Props, State> {
         placeholder="Select majority type"
         search
         inverted
-        label="Type"
         options={MAJORITY_OPTIONS}
         onChange={dropdownHandler<ResolutionData>(resolutionFref, 'requiredMajority')}
         value={requiredMajority || DEFAULT_RESOLUTION.requiredMajority}
