@@ -453,7 +453,7 @@ export default class Homepage extends React.Component<{}, {
                   <p>Made with 💖 by <a href="https://github.com/MaxwellBo">Max Bo</a>, 
                   with assistance from the <a href="https://www.facebook.com/UQUNSA/">UQ United Nations Student Association</a>
                   </p>
-                  <p>Copyright © 2018</p>
+                  <p>Copyright © 2019</p>
                 </Grid.Column>
               </Grid.Row>
             </Grid>

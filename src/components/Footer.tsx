@@ -8,7 +8,7 @@ interface State {
   timerId?: NodeJS.Timer;
 }
 
-export const CLIENT_VERSION = 'v2.17.0';
+export const CLIENT_VERSION = 'v2.18.0';
 
 export const CLIENT_VERSION_LINK = (
   <a href="https://github.com/MaxwellBo/Muncoordinated-2/releases">
@@ -59,7 +59,8 @@ export default class Footer extends React.PureComponent<Props, State> {
       </span>
     );
 
-    const willShowNudge = latestVersion && latestVersion !== CLIENT_VERSION;
+    // const willShowNudge = latestVersion && latestVersion !== CLIENT_VERSION;
+    const willShowNudge = false;
 
     return (
       <div style={{ position: 'fixed', bottom: 5, left: 5, background: '#FFFFFF' }}>

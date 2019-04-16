@@ -21,6 +21,7 @@ import { voteOnResolution, deleteResolution } from '../actions/resolutionActions
 import { postCaucus } from '../actions/caucusActions';
 import { Stance } from './caucus/SpeakerFeed';
 import { NotFound } from './NotFound';
+import Files from './Files';
 
 export const IDENTITCAL_PROPOSER_SECONDER = (
   <Message
@@ -435,7 +436,6 @@ export default class Resolution extends React.Component<Props, State> {
       <Dropdown
         placeholder="Select majority type"
         search
-        inverted
         options={MAJORITY_OPTIONS}
         onChange={dropdownHandler<ResolutionData>(resolutionFref, 'requiredMajority')}
         value={requiredMajority || DEFAULT_RESOLUTION.requiredMajority}
@@ -530,18 +530,9 @@ export default class Resolution extends React.Component<Props, State> {
     );
   }
 
-  renderHeader = (resolution?: ResolutionData) => {
+  renderMeta = (resolution?: ResolutionData) => {
     const resolutionFref = this.recoverResolutionFref();
     const { handleProvisionResolution, amendmentsArePublic } = this;
-
-    const statusDropdown = (
-      <Dropdown
-        value={resolution ? resolution.status : ResolutionStatus.Introduced}
-        options={RESOLUTION_STATUS_OPTIONS}
-        onChange={dropdownHandler<ResolutionData>(resolutionFref, 'status')}
-        loading={!resolution}
-      />
-    );
 
     const memberOptions = recoverMemberOptions(this.state.committee);
 
@@ -610,6 +601,56 @@ export default class Resolution extends React.Component<Props, State> {
     return (
       <React.Fragment>
         <Segment attached={amendmentsArePublic(resolution) ? 'top' : undefined}>
+          <Form error={hasError}>
+            {proposerTree}
+            {seconderTree}
+            {IDENTITCAL_PROPOSER_SECONDER}
+            {provisionTree}
+            <Form.Checkbox
+              label="Delegates can amend"
+              indeterminate={!resolution}
+              toggle
+              checked={amendmentsArePublic(resolution)}
+              onChange={checkboxHandler<ResolutionData>(resolutionFref, 'amendmentsArePublic')}
+            />
+          </Form>
+        </Segment>
+        {amendmentsArePublic(resolution) && DELEGATES_CAN_AMEND_NOTICE}
+      </React.Fragment>
+    );
+  }
+
+  renderText = (resolution?: ResolutionData) => {
+    const resolutionFref = this.recoverResolutionFref();
+
+    return (
+      <Form>
+        <TextArea
+          value={resolution ? resolution.link : ''}
+          autoHeight
+          onChange={textAreaHandler<ResolutionData>(resolutionFref, 'link')}
+          attatched="top"
+          rows={3}
+          placeholder="Resolution text"
+        />
+      </Form>
+    )
+  }
+
+  renderHeader = (resolution?: ResolutionData) => {
+    const resolutionFref = this.recoverResolutionFref();
+
+    const statusDropdown = (
+      <Dropdown
+        value={resolution ? resolution.status : ResolutionStatus.Introduced}
+        options={RESOLUTION_STATUS_OPTIONS}
+        onChange={dropdownHandler<ResolutionData>(resolutionFref, 'status')}
+        loading={!resolution}
+      />
+    );
+
+    return (
+        <Segment>
           <Input
             value={resolution ? resolution.name : ''}
             label={statusDropdown}
@@ -621,34 +662,7 @@ export default class Resolution extends React.Component<Props, State> {
             fluid
             placeholder="Set resolution name"
           />
-          <Form error={hasError}>
-            <Form.Group widths="equal">
-              {proposerTree}
-              {seconderTree}
-            </Form.Group>
-            {IDENTITCAL_PROPOSER_SECONDER}
-            <Form.Group>
-              {provisionTree}
-              <Form.Checkbox
-                label="Delegates can amend"
-                indeterminate={!resolution}
-                toggle
-                checked={amendmentsArePublic(resolution)}
-                onChange={checkboxHandler<ResolutionData>(resolutionFref, 'amendmentsArePublic')}
-              />
-            </Form.Group>
-            <TextArea
-              value={resolution ? resolution.link : ''}
-              autoHeight
-              onChange={textAreaHandler<ResolutionData>(resolutionFref, 'link')}
-              attatched="top"
-              rows={1}
-              placeholder="Resolution text or link to resolution text"
-            />
-          </Form>
         </Segment>
-        {amendmentsArePublic(resolution) && DELEGATES_CAN_AMEND_NOTICE}
-      </React.Fragment>
     );
   }
 
@@ -720,15 +734,26 @@ export default class Resolution extends React.Component<Props, State> {
     );
   }
 
+  renderFeed = () => {
+    const resolutionID: ResolutionID = this.props.match.params.resolutionID;
+
+    return <Files {...this.props} forResolution={resolutionID} />;
+  }
+
   renderResolution = (resolution?: ResolutionData) => {
-    const { renderHeader, renderAmendmentsGroup, renderVoting, renderDelete } = this;
+    const { renderAmendmentsGroup, renderVoting, renderDelete, renderFeed, renderText } = this;
 
     const panes = [
       {
         menuItem: 'Amendments',
         render: () => <Tab.Pane>{renderAmendmentsGroup(resolution)}</Tab.Pane>
-      },
-      {
+      }, {
+        menuItem: 'Text',
+        render: () => <Tab.Pane>{renderText(resolution)}</Tab.Pane>
+      }, {
+        menuItem: 'Feed',
+        render: () => <Tab.Pane>{renderFeed()}</Tab.Pane>
+      }, {
         menuItem: 'Voting',
         render: () => <Tab.Pane>{renderVoting(resolution)}</Tab.Pane>
       }, {
@@ -739,8 +764,21 @@ export default class Resolution extends React.Component<Props, State> {
 
     return (
       <Container>
-        {renderHeader(resolution)}
-        <Tab panes={panes} />
+        <Grid columns="equal" stackable>
+          <Grid.Row>
+            <Grid.Column>
+              {this.renderHeader(resolution)}
+            </Grid.Column>
+          </Grid.Row>
+          <Grid.Row>
+            <Grid.Column width={11}>
+              <Tab panes={panes} />
+            </Grid.Column>
+            <Grid.Column width={5}>
+              {this.renderMeta(resolution)}
+            </Grid.Column>
+          </Grid.Row>
+        </Grid >
       </Container>
     );
   }
