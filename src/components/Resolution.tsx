@@ -613,19 +613,28 @@ export default class Resolution extends React.Component<Props, State> {
               checked={amendmentsArePublic(resolution)}
               onChange={checkboxHandler<ResolutionData>(resolutionFref, 'amendmentsArePublic')}
             />
-            <TextArea
-              value={resolution ? resolution.link : ''}
-              autoHeight
-              onChange={textAreaHandler<ResolutionData>(resolutionFref, 'link')}
-              attatched="top"
-              rows={1}
-              placeholder="Resolution text or link to resolution text"
-            />
           </Form>
         </Segment>
         {amendmentsArePublic(resolution) && DELEGATES_CAN_AMEND_NOTICE}
       </React.Fragment>
     );
+  }
+
+  renderText = (resolution?: ResolutionData) => {
+    const resolutionFref = this.recoverResolutionFref();
+
+    return (
+      <Form>
+        <TextArea
+          value={resolution ? resolution.link : ''}
+          autoHeight
+          onChange={textAreaHandler<ResolutionData>(resolutionFref, 'link')}
+          attatched="top"
+          rows={3}
+          placeholder="Resolution text"
+        />
+      </Form>
+    )
   }
 
   renderHeader = (resolution?: ResolutionData) => {
@@ -732,12 +741,15 @@ export default class Resolution extends React.Component<Props, State> {
   }
 
   renderResolution = (resolution?: ResolutionData) => {
-    const { renderAmendmentsGroup, renderVoting, renderDelete, renderFeed } = this;
+    const { renderAmendmentsGroup, renderVoting, renderDelete, renderFeed, renderText } = this;
 
     const panes = [
       {
         menuItem: 'Amendments',
         render: () => <Tab.Pane>{renderAmendmentsGroup(resolution)}</Tab.Pane>
+      }, {
+        menuItem: 'Text',
+        render: () => <Tab.Pane>{renderText(resolution)}</Tab.Pane>
       }, {
         menuItem: 'Feed',
         render: () => <Tab.Pane>{renderFeed()}</Tab.Pane>

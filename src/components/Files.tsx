@@ -490,7 +490,6 @@ export default class Files extends React.Component<Props, State> {
             required
             value={uploader ? uploader.key : undefined}
             search
-            fluid
             selection
             error={!uploader}
             onChange={this.setMember}
