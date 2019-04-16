@@ -59,7 +59,8 @@ export default class Footer extends React.PureComponent<Props, State> {
       </span>
     );
 
-    const willShowNudge = latestVersion && latestVersion !== CLIENT_VERSION;
+    // const willShowNudge = latestVersion && latestVersion !== CLIENT_VERSION;
+    const willShowNudge = false;
 
     return (
       <div style={{ position: 'fixed', bottom: 5, left: 5, background: '#FFFFFF' }}>
