@@ -4,10 +4,11 @@ import * as FileSaver from 'file-saver';
 import { CommitteeData, CommitteeID, recoverMemberOptions } from './Committee';
 import { RouteComponentProps } from 'react-router';
 import { URLParameters } from '../types';
-import { Form, Button, Progress, DropdownProps, Flag, Container, Tab, TextAreaProps, Feed, SemanticICONS } from 'semantic-ui-react';
+import { Form, Button, Progress, DropdownProps, Flag, Container, Tab, TextAreaProps, Feed, SemanticICONS, Segment } from 'semantic-ui-react';
 import { parseFlagName } from './Member';
 import Loading from './Loading';
 import { MemberOption, COUNTRY_OPTIONS } from '../constants';
+import { ResolutionID } from './Resolution';
 
 const TEXT_ICON: SemanticICONS = 'align left';
 const FILE_ICON: SemanticICONS = 'file outline';
@@ -24,6 +25,7 @@ export type PostID = string;
 export interface Post {
   type: Type
   uploader: string;
+  forResolution?: ResolutionID
   timestamp?: number; // we're just going to have to cop the undefined here
 }
 
@@ -45,17 +47,17 @@ interface Text extends Post {
 
 export type PostData = Link | File | Text;
 
-interface FeedPostProps {
+interface EntryProps {
   committeeID: CommitteeID;
   post: PostData;
 }
 
-interface FeedPostState {
+interface EntryState {
   metadata?: any;
 }
 
-class FeedEntry extends React.Component<FeedPostProps, FeedPostState> {
-  constructor(props: FeedPostProps) {
+class Entry extends React.Component<EntryProps, EntryState> {
+  constructor(props: EntryProps) {
     super(props);
 
     this.state = {
@@ -132,7 +134,7 @@ class FeedEntry extends React.Component<FeedPostProps, FeedPostState> {
             <Feed.User><Flag name={parseFlagName(post.uploader)}/> {post.uploader}</Feed.User>
             <Feed.Date>{this.renderDate('Posted')}</Feed.Date>
           </Feed.Summary>
-          <Feed.Extra style={{'white-space': 'pre'}} text>{post.body}</Feed.Extra>
+          <Feed.Extra style={{'whiteSpace': 'pre'}} text>{post.body}</Feed.Extra>
         </Feed.Content>
       </Feed.Event>
     );
@@ -200,6 +202,7 @@ interface State {
 }
 
 interface Props extends RouteComponentProps<URLParameters> {
+  forResolution?: ResolutionID
 }
 
 export default class Files extends React.Component<Props, State> {
@@ -249,7 +252,8 @@ export default class Files extends React.Component<Props, State> {
       type: Type.File,
       timestamp: new Date().getTime(),
       filename: uploadTask.snapshot.ref.name,
-      uploader: uploader ? uploader.text : 'Unknown'
+      uploader: uploader ? uploader.text : 'Unknown',
+      forResolution: this.props.forResolution // may not exist
     };
 
     this.state.committeeFref.child('files').push().set(file);
@@ -305,7 +309,8 @@ export default class Files extends React.Component<Props, State> {
       timestamp: new Date().getTime(),
       name: body,
       url: link,
-      uploader: uploader ? uploader.text : 'Unknown'
+      uploader: uploader ? uploader.text : 'Unknown',
+      forResolution: this.props.forResolution // may not exist
     };
 
     this.state.committeeFref.child('files').push().set(linkData);
@@ -320,7 +325,8 @@ export default class Files extends React.Component<Props, State> {
       type: Type.Text,
       timestamp: new Date().getTime(),
       body: body,
-      uploader: uploader ? uploader.text : 'Unknown'
+      uploader: uploader ? uploader.text : 'Unknown',
+      forResolution: this.props.forResolution // may not exist
     };
 
     this.state.committeeFref.child('files').push().set(linkData);
@@ -473,7 +479,7 @@ export default class Files extends React.Component<Props, State> {
         <Form.TextArea
           value={body}
           onChange={this.setBody}
-          autoHeight
+          autoHeight={true}
           label="Body"
           rows={3}
         />
@@ -484,6 +490,7 @@ export default class Files extends React.Component<Props, State> {
             required
             value={uploader ? uploader.key : undefined}
             search
+            fluid
             selection
             error={!uploader}
             onChange={this.setMember}
@@ -512,12 +519,24 @@ export default class Files extends React.Component<Props, State> {
     if (filtered.includes(post.uploader)) {
       return true;
     }
-
+    
     // For default country members
     return COUNTRY_OPTIONS
       .filter(x => filtered.includes(x.key))
       .map(x => x.text)
       .includes(post.uploader)
+  }
+
+  isResolutionAssociated = (post: PostData) => {
+    if (!this.props.forResolution && post.forResolution) {
+      return false;
+    }
+
+    if (this.props.forResolution) {
+      return this.props.forResolution === post.forResolution;
+    }
+
+    return true;
   }
 
   render() {
@@ -541,22 +560,34 @@ export default class Files extends React.Component<Props, State> {
       },
     ];
 
-    return (
-      <Container text style={{ padding: '1em 0em' }}>
-        <Tab panes={panes} />
+    const inner = (
+      <>
+        <Tab 
+          menu={{ attached: true, tabular: false }}
+          panes={panes} 
+        />
         {this.renderFilter()}
         <Feed size="large">
           {committee ? Object.keys(files).reverse()
             .filter(key => this.isFiltered(files[key]))
+            .filter(key => this.isResolutionAssociated(files[key]))
             .map(key =>
-            <FeedEntry 
+            <Entry 
               key={key} 
               committeeID={committeeID}
               post={files[key]}
             />
           ) : <Loading />}
         </Feed>
-      </Container>
-    );
+      </>
+    )
+
+    return this.props.forResolution
+      ? inner:
+      (
+        <Container text style={{ padding: '1em 0em' }}>
+          {inner}
+        </Container>
+      );
   }
 }
