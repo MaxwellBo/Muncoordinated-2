@@ -737,7 +737,7 @@ export default class Resolution extends React.Component<Props, State> {
   renderFeed = () => {
     const resolutionID: ResolutionID = this.props.match.params.resolutionID;
 
-    return <Segment fluid><Files {...this.props} forResolution={resolutionID} /></Segment>
+    return <Files {...this.props} forResolution={resolutionID} />;
   }
 
   renderResolution = (resolution?: ResolutionData) => {

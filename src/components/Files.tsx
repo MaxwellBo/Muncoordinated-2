@@ -4,7 +4,7 @@ import * as FileSaver from 'file-saver';
 import { CommitteeData, CommitteeID, recoverMemberOptions } from './Committee';
 import { RouteComponentProps } from 'react-router';
 import { URLParameters } from '../types';
-import { Form, Button, Progress, DropdownProps, Flag, Container, Tab, TextAreaProps, Feed, SemanticICONS, Segment } from 'semantic-ui-react';
+import { Form, Button, Progress, DropdownProps, Flag, Container, Tab, TextAreaProps, Feed, SemanticICONS } from 'semantic-ui-react';
 import { parseFlagName } from './Member';
 import Loading from './Loading';
 import { MemberOption, COUNTRY_OPTIONS } from '../constants';
