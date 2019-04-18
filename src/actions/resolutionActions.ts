@@ -1,5 +1,5 @@
 import * as firebase from 'firebase/app';
-import { MemberData, MemberID } from '../components/Member';
+import { MemberID } from '../components/Member';
 import { ResolutionID, Vote, ResolutionData } from '../components/Resolution';
 import { CommitteeID } from '../components/Committee';
 import { AmendmentData } from '../components/Amendment';
@@ -27,7 +27,7 @@ export const voteOnResolution = (
   }
 };
 
-export const postAmendment = (
+export const putAmendment = (
   committeeID: CommitteeID, 
   resolutionID: ResolutionID,
   amendmentData: AmendmentData, 
@@ -46,7 +46,7 @@ export const postAmendment = (
   return ref;
 };
 
-export const postResolution = 
+export const putResolution = 
   (committeeID: CommitteeID, resolutionData: ResolutionData): firebase.database.ThenableReference => {
 
   const ref = firebase.database()

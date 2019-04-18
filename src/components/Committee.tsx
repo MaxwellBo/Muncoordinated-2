@@ -15,7 +15,7 @@ import Unmod from './Unmod';
 import Notes from './Notes';
 import Help, { KEYBOARD_SHORTCUT_LIST } from './Help';
 import Motions from './Motions';
-import { postCaucus } from '../actions/caucusActions';
+import { postCaucus as putCaucus } from '../actions/caucusActions';
 import { URLParameters, Dictionary } from '../types';
 import Loading from './Loading';
 import Footer from './Footer';
@@ -24,11 +24,13 @@ import Files, { PostID, PostData } from './Files';
 import { ModalLogin } from './Auth';
 import ShareHint from './ShareHint';
 import Notifications from './Notifications';
-import { postResolution } from '../actions/resolutionActions';
+import { putResolution } from '../actions/resolutionActions';
 import ConnectionStatus from './ConnectionStatus';
 import { membersToOptions } from '../utils';
 import { fieldHandler } from '../actions/handlers';
 import { MemberOption } from '../constants';
+import { putStrawpoll } from '../actions/strawpollActions';
+import Strawpoll, { DEFAULT_STRAWPOLL, StrawpollID, StrawpollData } from './Strawpoll';
 
 export function recoverMemberOptions(committee?: CommitteeData): MemberOption[] {
   if (committee) {
@@ -114,6 +116,7 @@ export interface CommitteeData {
   members?: Dictionary<MemberID, MemberData>;
   caucuses?: Dictionary<CaucusID, CaucusData>;
   resolutions?: Dictionary<ResolutionID, ResolutionData>;
+  strawpolls?: Dictionary<StrawpollID, StrawpollData>;
   motions?: Dictionary<MotionID, MotionData>;
   files?: Dictionary<PostID, PostData>;
   timer: TimerData;
@@ -137,6 +140,7 @@ export const DEFAULT_COMMITTEE: CommitteeData = {
   } as Dictionary<string, CaucusData>,
   resolutions: {} as Dictionary<ResolutionID, ResolutionData>,
   files: {} as Dictionary<PostID, PostData>,
+  strawpolls: {} as Dictionary<StrawpollID, StrawpollData>,
   timer: { ...DEFAULT_TIMER, remaining: DEFAULT_CAUCUS_TIME_SECONDS },
   notes: '',
   settings: DEFAULT_SETTINGS
@@ -209,24 +213,25 @@ interface ResponsiveContainerProps extends RouteComponentProps<URLParameters> {
   committee?: CommitteeData;
 }
 
-class ResponsiveNav extends React.Component<ResponsiveContainerProps, {}> {
-  makeMenuItem = (name: string, icon: SemanticICONS) => {
-    const committeeID: CommitteeID = this.props.match.params.committeeID;
+function ResponsiveNav(props: ResponsiveContainerProps) {
+  const committeeID: CommitteeID = props.match.params.committeeID;
+
+  const makeMenuItem = (name: string, icon: SemanticICONS) => {
     const destination = `/committees/${committeeID}/${name.toLowerCase()}`;
 
     return (
       <Menu.Item
         key={name}
         name={name.toLowerCase()}
-        active={this.props.location.pathname === destination}
-        onClick={() => this.props.history.push(destination)}
+        active={props.location.pathname === destination}
+        onClick={() => props.history.push(destination)}
         text={name}
         // icon={icon}
       />
     );
   }
 
-  makeSubmenuButton = (name: string, icon: SemanticICONS, f: () => void) => {
+  const makeSubmenuButton = (name: string, icon: SemanticICONS, f: () => void) => {
     return (
       <Dropdown.Item
         key={name}
@@ -239,60 +244,62 @@ class ResponsiveNav extends React.Component<ResponsiveContainerProps, {}> {
     );
   }
 
-  makeMenuIcon = (name: string, icon: SemanticICONS) => {
-    const committeeID: CommitteeID = this.props.match.params.committeeID;
+  const makeMenuIcon = (name: string, icon: SemanticICONS) => {
     const destination = `/committees/${committeeID}/${name.toLowerCase()}`;
 
     return (
       <Menu.Item
         key={name}
         name={name.toLowerCase()}
-        active={this.props.location.pathname === destination}
+        active={props.location.pathname === destination}
         position="right"
-        onClick={() => this.props.history.push(destination)}
+        onClick={() => props.history.push(destination)}
         icon={icon}
       />
     );
   }
 
-  makeSubmenuItem = (id: string, name: string, description: string | undefined, type: 'caucuses' | 'resolutions') => {
-    const { committeeID } = this.props.match.params;
+  const makeSubmenuItem = (id: string, name: string, description: string | undefined, type: 'caucuses' | 'resolutions' | 'strawpolls') => {
     const destination = `/committees/${committeeID}/${type}/${id}`;
 
     return (
       <Dropdown.Item
         key={id}
         name={name}
-        active={this.props.location.pathname === destination}
-        onClick={() => this.props.history.push(destination)}
+        active={props.location.pathname === destination}
+        onClick={() => props.history.push(destination)}
         text={name}
       />
     );
   }
 
-  pushCaucus = () => {
-    const committeeID: CommitteeID = this.props.match.params.committeeID;
-    const ref = postCaucus(committeeID, DEFAULT_CAUCUS);
+  const pushCaucus = () => {
+    const ref = putCaucus(committeeID, DEFAULT_CAUCUS);
 
-    this.props.history
+    props.history
       .push(`/committees/${committeeID}/caucuses/${ref.key}`);
   }
 
-  pushResolution = () => {
-    const committeeID: CommitteeID = this.props.match.params.committeeID;
-    const ref = postResolution(committeeID, DEFAULT_RESOLUTION);
+  const pushResolution = () => {
+    const ref = putResolution(committeeID, DEFAULT_RESOLUTION);
 
-    this.props.history
+    props.history
       .push(`/committees/${committeeID}/resolutions/${ref.key}`);
   }
 
-  renderMenuItems = () => {
-    const { makeMenuItem, makeSubmenuItem, makeMenuIcon, makeSubmenuButton } = this;
-    const { committee } = this.props;
+  const pushStrawpoll = () => {
+    const ref = putStrawpoll(committeeID, DEFAULT_STRAWPOLL);
 
-    const committeeID: CommitteeID = this.props.match.params.committeeID;
+    props.history
+      .push(`/committees/${committeeID}/strawpolls/${ref.key}`);
+  }
+
+  const renderMenuItems = () => {
+    const { committee } = props;
+
     const caucuses = committee ? committee.caucuses : undefined;
     const resolutions = committee ? committee.resolutions : undefined;
+    const strawpolls = committee ? committee.strawpolls : undefined;
 
     const caucusItems = Object.keys(caucuses || {})
       .filter(key => caucuses![key].status !== CaucusStatus.Closed)
@@ -303,13 +310,17 @@ class ResponsiveNav extends React.Component<ResponsiveContainerProps, {}> {
       makeSubmenuItem(key, resolutions![key].name, undefined, 'resolutions')
     );
 
+    const strawpollItems = Object.keys(strawpolls || {}).map(key =>
+      makeSubmenuItem(key, strawpolls![key].question, undefined, 'strawpolls')
+    );
+
     return (
       <React.Fragment>
         <Menu.Item
           header
           key="header"
-          onClick={() => this.props.history.push(`/committees/${committeeID}`)}
-          active={this.props.location.pathname === `/committees/${committeeID}`}
+          onClick={() => props.history.push(`/committees/${committeeID}`)}
+          active={props.location.pathname === `/committees/${committeeID}`}
         >
           {committee ? committee.name : <Loading small />}
         </Menu.Item>
@@ -318,14 +329,20 @@ class ResponsiveNav extends React.Component<ResponsiveContainerProps, {}> {
         {makeMenuItem('Unmod', 'discussions')}
         <Dropdown key="caucuses" item text="Caucuses" loading={!committee} icon={committee ? 'add' : undefined}>
           <Dropdown.Menu>
-            {makeSubmenuButton('New caucus', 'add', this.pushCaucus)}
+            {makeSubmenuButton('New caucus', 'add', pushCaucus)}
             {caucusItems}
           </Dropdown.Menu>
         </Dropdown>
         <Dropdown key="resolutions" item text="Resolutions" loading={!committee} icon={committee ? 'add' : undefined}>
           <Dropdown.Menu>
-            {makeSubmenuButton('New resolution', 'add', this.pushResolution)}
+            {makeSubmenuButton('New resolution', 'add', pushResolution)}
             {resolutionItems}
+          </Dropdown.Menu>
+        </Dropdown>
+        <Dropdown key="strawpolls" item text="Strawpolls" loading={!committee} icon={committee ? 'add' : undefined}>
+          <Dropdown.Menu>
+            {makeSubmenuButton('New strawpoll', 'add', pushStrawpoll)}
+            {strawpollItems}
           </Dropdown.Menu>
         </Dropdown>
         {makeMenuItem('Notes', 'sticky note outline')}
@@ -342,14 +359,12 @@ class ResponsiveNav extends React.Component<ResponsiveContainerProps, {}> {
     );
   }
 
-  render() {
-    return (
-      <React.Fragment>
-        <DesktopContainer body={this.props.children} menu={this.renderMenuItems()} />
-        <MobileContainer body={this.props.children} menu={this.renderMenuItems()} />
-      </React.Fragment>
-    );
-  }
+  return (
+    <React.Fragment>
+      <DesktopContainer body={props.children} menu={renderMenuItems()} />
+      <MobileContainer body={props.children} menu={renderMenuItems()} />
+    </React.Fragment>
+  );
 }
 
 export default class Committee extends React.Component<Props, State> {
@@ -462,6 +477,7 @@ export default class Committee extends React.Component<Props, State> {
           <Route exact={true} path="/committees/:committeeID/help" component={Help} />
           <Route path="/committees/:committeeID/caucuses/:caucusID" component={Caucus} />
           <Route path="/committees/:committeeID/resolutions/:resolutionID" component={Resolution} />
+          <Route path="/committees/:committeeID/strawpolls/:strawpollID" component={Strawpoll} />
           <Footer />
         </ResponsiveNav>
       </React.Fragment>
