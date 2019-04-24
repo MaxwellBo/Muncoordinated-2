@@ -75,29 +75,29 @@ export class SpeakerFeedEntry extends React.PureComponent<{
   renderContent() {
     const { data, speaking, fref } = this.props;
 
-    return data ? (
+    return (
       <Feed.Content>
         <Feed.Summary>
           <Feed.User>
-            <Flag name={parseFlagName(data.who)} />
-            {data.who}
+            {data && <Flag name={parseFlagName(data.who)} />}
+            {data ? data.who : ''}
           </Feed.User>
-          <Feed.Date>{data.duration.toString() + ' seconds'}</Feed.Date>
+          <Feed.Date>{data ? data.duration.toString() + ' seconds': ''}</Feed.Date>
         </Feed.Summary>
         <Feed.Meta>
           <Feed.Like>
-            <StanceIcon stance={data.stance} />
-            {data.stance}
+            {data && <StanceIcon stance={data.stance} />}
+            {data ? data.stance : ''}
           </Feed.Like>
-          <Label size="mini" as="a" onClick={() => fref.remove()}>
+          {data && <Label size="mini" as="a" onClick={() => fref.remove()}>
             Remove
-          </Label>
-          {speaking && (<Label size="mini" as="a" onClick={this.yieldHandler}>
+          </Label>}
+          {data && speaking && (<Label size="mini" as="a" onClick={this.yieldHandler}>
             Yield
           </Label>)}
         </Feed.Meta>
       </Feed.Content>
-    ) : <FeedContent />
+    )
   }
   
   render() {
