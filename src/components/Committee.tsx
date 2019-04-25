@@ -250,7 +250,6 @@ function ResponsiveNav(props: ResponsiveContainerProps) {
     return (
       <Menu.Item
         key={name}
-        name={name.toLowerCase()}
         active={props.location.pathname === destination}
         position="right"
         onClick={() => props.history.push(destination)}
