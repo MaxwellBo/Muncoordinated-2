@@ -21,8 +21,10 @@ import { URLParameters, Dictionary } from '../types';
 import { ResolutionData, DEFAULT_RESOLUTION, ResolutionID, IDENTITCAL_PROPOSER_SECONDER } from './Resolution';
 import { Stance } from './caucus/SpeakerFeed';
 import { AmendmentData, DEFAULT_AMENDMENT } from './Amendment';
-import { postAmendment, postResolution } from '../actions/resolutionActions';
+import { putAmendment, putResolution } from '../actions/resolutionActions';
 import * as _ from 'lodash';
+import { putStrawpoll } from '../actions/strawpollActions';
+import { DEFAULT_STRAWPOLL } from './Strawpoll';
 
 export type MotionID = string;
 
@@ -103,6 +105,8 @@ const actionName = (motionType: MotionType): string => {
       return 'Resume';
     case MotionType.ReorderDraftResolutions:
       return 'Reorder';
+    case MotionType.ProposeStrawpoll:
+      return 'Create';
     default:
       return 'Enact';
   }
@@ -117,6 +121,7 @@ const approvable = (motionType: MotionType): boolean => {
     case MotionType.ExtendModeratedCaucus:
     case MotionType.CloseModeratedCaucus:
     case MotionType.IntroduceAmendment:
+    case MotionType.ProposeStrawpoll:
       return true;
     default:
       return false;
@@ -156,7 +161,6 @@ const hasDetail = (motionType: MotionType): boolean => {
 const hasTextArea = (motionType: MotionType): boolean => {
   switch (motionType) {
     case MotionType.IntroduceAmendment:
-    case MotionType.ProposeStrawpoll:
       return true;
     default:
       return false;
@@ -172,7 +176,7 @@ const detailLabel = (motionType: MotionType): string => {
     case MotionType.IntroduceAmendment:
       return 'Text';
     case MotionType.ProposeStrawpoll:
-      return 'Options';
+      return 'Question';
     default:
       return '';
   }
@@ -411,7 +415,7 @@ export default class Motions extends React.Component<Props, State> {
         seconder: seconder
       };
 
-      const resolutionRef = postResolution(committeeID, newResolution);
+      const resolutionRef = putResolution(committeeID, newResolution);
 
       this.props.history
         .push(`/committees/${committeeID}/resolutions/${resolutionRef.key}`);
@@ -451,10 +455,16 @@ export default class Motions extends React.Component<Props, State> {
         proposer: proposer
       };
 
-      postAmendment(committeeID, resolutionID, newAmendment);
+      putAmendment(committeeID, resolutionID, newAmendment);
+    } else if (motionData.type === MotionType.ProposeStrawpoll) {
+      const strawpollRef = putStrawpoll(committeeID, {
+        ...DEFAULT_STRAWPOLL,
+        question: proposal
+      });
+
+      this.props.history
+        .push(`/committees/${committeeID}/strawpolls/${strawpollRef.key}`);
     }
-    // remember to add the correct enum value to the approvable predicate when adding 
-    // new cases
   } 
 
   renderMotion = (id: MotionID, motionData: MotionData, motionFref: firebase.database.Reference) => {
