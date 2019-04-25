@@ -50,6 +50,7 @@ export type PostData = Link | File | Text;
 interface EntryProps {
   committeeID: CommitteeID;
   post: PostData;
+  onDelete: () => void;
 }
 
 interface EntryState {
@@ -125,6 +126,14 @@ class Entry extends React.Component<EntryProps, EntryState> {
     return sinceText;
   }
 
+  renderDelete = () => {
+    return (
+      <Feed.Meta>
+        <a onClick={this.props.onDelete}>Delete</a>
+      </Feed.Meta>
+    )
+  }
+
   renderText = (post: Text) => {
     return (
       <Feed.Event>
@@ -135,6 +144,7 @@ class Entry extends React.Component<EntryProps, EntryState> {
             <Feed.Date>{this.renderDate('Posted')}</Feed.Date>
           </Feed.Summary>
           <Feed.Extra style={{'whiteSpace': 'pre'}} text>{post.body}</Feed.Extra>
+          {this.renderDelete()}
         </Feed.Content>
       </Feed.Event>
     );
@@ -150,6 +160,7 @@ class Entry extends React.Component<EntryProps, EntryState> {
             <Feed.Date>{this.renderDate('Uploaded')}</Feed.Date>
           </Feed.Summary>
           <Feed.Extra><a onClick={this.download(post.filename)}>{post.filename}</a></Feed.Extra>
+          {this.renderDelete()}
         </Feed.Content>
       </Feed.Event>
     );
@@ -167,6 +178,8 @@ class Entry extends React.Component<EntryProps, EntryState> {
           <Feed.Extra><a href={post.url}>{post.name || post.url}</a></Feed.Extra>
           {/* Show the URL too if the link has name */}
           {post.name && <Feed.Meta><a href={post.url}>{post.url}</a></Feed.Meta>}
+          <br />
+          {this.renderDelete()}
         </Feed.Content>
       </Feed.Event>
     );
@@ -247,14 +260,21 @@ export default class Files extends React.Component<Props, State> {
 
   handleComplete = (uploadTask: firebase.storage.UploadTask) => () => {
     const { uploader } = this.state;
+    const { forResolution } = this.props;
 
-    const file: File = {
+    let file: File = {
       type: Type.File,
       timestamp: new Date().getTime(),
       filename: uploadTask.snapshot.ref.name,
       uploader: uploader ? uploader.text : 'Unknown',
-      forResolution: this.props.forResolution // may not exist
     };
+
+    if (forResolution) {
+      file = {
+        ...file,
+        forResolution
+      };
+    }
 
     this.state.committeeFref.child('files').push().set(file);
 
@@ -303,15 +323,22 @@ export default class Files extends React.Component<Props, State> {
   
   postLink = () => {
     const { uploader, link, body } = this.state;
+    const { forResolution } = this.props;
 
-    const linkData: Link = {
+    let linkData: Link = {
       type: Type.Link,
       timestamp: new Date().getTime(),
       name: body,
       url: link,
       uploader: uploader ? uploader.text : 'Unknown',
-      forResolution: this.props.forResolution // may not exist
     };
+
+    if (forResolution) {
+      linkData = {
+        ...linkData,
+        forResolution
+      };
+    }
 
     this.state.committeeFref.child('files').push().set(linkData);
 
@@ -320,14 +347,21 @@ export default class Files extends React.Component<Props, State> {
 
   postText = () => {
     const { uploader, body } = this.state;
+    const { forResolution } = this.props;
 
-    const linkData: Text = {
+    let linkData: Text = {
       type: Type.Text,
       timestamp: new Date().getTime(),
       body: body,
       uploader: uploader ? uploader.text : 'Unknown',
-      forResolution: this.props.forResolution // may not exist
     };
+
+    if (forResolution) {
+      linkData = {
+        ...linkData,
+        forResolution
+      };
+    }
 
     this.state.committeeFref.child('files').push().set(linkData);
     
@@ -421,6 +455,10 @@ export default class Files extends React.Component<Props, State> {
         />
       </Form>
     )
+  }
+
+  deletePost = (postID: PostID) => () => {
+    this.state.committeeFref.child('files').child(postID).remove();
   }
 
   renderLinker = () => {
@@ -571,11 +609,12 @@ export default class Files extends React.Component<Props, State> {
             .filter(key => this.isFiltered(files[key]))
             .filter(key => this.isResolutionAssociated(files[key]))
             .map(key =>
-            <Entry 
-              key={key} 
-              committeeID={committeeID}
-              post={files[key]}
-            />
+              <Entry 
+                key={key} 
+                onDelete={this.deletePost(key)}
+                committeeID={committeeID}
+                post={files[key]}
+              />
           ) : <Loading />}
         </Feed>
       </>
