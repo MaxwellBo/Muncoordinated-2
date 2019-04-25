@@ -5,7 +5,7 @@ import { RouteComponentProps } from 'react-router';
 import { URLParameters, Dictionary } from '../types';
 import { getStrawpollRef } from '../actions/strawpollActions';
 import { useObject } from 'react-firebase-hooks/database';
-import { Container, Header, Input, Button, List, Icon, Checkbox, Form, CheckboxProps } from 'semantic-ui-react';
+import { Container, Header, Input, Button, List, Icon, Checkbox, Form, CheckboxProps, Progress } from 'semantic-ui-react';
 import { fieldHandler } from '../actions/handlers';
 import Loading from './Loading';
 import { useAuthState } from 'react-firebase-hooks/auth';
@@ -66,6 +66,15 @@ export default function Strawpoll(props: StrawpollProps) {
     const options: Dictionary<StrawpollOptionID, StrawpollOptionData> = 
       strawpoll ? strawpoll.val().options || {}: {};
     const { initialising, user } = useAuthState(firebase.auth());
+
+    let totalVotes = 0;
+
+    Object.keys(options).forEach(oid => {
+      const votes = options[oid].votes || {};
+      Object.keys(votes).forEach(vid => {
+        totalVotes += 1;
+      })
+    })
 
     const [voterID, setVoterID] = useLocalStorage('voterID', undefined);
     if (!voterID) {
@@ -151,7 +160,8 @@ export default function Strawpoll(props: StrawpollProps) {
           </Form.Field>
         case StrawpollStage.Results:
           return <List.Item key={optionID}>
-            {count} votes for {option.text}
+            <b>{option.text}</b> {count} votes
+            <Progress progress='value' value={count} total={totalVotes} />
           </List.Item>
         default:
           <div />
@@ -216,22 +226,24 @@ export default function Strawpoll(props: StrawpollProps) {
       break;
   }
 
-    return !loading ? (
-        <Container text style={{ padding: '1em 0em' }}>
-          <Header as="h2">
-            <Input
-              value={strawpoll ? strawpoll.val().question : ''}
-              onChange={fieldHandler<StrawpollData>(strawpollFref, 'question')}
-              fluid
-              placeholder="Type your question here"
-            />
-          </Header>
-          <List>
-            {Object.keys(options).map(key => {
-              return renderOption(key, options[key])
-            })}
-          </List>
-          {buttons}
-        </Container>
-      ) : <Loading />
+  const optionsTree = Object.keys(options).map(key => {
+    return renderOption(key, options[key])
+  })
+
+  return !loading ? (
+      <Container text style={{ padding: '1em 0em' }}>
+        <Header as="h2">
+          <Input
+            value={strawpoll ? strawpoll.val().question : ''}
+            onChange={fieldHandler<StrawpollData>(strawpollFref, 'question')}
+            fluid
+            placeholder="Type your question here"
+          />
+        </Header>
+        <List>
+          {optionsTree}
+        </List>
+        {buttons}
+      </Container>
+    ) : <Loading />
 }
