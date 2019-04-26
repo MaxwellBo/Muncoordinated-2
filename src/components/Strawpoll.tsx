@@ -6,7 +6,7 @@ import { URLParameters, Dictionary } from '../types';
 import { getStrawpollRef } from '../actions/strawpollActions';
 import { useObject } from 'react-firebase-hooks/database';
 import { Container, Header, Input, Button, List, Icon, Checkbox, Form, CheckboxProps, Progress } from 'semantic-ui-react';
-import { fieldHandler } from '../actions/handlers';
+import { fieldHandler, validatedNumberFieldHandler, clearableZeroableValidatedNumberFieldHandler } from '../actions/handlers';
 import Loading from './Loading';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { useLocalStorage, uuidv4 } from '../utils';
@@ -23,6 +23,11 @@ enum StrawpollType {
   Radio = 'radio'
 }
 
+enum StrawpollMedium {
+  Manual = 'manual',
+  Link = 'link'
+}
+
 export type StrawpollID = string;
 export type StrawpollOptionID = string;
 export type StrawpollVoteID = string;
@@ -31,6 +36,7 @@ export const DEFAULT_STRAWPOLL: StrawpollData = {
   question: 'undefined question',
   stage: StrawpollStage.Preparing,
   type: StrawpollType.Checkbox,
+  medium: StrawpollMedium.Link,
   options: {},
 }
 
@@ -38,12 +44,14 @@ export interface StrawpollData {
   question: string
   type: StrawpollType
   stage: StrawpollStage
+  medium?: StrawpollMedium
   options?: Dictionary<StrawpollOptionID, StrawpollOptionData>
 }
 
 export interface StrawpollOptionData {
   text: string
   votes?: Dictionary<StrawpollVoteID, StrawpollVoteData>
+  tally?: number
 }
 
 const DEFAULT_STRAWPOLL_OPTION: StrawpollOptionData = {
@@ -58,12 +66,27 @@ export interface StrawpollVoteData {
 export interface StrawpollProps extends RouteComponentProps<URLParameters> {
 } 
 
+function getNumberOfVotes(option: StrawpollOptionData, medium: StrawpollMedium) {
+
+  if (medium === StrawpollMedium.Manual) {
+    return option.tally || 0;
+  } else {
+    let votes = 0;
+
+    Object.keys(option.votes || {}).forEach(vid => {
+      votes += 1;
+    })
+
+    return votes;
+  }
+}
 
 export default function Strawpoll(props: StrawpollProps) {
     const { committeeID, strawpollID } = props.match.params;
     const strawpollFref = getStrawpollRef(committeeID, strawpollID)
     const { error, loading, value: strawpoll } = useObject(strawpollFref);
-    const stage = strawpoll ? strawpoll.val().stage || StrawpollStage.Results : StrawpollStage.Voting;
+    const stage: StrawpollStage = strawpoll ? strawpoll.val().stage || StrawpollStage.Results : StrawpollStage.Voting;
+    const medium: StrawpollMedium = strawpoll ? strawpoll.val().medium || StrawpollMedium.Link : StrawpollMedium.Link;
     const options: Dictionary<StrawpollOptionID, StrawpollOptionData> = 
       strawpoll ? strawpoll.val().options || {}: {};
     const { initialising, user } = useAuthState(firebase.auth());
@@ -71,10 +94,7 @@ export default function Strawpoll(props: StrawpollProps) {
     let totalVotes = 0;
 
     Object.keys(options).forEach(oid => {
-      const votes = options[oid].votes || {};
-      Object.keys(votes).forEach(vid => {
-        totalVotes += 1;
-      })
+      totalVotes += getNumberOfVotes(options[oid], medium)
     })
 
     const [voterID, setVoterID] = useLocalStorage('voterID', undefined);
@@ -86,7 +106,17 @@ export default function Strawpoll(props: StrawpollProps) {
       strawpollFref.child('options').push(DEFAULT_STRAWPOLL_OPTION);
     }
 
-    const createPoll = () => {
+    const createSharablePoll = () => {
+      strawpollFref.child('stage').set(StrawpollStage.Voting);
+      strawpollFref.child('medium').set(StrawpollMedium.Link);
+    }
+
+    const createManualPoll = () => {
+      strawpollFref.child('stage').set(StrawpollStage.Voting);
+      strawpollFref.child('medium').set(StrawpollMedium.Manual);
+    }
+
+    const reopenVoting = () => {
       strawpollFref.child('stage').set(StrawpollStage.Voting);
     }
 
@@ -128,7 +158,7 @@ export default function Strawpoll(props: StrawpollProps) {
             : false
           : false
 
-      const count = Object.keys(option.votes || {}).length
+      const votes = getNumberOfVotes(option, medium);
 
       switch (stage) {
         case StrawpollStage.Preparing:
@@ -150,7 +180,7 @@ export default function Strawpoll(props: StrawpollProps) {
             </Input>
           </List.Item>
         case StrawpollStage.Voting:
-          return <Form.Field key={optionID}>
+          return medium === StrawpollMedium.Link ? <Form.Field key={optionID}>
             <Checkbox
               label={option.text}
               name='checkboxRadioGroup'
@@ -158,11 +188,21 @@ export default function Strawpoll(props: StrawpollProps) {
               checked={isChecked}
               onChange={onCheck(optionID)}
             />
-          </Form.Field>
+          </Form.Field> : 
+            <List.Item key={optionID}>
+              <Input
+                fluid
+                placeholder="Number of votes received"
+                label={option.text}
+                value={(!!option.tally || (option.tally === 0) ? option.tally : '').toString()}
+                error={option.tally === undefined}
+                onChange={clearableZeroableValidatedNumberFieldHandler<StrawpollOptionData>(strawpollOptionFref, 'tally')}
+              />
+            </List.Item>
         case StrawpollStage.Results:
           return <List.Item key={optionID}>
-            <b>{option.text}</b> {count} votes
-            <Progress progress='value' value={count} total={totalVotes} />
+            <b>{option.text}</b> {votes} votes
+            <Progress progress='value' value={votes} total={totalVotes} />
           </List.Item>
         default:
           <div />
@@ -185,9 +225,16 @@ export default function Strawpoll(props: StrawpollProps) {
           <Button
             primary
             basic
-            onClick={createPoll}
+            onClick={createSharablePoll}
           >
-            Create poll
+            Create sharable poll
+            </Button>
+          <Button
+            primary
+            basic
+            onClick={createManualPoll}
+          >
+            Create manual poll
             </Button>
         </Button.Group>
       break;
@@ -217,8 +264,7 @@ export default function Strawpoll(props: StrawpollProps) {
           fluid
           primary
           basic
-          
-          onClick={createPoll}
+          onClick={reopenVoting}
         >
           Reopen voting
         </Button>
@@ -241,7 +287,7 @@ export default function Strawpoll(props: StrawpollProps) {
             placeholder="Type your question here"
           />
         </Header>
-        {stage === StrawpollStage.Voting &&
+        {stage === StrawpollStage.Voting && medium === StrawpollMedium.Link &&
           <StrawpollShareHint committeeID={committeeID} strawpollID={strawpollID} />
         }
         <List>

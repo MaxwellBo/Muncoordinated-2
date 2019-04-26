@@ -39,6 +39,27 @@ export function validatedNumberFieldHandler<T>
   };
 }
 
+export function clearableZeroableValidatedNumberFieldHandler<T>
+  (fref: firebase.database.Reference, field: keyof T) {
+  return (e: React.FormEvent<HTMLInputElement>) => {
+
+    const v = e.currentTarget.value;
+    const n: number = Number(e.currentTarget.value);
+
+    let result = {};
+
+    if (v === '') {
+      result = {}
+    } else if (n) {
+      result = n
+    } else if (n === 0) {
+      result = 0
+    }
+
+    fref.child(field.toString()).set(result);
+  };
+}
+
 export function stateValidatedNumberFieldHandler<P, S>
   (comp: React.Component<P, S>, field: keyof S, target: string) {
   return (e: React.FormEvent<HTMLInputElement>) => {
