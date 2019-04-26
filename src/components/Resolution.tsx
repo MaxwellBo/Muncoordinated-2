@@ -5,7 +5,7 @@ import { MemberID, nameToMemberOption, MemberData, Rank } from './Member';
 import { AmendmentID, AmendmentData, DEFAULT_AMENDMENT, AMENDMENT_STATUS_OPTIONS, recoverLinkedCaucus } from './Amendment';
 import {
   Card, Button, Form, Dropdown, Segment, Input, TextArea, Checkbox,
-  List, SemanticICONS, Icon, Tab, Grid, SemanticCOLORS, Container, Message, Label, Popup, Statistic, DropdownProps, DropdownItemProps
+  List, SemanticICONS, Icon, Tab, Grid, SemanticCOLORS, Container, Message, Label, Popup, Statistic, DropdownProps, DropdownItemProps, TabProps
 } from 'semantic-ui-react';
 import { CommitteeData, recoverMemberOptions } from './Committee';
 import { CaucusID, DEFAULT_CAUCUS, CaucusData } from './Caucus';
@@ -22,6 +22,8 @@ import { postCaucus } from '../actions/caucusActions';
 import { Stance } from './caucus/SpeakerFeed';
 import { NotFound } from './NotFound';
 import Files from './Files';
+
+const TAB_ORDER = ['feed', 'text', 'amendments', 'voting', 'options'];
 
 export const IDENTITCAL_PROPOSER_SECONDER = (
   <Message
@@ -671,7 +673,7 @@ export default class Resolution extends React.Component<Props, State> {
 
     const resolutionRef = recoverResolutionFref();
 
-    return Object.keys(amendments).map(key => {
+    return Object.keys(amendments).reverse().map(key => {
       return renderAmendment(key, amendments[key], resolutionRef.child('amendments').child(key));
     });
   }
@@ -740,8 +742,29 @@ export default class Resolution extends React.Component<Props, State> {
     return <Files {...this.props} forResolution={resolutionID} />;
   }
 
+  onTabChange = (event: React.MouseEvent<HTMLDivElement>, data: TabProps) => {
+    const { committeeID, resolutionID } = this.props.match.params;
+
+    // @ts-ignore
+    const tab = TAB_ORDER[data.activeIndex];
+
+    if (tab) {
+      this.props.history
+        .push(`/committees/${committeeID}/resolutions/${resolutionID}/${tab}`);
+    } else {
+      this.props.history
+        .push(`/committees/${committeeID}/resolutions/${resolutionID}`);
+    }
+  }
+
   renderResolution = (resolution?: ResolutionData) => {
     const { renderAmendmentsGroup, renderVoting, renderDelete, renderFeed, renderText } = this;
+    const { tab } = this.props.match.params;
+
+    let index = TAB_ORDER.findIndex(x => x === tab)
+    if (index === -1) {
+      index = 0
+    }
 
     const panes = [
       {
@@ -772,7 +795,7 @@ export default class Resolution extends React.Component<Props, State> {
           </Grid.Row>
           <Grid.Row>
             <Grid.Column width={11}>
-              <Tab panes={panes} />
+              <Tab panes={panes} onTabChange={this.onTabChange} activeIndex={index}/>
             </Grid.Column>
             <Grid.Column width={5}>
               {this.renderMeta(resolution)}
