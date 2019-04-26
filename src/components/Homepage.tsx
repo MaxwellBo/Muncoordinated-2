@@ -286,6 +286,7 @@ export default class Homepage extends React.Component<{}, {
                     <List.Item as="li">Roll-call voting</List.Item>
                     <List.Item as="li">File uploads</List.Item>
                     <List.Item as="li">Notes</List.Item>
+                    <List.Item as="li">Strawpolls</List.Item>
                   </List>
                 </div>
                 <Header as="h3" style={{ fontSize: '2em' }}>Mobile friendly</Header>
