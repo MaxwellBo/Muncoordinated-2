@@ -745,14 +745,14 @@ export default class Resolution extends React.Component<Props, State> {
 
     const panes = [
       {
-        menuItem: 'Amendments',
-        render: () => <Tab.Pane>{renderAmendmentsGroup(resolution)}</Tab.Pane>
+        menuItem: 'Feed',
+        render: () => <Tab.Pane>{renderFeed()}</Tab.Pane>
       }, {
         menuItem: 'Text',
         render: () => <Tab.Pane>{renderText(resolution)}</Tab.Pane>
       }, {
-        menuItem: 'Feed',
-        render: () => <Tab.Pane>{renderFeed()}</Tab.Pane>
+        menuItem: 'Amendments',
+        render: () => <Tab.Pane>{renderAmendmentsGroup(resolution)}</Tab.Pane>
       }, {
         menuItem: 'Voting',
         render: () => <Tab.Pane>{renderVoting(resolution)}</Tab.Pane>
