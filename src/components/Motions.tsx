@@ -362,7 +362,7 @@ export default class Motions extends React.Component<Props, State> {
     const caucusID = motionData.caucusTarget;
     const resolutionID = motionData.resolutionTarget;
 
-    motionFref.remove();
+    motionFref.child('deleted').set(true);
 
     if (motionData.type === MotionType.OpenModeratedCaucus && speakerDuration && caucusDuration && proposer) {
 
