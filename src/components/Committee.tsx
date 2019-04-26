@@ -22,7 +22,7 @@ import Footer from './Footer';
 import Settings, { SettingsData, DEFAULT_SETTINGS } from './Settings';
 import Files, { PostID, PostData } from './Files';
 import { ModalLogin } from './Auth';
-import ShareHint from './ShareHint';
+import { CommitteeShareHint } from './ShareHint';
 import Notifications from './Notifications';
 import { putResolution } from '../actions/resolutionActions';
 import ConnectionStatus from './ConnectionStatus';
@@ -447,7 +447,7 @@ export default class Committee extends React.Component<Props, State> {
           </List.Item>
         </List>
         <Divider />
-        <ShareHint committeeID={this.props.match.params.committeeID} />
+        <CommitteeShareHint committeeID={this.props.match.params.committeeID} />
         <Divider />
         <Header as="h3">Keyboard Shortcuts</Header>
         {KEYBOARD_SHORTCUT_LIST}

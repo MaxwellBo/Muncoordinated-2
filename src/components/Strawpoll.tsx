@@ -10,6 +10,7 @@ import { fieldHandler } from '../actions/handlers';
 import Loading from './Loading';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { useLocalStorage, uuidv4 } from '../utils';
+import { StrawpollShareHint } from './ShareHint';
 
 enum StrawpollStage {
   Preparing = 'preparing',
@@ -240,6 +241,9 @@ export default function Strawpoll(props: StrawpollProps) {
             placeholder="Type your question here"
           />
         </Header>
+        {stage === StrawpollStage.Voting &&
+          <StrawpollShareHint committeeID={committeeID} strawpollID={strawpollID} />
+        }
         <List>
           {optionsTree}
         </List>
