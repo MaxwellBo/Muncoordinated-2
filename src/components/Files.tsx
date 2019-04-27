@@ -9,12 +9,14 @@ import { parseFlagName } from './Member';
 import Loading from './Loading';
 import { MemberOption, COUNTRY_OPTIONS } from '../constants';
 import { ResolutionID } from './Resolution';
+import { putAmendment } from '../actions/resolutionActions';
+import { DEFAULT_AMENDMENT } from './Amendment';
 
 const TEXT_ICON: SemanticICONS = 'align left';
 const FILE_ICON: SemanticICONS = 'file outline';
 const LINK_ICON: SemanticICONS = 'linkify';
 
-enum Type {
+enum PostType {
   Link = 'link',
   File = 'file',
   Text = 'text'
@@ -23,25 +25,25 @@ enum Type {
 export type PostID = string;
 
 export interface Post {
-  type: Type
+  type: PostType
   uploader: string;
   forResolution?: ResolutionID
   timestamp?: number; // we're just going to have to cop the undefined here
 }
 
 interface Link extends Post {
-  type: Type.Link;
+  type: PostType.Link;
   url: string;
   name: string;
 }
 
 interface File extends Post {
-  type: Type.File;
+  type: PostType.File;
   filename: string;
 }
 
 interface Text extends Post {
-  type: Type.Text;
+  type: PostType.Text;
   body: string;
 }
 
@@ -51,6 +53,7 @@ interface EntryProps {
   committeeID: CommitteeID;
   post: PostData;
   onDelete: () => void;
+  onPromoteToAmendment: () => void;
 }
 
 interface EntryState {
@@ -68,7 +71,7 @@ class Entry extends React.Component<EntryProps, EntryState> {
   recoverStorageRef = (): firebase.storage.Reference | null => {
     const { committeeID, post } = this.props;
 
-    if (post.type === Type.File) {
+    if (post.type === PostType.File) {
       const storageRef = firebase.storage().ref();
       return storageRef.child('committees').child(committeeID).child(post.filename);
     } else {
@@ -80,7 +83,7 @@ class Entry extends React.Component<EntryProps, EntryState> {
     const { post } = this.props;
     const { timestamp } = this.props.post;
 
-    if (!timestamp && post.type === Type.File) {
+    if (!timestamp && post.type === PostType.File) {
       this.recoverStorageRef()!.getMetadata().then((metadata: any) => {
         this.setState({ metadata: metadata });
       });
@@ -126,14 +129,6 @@ class Entry extends React.Component<EntryProps, EntryState> {
     return sinceText;
   }
 
-  renderDelete = () => {
-    return (
-      <Feed.Meta>
-        <a onClick={this.props.onDelete}>Delete</a>
-      </Feed.Meta>
-    )
-  }
-
   renderText = (post: Text) => {
     return (
       <Feed.Event>
@@ -144,7 +139,10 @@ class Entry extends React.Component<EntryProps, EntryState> {
             <Feed.Date>{this.renderDate('Posted')}</Feed.Date>
           </Feed.Summary>
           <Feed.Extra style={{'whiteSpace': 'pre'}} text>{post.body}</Feed.Extra>
-          {this.renderDelete()}
+          <Feed.Meta>
+            <a onClick={this.props.onDelete}>Delete</a>
+            {post.forResolution && <a onClick={this.props.onPromoteToAmendment}>Create amendment</a>}
+          </Feed.Meta>
         </Feed.Content>
       </Feed.Event>
     );
@@ -160,7 +158,9 @@ class Entry extends React.Component<EntryProps, EntryState> {
             <Feed.Date>{this.renderDate('Uploaded')}</Feed.Date>
           </Feed.Summary>
           <Feed.Extra><a onClick={this.download(post.filename)}>{post.filename}</a></Feed.Extra>
-          {this.renderDelete()}
+          <Feed.Meta>
+            <a onClick={this.props.onDelete}>Delete</a>
+          </Feed.Meta>
         </Feed.Content>
       </Feed.Event>
     );
@@ -179,7 +179,9 @@ class Entry extends React.Component<EntryProps, EntryState> {
           {/* Show the URL too if the link has name */}
           {post.name && <Feed.Meta><a href={post.url}>{post.url}</a></Feed.Meta>}
           <br />
-          {this.renderDelete()}
+          <Feed.Meta>
+            <a onClick={this.props.onDelete}>Delete</a>
+          </Feed.Meta>
         </Feed.Content>
       </Feed.Event>
     );
@@ -189,11 +191,11 @@ class Entry extends React.Component<EntryProps, EntryState> {
     const { post } = this.props;
 
     switch (post.type) {
-      case Type.File:
+      case PostType.File:
         return this.renderFile(post);
-      case Type.Link:
+      case PostType.Link:
         return this.renderLink(post);
-      case Type.Text:
+      case PostType.Text:
         return this.renderText(post);
       default:
         return this.renderFile(post); // for backwards compat
@@ -263,7 +265,7 @@ export default class Files extends React.Component<Props, State> {
     const { forResolution } = this.props;
 
     let file: File = {
-      type: Type.File,
+      type: PostType.File,
       timestamp: new Date().getTime(),
       filename: uploadTask.snapshot.ref.name,
       uploader: uploader ? uploader.text : 'Unknown',
@@ -326,7 +328,7 @@ export default class Files extends React.Component<Props, State> {
     const { forResolution } = this.props;
 
     let linkData: Link = {
-      type: Type.Link,
+      type: PostType.Link,
       timestamp: new Date().getTime(),
       name: body,
       url: link,
@@ -350,7 +352,7 @@ export default class Files extends React.Component<Props, State> {
     const { forResolution } = this.props;
 
     let linkData: Text = {
-      type: Type.Text,
+      type: PostType.Text,
       timestamp: new Date().getTime(),
       body: body,
       uploader: uploader ? uploader.text : 'Unknown',
@@ -459,6 +461,26 @@ export default class Files extends React.Component<Props, State> {
 
   deletePost = (postID: PostID) => () => {
     this.state.committeeFref.child('files').child(postID).remove();
+  }
+
+  promoteToAmendment = (post: PostData) => () => {
+    const { committeeID } = this.props.match.params;
+
+    if (post.type !== PostType.Text) {
+      return;
+    }
+
+    if (!post.forResolution) {
+      return;
+    }
+
+    putAmendment(committeeID, post.forResolution, {
+      ...DEFAULT_AMENDMENT,
+      proposer: post.uploader,
+      text: post.body,
+    })
+
+    this.props.history.push(`/committees/${committeeID}/resolutions/${post.forResolution}/amendments`);
   }
 
   renderLinker = () => {
@@ -612,6 +634,7 @@ export default class Files extends React.Component<Props, State> {
               <Entry 
                 key={key} 
                 onDelete={this.deletePost(key)}
+                onPromoteToAmendment={this.promoteToAmendment(files[key])}
                 committeeID={committeeID}
                 post={files[key]}
               />
