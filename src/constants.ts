@@ -207,6 +207,7 @@ export const COUNTRY_OPTIONS: MemberOption[] = [
   { key: 'ms', value: 'ms', flag: 'ms', text: 'Montserrat' },
   { key: 'ma', value: 'ma', flag: 'ma', text: 'Morocco' },
   { key: 'mz', value: 'mz', flag: 'mz', text: 'Mozambique' },
+  { key: 'mm', value: 'mm', flag: 'mm', text: 'Myanmar' },
   { key: 'na', value: 'na', flag: 'na', text: 'Namibia' },
   { key: 'nr', value: 'nr', flag: 'nr', text: 'Nauru' },
   { key: 'np', value: 'np', flag: 'np', text: 'Nepal' },
