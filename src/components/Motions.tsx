@@ -25,6 +25,7 @@ import { putAmendment, putResolution } from '../actions/resolution-actions';
 import * as _ from 'lodash';
 import { putStrawpoll } from '../actions/strawpoll-actions';
 import { DEFAULT_STRAWPOLL } from './Strawpoll';
+import { makeCommitteeStats } from './Admin';
 
 export type MotionID = string;
 
@@ -817,6 +818,8 @@ export default class Motions extends React.Component<Props, State> {
 
     const { committee } = this.state;
 
+    const { operative } = makeCommitteeStats(this.state.committee);
+
     const renderedMotions = committee 
       ? renderMotions(committee.motions || {} as Dictionary<string, MotionData>)
       : []; // TODO: This could probably do with a nice spinner
@@ -825,7 +828,7 @@ export default class Motions extends React.Component<Props, State> {
       <Container text style={{ padding: '1em 0em' }}>
         {renderAdder(committee)}
         <Divider />
-        <Icon name="sort numeric ascending" /> Sorted from most to least disruptive
+        <Icon name="sort numeric ascending" /> Sorted from most to least disruptive. {operative} votes required to pass a motion.
         <Button
           negative
           disabled={renderedMotions.length <= 0}
