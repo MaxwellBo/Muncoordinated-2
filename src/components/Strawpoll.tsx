@@ -3,7 +3,7 @@ import * as _ from 'lodash';
 import * as React from 'react';
 import { RouteComponentProps } from 'react-router';
 import { URLParameters, Dictionary } from '../types';
-import { getStrawpollRef } from '../actions/strawpollActions';
+import { getStrawpollRef } from '../actions/strawpoll-actions';
 import { useObject } from 'react-firebase-hooks/database';
 import { Container, Header, Input, Button, List, Icon, Checkbox, Form, CheckboxProps, Progress } from 'semantic-ui-react';
 import { fieldHandler, clearableZeroableValidatedNumberFieldHandler } from '../actions/handlers';

@@ -17,8 +17,8 @@ import {
 } from '../actions/handlers';
 import { makeDropdownOption } from '../utils';
 import { canVote, CommitteeStats, makeCommitteeStats } from './Admin';
-import { voteOnResolution } from '../actions/resolutionActions';
-import { putCaucus } from '../actions/caucusActions';
+import { voteOnResolution } from '../actions/resolution-actions';
+import { putCaucus } from '../actions/caucus-actions';
 import { Stance } from './caucus/SpeakerFeed';
 import { NotFound } from './NotFound';
 import Files from './Files';

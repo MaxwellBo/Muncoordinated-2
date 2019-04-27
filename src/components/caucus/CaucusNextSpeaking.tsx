@@ -3,7 +3,7 @@ import * as firebase from 'firebase/app';
 import { CaucusData, recoverUnit, recoverDuration } from '../Caucus';
 import { TimerData, toggleTicking } from '../Timer';
 import { Segment, Button, Icon, Label, Popup } from 'semantic-ui-react';
-import { runLifecycle, Lifecycle } from '../../actions/caucusActions';
+import { runLifecycle, Lifecycle } from '../../actions/caucus-actions';
 import { SpeakerEvent, Stance } from './SpeakerFeed';
 import { SpeakerFeed } from './SpeakerFeed';
 import * as _ from 'lodash';

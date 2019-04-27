@@ -15,7 +15,7 @@ import Unmod from './Unmod';
 import Notes from './Notes';
 import Help, { KEYBOARD_SHORTCUT_LIST } from './Help';
 import Motions from './Motions';
-import { putCaucus } from '../actions/caucusActions';
+import { putCaucus } from '../actions/caucus-actions';
 import { URLParameters, Dictionary } from '../types';
 import Loading from './Loading';
 import Footer from './Footer';
@@ -24,12 +24,12 @@ import Files, { PostID, PostData } from './Files';
 import { ModalLogin } from './Auth';
 import { CommitteeShareHint } from './ShareHint';
 import Notifications from './Notifications';
-import { putResolution } from '../actions/resolutionActions';
+import { putResolution } from '../actions/resolution-actions';
 import ConnectionStatus from './ConnectionStatus';
 import { membersToOptions } from '../utils';
 import { fieldHandler } from '../actions/handlers';
 import { MemberOption } from '../constants';
-import { putStrawpoll } from '../actions/strawpollActions';
+import { putStrawpoll } from '../actions/strawpoll-actions';
 import Strawpoll, { DEFAULT_STRAWPOLL, StrawpollID, StrawpollData } from './Strawpoll';
 
 export function recoverMemberOptions(committee?: CommitteeData): MemberOption[] {

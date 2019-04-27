@@ -9,7 +9,7 @@ import { parseFlagName } from './Member';
 import Loading from './Loading';
 import { MemberOption, COUNTRY_OPTIONS } from '../constants';
 import { ResolutionID } from './Resolution';
-import { putAmendment } from '../actions/resolutionActions';
+import { putAmendment } from '../actions/resolution-actions';
 import { DEFAULT_AMENDMENT } from './Amendment';
 
 const TEXT_ICON: SemanticICONS = 'align left';
