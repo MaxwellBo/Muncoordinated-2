@@ -18,7 +18,7 @@ import {
 import { makeDropdownOption } from '../utils';
 import { canVote, CommitteeStats, makeCommitteeStats } from './Admin';
 import { voteOnResolution } from '../actions/resolutionActions';
-import { postCaucus } from '../actions/caucusActions';
+import { putCaucus } from '../actions/caucusActions';
 import { Stance } from './caucus/SpeakerFeed';
 import { NotFound } from './NotFound';
 import Files from './Files';
@@ -174,7 +174,7 @@ export default class Resolution extends React.Component<Props, State> {
       }
     };
 
-    const ref = postCaucus(committeeID, newCaucus);
+    const ref = putCaucus(committeeID, newCaucus);
 
     this.recoverResolutionFref().child('amendments').child(id).child('caucus').set(ref.key);
 
@@ -204,7 +204,7 @@ export default class Resolution extends React.Component<Props, State> {
       }
     };
 
-    const ref = postCaucus(committeeID, newCaucus);
+    const ref = putCaucus(committeeID, newCaucus);
 
     ref.child('queue').push().set({
       duration: DEFAULT_CAUCUS.speakerTimer.remaining,

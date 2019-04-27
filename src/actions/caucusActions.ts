@@ -5,7 +5,7 @@ import { CaucusData, CaucusID, CaucusStatus } from '../components/Caucus';
 import { TimerData } from '../components/Timer';
 import { SpeakerEvent } from '../components/caucus/SpeakerFeed';
 
-export const postCaucus = 
+export const putCaucus = 
   (committeeID: CommitteeID, caucusData: CaucusData): firebase.database.ThenableReference => {
   const ref = firebase.database()
     .ref('committees')

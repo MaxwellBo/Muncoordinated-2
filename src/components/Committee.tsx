@@ -15,7 +15,7 @@ import Unmod from './Unmod';
 import Notes from './Notes';
 import Help, { KEYBOARD_SHORTCUT_LIST } from './Help';
 import Motions from './Motions';
-import { postCaucus as putCaucus } from '../actions/caucusActions';
+import { putCaucus } from '../actions/caucusActions';
 import { URLParameters, Dictionary } from '../types';
 import Loading from './Loading';
 import Footer from './Footer';

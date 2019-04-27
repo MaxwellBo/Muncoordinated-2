@@ -14,7 +14,7 @@ import { makeDropdownOption, implies } from '../utils';
 import { TimerSetter, Unit, getSeconds } from './TimerSetter';
 import { nameToMemberOption, parseFlagName } from './Member';
 import { DEFAULT_CAUCUS, CaucusData, CaucusID, CaucusStatus } from './Caucus';
-import { postCaucus, closeCaucus } from '../actions/caucusActions';
+import { putCaucus, closeCaucus } from '../actions/caucusActions';
 import { TimerData } from './Timer';
 import { putUnmodTimer, extendUnmodTimer, extendModTimer } from '../actions/committeeActions';
 import { URLParameters, Dictionary } from '../types';
@@ -389,7 +389,7 @@ export default class Motions extends React.Component<Props, State> {
         speakerUnit: speakerUnit
       };
 
-      const caucusRef = postCaucus(committeeID, newCaucus);
+      const caucusRef = putCaucus(committeeID, newCaucus);
 
       this.props.history
         .push(`/committees/${committeeID}/caucuses/${caucusRef.key}`);
