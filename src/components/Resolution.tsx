@@ -17,13 +17,13 @@ import {
 } from '../actions/handlers';
 import { makeDropdownOption } from '../utils';
 import { canVote, CommitteeStats, makeCommitteeStats } from './Admin';
-import { voteOnResolution, deleteResolution } from '../actions/resolutionActions';
+import { voteOnResolution } from '../actions/resolutionActions';
 import { postCaucus } from '../actions/caucusActions';
 import { Stance } from './caucus/SpeakerFeed';
 import { NotFound } from './NotFound';
 import Files from './Files';
 
-const TAB_ORDER = ['feed', 'text', 'amendments', 'voting', 'options'];
+const TAB_ORDER = ['feed', 'text', 'amendments', 'voting'];
 
 export const IDENTITCAL_PROPOSER_SECONDER = (
   <Message

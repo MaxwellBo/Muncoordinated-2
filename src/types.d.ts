@@ -8,7 +8,7 @@ export interface URLParameters {
   caucusID: CaucusID;
   resolutionID: ResolutionID;
   strawpollID: StrawpollID;
-  tab: 'feed' | 'text' | 'amendments' | 'voting' | 'options'
+  tab: 'feed' | 'text' | 'amendments' | 'voting'
 }
 
 export interface Dictionary<K, V> {
