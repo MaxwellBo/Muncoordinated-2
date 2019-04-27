@@ -345,7 +345,7 @@ function ResponsiveNav(props: ResponsiveContainerProps) {
           </Dropdown.Menu>
         </Dropdown>
         {makeMenuItem('Notes', 'sticky note outline')}
-        {makeMenuItem('Feed', 'file outline')}
+        {makeMenuItem('Posts', 'file outline')}
         {makeMenuItem('Stats', 'chart bar')}
         <Menu.Menu key="icon-submenu" position="right">
           {makeMenuIcon('Settings', 'settings')}
@@ -471,7 +471,7 @@ export default class Committee extends React.Component<Props, State> {
           <Route exact={true} path="/committees/:committeeID/unmod" component={Unmod} />
           <Route exact={true} path="/committees/:committeeID/motions" component={Motions} />
           <Route exact={true} path="/committees/:committeeID/notes" component={Notes} />
-          <Route exact={true} path="/committees/:committeeID/feed" component={Files} />
+          <Route exact={true} path="/committees/:committeeID/posts" component={Files} />
           <Route exact={true} path="/committees/:committeeID/settings" component={Settings} />
           <Route exact={true} path="/committees/:committeeID/help" component={Help} />
           <Route path="/committees/:committeeID/caucuses/:caucusID" component={Caucus} />

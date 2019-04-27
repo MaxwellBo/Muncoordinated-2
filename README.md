@@ -13,6 +13,7 @@ This version of Muncoordinated began development at the end of 2017, ahead of Sy
 
 Ultimately, this is a personal project that ballooned in scope and LOC - contributing to this will be difficult. Absolutely feel free to contact me  if you'd like to contribute; I'll gladly guide you through the ugly hacks and shaky foundations.
 
+
 ## Building
 
 
