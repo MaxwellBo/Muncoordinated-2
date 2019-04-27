@@ -718,24 +718,6 @@ export default class Resolution extends React.Component<Props, State> {
       : false;
   }
 
-  handleDelete = () => {
-    const { resolutionID, committeeID } = this.props.match.params;
-
-    deleteResolution(committeeID, resolutionID);
-  }
-
-  renderDelete = () => {
-    return (
-      <Button
-        negative
-        icon="trash"
-        content="Delete"
-        basic
-        onClick={this.handleDelete}
-      />
-    );
-  }
-
   renderFeed = () => {
     const resolutionID: ResolutionID = this.props.match.params.resolutionID;
 
@@ -758,7 +740,7 @@ export default class Resolution extends React.Component<Props, State> {
   }
 
   renderResolution = (resolution?: ResolutionData) => {
-    const { renderAmendmentsGroup, renderVoting, renderDelete, renderFeed, renderText } = this;
+    const { renderAmendmentsGroup, renderVoting, renderFeed, renderText } = this;
     const { tab } = this.props.match.params;
 
     let index = TAB_ORDER.findIndex(x => x === tab)
@@ -779,9 +761,6 @@ export default class Resolution extends React.Component<Props, State> {
       }, {
         menuItem: 'Voting',
         render: () => <Tab.Pane>{renderVoting(resolution)}</Tab.Pane>
-      }, {
-        menuItem: 'Options',
-        render: () => <Tab.Pane>{renderDelete()}</Tab.Pane>
       }
     ];
 
