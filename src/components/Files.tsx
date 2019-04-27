@@ -138,7 +138,7 @@ class Entry extends React.Component<EntryProps, EntryState> {
             <Feed.User><Flag name={parseFlagName(post.uploader)}/> {post.uploader}</Feed.User>
             <Feed.Date>{this.renderDate('Posted')}</Feed.Date>
           </Feed.Summary>
-          <Feed.Extra style={{'whiteSpace': 'pre'}} text>{post.body}</Feed.Extra>
+          <Feed.Extra style={{'whiteSpace': 'pre-wrap'}} text>{post.body}</Feed.Extra>
           <Feed.Meta>
             <a onClick={this.props.onDelete}>Delete</a>
             {post.forResolution && <a onClick={this.props.onPromoteToAmendment}>Create amendment</a>}
