@@ -448,8 +448,6 @@ export default class Motions extends React.Component<Props, State> {
         DEFAULT_SPEAKER_TIME_SECONDS
         : getSeconds(caucus.speakerDuration, caucus.speakerUnit);
 
-      console.debug(committee);
-
       putSpeaking(committeeID, caucusID, { 
         who: proposer,
         stance: Stance.For,
