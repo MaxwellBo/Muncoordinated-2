@@ -660,13 +660,13 @@ export default class Motions extends React.Component<Props, State> {
     const { caucuses, resolutions } = this.state.committee || { caucuses:  {}, resolutions: {} };
 
     // BADCODE: Filter predicate shared with menu in Committee, also update when changing
-    const caucusOptions = Object.keys(caucuses || {}).filter(key =>
+    const caucusOptions = Object.keys(caucuses || {}).reverse().filter(key =>
       caucuses![key].status === CaucusStatus.Open.toString()
     ).map(key =>
       ({ key: key, value: key, text: caucuses![key].name })
     );
 
-    const resolutionOptions = Object.keys(resolutions || {}).map(key =>
+    const resolutionOptions = Object.keys(resolutions || {}).reverse().map(key =>
       ({ key: key, value: key, text: resolutions![key].name })
     );
 
