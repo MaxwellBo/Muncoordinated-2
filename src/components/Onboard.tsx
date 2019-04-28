@@ -3,7 +3,7 @@ import { RouteComponentProps } from 'react-router';
 import * as firebase from 'firebase/app';
 import { CommitteeData, DEFAULT_COMMITTEE } from './Committee';
 import { Form, Grid, Header, InputOnChangeData, Divider,
-  Message, Container, List, Segment } from 'semantic-ui-react';
+  Message, Container, List, Segment, Icon } from 'semantic-ui-react';
 import { Login } from './Auth';
 import { URLParameters, Dictionary } from '../types';
 import ConnectionStatus from './ConnectionStatus';
@@ -140,6 +140,7 @@ export default class Onboard extends React.Component<Props, State> {
               disabled={!this.state.user || this.state.name === ''}
             >
               Create Committee
+              <Icon name="arrow right" />
             </Form.Button>
           </Form>
         </Segment>

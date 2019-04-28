@@ -7,7 +7,7 @@ import Caucus, { CaucusData, CaucusID, DEFAULT_CAUCUS, DEFAULT_CAUCUS_TIME_SECON
 import Resolution, { ResolutionData, ResolutionID, DEFAULT_RESOLUTION } from './Resolution';
 import Admin from './Admin';
 import { Icon, Menu, SemanticICONS, Dropdown, Container, Responsive, Sidebar, Header, Label, Divider, 
-  List, Input } from 'semantic-ui-react';
+  List, Input, Button, Segment } from 'semantic-ui-react';
 import Stats from './Stats';
 import { MotionID, MotionData } from './Motions';
 import { TimerData, DEFAULT_TIMER } from './Timer';
@@ -391,6 +391,13 @@ export default class Committee extends React.Component<Props, State> {
     this.state.committeeFref.off('value', this.firebaseCallback);
   }
 
+  gotoSetup = () => {
+    const { committeeID } = this.props.match.params;
+
+    this.props.history
+      .push(`/committees/${committeeID}/setup`);
+  }
+
   renderAdmin = () => {
     return (
       <Admin
@@ -446,11 +453,19 @@ export default class Committee extends React.Component<Props, State> {
             />
           </List.Item>
         </List>
-        <Divider />
-        <CommitteeShareHint committeeID={this.props.match.params.committeeID} />
-        <Divider />
-        <Header as="h3">Keyboard Shortcuts</Header>
-        {KEYBOARD_SHORTCUT_LIST}
+        <Segment>
+          <CommitteeShareHint committeeID={this.props.match.params.committeeID} />
+        </Segment>
+        <Segment>
+          <Label attached="top left" size="large">Keyboard Shorcuts</Label>
+          {KEYBOARD_SHORTCUT_LIST}
+        </Segment>
+        <Segment textAlign="center" basic>
+          <Button as="a" primary size="large" onClick={this.gotoSetup}>
+            Setup committee
+            <Icon name="arrow right" />
+          </Button>
+        </Segment>
       </Container>
     );
   }
