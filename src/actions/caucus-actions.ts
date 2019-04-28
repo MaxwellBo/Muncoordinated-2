@@ -18,6 +18,20 @@ export const putCaucus =
   return ref;
 };
 
+export const putSpeaking =
+  (committeeID: CommitteeID, caucusID: CaucusID, speaker: SpeakerEvent): Promise<any> => {
+
+  console.debug(speaker);
+
+  return firebase.database()
+    .ref('committees')
+    .child(committeeID)
+    .child('caucuses')
+    .child(caucusID)
+    .child('speaking')
+    .set(speaker);
+}
+
 // tslint:disable-next-line
 export const closeCaucus = 
   (committeeID: CommitteeID, caucusID: CaucusID): Promise<any> => {

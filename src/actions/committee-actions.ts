@@ -21,10 +21,12 @@ const extendTimer = (ref: firebase.database.Reference, seconds: number): Promise
 
         let newRemaining;
 
+        // This is correct, if not a little unclear
         if (timerData.remaining <= 0) {
           newRemaining = seconds;
+        } else if (!timerData.ticking) {
+          newRemaining = timerData.remaining + seconds;
         } else {
-          // newRemaining = timerData.remaining + seconds;
           newRemaining = seconds;
         }
 

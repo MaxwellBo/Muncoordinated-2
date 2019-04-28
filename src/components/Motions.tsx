@@ -13,8 +13,8 @@ import { stateFieldHandler,
 import { makeDropdownOption, implies } from '../utils';
 import { TimerSetter, Unit, getSeconds } from './TimerSetter';
 import { nameToMemberOption, parseFlagName } from './Member';
-import { DEFAULT_CAUCUS, CaucusData, CaucusID, CaucusStatus } from './Caucus';
-import { putCaucus, closeCaucus } from '../actions/caucus-actions';
+import { DEFAULT_CAUCUS, CaucusData, CaucusID, CaucusStatus, DEFAULT_SPEAKER_TIME_SECONDS } from './Caucus';
+import { putCaucus, closeCaucus, putSpeaking } from '../actions/caucus-actions';
 import { TimerData } from './Timer';
 import { putUnmodTimer, extendUnmodTimer, extendModTimer } from '../actions/committee-actions';
 import { URLParameters, Dictionary } from '../types';
@@ -356,6 +356,7 @@ export default class Motions extends React.Component<Props, State> {
       motionData: MotionData
   ): void => {
     const committeeID: CommitteeID = this.props.match.params.committeeID;
+    const { committee } = this.state;
 
     const { proposer, speakerDuration, speakerUnit, 
       caucusDuration, caucusUnit, seconder, proposal } = motionData;
@@ -433,13 +434,27 @@ export default class Motions extends React.Component<Props, State> {
       // when this gets fired off
       extendUnmodTimer(committeeID, caucusSeconds);
 
-    } else if (motionData.type === MotionType.ExtendModeratedCaucus && caucusDuration && caucusID) {
+    } else if (motionData.type === MotionType.ExtendModeratedCaucus && caucusDuration && caucusID && proposer && committee) {
       this.props.history
         .push(`/committees/${committeeID}/caucuses/${caucusID}`);
 
       const caucusSeconds = getSeconds(caucusDuration, caucusUnit);
-      
+
       extendModTimer(committeeID, caucusID, caucusSeconds);
+          
+      // @ts-ignore Assert that this exists
+      const caucus: CaucusData = committee.caucuses[caucusID];
+      const speakerSeconds = !caucus.speakerDuration || !caucus.speakerUnit ? 
+        DEFAULT_SPEAKER_TIME_SECONDS
+        : getSeconds(caucus.speakerDuration, caucus.speakerUnit);
+
+      console.debug(committee);
+
+      putSpeaking(committeeID, caucusID, { 
+        who: proposer,
+        stance: Stance.For,
+        duration: speakerSeconds
+      });
 
     } else if (motionData.type === MotionType.CloseModeratedCaucus && caucusID) {
       this.props.history
