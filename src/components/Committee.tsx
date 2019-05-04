@@ -326,19 +326,19 @@ function ResponsiveNav(props: ResponsiveContainerProps) {
         {makeMenuItem('Setup', 'users')}
         {makeMenuItem('Motions', 'sort numeric descending')}
         {makeMenuItem('Unmod', 'discussions')}
-        <Dropdown key="caucuses" item text="Caucuses" loading={!committee} icon={committee ? 'add' : undefined}>
+        <Dropdown key="caucuses" item text="Caucuses" loading={!committee}>
           <Dropdown.Menu>
             {makeSubmenuButton('New caucus', 'add', pushCaucus)}
             {caucusItems}
           </Dropdown.Menu>
         </Dropdown>
-        <Dropdown key="resolutions" item text="Resolutions" loading={!committee} icon={committee ? 'add' : undefined}>
+        <Dropdown key="resolutions" item text="Resolutions" loading={!committee}>
           <Dropdown.Menu>
             {makeSubmenuButton('New resolution', 'add', pushResolution)}
             {resolutionItems}
           </Dropdown.Menu>
         </Dropdown>
-        <Dropdown key="strawpolls" item text="Strawpolls" loading={!committee} icon={committee ? 'add' : undefined}>
+        <Dropdown key="strawpolls" item text="Strawpolls" loading={!committee}>
           <Dropdown.Menu>
             {makeSubmenuButton('New strawpoll', 'add', pushStrawpoll)}
             {strawpollItems}
