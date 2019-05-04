@@ -401,6 +401,7 @@ export default class Committee extends React.Component<Props, State> {
   renderAdmin = () => {
     return (
       <Admin
+        {...this.props}
         committee={this.state.committee || DEFAULT_COMMITTEE}
         fref={this.state.committeeFref}
       />

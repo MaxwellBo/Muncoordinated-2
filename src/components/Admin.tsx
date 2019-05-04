@@ -4,27 +4,28 @@ import { CommitteeData } from './Committee';
 import { MemberData, MemberID, Rank, parseFlagName, nameToMemberOption } from './Member';
 import * as Utils from '../utils';
 import { Dropdown, Flag, Table, Button, Checkbox,
-  CheckboxProps, DropdownProps, ButtonProps, Tab, Container } from 'semantic-ui-react';
+  CheckboxProps, DropdownProps, ButtonProps, Tab, Container, Message, Icon } from 'semantic-ui-react';
 import { COUNTRY_OPTIONS, MemberOption } from '../constants';
 import { checkboxHandler, dropdownHandler } from '../actions/handlers';
 import { makeDropdownOption } from '../utils';
 import * as _ from 'lodash';
-import { Dictionary } from '../types';
+import { Dictionary, URLParameters } from '../types';
+import { RouteComponentProps } from 'react-router';
 
 export const canVote = (x: MemberData) => (x.rank === Rank.Veto || x.rank === Rank.Standard);
 export const nonNGO = (x: MemberData) => (x.rank !== Rank.NGO);
 
-interface Props {
+interface Props extends RouteComponentProps<URLParameters> {
   committee: CommitteeData;
   fref: firebase.database.Reference;
 }
 
 interface State {
-  newMember: MemberOption;
-  newOptions: MemberOption[];
-  newMemberRank: Rank;
-  newMemberVoting: MemberData['voting'];
-  newMemberPresent: MemberData['present'];
+  member: MemberOption;
+  options: MemberOption[];
+  rank: Rank;
+  voting: MemberData['voting'];
+  present: MemberData['present'];
 }
 
 const RANK_OPTIONS = [
@@ -154,11 +155,11 @@ export default class Admin extends React.Component<Props, State> {
     super(props);
 
     this.state = {
-      newMember: COUNTRY_OPTIONS[0],
-      newOptions: [],
-      newMemberRank: Rank.Standard,
-      newMemberVoting: false,
-      newMemberPresent: true
+      member: COUNTRY_OPTIONS[0],
+      options: [],
+      rank: Rank.Standard,
+      voting: false,
+      present: true
     };
   }
 
@@ -207,7 +208,7 @@ export default class Admin extends React.Component<Props, State> {
   }
 
   canPush = () => { 
-    const { newMember } = this.state;
+    const { member: newMember } = this.state;
 
     const members = this.props.committee.members || {};
     const memberNames = Object.keys(members).map(id => 
@@ -220,35 +221,35 @@ export default class Admin extends React.Component<Props, State> {
   pushMember = (event: React.MouseEvent<HTMLButtonElement>, data: ButtonProps) => {
     event.preventDefault();
 
-    const newMember: MemberData = {
-      name: this.state.newMember.text,
-      rank: this.state.newMemberRank,
-      present: this.state.newMemberPresent,
-      voting: this.state.newMemberVoting
+    const member: MemberData = {
+      name: this.state.member.text,
+      rank: this.state.rank,
+      present: this.state.present,
+      voting: this.state.voting
     };
 
-    this.props.fref.child('members').push().set(newMember);
+    this.props.fref.child('members').push().set(member);
   }
 
   setMember = (event: React.SyntheticEvent<HTMLElement>, data: DropdownProps) => {
-    const { newOptions } = this.state;
+    const { options: newOptions } = this.state;
     const newMember = [...newOptions, ...COUNTRY_OPTIONS].filter(c => c.value === data.value)[0];
 
     if (newMember) {
-      this.setState({ newMember });
+      this.setState({ member: newMember });
     }
   }
 
   setPresent = (event: React.FormEvent<HTMLInputElement>, data: CheckboxProps) => {
-    this.setState({ newMemberPresent: data.checked || false });
+    this.setState({ present: data.checked || false });
   }
 
   setVoting = (event: React.FormEvent<HTMLInputElement>, data: CheckboxProps) => {
-    this.setState({ newMemberVoting: data.checked || false });
+    this.setState({ voting: data.checked || false });
   }
 
   setRank = (event: React.SyntheticEvent<HTMLElement>, data: DropdownProps) => {
-    this.setState({ newMemberRank: data.value as Rank || Rank.Standard });
+    this.setState({ rank: data.value as Rank || Rank.Standard });
   }
 
   handleAdd = (event: React.KeyboardEvent<HTMLElement>, data: DropdownProps) => {
@@ -256,16 +257,23 @@ export default class Admin extends React.Component<Props, State> {
     const newMember = nameToMemberOption((data.value as number | string).toString());
 
     if (_.includes(COUNTRY_OPTIONS, newMember)) {
-      this.setState({ newMember });
+      this.setState({ member: newMember });
     } else {
-      const newOptions = [ newMember, ...this.state.newOptions ];
-      this.setState({ newMember, newOptions });
+      const newOptions = [ newMember, ...this.state.options ];
+      this.setState({ member: newMember, options: newOptions });
     }
+  }
+
+  gotoGSL = () => {
+    const { committeeID } = this.props.match.params;
+
+    this.props.history
+      .push(`/committees/${committeeID}/caucuses/gsl`);
   }
 
   renderAdder() {
     const { handleAdd, setMember, setRank, setPresent, setVoting } = this;
-    const { newMemberPresent, newMemberVoting, newOptions, newMember } = this.state;
+    const { present: newMemberPresent, voting: newMemberVoting, options: newOptions, member: newMember } = this.state;
 
     return (
       <Table.Row>
@@ -293,7 +301,7 @@ export default class Admin extends React.Component<Props, State> {
             fluid
             options={RANK_OPTIONS}
             onChange={setRank}
-            value={this.state.newMemberRank}
+            value={this.state.rank}
           />
         </Table.HeaderCell>
         <Table.HeaderCell collapsing >
@@ -329,31 +337,45 @@ export default class Admin extends React.Component<Props, State> {
   CommitteeMembers = (props: { data: CommitteeData, fref: firebase.database.Reference }) => {
 
     const members = this.props.committee.members || {};
-    const memberItems = Object.keys(members).map(id => 
+    const memberItems = Object.keys(members).map(id =>
       this.renderMemberItem(id, members[id], props.fref.child('members').child(id))
     );
 
     return (
-      <Table compact celled definition>
-        <Table.Header>
-          <Table.Row>
-            <Table.HeaderCell />
-            <Table.HeaderCell>Rank</Table.HeaderCell>
-            <Table.HeaderCell>Present</Table.HeaderCell>
-            <Table.HeaderCell>Voting</Table.HeaderCell>
-            <Table.HeaderCell />
-          </Table.Row>
-        </Table.Header>
+      <>
+        <Table compact celled definition>
+          <Table.Header>
+            <Table.Row>
+              <Table.HeaderCell />
+              <Table.HeaderCell>Rank</Table.HeaderCell>
+              <Table.HeaderCell>Present</Table.HeaderCell>
+              <Table.HeaderCell>Voting</Table.HeaderCell>
+              <Table.HeaderCell />
+            </Table.Row>
+          </Table.Header>
 
-        <Table.Header fullWidth>
-          {this.renderAdder()}
-        </Table.Header>
+          <Table.Header fullWidth>
+            {this.renderAdder()}
+          </Table.Header>
 
-        <Table.Body>
-          {memberItems.reverse()}
-        </Table.Body>
-
-      </Table>
+          <Table.Body>
+            {memberItems.reverse()}
+          </Table.Body>
+        </Table>
+        {memberItems.length === 0
+          ? <Message error>
+            Add at least one committee member to proceed
+          </Message>
+          : <Button
+            onClick={this.gotoGSL}
+            primary
+            fluid
+          >
+            General Speakers List
+              <Icon name="arrow right" />
+          </Button>
+        }
+      </>
     );
   }
 
