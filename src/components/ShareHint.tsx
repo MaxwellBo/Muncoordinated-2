@@ -17,6 +17,7 @@ export function CommitteeShareHint(props: {
         <List.Item>Upload files</List.Item>
         <List.Item>Add themselves to speaker's lists that have the 'Delegates can queue' flag enabled</List.Item>
         <List.Item>Add and edit amendments on resolutions that have the 'Delegates can amend' flag enabled</List.Item>
+        <List.Item>Vote on strawpolls</List.Item>
       </List>
     </React.Fragment>
   );
