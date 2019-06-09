@@ -469,11 +469,14 @@ export default class Resolution extends React.Component<Props, State> {
 
     const resolutionVetoed = !!vetoes[0];
 
-    const votesValues: Vote[] = _.values(votes || {});
-    const fors = votesValues.filter(v => v === Vote.For).length;
-    const abstains = votesValues.filter(v => v === Vote.Abstaining).length;
-    const againsts = votesValues.filter(v => v === Vote.Against).length;
-    const remaining = sortedPresentAndCanVote.length - votesValues.length;
+    const votesByVoters = Object.keys(votes || {})
+      .filter(k => sortedPresentAndCanVote.includes(k))
+      .map(k => votes[k]);
+
+    const fors = votesByVoters.filter(v => v === Vote.For).length;
+    const abstains = votesByVoters.filter(v => v === Vote.Abstaining).length;
+    const againsts = votesByVoters.filter(v => v === Vote.Against).length;
+    const remaining = sortedPresentAndCanVote.length - votesByVoters.length;
 
     const requiredMajority: Majority = resolution 
       ? (resolution.requiredMajority || DEFAULT_RESOLUTION.requiredMajority as Majority)
