@@ -66,13 +66,40 @@ const RESOLUTION_STATUS_OPTIONS = [
 
 enum Majority {
   Simple = "Simple majority",
-  TwoThirds = "Two-thirds majority"
+  TwoThirds = "Two-thirds majority",
+  TwoThirdsNoAbstentions = "Two-thirds majority, ignoring abstentions"
 }
 
 const MAJORITY_OPTIONS: DropdownItemProps[] = [
   { key: Majority.Simple, value: Majority.Simple, text: "Simple (50%) majority required" },
-  { key: Majority.TwoThirds, value: Majority.TwoThirds, text: "Two-thirds majority required" }
+  { key: Majority.TwoThirds, value: Majority.TwoThirds, text: "Two-thirds majority required" },
+  { key: Majority.TwoThirdsNoAbstentions, value: Majority.TwoThirdsNoAbstentions, text: "Two-thirds majority required, ignoring abstentions" },
 ]
+
+function getThreshold(requiredMajority: Majority, committee: CommitteeData | undefined, fors: number, againsts: number): number {
+  const stats = makeCommitteeStats(committee)
+  switch (requiredMajority) {
+    case Majority.TwoThirds:
+      return stats.twoThirdsMajority;
+    case Majority.TwoThirdsNoAbstentions:
+      return Math.ceil((2/3) * (fors + againsts));
+    case Majority.Simple:
+    default:
+      return stats.simpleMajority;
+  }
+}
+
+function getThresholdName(majority: Majority): string {
+  switch (majority) {
+    case Majority.TwoThirds:
+      return "two-thirds majority"
+    case Majority.TwoThirdsNoAbstentions:
+      return "two-thirds majority"
+    case Majority.Simple:
+    default:
+      return "simple majority";
+  }
+}
 
 export type ResolutionID = string;
 
@@ -482,13 +509,8 @@ export default class Resolution extends React.Component<Props, State> {
       ? (resolution.requiredMajority || DEFAULT_RESOLUTION.requiredMajority as Majority)
       : DEFAULT_RESOLUTION.requiredMajority as Majority;
 
-    const threshold = (requiredMajority === Majority.TwoThirds) 
-      ? makeCommitteeStats(committee).twoThirdsMajority
-      : makeCommitteeStats(committee).simpleMajority;
-
-    const thresholdName = (requiredMajority === Majority.TwoThirds)
-      ? "two-thirds majority"
-      : "simple majority"
+    const threshold = getThreshold(requiredMajority, committee, fors, againsts);
+    const thresholdName = getThresholdName(requiredMajority);
 
     const resolutionPassed: boolean = fors >= threshold && !resolutionVetoed; 
     const resolutionFailed: boolean = fors + remaining < threshold && !resolutionVetoed;
@@ -506,6 +528,7 @@ export default class Resolution extends React.Component<Props, State> {
       </Grid.Column>
     ));
 
+
     return (
       <Segment inverted loading={!resolution} textAlign="center">
         <Grid columns="equal">
@@ -519,6 +542,9 @@ export default class Resolution extends React.Component<Props, State> {
         {resolutionPassed && <Statistic inverted>
           <Statistic.Value>Passed</Statistic.Value>
           <Statistic.Label>{fors} clears the required {thresholdName} of {threshold}</Statistic.Label>
+          {requiredMajority === Majority.TwoThirdsNoAbstentions && 
+            <Statistic.Label>Further votes may change the result from 'Passed'</Statistic.Label>
+          }
         </Statistic>} 
         {resolutionFailed && <Statistic inverted>
           <Statistic.Value>Failed</Statistic.Value>
