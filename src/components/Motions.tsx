@@ -45,6 +45,7 @@ enum MotionType {
   IntroduceDraftResolution = 'Introduce Draft Resolution',
   IntroduceAmendment = 'Introduce Amendment',
   SuspendDraftResolutionSpeakersList = 'Suspend Draft Resolution Speakers List',
+  VoteOnResolution = 'Vote On Resolution',
   OpenDebate = 'Open Debate',
   SuspendDebate = 'Suspend Debate',
   ResumeDebate = 'Resume Debate',
@@ -76,6 +77,7 @@ const disruptiveness = (motionType: MotionType): number => {
     case MotionType.SuspendDebate:
     case MotionType.ResumeDebate:
     case MotionType.CloseDebate:
+    case MotionType.VoteOnResolution:
       return 10;
     case MotionType.ReorderDraftResolutions:
       return 11;
@@ -108,6 +110,8 @@ const actionName = (motionType: MotionType): string => {
       return 'Reorder';
     case MotionType.ProposeStrawpoll:
       return 'Create';
+    case MotionType.VoteOnResolution:
+      return 'Vote';
     default:
       return 'Enact';
   }
@@ -123,6 +127,7 @@ const approvable = (motionType: MotionType): boolean => {
     case MotionType.CloseModeratedCaucus:
     case MotionType.IntroduceAmendment:
     case MotionType.ProposeStrawpoll:
+    case MotionType.VoteOnResolution:
       return true;
     default:
       return false;
@@ -224,6 +229,7 @@ const hasResolutionTarget = (motionType: MotionType): boolean => {
   switch (motionType) {
     case MotionType.IntroduceAmendment:
     case MotionType.SuspendDraftResolutionSpeakersList:
+    case MotionType.VoteOnResolution:
       return true;
     default:
       return false;
@@ -261,6 +267,7 @@ const MOTION_TYPE_OPTIONS = [
   MotionType.CloseModeratedCaucus, // implemented
   MotionType.IntroduceDraftResolution, // implemented
   MotionType.IntroduceAmendment, // implemented
+  MotionType.VoteOnResolution,
   MotionType.ProposeStrawpoll,
   MotionType.SuspendDraftResolutionSpeakersList, 
   MotionType.OpenDebate,
@@ -470,6 +477,10 @@ export default class Motions extends React.Component<Props, State> {
       };
 
       putAmendment(committeeID, resolutionID, newAmendment);
+    } else if (motionData.type === MotionType.VoteOnResolution && resolutionID) {
+      this.props.history
+        .push(`/committees/${committeeID}/resolutions/${resolutionID}/voting`);
+
     } else if (motionData.type === MotionType.ProposeStrawpoll) {
       const strawpollRef = putStrawpoll(committeeID, {
         ...DEFAULT_STRAWPOLL,
