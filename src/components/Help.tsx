@@ -67,9 +67,6 @@ export default class Help extends React.PureComponent<{}, {}> {
               Describe what happened instead 
             </List.Item>
             <List.Item>
-              List the browser you are using
-            </List.Item>
-            <List.Item>
               List the version of the app you're using ({CLIENT_VERSION_LINK})
             </List.Item>
             <List.Item>
@@ -77,7 +74,7 @@ export default class Help extends React.PureComponent<{}, {}> {
             </List.Item>
           </List>
           <br />
-          If you're at an Australian MUN, I'll see if I can push a fix within the hour
+          If you're at an Australian MUN, I'll see if I can push a fix within the hour.
         </Segment>
         <Header as="h3" attached="top">License</Header>
         <Segment attached="bottom">
