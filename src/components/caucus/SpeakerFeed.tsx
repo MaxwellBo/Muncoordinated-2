@@ -132,7 +132,7 @@ export const SpeakerFeed = (props: {
   speakerTimer: TimerData
 }) => {
   const { data, queueFref, speaking, speakerTimer } = props;
-  const { initialising, user } = useAuthState(firebase.auth());
+  const [ user  ] = useAuthState(firebase.auth());
 
   const events = data || {};
 

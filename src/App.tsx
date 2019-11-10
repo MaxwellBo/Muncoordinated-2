@@ -12,6 +12,10 @@ import 'firebase/storage';
 import { Route } from 'react-router-dom';
 import './App.css';
 
+import Onboard from './components/Onboard';
+import Homepage from './components/Homepage';
+import Committee from './components/Committee';
+
 const firebaseConfig = {
   apiKey: 'AIzaSyA9EuEf7m3YOTBhBNhoe7DcOIZJP2toL6w',
   authDomain: 'muncoordinated.firebaseapp.com',
@@ -23,9 +27,7 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 
-import Onboard from './components/Onboard';
-import Homepage from './components/Homepage';
-import Committee from './components/Committee';
+
 
 class App extends React.Component {
   render() {
