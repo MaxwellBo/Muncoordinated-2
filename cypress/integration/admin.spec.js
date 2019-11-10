@@ -24,8 +24,8 @@ describe('Add members and checks that the thresholds are sensible', function () 
     })
 
     it('navs to the admin page', () => {
-      cy.contains('Admin').click()
-      cy.url().should('include', '/admin')
+      cy.contains('Setup').click()
+      cy.url().should('include', '/setup')
       cy.wait(2000)
     })
 
