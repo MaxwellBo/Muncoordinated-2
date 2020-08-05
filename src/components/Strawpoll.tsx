@@ -85,8 +85,8 @@ function getNumberOfVotes(option: StrawpollOptionData, medium: StrawpollMedium) 
 export default function Strawpoll(props: StrawpollProps) {
     const { committeeID, strawpollID } = props.match.params;
     const strawpollFref = getStrawpollRef(committeeID, strawpollID)
-    const { error, loading, value } = useObject(strawpollFref);
-    const { initialising, user } = useAuthState(firebase.auth());
+    const  [value, loading] = useObject(strawpollFref);
+    const [user] = useAuthState(firebase.auth());
     const [voterID, setVoterID] = useLocalStorage('voterID', undefined);
 
     if (!voterID) {
@@ -175,6 +175,7 @@ export default function Strawpoll(props: StrawpollProps) {
 
       const votes = getNumberOfVotes(option, medium);
 
+      /* eslint no-unused-expressions: "warn" */
       switch (stage) {
         case StrawpollStage.Preparing:
           return <List.Item key={optionID}>

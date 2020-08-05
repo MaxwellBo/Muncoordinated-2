@@ -1,8 +1,8 @@
 import * as React from 'react';
-import * as firebase from 'firebase/app';
+import firebase from 'firebase/app';
 import { Form, Segment, Button, Divider, Progress, DropdownProps, ButtonProps, Icon, Label } from 'semantic-ui-react';
 import { Unit, TimerSetter, getSeconds } from './TimerSetter';
-import * as _ from 'lodash';
+import _ from 'lodash';
 import { DEFAULT_SPEAKER_TIME_SECONDS } from './Caucus';
 
 interface Props {

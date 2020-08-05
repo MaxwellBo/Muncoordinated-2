@@ -1,6 +1,6 @@
 import * as React from 'react';
-import * as firebase from 'firebase/app';
-import * as FileSaver from 'file-saver';
+import firebase from 'firebase/app';
+import FileSaver from 'file-saver';
 import { CommitteeData, CommitteeID, recoverMemberOptions } from './Committee';
 import { RouteComponentProps } from 'react-router';
 import { URLParameters } from '../types';

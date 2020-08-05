@@ -1,9 +1,9 @@
 import * as React from 'react';
-import * as firebase from 'firebase/app';
+import firebase from 'firebase/app';
 import { CommitteeData } from './Committee';
 import { RouteComponentProps } from 'react-router';
 import { URLParameters } from '../types';
-import { TextArea, Segment, Form, Button, Popup, Container } from 'semantic-ui-react';
+import { TextArea, Form, Container } from 'semantic-ui-react';
 import { textAreaHandler } from '../actions/handlers';
 import Loading from './Loading';
 

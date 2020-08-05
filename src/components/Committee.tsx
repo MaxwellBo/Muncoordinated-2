@@ -1,5 +1,5 @@
 import * as React from 'react';
-import * as firebase from 'firebase/app';
+import firebase from 'firebase/app';
 import { RouteComponentProps } from 'react-router';
 import { Route } from 'react-router-dom';
 import { MemberData, MemberID } from './Member';

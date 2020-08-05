@@ -1,12 +1,12 @@
 import * as React from 'react';
-import * as firebase from 'firebase/app';
+import firebase from 'firebase/app';
 import { CaucusData, recoverUnit, recoverDuration } from '../Caucus';
 import { TimerData, toggleTicking } from '../Timer';
 import { Segment, Button, Icon, Label, Popup } from 'semantic-ui-react';
 import { runLifecycle, Lifecycle } from '../../actions/caucus-actions';
 import { SpeakerEvent, Stance } from './SpeakerFeed';
 import { SpeakerFeed } from './SpeakerFeed';
-import * as _ from 'lodash';
+import _ from 'lodash';
 import { Unit } from '../TimerSetter';
 import { useObjectVal } from 'react-firebase-hooks/database';
 import { useAuthState } from 'react-firebase-hooks/auth';
@@ -19,7 +19,7 @@ interface Props {
 }
 
 export function CaucusNextSpeaking(props: Props) {
-  const { initialising, user } = useAuthState(firebase.auth());
+  const [user] = useAuthState(firebase.auth());
 
   const handleKeyDown = (ev: KeyboardEvent) => {
     // if changing this, update Help
@@ -93,7 +93,9 @@ export function CaucusNextSpeaking(props: Props) {
     runLifecycle({ ...lifecycle, ...queueHeadDetails });
   };
 
-  const skew = useObjectVal<number>(firebase.database().ref('/.info/serverTimeOffset'));
+  // TODO: Improve this dirty fix
+  let skew: any
+  skew = useObjectVal<number>(firebase.database().ref('/.info/serverTimeOffset'));
 
   const startTimer = () => {
     toggleTicking({

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import * as firebase from 'firebase/app';
+import firebase from 'firebase/app';
 import { CommitteeData } from './Committee';
 import { MemberData, MemberID, Rank, parseFlagName, nameToMemberOption } from './Member';
 import * as Utils from '../utils';
@@ -8,7 +8,7 @@ import { Dropdown, Flag, Table, Button, Checkbox,
 import { COUNTRY_OPTIONS, MemberOption } from '../constants';
 import { checkboxHandler, dropdownHandler } from '../actions/handlers';
 import { makeDropdownOption } from '../utils';
-import * as _ from 'lodash';
+import _ from 'lodash';
 import { Dictionary, URLParameters } from '../types';
 import { RouteComponentProps } from 'react-router';
 
