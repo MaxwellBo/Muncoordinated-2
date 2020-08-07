@@ -12,7 +12,6 @@ interface Props extends RouteComponentProps<URLParameters> {
 }
 
 interface State {
-  committees: Dictionary<string, CommitteeData>;
   name: string;
   topic: string;
   chair: string;
@@ -23,13 +22,10 @@ interface State {
 }
 
 export default class Onboard extends React.Component<Props, State> {
-  committeesRef = firebase.database().ref('committees');
-
   constructor(props: Props) {
     super(props);
 
     this.state = {
-      committees: {} as Dictionary<string, CommitteeData>,
       name: '',
       topic: '',
       chair: '',
@@ -39,19 +35,11 @@ export default class Onboard extends React.Component<Props, State> {
     };
   }
 
-  firebaseCallback = (committees: firebase.database.DataSnapshot | null) => {
-    if (committees) {
-      this.setState({ committees: committees.val() });
-    }
-  }
-
   authStateChangedCallback = (user: firebase.User | null) => {
     this.setState({ user: user });
   }
 
   componentDidMount() {
-    this.state.committeesFref.on('value', this.firebaseCallback);
-
     const unsubscribe = firebase.auth().onAuthStateChanged(
       this.authStateChangedCallback,
     );
@@ -60,8 +48,6 @@ export default class Onboard extends React.Component<Props, State> {
   }
 
   componentWillUnmount() {
-    this.state.committeesFref.off('value', this.firebaseCallback);
-
     if (this.state.unsubscribe) {
       this.state.unsubscribe();
     }
@@ -85,7 +71,7 @@ export default class Onboard extends React.Component<Props, State> {
         creatorUid: this.state.user.uid
       };
 
-      const newCommitteeRef = this.committeesRef.push();
+      const newCommitteeRef = this.state.committeesFref.push();
       newCommitteeRef.set(newCommittee);
 
       this.props.history.push(`/committees/${newCommitteeRef.key}`);
