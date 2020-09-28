@@ -1,4 +1,4 @@
-import * as React from 'react';
+import * as React from "react";
 import {
   Button,
   Container,
@@ -14,15 +14,15 @@ import {
   Statistic,
   Sidebar,
   Visibility,
-  Popup
-} from 'semantic-ui-react';
-import Loading from './Loading';
+  Popup,
+} from "semantic-ui-react";
+import Loading from "./Loading";
 
 interface HomepageHeadingProps {
   mobile: boolean;
 }
 
-const REPO_LINK = 'https://github.com/MaxwellBo/Muncoordinated-2';
+const REPO_LINK = "https://github.com/MaxwellBo/Muncoordinated-2";
 
 /* eslint-disable react/no-multi-comp */
 /* Heads up! HomepageHeading uses inline styling, however it's not the best practice. Use CSS or styled components for
@@ -35,10 +35,10 @@ const HomepageHeading = ({ mobile }: HomepageHeadingProps) => (
       content="Muncoordinated"
       inverted
       style={{
-        fontSize: mobile ? '2em' : '4em',
-        fontWeight: 'normal',
+        fontSize: mobile ? "2em" : "4em",
+        fontWeight: "normal",
         marginBottom: 0,
-        marginTop: mobile ? '1.5em' : '3em',
+        marginTop: mobile ? "1.5em" : "3em",
       }}
     />
     <Header
@@ -46,9 +46,9 @@ const HomepageHeading = ({ mobile }: HomepageHeadingProps) => (
       content="The collaborative browser-based Model UN committee management app"
       inverted
       style={{
-        fontSize: mobile ? '1.5em' : '1.7em',
-        fontWeight: 'normal',
-        marginTop: mobile ? '0.5em' : '1.5em',
+        fontSize: mobile ? "1.5em" : "1.7em",
+        fontWeight: "normal",
+        marginTop: mobile ? "0.5em" : "1.5em",
       }}
     />
     <br />
@@ -73,22 +73,25 @@ interface DesktopContainerState {
  * It can be more complicated, but you can create really flexible markup.
  */
 
-class DesktopContainer extends React.Component<DesktopContainerProps, DesktopContainerState> {
+class DesktopContainer extends React.Component<
+  DesktopContainerProps,
+  DesktopContainerState
+> {
   constructor(props: DesktopContainerProps) {
     super(props);
 
     this.state = {
-      fixed: false
+      fixed: false,
     };
   }
 
   hideFixedMenu = () => {
     this.setState({ fixed: false });
-  }
+  };
 
   showFixedMenu = () => {
     this.setState({ fixed: true });
-  }
+  };
 
   render() {
     const { children } = this.props;
@@ -98,20 +101,39 @@ class DesktopContainer extends React.Component<DesktopContainerProps, DesktopCon
     return (
       // @ts-ignore
       <Responsive {...{ minWidth: Responsive.onlyMobile.maxWidth + 1 }}>
-        <Visibility once={false} onBottomPassed={this.showFixedMenu} onBottomPassedReverse={this.hideFixedMenu}>
-          <Segment inverted textAlign="center" style={{ minHeight: 700, padding: '1em 0em' }} vertical>
+        <Visibility
+          once={false}
+          onBottomPassed={this.showFixedMenu}
+          onBottomPassedReverse={this.hideFixedMenu}
+        >
+          <Segment
+            inverted
+            textAlign="center"
+            style={{ minHeight: 700, padding: "1em 0em" }}
+            vertical
+          >
             <Menu
-              fixed={fixed ? 'top' : undefined}
+              fixed={fixed ? "top" : undefined}
               inverted={!fixed}
               pointing={!fixed}
               secondary={!fixed}
               size="large"
             >
               <Container>
-                <Menu.Item as="a" active>Home</Menu.Item>
+                <Menu.Item as="a" active>
+                  Home
+                </Menu.Item>
                 <Menu.Item position="right">
-                  <Button as="a" href="/onboard" inverted={!fixed}>Log in</Button>
-                  <Button as="a" href="/onboard" inverted={!fixed} primary={fixed} style={{ marginLeft: '0.5em' }}>
+                  <Button as="a" href="/onboard" inverted={!fixed}>
+                    Log in
+                  </Button>
+                  <Button
+                    as="a"
+                    href="/onboard"
+                    inverted={!fixed}
+                    primary={fixed}
+                    style={{ marginLeft: "0.5em" }}
+                  >
                     Sign Up
                   </Button>
                 </Menu.Item>
@@ -135,12 +157,15 @@ interface MobileContainerState {
   sidebarOpened: boolean;
 }
 
-class MobileContainer extends React.Component<MobileContainerProps, MobileContainerState> {
+class MobileContainer extends React.Component<
+  MobileContainerProps,
+  MobileContainerState
+> {
   constructor(props: MobileContainerProps) {
     super(props);
 
     this.state = {
-      sidebarOpened: false
+      sidebarOpened: false,
     };
   }
 
@@ -150,11 +175,11 @@ class MobileContainer extends React.Component<MobileContainerProps, MobileContai
     if (sidebarOpened) {
       this.setState({ sidebarOpened: false });
     }
-  }
+  };
 
   handleToggle = () => {
     this.setState({ sidebarOpened: !this.state.sidebarOpened });
-  }
+  };
 
   render() {
     const { children } = this.props;
@@ -163,22 +188,48 @@ class MobileContainer extends React.Component<MobileContainerProps, MobileContai
     return (
       <Responsive {...Responsive.onlyMobile}>
         <Sidebar.Pushable>
-          <Sidebar as={Menu} animation="uncover" inverted vertical visible={sidebarOpened}>
-            <Menu.Item as="a" active>Home</Menu.Item>
+          <Sidebar
+            as={Menu}
+            animation="uncover"
+            inverted
+            vertical
+            visible={sidebarOpened}
+          >
+            <Menu.Item as="a" active>
+              Home
+            </Menu.Item>
             <Menu.Item as="a">Log in</Menu.Item>
             <Menu.Item as="a">Sign Up</Menu.Item>
           </Sidebar>
 
-          <Sidebar.Pusher dimmed={sidebarOpened} onClick={this.handlePusherClick} style={{ minHeight: '100vh' }}>
-            <Segment inverted textAlign="center" style={{ minHeight: 350, padding: '1em 0em' }} vertical>
+          <Sidebar.Pusher
+            dimmed={sidebarOpened}
+            onClick={this.handlePusherClick}
+            style={{ minHeight: "100vh" }}
+          >
+            <Segment
+              inverted
+              textAlign="center"
+              style={{ minHeight: 350, padding: "1em 0em" }}
+              vertical
+            >
               <Container>
                 <Menu inverted pointing secondary size="large">
                   <Menu.Item onClick={this.handleToggle}>
                     <Icon name="sidebar" />
                   </Menu.Item>
                   <Menu.Item position="right">
-                    <Button as="a" inverted href="/onboard" >Log in</Button>
-                    <Button as="a" inverted href="/onboard" style={{ marginLeft: '0.5em' }}>Sign Up</Button>
+                    <Button as="a" inverted href="/onboard">
+                      Log in
+                    </Button>
+                    <Button
+                      as="a"
+                      inverted
+                      href="/onboard"
+                      style={{ marginLeft: "0.5em" }}
+                    >
+                      Sign Up
+                    </Button>
                   </Menu.Item>
                 </Menu>
               </Container>
@@ -204,10 +255,13 @@ const ResponsiveContainer = ({ children }: ResponsiveContainerProps) => (
   </React.Fragment>
 );
 
-export default class Homepage extends React.Component<{}, { 
-  committeeNo?: number,
-  delegateNo?: number
-}> {
+export default class Homepage extends React.Component<
+  {},
+  {
+    committeeNo?: number;
+    delegateNo?: number;
+  }
+> {
   constructor(props: {}) {
     super(props);
     this.state = {};
@@ -217,11 +271,15 @@ export default class Homepage extends React.Component<{}, {
     return (
       <Statistic.Group textAlign="center">
         <Statistic>
-          <Statistic.Value>{this.state.committeeNo || <Loading small />}</Statistic.Value>
+          <Statistic.Value>
+            {this.state.committeeNo || <Loading small />}
+          </Statistic.Value>
           <Statistic.Label>Committees created</Statistic.Label>
         </Statistic>
         <Statistic>
-          <Statistic.Value>{this.state.delegateNo || <Loading small />}</Statistic.Value>
+          <Statistic.Value>
+            {this.state.delegateNo || <Loading small />}
+          </Statistic.Value>
           <Statistic.Label>Delegates participating</Statistic.Label>
         </Statistic>
       </Statistic.Group>
@@ -231,54 +289,78 @@ export default class Homepage extends React.Component<{}, {
   render() {
     return (
       <ResponsiveContainer>
-        <Segment style={{ padding: '3em 0em' }} vertical>
+        <Segment style={{ padding: "3em 0em" }} vertical>
           <Grid container stackable verticalAlign="middle">
             <Grid.Row>
               <Grid.Column width={8}>
-                <Header as="h3" style={{ fontSize: '2em' }}>Collaborative</Header>
-                <p style={{ fontSize: '1.33em' }}>
-                  Using a shareable link, multiple directors can run the committee at once. Delegates can also add themselves to speaker's lists, propose resolution amendments and upload files.<br />
+                <Header as="h3" style={{ fontSize: "2em" }}>
+                  Collaborative
+                </Header>
+                <p style={{ fontSize: "1.33em" }}>
+                  Using a shareable link, multiple directors can run the
+                  committee at once. Delegates can also add themselves to
+                  speaker's lists, propose resolution amendments and upload
+                  files.
+                  <br />
                 </p>
-                <p style={{ fontSize: '1.33em' }}>
-                  Everyone will see all updates in real-time, without needing to refresh the page. It's like Google Docs, but for MUN.
+                <p style={{ fontSize: "1.33em" }}>
+                  Everyone will see all updates in real-time, without needing to
+                  refresh the page. It's like Google Docs, but for MUN.
                 </p>
-                <p style={{ fontSize: '1.33em' }}>
-                 We recommend pairing Muncoordinated with <a href="https://classroom.google.com">Google Classroom</a>, which allows you to share files, links, Google docs and strawpolls.
+                <p style={{ fontSize: "1.33em" }}>
+                  We recommend pairing Muncoordinated with{" "}
+                  <a href="https://classroom.google.com">Google Classroom</a>,
+                  which allows you to share files, links, Google docs and
+                  strawpolls.
                 </p>
-                <Header as="h3" style={{ fontSize: '2em' }}>Cloud based</Header>
-                <p style={{ fontSize: '1.33em' }}>
-                  You won't have to worry about data loss ever again. All committee activity is automatically saved to the server, 
-                  so you can start sessions with all data available from the day before.
+                <Header as="h3" style={{ fontSize: "2em" }}>
+                  Cloud based
+                </Header>
+                <p style={{ fontSize: "1.33em" }}>
+                  You won't have to worry about data loss ever again. All
+                  committee activity is automatically saved to the server, so
+                  you can start sessions with all data available from the day
+                  before.
                 </p>
-                <Header as="h3" style={{ fontSize: '2em' }}>Free and open-source</Header>
-                <p style={{ fontSize: '1.33em' }}>
-                  All of Muncoordinated's features are available for free, not locked behind paywalls.
+                <Header as="h3" style={{ fontSize: "2em" }}>
+                  Free and open-source
+                </Header>
+                <p style={{ fontSize: "1.33em" }}>
+                  All of Muncoordinated's features are available for free, not
+                  locked behind paywalls.
                 </p>
-                <p style={{ fontSize: '1.33em' }}>
-                  It's also <a href="https://github.com/MaxwellBo/Muncoordinated-2">open-source</a>, so you're free to customize it to your needs and liking.
+                <p style={{ fontSize: "1.33em" }}>
+                  It's also{" "}
+                  <a href="https://github.com/MaxwellBo/Muncoordinated-2">
+                    open-source
+                  </a>
+                  , so you're free to customize it to your needs and liking.
                 </p>
               </Grid.Column>
               <Grid.Column floated="right" width={8}>
-                <Image
-                  bordered
-                  rounded
-                  size="massive"
-                  src="/promo.png"
-                />
+                <Image bordered rounded size="massive" src="/promo.png" />
               </Grid.Column>
             </Grid.Row>
             <Grid.Row>
               <Grid.Column width={8}>
-                <Header as="h3" style={{ fontSize: '2em' }}>A comprehensive feature set</Header>
-                <div style={{ fontSize: '1.33em' }}>
+                <Header as="h3" style={{ fontSize: "2em" }}>
+                  A comprehensive feature set
+                </Header>
+                <div style={{ fontSize: "1.33em" }}>
                   Muncoordinated supports <br />
                   <List as="ul">
                     <List.Item as="li">Custom delegations</List.Item>
                     <List.Item as="li">Committee statistics</List.Item>
                     <List.Item as="li">Motions</List.Item>
-                    <List.Item as="li">Moderated and unmoderated caucuses</List.Item>
+                    <List.Item as="li">
+                      Moderated and unmoderated caucuses
+                    </List.Item>
                     <Popup
-                      trigger={<List.Item as="li">Time-saving hotkeys for frequently used actions</List.Item>}
+                      trigger={
+                        <List.Item as="li">
+                          Time-saving hotkeys for frequently used actions
+                        </List.Item>
+                      }
                       content="Currently implemented hotkeys include 'Next Speaker', 
                       'Toggle Caucus Timer' and 'Toggle Speaker Timer'"
                     />
@@ -289,10 +371,13 @@ export default class Homepage extends React.Component<{}, {
                     <List.Item as="li">Strawpolls</List.Item>
                   </List>
                 </div>
-                <Header as="h3" style={{ fontSize: '2em' }}>Mobile friendly</Header>
-                <p style={{ fontSize: '1.33em' }}>
-                  Prefer to pack light? We know the pain of not having a laptop while in committee; 
-                  that's why we've built Muncoordinated to be as mobile friendly as possible.
+                <Header as="h3" style={{ fontSize: "2em" }}>
+                  Mobile friendly
+                </Header>
+                <p style={{ fontSize: "1.33em" }}>
+                  Prefer to pack light? We know the pain of not having a laptop
+                  while in committee; that's why we've built Muncoordinated to
+                  be as mobile friendly as possible.
                 </p>
               </Grid.Column>
               <Grid.Column floated="right" width={8}>
@@ -316,84 +401,56 @@ export default class Homepage extends React.Component<{}, {
           as="h4"
           className="header"
           horizontal
-          style={{ margin: '3em 0em', textTransform: 'uppercase' }}
+          style={{ margin: "3em 0em", textTransform: "uppercase" }}
         >
           Conferences using Muncoordinated
         </Divider>
-        <Segment style={{ padding: '0em' }} vertical>
+        <Segment style={{ padding: "0em" }} vertical>
           <Grid celled="internally" columns="equal" stackable>
             {/* <Grid.Row textAlign="center">
               {this.renderStatistics()}
             </Grid.Row> */}
             <Grid.Row textAlign="center">
-              <Grid.Column style={{ paddingBottom: '5em', paddingTop: '5em' }}>
-                <Header as="h3" style={{ fontSize: '2em' }}>
+              <Grid.Column style={{ paddingBottom: "5em", paddingTop: "5em" }}>
+                <Header as="h3" style={{ fontSize: "2em" }}>
                   <a href="https://www.facebook.com/SYDMUN2018/">SydMUN 2018</a>
                 </Header>
-                <Image 
-                  centered 
-                  size="small" 
-                  rounded 
-                  src="/sydmun2018.png" 
-                />
+                <Image centered size="small" rounded src="/sydmun2018.png" />
               </Grid.Column>
-              <Grid.Column style={{ paddingBottom: '5em', paddingTop: '5em' }}>
-                <Header as="h3" style={{ fontSize: '2em' }}>
+              <Grid.Column style={{ paddingBottom: "5em", paddingTop: "5em" }}>
+                <Header as="h3" style={{ fontSize: "2em" }}>
                   <a href="https://brismun18.com/">Brismun 2018</a>
                 </Header>
                 {/* <p style={{ fontSize: '1.33em' }}>That is what they all say about us</p> */}
-                <Image 
-                  centered 
-                  size="small" 
-                  rounded 
-                  src="/brizmun2018.jpg" 
-                />
+                <Image centered size="small" rounded src="/brizmun2018.jpg" />
               </Grid.Column>
-              <Grid.Column style={{ paddingBottom: '5em', paddingTop: '5em' }}>
-                <Header as="h3" style={{ fontSize: '2em' }}>
-                <a href="https://www.facebook.com/melbmun">MelbMUN 2018</a>
+              <Grid.Column style={{ paddingBottom: "5em", paddingTop: "5em" }}>
+                <Header as="h3" style={{ fontSize: "2em" }}>
+                  <a href="https://www.facebook.com/melbmun">MelbMUN 2018</a>
                 </Header>
-                <Image 
-                  centered 
-                  size="small" 
-                  rounded 
-                  src="/melbmun2018.png" 
-                />
+                <Image centered size="small" rounded src="/melbmun2018.png" />
               </Grid.Column>
             </Grid.Row>
             <Grid.Row textAlign="center">
-              <Grid.Column style={{ paddingBottom: '5em', paddingTop: '5em' }}>
-                <Header as="h3" style={{ fontSize: '2em' }}>
-                <a href="https://www.facebook.com/amunc/">AMUNC 2018</a>
+              <Grid.Column style={{ paddingBottom: "5em", paddingTop: "5em" }}>
+                <Header as="h3" style={{ fontSize: "2em" }}>
+                  <a href="https://www.facebook.com/amunc/">AMUNC 2018</a>
                 </Header>
-                <Image 
-                  centered 
-                  size="small" 
-                  rounded 
-                  src="/amunc2018.jpg" 
-                />
+                <Image centered size="small" rounded src="/amunc2018.jpg" />
               </Grid.Column>
-              <Grid.Column style={{ paddingBottom: '5em', paddingTop: '5em' }}>
-                <Header as="h3" style={{ fontSize: '2em' }}>
-                <a href="https://www.facebook.com/NationalCapitalMUN/">NCMUN 2018</a>
+              <Grid.Column style={{ paddingBottom: "5em", paddingTop: "5em" }}>
+                <Header as="h3" style={{ fontSize: "2em" }}>
+                  <a href="https://www.facebook.com/NationalCapitalMUN/">
+                    NCMUN 2018
+                  </a>
                 </Header>
-                <Image 
-                  centered 
-                  size="small" 
-                  rounded 
-                  src="/ncmun2018.jpg" 
-                />
+                <Image centered size="small" rounded src="/ncmun2018.jpg" />
               </Grid.Column>
-              <Grid.Column style={{ paddingBottom: '5em', paddingTop: '5em' }}>
-                <Header as="h3" style={{ fontSize: '2em' }}>
-                <a href="https://www.facebook.com/VicMUNconf/">VicMUN 2019</a>
+              <Grid.Column style={{ paddingBottom: "5em", paddingTop: "5em" }}>
+                <Header as="h3" style={{ fontSize: "2em" }}>
+                  <a href="https://www.facebook.com/VicMUNconf/">VicMUN 2019</a>
                 </Header>
-                <Image 
-                  centered 
-                  size="small" 
-                  rounded 
-                  src="/vicmun2019.png" 
-                />
+                <Image centered size="small" rounded src="/vicmun2019.png" />
               </Grid.Column>
             </Grid.Row>
           </Grid>
@@ -424,14 +481,16 @@ export default class Homepage extends React.Component<{}, {
             <Button as="a" size="large">I'm Still Quite Interested</Button>
           </Container>
         </Segment> */}
-        <Segment inverted vertical style={{ padding: '5em 0em' }}>
+        <Segment inverted vertical style={{ padding: "5em 0em" }}>
           <Container>
             <Grid divided inverted stackable>
               <Grid.Row>
                 <Grid.Column width={3}>
                   <Header inverted as="h4" content="About" />
                   <List link inverted>
-                    <List.Item as="a" href={REPO_LINK}>Source</List.Item>
+                    <List.Item as="a" href={REPO_LINK}>
+                      Source
+                    </List.Item>
                     <List.Item
                       as="a"
                       href="https://github.com/MaxwellBo/Muncoordinated-2/blob/master/LICENSE"
@@ -444,17 +503,31 @@ export default class Homepage extends React.Component<{}, {
                 <Grid.Column width={3}>
                   <Header inverted as="h4" content="Services" />
                   <List link inverted>
-                    <List.Item as="a" href="https://github.com/MaxwellBo/Muncoordinated-2/issues">Support</List.Item>
-                    <List.Item as="a" href="https://www.helpmymun.com/">MUN Resources</List.Item>
+                    <List.Item
+                      as="a"
+                      href="https://github.com/MaxwellBo/Muncoordinated-2/issues"
+                    >
+                      Support
+                    </List.Item>
+                    <List.Item as="a" href="https://www.helpmymun.com/">
+                      MUN Resources
+                    </List.Item>
                     {/* <List.Item as="a">FAQ</List.Item> TODO*/}
                   </List>
                 </Grid.Column>
                 <Grid.Column width={7}>
-                  <Header as="h4" inverted>Info</Header>
-                  <p>Made with 💖 by <a href="https://github.com/MaxwellBo">Max Bo</a>, 
-                  with assistance from the <a href="https://www.facebook.com/UQUNSA/">UQ United Nations Student Association</a>
+                  <Header as="h4" inverted>
+                    Info
+                  </Header>
+                  <p>
+                    Made with 💖 by{" "}
+                    <a href="https://github.com/MaxwellBo">Max Bo</a>, with
+                    assistance from the{" "}
+                    <a href="https://www.facebook.com/UQUNSA/">
+                      UQ United Nations Student Association
+                    </a>
                   </p>
-                  <p>Copyright © 2019</p>
+                  <p>Copyright © 2020</p>
                 </Grid.Column>
               </Grid.Row>
             </Grid>
