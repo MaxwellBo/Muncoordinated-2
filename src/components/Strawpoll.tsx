@@ -4,7 +4,7 @@ import { RouteComponentProps } from 'react-router';
 import { URLParameters, Dictionary } from '../types';
 import { getStrawpollRef } from '../actions/strawpoll-actions';
 import { useObject } from 'react-firebase-hooks/database';
-import { Container, Header, Input, Button, List, Icon, Checkbox, Form, CheckboxProps, Progress } from 'semantic-ui-react';
+import { Container, Header, Input, Button, List, Icon, Checkbox, Form, Modal, CheckboxProps, Progress } from 'semantic-ui-react';
 import { fieldHandler, clearableZeroableValidatedNumberFieldHandler } from '../actions/handlers';
 import Loading from './Loading';
 import { useAuthState } from 'react-firebase-hooks/auth';
@@ -66,6 +66,12 @@ export interface StrawpollVoteData {
 export interface StrawpollProps extends RouteComponentProps<URLParameters> {
 } 
 
+export interface ModalProps {
+  open: boolean,
+  setOpen: Function,
+  onConfirm: Function
+}
+
 function getNumberOfVotes(option: StrawpollOptionData, medium: StrawpollMedium) {
 
   if (medium === StrawpollMedium.Manual) {
@@ -81,12 +87,45 @@ function getNumberOfVotes(option: StrawpollOptionData, medium: StrawpollMedium) 
   }
 }
 
+export function StrawpollConfirm(props: ModalProps) {
+  const onYesClick = () => {
+    props.onConfirm()
+    props.setOpen(false)
+  }
+
+  const onNoClick = () => {
+    props.setOpen(false)
+  }
+
+  return (
+    <Modal
+      size={"mini"}
+      centered={false}
+      open={props.open}
+      onClose={() => props.setOpen(false)}
+      onOpen={() => props.setOpen(true)}
+    >
+      <Modal.Header>Delete strawpoll?</Modal.Header>
+      <Modal.Content>
+        <Modal.Description>
+          Are you sure that you want to delete this strawpoll? 
+        </Modal.Description>
+      </Modal.Content>
+      <Modal.Actions>
+        <Button negative onClick={onYesClick}>Yes</Button>
+        <Button onClick={onNoClick}>No</Button>
+      </Modal.Actions>
+    </Modal>
+  )
+}
+
 export default function Strawpoll(props: StrawpollProps) {
     const { committeeID, strawpollID } = props.match.params;
     const strawpollFref = getStrawpollRef(committeeID, strawpollID)
     const  [value, loading] = useObject(strawpollFref);
     const [user] = useAuthState(firebase.auth());
     const [voterID, setVoterID] = useLocalStorage('voterID', undefined);
+    const [modalOpen, setOpen] = React.useState(false)
 
     if (!voterID) {
       setVoterID(uuidv4())
@@ -118,6 +157,10 @@ export default function Strawpoll(props: StrawpollProps) {
 
     const addOption = () => {
       strawpollFref.child('options').push(DEFAULT_STRAWPOLL_OPTION);
+    }
+
+    const deleteStrawpoll = () => {
+      strawpollFref.remove();
     }
 
     const createSharablePoll = () => {
@@ -251,6 +294,13 @@ export default function Strawpoll(props: StrawpollProps) {
           >
             Create manual poll
             </Button>
+          <Button
+            color="red"
+            basic
+            onClick={()=> setOpen(true)}
+          >
+            <Icon name="delete" />Delete Strawpoll
+          </Button>
         </Button.Group>
       break;
     case StrawpollStage.Voting:
@@ -310,6 +360,7 @@ export default function Strawpoll(props: StrawpollProps) {
           {optionsTree}
         </List>
         {buttons}
+        <StrawpollConfirm open={modalOpen} setOpen={setOpen} onConfirm={deleteStrawpoll}></StrawpollConfirm>
       </Container>
     );
 }
