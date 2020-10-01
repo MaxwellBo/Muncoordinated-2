@@ -106,6 +106,7 @@ export default function Strawpoll(props: StrawpollProps) {
       </Container>;
     }
 
+    const type: StrawpollType = strawpoll ? strawpoll.type || StrawpollType.Checkbox : StrawpollType.Checkbox;
     const stage: StrawpollStage = strawpoll ? strawpoll.stage || StrawpollStage.Results : StrawpollStage.Voting;
     const medium: StrawpollMedium = strawpoll ? strawpoll.medium || StrawpollMedium.Link : StrawpollMedium.Link;
     const options: Dictionary<StrawpollOptionID, StrawpollOptionData> = 
@@ -119,6 +120,17 @@ export default function Strawpoll(props: StrawpollProps) {
 
     const addOption = () => {
       strawpollFref.child('options').push(DEFAULT_STRAWPOLL_OPTION);
+    }
+
+    const togglePollType = () => {
+      strawpollFref.child('type').set(type === StrawpollType.Checkbox ? StrawpollType.Radio : StrawpollType.Checkbox);
+      // reset votes
+      Object.keys(options).forEach(oid => {
+        const votes = options[oid].votes;
+        if (votes) {
+          Object.keys(votes).forEach(vid => strawpollFref.child('options').child(oid).child('votes').child(vid).remove());
+        }
+      });
     }
 
     const createSharablePoll = () => {
@@ -144,20 +156,40 @@ export default function Strawpoll(props: StrawpollProps) {
     }
 
     const onCheck = (oid: StrawpollOptionID) => (event: React.FormEvent<HTMLInputElement>, data: CheckboxProps) => {
-      if (data.checked) {
-        strawpollFref
-          .child('options')
-          .child(oid)
-          .child('votes')
-          .child(voterID)
-          .set(true)
-      } else {
-        strawpollFref
-          .child('options')
-          .child(oid)
-          .child('votes')
-          .child(voterID)
-          .remove()
+      if (type === StrawpollType.Checkbox) {
+        if (data.checked) {
+          strawpollFref
+            .child('options')
+            .child(oid)
+            .child('votes')
+            .child(voterID)
+            .set(true)
+        } else {
+          strawpollFref
+            .child('options')
+            .child(oid)
+            .child('votes')
+            .child(voterID)
+            .remove()
+        }
+      } else if (type === StrawpollType.Radio) {
+        if (data.checked) {
+          // Set everything to unchecked
+          Object.keys(options).forEach(id =>
+            strawpollFref
+              .child('options')
+              .child(id)
+              .child('votes')
+              .child(voterID)
+              .remove()
+          );
+          strawpollFref
+            .child('options')
+            .child(oid)
+            .child('votes')
+            .child(voterID)
+            .set(true);
+        }
       }
     }
 
@@ -200,6 +232,7 @@ export default function Strawpoll(props: StrawpollProps) {
             <Checkbox
               label={option.text}
               name='checkboxRadioGroup'
+              radio={type === StrawpollType.Radio || undefined}
               value={option.text}
               checked={isChecked}
               onChange={onCheck(optionID)}
@@ -237,6 +270,14 @@ export default function Strawpoll(props: StrawpollProps) {
             onClick={addOption}
           >
             <Icon name="plus" />Add Option
+          </Button>
+          <Button
+            color="purple"
+            basic
+            onClick={togglePollType}
+          >
+            <Icon name={type === StrawpollType.Checkbox ? "radio" : "check square"} />
+            {type === StrawpollType.Checkbox ? "Choose one" : "Choose many"}
           </Button>
           <Button
             primary
