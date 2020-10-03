@@ -1,6 +1,6 @@
 # Muncoordinated
 
-[![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
+[![Netlify Status](https://api.netlify.com/api/v1/badges/620aebdc-0c8d-4ef6-873d-cfcd154f8269/deploy-status)](https://app.netlify.com/sites/muncoordinated/deploys)
 
 Muncoordinated is a Model UN committee management service, (re)written with TypeScript, React, Semantic UI and Firebase, and available at [muncoordinated.io](https://muncoordinated.io).
 
@@ -36,8 +36,6 @@ yarn test && yarn run cypress
 ## Contributing
 
 Feel free to dive in! [Open an issue](https://github.com/MaxwellBo/Muncoordinated-2/issues/new) or submit PRs.
-
-Muncoordinated follows the [Contributor Covenant](http://contributor-covenant.org/version/1/3/0/) Code of Conduct.
 
 ### Contributors
 
