@@ -68,8 +68,9 @@ export interface StrawpollProps extends RouteComponentProps<URLParameters> {
 
 export interface ModalProps {
   open: boolean,
-  setOpen: Function,
-  onConfirm: Function
+  onChangeOpenState: (open: boolean) => void,
+  onConfirm: Function,
+  trigger: React.ReactElement<Button>
 }
 
 function getNumberOfVotes(option: StrawpollOptionData, medium: StrawpollMedium) {
@@ -87,14 +88,14 @@ function getNumberOfVotes(option: StrawpollOptionData, medium: StrawpollMedium) 
   }
 }
 
-export function StrawpollConfirm(props: ModalProps) {
+export function StrawpollModal(props: ModalProps) {
   const onYesClick = () => {
     props.onConfirm()
-    props.setOpen(false)
+    props.onChangeOpenState(false)
   }
 
   const onNoClick = () => {
-    props.setOpen(false)
+    props.onChangeOpenState(false)
   }
 
   return (
@@ -102,8 +103,9 @@ export function StrawpollConfirm(props: ModalProps) {
       size={"mini"}
       centered={false}
       open={props.open}
-      onClose={() => props.setOpen(false)}
-      onOpen={() => props.setOpen(true)}
+      onClose={() => props.onChangeOpenState(false)}
+      onOpen={() => props.onChangeOpenState(true)}
+      trigger={props.trigger}
     >
       <Modal.Header>Delete strawpoll?</Modal.Header>
       <Modal.Content>
@@ -271,6 +273,15 @@ export default function Strawpoll(props: StrawpollProps) {
 
   switch (stage) {
     case StrawpollStage.Preparing:
+      let deleteButton =        
+        <Button
+        color="red"
+        basic
+        onClick={()=> setOpen(true)}
+      >
+        <Icon name="delete" />Delete Strawpoll
+      </Button>
+      
       buttons =
         <Button.Group fluid>
           <Button
@@ -294,13 +305,7 @@ export default function Strawpoll(props: StrawpollProps) {
           >
             Create manual poll
             </Button>
-          <Button
-            color="red"
-            basic
-            onClick={()=> setOpen(true)}
-          >
-            <Icon name="delete" />Delete Strawpoll
-          </Button>
+          <StrawpollModal open={modalOpen} onChangeOpenState={setOpen} onConfirm={deleteStrawpoll} trigger={deleteButton}></StrawpollModal>
         </Button.Group>
       break;
     case StrawpollStage.Voting:
@@ -360,7 +365,6 @@ export default function Strawpoll(props: StrawpollProps) {
           {optionsTree}
         </List>
         {buttons}
-        <StrawpollConfirm open={modalOpen} setOpen={setOpen} onConfirm={deleteStrawpoll}></StrawpollConfirm>
       </Container>
     );
 }
