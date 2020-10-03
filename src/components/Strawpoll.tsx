@@ -305,7 +305,7 @@ export default function Strawpoll(props: StrawpollProps) {
           >
             Create manual poll
             </Button>
-          <StrawpollModal open={modalOpen} onChangeOpenState={setOpen} onConfirm={deleteStrawpoll} trigger={deleteButton}></StrawpollModal>
+          <StrawpollModal open={modalOpen} onChangeOpenState={setOpen} onConfirm={deleteStrawpoll} trigger={deleteButton} />
         </Button.Group>
       break;
     case StrawpollStage.Voting:
