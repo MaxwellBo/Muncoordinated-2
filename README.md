@@ -16,22 +16,47 @@ This version of Muncoordinated began development at the end of 2017, ahead of Sy
 Ultimately, this is a personal project that ballooned in scope and LOC - contributing to this will be difficult. Absolutely feel free to contact me  if you'd like to contribute; I'll gladly guide you through the ugly hacks and shaky foundations.
 
 
-## Building
+## Development
 
 
 ```sh
 yarn && yarn start
 ```
 
+Runs the app in the development mode.<br>
+Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+
+The page will reload if you make edits.<br>
+You will also see any lint errors in the console.
+
 ## Tests
 
 
 ```sh
-yarn test && yarn run cypress
+yarn test
+```
+
+Launches the test runner in the interactive watch mode.<br>
+See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+
+## Integration tests
+
+```sh
+yarn run cypress
 ```
 
 [Public Cypress test runs](https://dashboard.cypress.io/projects/zxca1q/runs)
 
+## Building
+
+```sh
+yarn build
+```
+
+Builds the app for production to the `build` folder.<br>
+It will bundle React in production mode and optimize the build for the best performance.
+
+The build is minified and the filenames include the hashes.<br>
 
 ## Maintainers
 
@@ -40,6 +65,13 @@ yarn test && yarn run cypress
 ## Contributing
 
 Feel free to dive in! [Open an issue](https://github.com/MaxwellBo/Muncoordinated-2/issues/new) or submit PRs.
+
+## Learn More
+
+You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+
+To learn React, check out the [React documentation](https://reactjs.org/).
+
 
 ### Contributors
 
