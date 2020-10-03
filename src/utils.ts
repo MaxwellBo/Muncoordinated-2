@@ -1,3 +1,5 @@
+/* eslint-disable no-mixed-operators */
+/* eslint-disable eqeqeq */
 import { MemberOption } from './constants';
 import { MemberID, nameToMemberOption, MemberData } from './components/Member';
 import * as _ from 'lodash';

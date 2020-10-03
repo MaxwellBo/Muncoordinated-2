@@ -1,5 +1,4 @@
 import * as firebase from 'firebase/app';
-import * as _ from 'lodash';
 import * as React from 'react';
 import { RouteComponentProps } from 'react-router';
 import { URLParameters, Dictionary } from '../types';
@@ -221,7 +220,7 @@ export default function Strawpoll(props: StrawpollProps) {
             <Progress progress='value' value={votes} total={totalVotes} />
           </List.Item>
         default:
-          <div />
+          return <div />
       }
     }
 

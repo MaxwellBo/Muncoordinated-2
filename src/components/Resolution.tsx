@@ -4,8 +4,8 @@ import * as _ from 'lodash';
 import { MemberID, nameToMemberOption, MemberData, Rank } from './Member';
 import { AmendmentID, AmendmentData, DEFAULT_AMENDMENT, AMENDMENT_STATUS_OPTIONS, recoverLinkedCaucus } from './Amendment';
 import {
-  Card, Button, Form, Dropdown, Segment, Input, TextArea, Checkbox,
-  List, SemanticICONS, Icon, Tab, Grid, SemanticCOLORS, Container, Message, Label, Popup, Statistic, DropdownProps, DropdownItemProps, TabProps
+  Card, Button, Form, Dropdown, Segment, Input, TextArea,
+  List, SemanticICONS, Icon, Tab, Grid, SemanticCOLORS, Container, Message, Label, Popup, Statistic, DropdownItemProps, TabProps
 } from 'semantic-ui-react';
 import { CommitteeData, recoverMemberOptions } from './Committee';
 import { CaucusID, DEFAULT_CAUCUS, CaucusData } from './Caucus';

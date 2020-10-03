@@ -6,7 +6,7 @@
 import * as firebase from 'firebase/app';
 import { TimerData } from '../Timer';
 import * as React from 'react';
-import { Feed, Icon, Flag, Label, FeedContent, FeedEvent } from 'semantic-ui-react';
+import { Feed, Icon, Flag, Label, FeedEvent } from 'semantic-ui-react';
 import { runLifecycle, Lifecycle } from '../../actions/caucus-actions';
 import { parseFlagName } from '../Member';
 import { Dictionary } from '../../types';

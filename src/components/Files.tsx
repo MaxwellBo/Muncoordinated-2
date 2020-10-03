@@ -140,7 +140,9 @@ class Entry extends React.Component<EntryProps, EntryState> {
           </Feed.Summary>
           <Feed.Extra style={{'whiteSpace': 'pre-wrap'}} text>{post.body}</Feed.Extra>
           <Feed.Meta>
+            {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
             <a onClick={this.props.onDelete}>Delete</a>
+            {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
             {post.forResolution && <a onClick={this.props.onPromoteToAmendment}>Create amendment</a>}
           </Feed.Meta>
         </Feed.Content>
@@ -157,8 +159,10 @@ class Entry extends React.Component<EntryProps, EntryState> {
             <Feed.User><Flag name={parseFlagName(post.uploader)}/> {post.uploader}</Feed.User> uploaded a file
             <Feed.Date>{this.renderDate('Uploaded')}</Feed.Date>
           </Feed.Summary>
+          {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
           <Feed.Extra><a onClick={this.download(post.filename)}>{post.filename}</a></Feed.Extra>
           <Feed.Meta>
+            {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
             <a onClick={this.props.onDelete}>Delete</a>
           </Feed.Meta>
         </Feed.Content>
@@ -180,6 +184,7 @@ class Entry extends React.Component<EntryProps, EntryState> {
           {post.name && <Feed.Meta><a href={post.url}>{post.url}</a></Feed.Meta>}
           <br />
           <Feed.Meta>
+            {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
             <a onClick={this.props.onDelete}>Delete</a>
           </Feed.Meta>
         </Feed.Content>
