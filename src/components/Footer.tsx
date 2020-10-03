@@ -5,7 +5,6 @@ interface Props {
 
 interface State {
   latestVersion?: string;
-  timerId?: NodeJS.Timer;
 }
 
 export const CLIENT_VERSION = 'v2.19.0';
@@ -38,33 +37,14 @@ export default class Footer extends React.PureComponent<Props, State> {
   componentDidMount() {
     const { fetchLatestVersion } = this;
     fetchLatestVersion();
-
-    this.setState({ timerId: setInterval(fetchLatestVersion, 1000 * 60 * 30) });
-  }
-
-  componentWillUnmount() {
-    const { timerId } = this.state;
-
-    if (timerId) {
-      clearInterval(timerId);
-    }
   }
 
   render() {
     const { latestVersion } = this.state;
 
-    const refreshNudge = (
-      <span>
-        . New version available; refresh the page twice
-      </span>
-    );
-
-    // const willShowNudge = latestVersion && latestVersion !== CLIENT_VERSION;
-    const willShowNudge = false;
-
     return (
       <div style={{ position: 'fixed', bottom: 5, left: 5, background: '#FFFFFF' }}>
-        {CLIENT_VERSION_LINK} by <a href="https://github.com/MaxwellBo">Max Bo</a> &amp; <a href="https://www.facebook.com/UQUNSA/">UQUNSA</a>{willShowNudge && refreshNudge}
+        {latestVersion || CLIENT_VERSION_LINK} by <a href="https://github.com/MaxwellBo">Max Bo</a> &amp; <a href="https://www.facebook.com/UQUNSA/">UQUNSA</a>
       </div>
     );
   }

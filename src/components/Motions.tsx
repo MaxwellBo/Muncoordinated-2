@@ -22,7 +22,6 @@ import { ResolutionData, DEFAULT_RESOLUTION, ResolutionID, IDENTITCAL_PROPOSER_S
 import { Stance } from './caucus/SpeakerFeed';
 import { AmendmentData, DEFAULT_AMENDMENT } from './Amendment';
 import { putAmendment, putResolution } from '../actions/resolution-actions';
-import _ from 'lodash';
 import { putStrawpoll } from '../actions/strawpoll-actions';
 import { DEFAULT_STRAWPOLL } from './Strawpoll';
 import { makeCommitteeStats } from './Admin';

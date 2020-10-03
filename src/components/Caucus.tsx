@@ -1,6 +1,5 @@
 import * as React from 'react';
 import firebase from 'firebase/app';
-import _ from 'lodash';
 import {
   Segment, Dropdown, TextArea, Input, Grid, Feed,
   Label, Form, Container

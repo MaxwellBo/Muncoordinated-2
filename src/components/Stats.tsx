@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as firebase from 'firebase/app';
 import * as _ from 'lodash';
-import Committee, { CommitteeData } from './Committee';
+import { CommitteeData } from './Committee';
 import { RouteComponentProps } from 'react-router';
 import { Table, Flag, Container } from 'semantic-ui-react';
 import { MemberData, MemberID, parseFlagName } from './Member';

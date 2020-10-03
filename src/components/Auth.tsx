@@ -218,7 +218,7 @@ export class Login extends React.Component<Props, State> {
   }
 
   renderLoggedIn = (u: firebase.User) => {
-    const { handleLogout, renderCommittees, renderSuccess } = this;
+    const { handleLogout, renderCommittees } = this;
     const { committees } = this.state;
     const { allowNewCommittee } = this.props;
 
@@ -315,6 +315,7 @@ export class Login extends React.Component<Props, State> {
           {mode === Mode.ForgotPassword && cancelButton}
           </Button.Group>
           {mode === Mode.Login && 
+            // eslint-disable-next-line jsx-a11y/anchor-is-valid
             <a 
               onClick={handleForgotPassword} 
               style={{'cursor': 'pointer'}}
