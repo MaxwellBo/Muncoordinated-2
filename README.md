@@ -48,4 +48,4 @@ This project exists thanks to all the people who contribute. Special thanks to:
 
 ## License
 
-[GNU AGPLv3](LICENSE) © Maxwell Bo
+[GNU GPLv3](LICENSE) © Maxwell Bo
