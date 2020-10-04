@@ -25,6 +25,14 @@ export function membersToOptions(members: Dictionary<MemberID, MemberData> | und
   return _.sortBy(options, (option: MemberOption) => option.text);
 }
 
+export function presentMembersToOptions(members: Dictionary<MemberID, MemberData> | undefined): MemberOption[] {
+  const options = objectToList(members || {})
+    .filter(x => x.present)
+    .map(x => nameToMemberOption(x.name));
+
+  return _.sortBy(options, (option: MemberOption) => option.text);
+}
+
 export function useLocalStorage(key: any, initialValue: any) {
   // State to store our value
   // Pass initial state function to useState so logic is only executed once
