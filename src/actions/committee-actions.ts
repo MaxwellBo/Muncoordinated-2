@@ -1,7 +1,71 @@
 import * as firebase from 'firebase/app';
-import { CommitteeID } from '../components/Committee';
+import { CommitteeData, CommitteeID } from '../components/Committee';
 import { TimerData, DEFAULT_TIMER } from '../components/Timer';
-import { CaucusID } from '../components/Caucus';
+import { CaucusData, CaucusID } from '../components/Caucus';
+import { MemberOption } from '../constants'
+import { MemberID, nameToMemberOption, MemberData } from '../components/Member';
+import { objectToList } from '../utils';
+import { ResolutionID, ResolutionData } from '../components/Resolution';
+import { SettingsData, DEFAULT_SETTINGS } from '../components/Settings';
+import { Dictionary } from '../types';
+import _ from 'lodash';
+
+export function presentMembersToOptions(members: Dictionary<MemberID, MemberData> | undefined): MemberOption[] {
+  const options = objectToList(members || {})
+    .filter(x => x.present)
+    .map(x => nameToMemberOption(x.name));
+
+  return _.sortBy(options, (option: MemberOption) => option.text);
+}
+
+
+export function recoverPresentMemberOptions(committee?: CommitteeData): MemberOption[] {
+  if (committee) {
+    return presentMembersToOptions(committee.members);
+  } else {
+    return [];
+  }
+}
+
+export function recoverPresentMembers(committee?: CommitteeData): Dictionary<MemberID, MemberData> | undefined {
+  return committee ? (committee.members || {} as Dictionary<MemberID, MemberData>) : undefined;
+}
+
+export function recoverSettings(committee?: CommitteeData): SettingsData {
+  let timersInSeparateColumns: boolean = DEFAULT_SETTINGS.timersInSeparateColumns;
+  let moveQueueUp: boolean = DEFAULT_SETTINGS.moveQueueUp;
+  let autoNextSpeaker: boolean = DEFAULT_SETTINGS.autoNextSpeaker;
+
+  if (committee) {
+    if (committee.settings.timersInSeparateColumns !== undefined) {
+      timersInSeparateColumns = committee.settings.timersInSeparateColumns;
+    }
+
+    if (committee.settings.moveQueueUp !== undefined) {
+      moveQueueUp = committee.settings.moveQueueUp;
+    }
+
+    if (committee.settings.autoNextSpeaker !== undefined) {
+      autoNextSpeaker = committee.settings.autoNextSpeaker;
+    }
+  }
+
+  return {
+    timersInSeparateColumns, moveQueueUp, autoNextSpeaker
+  };
+}
+
+export function recoverCaucus(committee: CommitteeData | undefined, caucusID: CaucusID): CaucusData | undefined {
+  const caucuses = committee ? committee.caucuses : {};
+  
+  return (caucuses || {})[caucusID];
+}
+
+export function recoverResolution(committee: CommitteeData | undefined, resolutionID: ResolutionID): ResolutionData | undefined {
+  const resolutions = committee ? committee.resolutions : {};
+  
+  return (resolutions || {})[resolutionID];
+}
 
 // tslint:disable-next-line
 export const putUnmodTimer = (committeeID: CommitteeID, timerData: TimerData): Promise<any> => {

@@ -26,59 +26,10 @@ import { CommitteeShareHint } from './ShareHint';
 import Notifications from './Notifications';
 import { putResolution } from '../actions/resolution-actions';
 import ConnectionStatus from './ConnectionStatus';
-import { membersToOptions } from '../utils';
 import { fieldHandler } from '../actions/handlers';
-import { MemberOption } from '../constants';
 import { putStrawpoll } from '../actions/strawpoll-actions';
 import Strawpoll, { DEFAULT_STRAWPOLL, StrawpollID, StrawpollData } from './Strawpoll';
 
-export function recoverMemberOptions(committee?: CommitteeData): MemberOption[] {
-  if (committee) {
-    return membersToOptions(committee.members);
-  } else {
-    return [];
-  }
-}
-
-export function recoverMembers(committee?: CommitteeData): Dictionary<MemberID, MemberData> | undefined {
-  return committee ? (committee.members || {} as Dictionary<MemberID, MemberData>) : undefined;
-}
-
-export function recoverSettings(committee?: CommitteeData): SettingsData {
-  let timersInSeparateColumns: boolean = DEFAULT_SETTINGS.timersInSeparateColumns;
-  let moveQueueUp: boolean = DEFAULT_SETTINGS.moveQueueUp;
-  let autoNextSpeaker: boolean = DEFAULT_SETTINGS.autoNextSpeaker;
-
-  if (committee) {
-    if (committee.settings.timersInSeparateColumns !== undefined) {
-      timersInSeparateColumns = committee.settings.timersInSeparateColumns;
-    }
-
-    if (committee.settings.moveQueueUp !== undefined) {
-      moveQueueUp = committee.settings.moveQueueUp;
-    }
-
-    if (committee.settings.autoNextSpeaker !== undefined) {
-      autoNextSpeaker = committee.settings.autoNextSpeaker;
-    }
-  }
-
-  return {
-    timersInSeparateColumns, moveQueueUp, autoNextSpeaker
-  };
-}
-
-export function recoverCaucus(committee: CommitteeData | undefined, caucusID: CaucusID): CaucusData | undefined {
-  const caucuses = committee ? committee.caucuses : {};
-  
-  return (caucuses || {})[caucusID];
-}
-
-export function recoverResolution(committee: CommitteeData | undefined, resolutionID: ResolutionID): ResolutionData | undefined {
-  const resolutions = committee ? committee.resolutions : {};
-  
-  return (resolutions || {})[resolutionID];
-}
 
 interface DesktopContainerProps {
   menu?: React.ReactNode;

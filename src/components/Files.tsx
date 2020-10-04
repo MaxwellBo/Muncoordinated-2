@@ -1,7 +1,7 @@
 import * as React from 'react';
 import firebase from 'firebase/app';
 import FileSaver from 'file-saver';
-import { CommitteeData, CommitteeID, recoverMemberOptions } from './Committee';
+import { CommitteeData, CommitteeID } from './Committee';
 import { RouteComponentProps } from 'react-router';
 import { URLParameters } from '../types';
 import { Form, Button, Progress, DropdownProps, Flag, Container, Tab, TextAreaProps, Feed, SemanticICONS } from 'semantic-ui-react';
@@ -11,6 +11,7 @@ import { MemberOption, COUNTRY_OPTIONS } from '../constants';
 import { ResolutionID } from './Resolution';
 import { putAmendment } from '../actions/resolution-actions';
 import { DEFAULT_AMENDMENT } from './Amendment';
+import { recoverPresentMemberOptions } from '../actions/committee-actions';
 
 const TEXT_ICON: SemanticICONS = 'align left';
 const FILE_ICON: SemanticICONS = 'file outline';
@@ -376,7 +377,7 @@ export default class Files extends React.Component<Props, State> {
   }
 
   setMember = (event: React.SyntheticEvent<HTMLElement>, data: DropdownProps): void => {
-    const memberOptions = recoverMemberOptions(this.state.committee);
+    const memberOptions = recoverPresentMemberOptions(this.state.committee);
 
     this.setState({ uploader: memberOptions.filter(c => c.value === data.value)[0] });
   }
@@ -384,7 +385,7 @@ export default class Files extends React.Component<Props, State> {
   renderUploader = () => {
     const { progress, state, errorCode, committee, file, uploader } = this.state;
 
-    const memberOptions = recoverMemberOptions(committee);
+    const memberOptions = recoverPresentMemberOptions(committee);
 
     return (
       <React.Fragment>
@@ -446,7 +447,7 @@ export default class Files extends React.Component<Props, State> {
   renderFilter = () => {
     const { committee } = this.state;
 
-    const memberOptions = recoverMemberOptions(committee);
+    const memberOptions = recoverPresentMemberOptions(committee);
 
     return (
       <Form>
@@ -491,7 +492,7 @@ export default class Files extends React.Component<Props, State> {
   renderLinker = () => {
     const { committee, uploader, body, link } = this.state;
 
-    const memberOptions = recoverMemberOptions(committee);
+    const memberOptions = recoverPresentMemberOptions(committee);
 
     return (
       <Form onSubmit={this.postLink}>
@@ -537,7 +538,7 @@ export default class Files extends React.Component<Props, State> {
   renderPoster = () => {
     const { committee, uploader, body } = this.state;
 
-    const memberOptions = recoverMemberOptions(committee);
+    const memberOptions = recoverPresentMemberOptions(committee);
 
     return (
       <Form onSubmit={this.postText}>

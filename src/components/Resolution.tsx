@@ -7,7 +7,7 @@ import {
   Card, Button, Form, Dropdown, Segment, Input, TextArea,
   List, SemanticICONS, Icon, Tab, Grid, SemanticCOLORS, Container, Message, Label, Popup, Statistic, DropdownItemProps, TabProps
 } from 'semantic-ui-react';
-import { CommitteeData, recoverMemberOptions } from './Committee';
+import { CommitteeData } from './Committee';
 import { CaucusID, DEFAULT_CAUCUS, CaucusData } from './Caucus';
 import { RouteComponentProps } from 'react-router';
 import { URLParameters, Dictionary } from '../types';
@@ -22,6 +22,7 @@ import { putCaucus } from '../actions/caucus-actions';
 import { Stance } from './caucus/SpeakerFeed';
 import { NotFound } from './NotFound';
 import Files from './Files';
+import { recoverPresentMemberOptions } from '../actions/committee-actions';
 
 const TAB_ORDER = ['feed', 'text', 'amendments', 'voting'];
 
@@ -275,7 +276,7 @@ export default class Resolution extends React.Component<Props, State> {
       />
     );
 
-    const memberOptions = recoverMemberOptions(this.state.committee);
+    const memberOptions = recoverPresentMemberOptions(this.state.committee);
 
     const proposerDropdown = (
       <Form.Dropdown
@@ -565,7 +566,7 @@ export default class Resolution extends React.Component<Props, State> {
     const resolutionFref = this.recoverResolutionFref();
     const { handleProvisionResolution, amendmentsArePublic } = this;
 
-    const memberOptions = recoverMemberOptions(this.state.committee);
+    const memberOptions = recoverPresentMemberOptions(this.state.committee);
 
     // TFW no null coalescing operator 
     const proposer = resolution

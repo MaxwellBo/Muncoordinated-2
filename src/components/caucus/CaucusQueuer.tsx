@@ -7,8 +7,8 @@ import { Segment, Button, Form, DropdownProps, Label } from 'semantic-ui-react';
 import { TimerSetter, Unit } from '../TimerSetter';
 import { SpeakerEvent, Stance } from '..//caucus/SpeakerFeed';
 import { checkboxHandler, validatedNumberFieldHandler, dropdownHandler } from '../../actions/handlers';
-import { presentMembersToOptions } from '../../utils';
 import { Dictionary } from '../../types';
+import { presentMembersToOptions } from '../../actions/committee-actions';
 
 interface Props {
   caucus?: CaucusData;
@@ -19,6 +19,8 @@ interface Props {
 export default function CaucusQueuer(props: Props) {
   const { members, caucus, caucusFref } = props;
   const [queueMember, setQueueMember] = React.useState<MemberOption | undefined>(undefined);
+  const memberOptions = presentMembersToOptions(members);
+  const duration = recoverDuration(caucus);
 
   const setStance = (stance: Stance) => () => {
     const { caucus } = props;
@@ -37,14 +39,9 @@ export default function CaucusQueuer(props: Props) {
   }
 
   const setMember = (event: React.SyntheticEvent<HTMLElement>, data: DropdownProps): void => {
-    const { members } = props;
-    const memberOptions = presentMembersToOptions(members);
-
     setQueueMember(memberOptions.filter(c => c.value === data.value)[0]);
   }
 
-  const memberOptions = presentMembersToOptions(members);
-  const duration = recoverDuration(caucus);
   const disableButtons = !queueMember || !duration;
 
   return (

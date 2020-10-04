@@ -6,7 +6,7 @@ import {
 } from 'semantic-ui-react';
 import Timer, { TimerData, DEFAULT_TIMER } from './Timer';
 import { RouteComponentProps } from 'react-router';
-import { CommitteeData, recoverMembers, recoverSettings, recoverCaucus } from './Committee';
+import { CommitteeData } from './Committee';
 import CaucusQueuer from './caucus/CaucusQueuer';
 import { textAreaHandler, dropdownHandler, fieldHandler } from '../actions/handlers';
 import { makeDropdownOption } from '../utils';
@@ -15,6 +15,7 @@ import { CaucusNextSpeaking } from './caucus/CaucusNextSpeaking';
 import { SpeakerEvent, SpeakerFeedEntry } from './caucus/SpeakerFeed';
 import { NotFound } from './NotFound';
 import { Unit } from './TimerSetter';
+import { recoverCaucus, recoverPresentMembers, recoverSettings } from '../actions/committee-actions';
 
 export const DEFAULT_CAUCUS_TIME_SECONDS = 10 * 60;
 export const DEFAULT_SPEAKER_TIME_SECONDS = 1 * 60;
@@ -189,7 +190,7 @@ export default class Caucus extends React.Component<Props, State> {
     const { caucusID } = this.props.match.params;
     const caucusFref = recoverCaucusFref();
 
-    const members = recoverMembers(committee);
+    const members = recoverPresentMembers(committee)
 
     const renderedSpeakerTimer = (
       <Timer

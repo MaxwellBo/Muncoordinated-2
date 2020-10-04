@@ -1,6 +1,6 @@
 import * as React from 'react';
 import firebase from 'firebase/app';
-import { CommitteeData, CommitteeID, DEFAULT_COMMITTEE, recoverCaucus, recoverResolution, recoverMemberOptions } from './Committee';
+import { CommitteeData, CommitteeID, DEFAULT_COMMITTEE } from './Committee';
 import { RouteComponentProps } from 'react-router';
 import { Icon, Button, Card, Form, Message, Flag, Label, 
   Container, Divider } from 'semantic-ui-react';
@@ -16,7 +16,7 @@ import { nameToMemberOption, parseFlagName } from './Member';
 import { DEFAULT_CAUCUS, CaucusData, CaucusID, CaucusStatus, DEFAULT_SPEAKER_TIME_SECONDS } from './Caucus';
 import { putCaucus, closeCaucus, putSpeaking } from '../actions/caucus-actions';
 import { TimerData } from './Timer';
-import { putUnmodTimer, extendUnmodTimer, extendModTimer } from '../actions/committee-actions';
+import { putUnmodTimer, extendUnmodTimer, extendModTimer, recoverCaucus, recoverPresentMemberOptions, recoverResolution } from '../actions/committee-actions';
 import { URLParameters, Dictionary } from '../types';
 import { ResolutionData, DEFAULT_RESOLUTION, ResolutionID, IDENTITCAL_PROPOSER_SECONDER } from './Resolution';
 import { Stance } from './caucus/SpeakerFeed';
@@ -723,7 +723,7 @@ export default class Motions extends React.Component<Props, State> {
       </Form.Group>
     );
 
-    const memberOptions = recoverMemberOptions(this.state.committee);
+    const memberOptions = recoverPresentMemberOptions(this.state.committee);
 
     const proposerTree = (
       <Form.Dropdown

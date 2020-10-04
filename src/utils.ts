@@ -1,8 +1,5 @@
 /* eslint-disable no-mixed-operators */
 /* eslint-disable eqeqeq */
-import { MemberOption } from './constants';
-import { MemberID, nameToMemberOption, MemberData } from './components/Member';
-import * as _ from 'lodash';
 import * as React from 'react';
 import { Dictionary } from './types';
 
@@ -16,21 +13,6 @@ export function objectToList<T>(object: Dictionary<string, T>): T[] {
 
 export function makeDropdownOption<T>(x: T) {
   return { key: x, value: x, text: x };
-}
-
-export function membersToOptions(members: Dictionary<MemberID, MemberData> | undefined): MemberOption[] {
-  const options = objectToList(members || {})
-    .map(x => nameToMemberOption(x.name));
-
-  return _.sortBy(options, (option: MemberOption) => option.text);
-}
-
-export function presentMembersToOptions(members: Dictionary<MemberID, MemberData> | undefined): MemberOption[] {
-  const options = objectToList(members || {})
-    .filter(x => x.present)
-    .map(x => nameToMemberOption(x.name));
-
-  return _.sortBy(options, (option: MemberOption) => option.text);
 }
 
 export function useLocalStorage(key: any, initialValue: any) {

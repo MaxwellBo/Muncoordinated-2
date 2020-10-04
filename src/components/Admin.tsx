@@ -7,7 +7,7 @@ import { Dropdown, Flag, Table, Button, Checkbox,
   CheckboxProps, DropdownProps, ButtonProps, Tab, Container, Message, Icon } from 'semantic-ui-react';
 import { COUNTRY_OPTIONS, MemberOption } from '../constants';
 import { checkboxHandler, dropdownHandler } from '../actions/handlers';
-import { makeDropdownOption } from '../utils';
+import { makeDropdownOption, objectToList } from '../utils';
 import _ from 'lodash';
 import { Dictionary, URLParameters } from '../types';
 import { RouteComponentProps } from 'react-router';
@@ -336,8 +336,10 @@ export default class Admin extends React.Component<Props, State> {
   }
 
   CommitteeMembers = (props: { data: CommitteeData, fref: firebase.database.Reference }) => {
-
     const members = this.props.committee.members || {};
+    const presentMembers = objectToList(members || {})
+      .filter(x => x.present)
+
     const memberItems = Object.keys(members).map(id =>
       this.renderMemberItem(id, members[id], props.fref.child('members').child(id))
     );
@@ -363,9 +365,11 @@ export default class Admin extends React.Component<Props, State> {
             {memberItems.reverse()}
           </Table.Body>
         </Table>
-        {memberItems.length === 0
+        {presentMembers.length === 0
           ? <Message error>
-            Add at least one committee member to proceed
+            Add at least one present committee member to proceed.
+            <br />
+            Only present members will be visible in dropdowns later on.
           </Message>
           : <Button
             onClick={this.gotoGSL}
