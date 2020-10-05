@@ -315,21 +315,21 @@ export const STANDARD_COMMITTEES: Dictionary<MemberOption> = {
     { key: 'bj', value: 'bj', flag: 'bj', text: 'Benin' },
     { key: 'bw', value: 'bw', flag: 'bw', text: 'Botswana' },
     { key: 'bf', value: 'bf', flag: 'bf', text: 'Burkina Faso' },
-    { key: 'bi', value: 'bi', flag: 'bi', text: 'Burundi' }
-    { key: 'cm', value: 'cm', flag: 'cm', text: 'Cameroon' }
-    { key: 'cv', value: 'cv', flag: 'cv', text: 'Cape Verde' }
-    { key: 'cf', value: 'cf', flag: 'cf', text: 'Central African Republic' }
-    { key: 'td', value: 'td', flag: 'td', text: 'Chad' }
-    { key: 'km', value: 'km', flag: 'km', text: 'Comoros' }
-    { key: 'cd', value: 'cd', flag: 'cd', text: 'Congo' }
-    { key: 'ci', value: 'ci', flag: 'ci', text: 'Cote Divoire' }
-    { key: 'dj', value: 'dj', flag: 'dj', text: 'Djibouti' }
-    { key: 'eg', value: 'eg', flag: 'eg', text: 'Egypt' }
-    { key: 'gq', value: 'gq', flag: 'gq', text: 'Equatorial Guinea' }
-    { key: 'er', value: 'er', flag: 'er', text: 'Eritrea' }
-    { key: 'et', value: 'et', flag: 'et', text: 'Ethiopia' }
-    { key: 'ga', value: 'ga', flag: 'ga', text: 'Gabon' }
-    { key: 'gh', value: 'gh', flag: 'gh', text: 'Ghana' }
+    { key: 'bi', value: 'bi', flag: 'bi', text: 'Burundi' },
+    { key: 'cm', value: 'cm', flag: 'cm', text: 'Cameroon' },
+    { key: 'cv', value: 'cv', flag: 'cv', text: 'Cape Verde' },
+    { key: 'cf', value: 'cf', flag: 'cf', text: 'Central African Republic' },
+    { key: 'td', value: 'td', flag: 'td', text: 'Chad' },
+    { key: 'km', value: 'km', flag: 'km', text: 'Comoros' },
+    { key: 'cd', value: 'cd', flag: 'cd', text: 'Congo' },
+    { key: 'ci', value: 'ci', flag: 'ci', text: 'Cote Divoire' },
+    { key: 'dj', value: 'dj', flag: 'dj', text: 'Djibouti' },
+    { key: 'eg', value: 'eg', flag: 'eg', text: 'Egypt' },
+    { key: 'gq', value: 'gq', flag: 'gq', text: 'Equatorial Guinea' },
+    { key: 'er', value: 'er', flag: 'er', text: 'Eritrea' },
+    { key: 'et', value: 'et', flag: 'et', text: 'Ethiopia' },
+    { key: 'ga', value: 'ga', flag: 'ga', text: 'Gabon' },
+    { key: 'gh', value: 'gh', flag: 'gh', text: 'Ghana' },
     { key: 'gw', value: 'gw', flag: 'gw', text: 'Guinea-Bissau' },
     { key: 'gn', value: 'gn', flag: 'gn', text: 'Guinea' },
     { key: 'ke', value: 'ke', flag: 'ke', text: 'Kenya' },
@@ -346,9 +346,9 @@ export const STANDARD_COMMITTEES: Dictionary<MemberOption> = {
     { key: 'na', value: 'na', flag: 'na', text: 'Namibia' },
     { key: 'ne', value: 'ne', flag: 'ne', text: 'Niger' },
     { key: 'ng', value: 'ng', flag: 'ng', text: 'Nigeria' },
-    { key: 'rw', value: 'rw', flag: 'rw', text: 'Rwanda' }
-    { key: 'st', value: 'st', flag: 'st', text: 'Sao Tome' }
-    { key: 'sn', value: 'sn', flag: 'sn', text: 'Senegal' }
+    { key: 'rw', value: 'rw', flag: 'rw', text: 'Rwanda' },
+    { key: 'st', value: 'st', flag: 'st', text: 'Sao Tome' },
+    { key: 'sn', value: 'sn', flag: 'sn', text: 'Senegal' },
     { key: 'sl', value: 'sl', flag: 'sl', text: 'Sierra Leone' },
     { key: 'sd', value: 'sd', flag: 'sd', text: 'Sudan' },
     { key: 'tz', value: 'tz', flag: 'tz', text: 'Tanzania' },
