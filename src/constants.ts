@@ -125,7 +125,6 @@ export const COUNTRY_OPTIONS: MemberOption[] = [
   { key: 'ec', value: 'ec', flag: 'ec', text: 'Ecuador' },
   { key: 'eg', value: 'eg', flag: 'eg', text: 'Egypt' },
   { key: 'sv', value: 'sv', flag: 'sv', text: 'El Salvador' },
-  { key: 'gb', value: 'gb', flag: 'gb', text: 'United Kingdom' },
   { key: 'gq', value: 'gq', flag: 'gq', text: 'Equatorial Guinea' },
   { key: 'er', value: 'er', flag: 'er', text: 'Eritrea' },
   { key: 'ee', value: 'ee', flag: 'ee', text: 'Estonia' },
@@ -303,6 +302,80 @@ export const COUNTRY_OPTIONS: MemberOption[] = [
   { key: 'zm', value: 'zm', flag: 'zm', text: 'Zambia' },
   { key: 'zw', value: 'zw', flag: 'zw', text: 'Zimbabwe' },
 ];
+
+interface Dictionary<MemberOption> {
+  [Key: string]: MemberOption[];
+}
+
+export const STANDARD_COMMITTEES: Dictionary<MemberOption> = {
+  "": [],
+  "African Union": [
+    { key: 'dz', value: 'dz', flag: 'dz', text: 'Algeria' },
+    { key: 'ao', value: 'ao', flag: 'ao', text: 'Angola' },
+    { key: 'bj', value: 'bj', flag: 'bj', text: 'Benin' },
+    { key: 'bw', value: 'bw', flag: 'bw', text: 'Botswana' },
+    { key: 'bf', value: 'bf', flag: 'bf', text: 'Burkina Faso' },
+    { key: 'bi', value: 'bi', flag: 'bi', text: 'Burundi' }
+    { key: 'cm', value: 'cm', flag: 'cm', text: 'Cameroon' }
+    { key: 'cv', value: 'cv', flag: 'cv', text: 'Cape Verde' }
+    { key: 'cf', value: 'cf', flag: 'cf', text: 'Central African Republic' }
+    { key: 'td', value: 'td', flag: 'td', text: 'Chad' }
+    { key: 'km', value: 'km', flag: 'km', text: 'Comoros' }
+    { key: 'cd', value: 'cd', flag: 'cd', text: 'Congo' }
+    { key: 'ci', value: 'ci', flag: 'ci', text: 'Cote Divoire' }
+    { key: 'dj', value: 'dj', flag: 'dj', text: 'Djibouti' }
+    { key: 'eg', value: 'eg', flag: 'eg', text: 'Egypt' }
+    { key: 'gq', value: 'gq', flag: 'gq', text: 'Equatorial Guinea' }
+    { key: 'er', value: 'er', flag: 'er', text: 'Eritrea' }
+    { key: 'et', value: 'et', flag: 'et', text: 'Ethiopia' }
+    { key: 'ga', value: 'ga', flag: 'ga', text: 'Gabon' }
+    { key: 'gh', value: 'gh', flag: 'gh', text: 'Ghana' }
+    { key: 'gw', value: 'gw', flag: 'gw', text: 'Guinea-Bissau' },
+    { key: 'gn', value: 'gn', flag: 'gn', text: 'Guinea' },
+    { key: 'ke', value: 'ke', flag: 'ke', text: 'Kenya' },
+    { key: 'ls', value: 'ls', flag: 'ls', text: 'Lesotho' },
+    { key: 'lr', value: 'lr', flag: 'lr', text: 'Liberia' },
+    { key: 'ly', value: 'ly', flag: 'ly', text: 'Libya' },
+    { key: 'mg', value: 'mg', flag: 'mg', text: 'Madagascar' },
+    { key: 'mw', value: 'mw', flag: 'mw', text: 'Malawi' },
+    { key: 'ml', value: 'ml', flag: 'ml', text: 'Mali' },
+    { key: 'mr', value: 'mr', flag: 'mr', text: 'Mauritania' },
+    { key: 'mu', value: 'mu', flag: 'mu', text: 'Mauritius' },
+    { key: 'ma', value: 'ma', flag: 'ma', text: 'Morocco' },
+    { key: 'mz', value: 'mz', flag: 'mz', text: 'Mozambique' },
+    { key: 'na', value: 'na', flag: 'na', text: 'Namibia' },
+    { key: 'ne', value: 'ne', flag: 'ne', text: 'Niger' },
+    { key: 'ng', value: 'ng', flag: 'ng', text: 'Nigeria' },
+    { key: 'rw', value: 'rw', flag: 'rw', text: 'Rwanda' }
+    { key: 'st', value: 'st', flag: 'st', text: 'Sao Tome' }
+    { key: 'sn', value: 'sn', flag: 'sn', text: 'Senegal' }
+    { key: 'sl', value: 'sl', flag: 'sl', text: 'Sierra Leone' },
+    { key: 'sd', value: 'sd', flag: 'sd', text: 'Sudan' },
+    { key: 'tz', value: 'tz', flag: 'tz', text: 'Tanzania' },
+    { key: 'tg', value: 'tg', flag: 'tg', text: 'Togo' },
+    { key: 'tn', value: 'tn', flag: 'tn', text: 'Tunisia' },
+    { key: 'ug', value: 'ug', flag: 'ug', text: 'Uganda' },
+    { key: 'zm', value: 'zm', flag: 'zm', text: 'Zambia' },
+    { key: 'zw', value: 'zw', flag: 'zw', text: 'Zimbabwe'}
+  ],
+  "Security Council": [
+    { key: 'be', value: 'be', flag: 'be', text: 'Belgium' },
+    { key: 'cn', value: 'cn', flag: 'cn', text: 'China' },
+    { key: 'do', value: 'do', flag: 'do', text: 'Dominican Republic' },
+    { key: 'ee', value: 'ee', flag: 'ee', text: 'Estonia' },
+    { key: 'fr', value: 'fr', flag: 'fr', text: 'France' },
+    { key: 'de', value: 'de', flag: 'de', text: 'Germany' },
+    { key: 'id', value: 'id', flag: 'id', text: 'Indonesia' },
+    { key: 'ne', value: 'ne', flag: 'ne', text: 'Niger' },
+    { key: 'ru', value: 'ru', flag: 'ru', text: 'Russia' },
+    { key: 'vc', value: 'vc', flag: 'vc', text: 'Saint Vincent' },
+    { key: 'za', value: 'za', flag: 'za', text: 'South Africa' },
+    { key: 'tn', value: 'tn', flag: 'tn', text: 'Tunisia' },
+    { key: 'gb', value: 'gb', flag: 'gb', text: 'United Kingdom' },
+    { key: 'us', value: 'us', flag: 'us', text: 'United States' },
+    { key: 'vn', value: 'vn', flag: 'vn', text: 'Vietnam' }
+  ]
+}
 
 export const LANGUAGE_OPTIONS = [
   { key: 'Arabic', text: 'Arabic', value: 'Arabic' },
