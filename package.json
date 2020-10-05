@@ -28,7 +28,8 @@
     "typescript": "3.7.2"
   },
   "devDependencies": {
-    "cypress": "3.6.1"
+    "cypress": "3.6.1",
+    "netlify-plugin-cypress": "^1.4.1"
   },
   "scripts": {
     "start": "react-scripts start",

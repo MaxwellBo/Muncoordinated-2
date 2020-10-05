@@ -2,6 +2,8 @@
 
 [![Netlify Status](https://api.netlify.com/api/v1/badges/620aebdc-0c8d-4ef6-873d-cfcd154f8269/deploy-status)](https://app.netlify.com/sites/muncoordinated/deploys)
 
+[![Muncoordinated](https://img.shields.io/endpoint?url=https://dashboard.cypress.io/badge/detailed/zxca1q&style=flat&logo=cypress)](https://dashboard.cypress.io/projects/zxca1q/runs)
+
 Muncoordinated is a Model UN committee management service, (re)written with TypeScript, React, Semantic UI and Firebase, and available at [muncoordinated.io](https://muncoordinated.io).
 
 ![demo screenshot](public/promo.png)
@@ -27,6 +29,8 @@ yarn && yarn start
 ```sh
 yarn test && yarn run cypress
 ```
+
+[Public Cypress test runs](https://dashboard.cypress.io/projects/zxca1q/runs)
 
 
 ## Maintainers
