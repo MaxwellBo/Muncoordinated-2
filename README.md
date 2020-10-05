@@ -19,7 +19,7 @@ Ultimately, this is a personal project that ballooned in scope and LOC - contrib
 
 - [Public Netlify deployment status](https://app.netlify.com/sites/muncoordinated/deploys)
 - [Public Cypress integration test run recordings](https://dashboard.cypress.io/projects/zxca1q/runs)
-- [Sentry error logging available upon request](https://sentry.io/organizations/muncoordinated/issues/?project=5450534)
+- [Private Sentry error logging](https://sentry.io/organizations/muncoordinated/issues/?project=5450534) (access available upon request)
 
 ## Development
 
