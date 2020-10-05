@@ -7,6 +7,7 @@ import { Form, Grid, Header, InputOnChangeData, Divider,
 import { Login } from './Auth';
 import { URLParameters } from '../types';
 import ConnectionStatus from './ConnectionStatus';
+import { logCreateCommittee } from '../analytics';
 
 interface Props extends RouteComponentProps<URLParameters> {
 }
@@ -73,6 +74,8 @@ export default class Onboard extends React.Component<Props, State> {
 
       const newCommitteeRef = this.state.committeesFref.push();
       newCommitteeRef.set(newCommittee);
+
+      logCreateCommittee(newCommitteeRef.key ?? undefined)
 
       this.props.history.push(`/committees/${newCommitteeRef.key}`);
     }
