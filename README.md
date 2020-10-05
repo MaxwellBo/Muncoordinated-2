@@ -15,6 +15,10 @@ This version of Muncoordinated began development at the end of 2017, ahead of Sy
 
 Ultimately, this is a personal project that ballooned in scope and LOC - contributing to this will be difficult. Absolutely feel free to contact me  if you'd like to contribute; I'll gladly guide you through the ugly hacks and shaky foundations.
 
+## Utilities
+
+- [Public Netlify deployment status](https://app.netlify.com/sites/muncoordinated/deploys)
+- [Public Cypress integration test run recordings](https://dashboard.cypress.io/projects/zxca1q/runs)
 
 ## Development
 
@@ -45,7 +49,8 @@ See the section about [running tests](https://facebook.github.io/create-react-ap
 yarn run cypress
 ```
 
-[Public Cypress test runs](https://dashboard.cypress.io/projects/zxca1q/runs)
+Launches the integration test runner.<br>
+See the section about [The Test Runner](https://docs.cypress.io/guides/core-concepts/test-runner.html)
 
 ## Building
 
