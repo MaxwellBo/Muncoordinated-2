@@ -5,6 +5,7 @@ import { CommitteeID, CommitteeData } from './Committee';
 import _ from 'lodash';
 import Loading from './Loading';
 import { Dictionary } from '../types';
+import { logCreateAccount } from '../analytics';
 
 enum Mode {
   Login = 'Login',
@@ -95,7 +96,9 @@ export class Login extends React.Component<Props, State> {
     const { email, password } = this.state;
     this.setState({ creating: true });
 
-    firebase.auth().createUserWithEmailAndPassword(email, password).then(() => {
+    firebase.auth().createUserWithEmailAndPassword(email, password).then(credential => {
+      logCreateAccount(credential.user?.uid)
+
       const success = { 
         name: 'Account created',
         message: 'Your account was successfully created' 
