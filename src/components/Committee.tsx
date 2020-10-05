@@ -112,6 +112,7 @@ export interface CommitteeData {
   chair: string;
   topic: string;
   conference?: string; // TODO: Migrate
+  template: string;
   creatorUid: firebase.UserInfo['uid'];
   members?: Dictionary<MemberID, MemberData>;
   caucuses?: Dictionary<CaucusID, CaucusData>;
@@ -134,6 +135,7 @@ export const DEFAULT_COMMITTEE: CommitteeData = {
   topic: '',
   conference: '',
   creatorUid: '',
+  template: '',
   members: {} as Dictionary<MemberID, MemberData>,
   caucuses: {
     'gsl': GENERAL_SPEAKERS_LIST

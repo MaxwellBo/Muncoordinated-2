@@ -2,10 +2,13 @@ import * as React from 'react';
 import { RouteComponentProps } from 'react-router';
 import * as firebase from 'firebase/app';
 import { CommitteeData, DEFAULT_COMMITTEE } from './Committee';
-import { Form, Grid, Header, InputOnChangeData, Divider,
+import { Form, Grid, Header, InputOnChangeData, DropdownProps, Divider,
   Message, Container, Segment, Icon } from 'semantic-ui-react';
 import { Login } from './Auth';
 import { URLParameters } from '../types';
+import { makeDropdownOption } from '../utils';
+import { STANDARD_COMMITTEES } from '../constants';
+import { Rank } from './Member';
 import ConnectionStatus from './ConnectionStatus';
 
 interface Props extends RouteComponentProps<URLParameters> {
@@ -17,6 +20,7 @@ interface State {
   chair: string;
   conference: string;
   user: firebase.User | null;
+  template: string,
   committeesFref: firebase.database.Reference;
   unsubscribe?: () => void;
 }
@@ -31,6 +35,7 @@ export default class Onboard extends React.Component<Props, State> {
       chair: '',
       conference: '',
       user: null,
+      template: '',
       committeesFref: firebase.database().ref('committees')
     };
   }
@@ -60,6 +65,11 @@ export default class Onboard extends React.Component<Props, State> {
     this.setState({ [data.name]: data.value });
   }
 
+  handleDropdown = (event: React.SyntheticEvent<HTMLElement, Event>, data: DropdownProps): void => {
+    // @ts-ignore
+    this.setState({ [data.name]: data.value });
+  }
+
   handleSubmit = () => {
     if (this.state.user) {
       const newCommittee: CommitteeData = {
@@ -68,11 +78,18 @@ export default class Onboard extends React.Component<Props, State> {
         topic: this.state.topic,
         chair: this.state.chair,
         conference: this.state.conference,
+        template: this.state.template,
         creatorUid: this.state.user.uid
       };
 
       const newCommitteeRef = this.state.committeesFref.push();
       newCommitteeRef.set(newCommittee);
+
+      // Add countries as per selected templates
+      STANDARD_COMMITTEES[this.state.template].forEach(
+        country => newCommitteeRef.child('members').push().set(
+            {"name": country.text, "rank": Rank.Standard, "present": true, "voting": false})
+        );
 
       this.props.history.push(`/committees/${newCommitteeRef.key}`);
     }
@@ -119,6 +136,16 @@ export default class Onboard extends React.Component<Props, State> {
               fluid
               placeholder="Conference name"
               onChange={this.handleInput}
+            />
+            <Form.Dropdown
+              label="Template"
+              name="template"
+              fluid
+              clearable
+              selection
+              placeholder="Template for committee"
+              options={Object.keys(STANDARD_COMMITTEES).filter(committee => committee).map(makeDropdownOption)}
+              onChange={this.handleDropdown}
             />
             <Form.Button 
               primary 
