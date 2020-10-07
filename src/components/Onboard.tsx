@@ -75,9 +75,9 @@ export default class Onboard extends React.Component<Props, State> {
       const newCommitteeRef = this.state.committeesFref.push();
       newCommitteeRef.set(newCommittee);
 
-      logCreateCommittee(newCommitteeRef.key ?? undefined)
-
       this.props.history.push(`/committees/${newCommitteeRef.key}`);
+
+      logCreateCommittee(newCommitteeRef.key ?? undefined)
     }
   }
 
@@ -128,7 +128,7 @@ export default class Onboard extends React.Component<Props, State> {
               fluid 
               disabled={!this.state.user || this.state.name === ''}
             >
-              Create Committee
+              Create committee
               <Icon name="arrow right" />
             </Form.Button>
           </Form>

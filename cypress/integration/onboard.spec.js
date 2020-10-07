@@ -20,7 +20,7 @@ describe('Run through creating a new committee', function () {
     cy.get('button').contains('Login').then(() => {
       enterUsernameAndPassword()
 
-      cy.contains('Create Account').click()
+      cy.contains('Create account').click()
       cy.contains('in use by another account')
 
       cy.get('button').contains('Login').click()
@@ -45,7 +45,7 @@ describe('Run through creating a new committee', function () {
       .should('have.value', CONFERENCE)
 
 
-    const createButton = cy.get('button').contains('Create Committee')
+    const createButton = cy.get('button').contains('Create committee')
 
     createButton.should('not.be.disabled')
     createButton.click()
