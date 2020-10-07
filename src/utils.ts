@@ -25,7 +25,7 @@ export function membersToOptions(members: Dictionary<MemberID, MemberData> | und
   return _.sortBy(options, (option: MemberOption) => option.text);
 }
 
-export function presentMembersToOptions(members: Dictionary<MemberID, MemberData> | undefined): MemberOption[] {
+export function membersToPresentOptions(members: Dictionary<MemberID, MemberData> | undefined): MemberOption[] {
   const options = objectToList(members || {})
     .filter(x => x.present)
     .map(x => nameToMemberOption(x.name));
