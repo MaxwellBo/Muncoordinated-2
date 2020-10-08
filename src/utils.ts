@@ -14,8 +14,17 @@ export function objectToList<T>(object: Dictionary<string, T>): T[] {
   return Object.keys(object).map(key => object[key]);
 }
 
-export function makeDropdownOption<T>(x: T) {
-  return { key: x, value: x, text: x };
+export function makeDropdownOption(label: string) {
+  return { key: label, value: label, text: label };
+}
+
+export function makeSentenceCaseDropdownOption(label: string) {
+  return { key: label, value: label, text: sentenceCase(label) };
+}
+
+export function sentenceCase(CC: string): string {
+  const cc = CC.toLowerCase();
+  return cc.charAt(0).toUpperCase() + cc.slice(1);
 }
 
 export function membersToOptions(members: Dictionary<MemberID, MemberData> | undefined): MemberOption[] {

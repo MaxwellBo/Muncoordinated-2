@@ -166,7 +166,7 @@ export default class Caucus extends React.Component<Props, State> {
 
     return (
       <Segment loading={!caucus}>
-        <Label attached="top left" size="large">Now Speaking</Label>
+        <Label attached="top left" size="large">Now speaking</Label>
         <Feed size="large">
           <SpeakerFeedEntry data={entryData} fref={caucusFref.child('speaking')} speakerTimer={speakerTimer}/>
         </Feed>
@@ -193,7 +193,7 @@ export default class Caucus extends React.Component<Props, State> {
 
     const renderedSpeakerTimer = (
       <Timer
-        name="Speaker Timer"
+        name="Speaker timer"
         timerFref={caucusFref.child('speakerTimer')}
         key={caucusID + 'speakerTimer'}
         onChange={this.setSpeakerTimer}
@@ -205,7 +205,7 @@ export default class Caucus extends React.Component<Props, State> {
 
     const renderedCaucusTimer = (
       <Timer
-        name="Caucus Timer"
+        name="Caucus timer"
         timerFref={caucusFref.child('caucusTimer')}
         key={caucusID + 'caucusTimer'}
         onChange={this.setCaucusTimer}
