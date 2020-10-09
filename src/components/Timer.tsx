@@ -1,6 +1,6 @@
 import * as React from 'react';
 import firebase from 'firebase/app';
-import { Form, Segment, Button, Divider, Progress, DropdownProps, ButtonProps, Icon, Label } from 'semantic-ui-react';
+import { Form, Segment, Button, Divider, Progress, DropdownProps, Icon, Label } from 'semantic-ui-react';
 import { Unit, TimerSetter, getSeconds } from './TimerSetter';
 import _ from 'lodash';
 import { DEFAULT_SPEAKER_TIME_SECONDS } from './Caucus';
@@ -60,6 +60,7 @@ export function hhmmss(seconds: number): string {
 }
 
 export function getTimeWithSkewCorrection(skew: number | undefined) {
+  // eslint-disable-next-line new-parens
   const millis =  skew ? skew + (new Date).getTime() : (new Date).getTime();
 
   return Math.floor(millis / 1000);
@@ -178,7 +179,7 @@ export default class Timer extends React.Component<Props, State> {
   }
 
   componentWillUnmount() {
-    const { handleKeyDown, timerCallback, skewCallback, tick, props, state } = this;
+    const { handleKeyDown, timerCallback, skewCallback, props, state } = this;
     const { timerId } = this.state;
 
     props.timerFref.off('value', timerCallback);

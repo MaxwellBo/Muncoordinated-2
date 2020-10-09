@@ -1,6 +1,8 @@
 # Muncoordinated
 
-[![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
+[![Netlify Status](https://api.netlify.com/api/v1/badges/620aebdc-0c8d-4ef6-873d-cfcd154f8269/deploy-status)](https://app.netlify.com/sites/muncoordinated/deploys)
+
+[![Muncoordinated](https://img.shields.io/endpoint?url=https://dashboard.cypress.io/badge/detailed/zxca1q/master&style=flat&logo=cypress)](https://dashboard.cypress.io/projects/zxca1q/runs)
 
 Muncoordinated is a Model UN committee management service, (re)written with TypeScript, React, Semantic UI and Firebase, and available at [muncoordinated.io](https://muncoordinated.io).
 
@@ -13,21 +15,54 @@ This version of Muncoordinated began development at the end of 2017, ahead of Sy
 
 Ultimately, this is a personal project that ballooned in scope and LOC - contributing to this will be difficult. Absolutely feel free to contact me  if you'd like to contribute; I'll gladly guide you through the ugly hacks and shaky foundations.
 
+## Utilities
 
-## Building
+- [Public Netlify deployment status](https://app.netlify.com/sites/muncoordinated/deploys)
+- [Public Cypress integration test run recordings](https://dashboard.cypress.io/projects/zxca1q/runs)
+- [Private Sentry error logging](https://sentry.io/organizations/muncoordinated/issues/?project=5450534) (access available upon request)
+
+## Development
 
 
 ```sh
 yarn && yarn start
 ```
 
+Runs the app in the development mode.<br>
+Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+
+The page will reload if you make edits.<br>
+You will also see any lint errors in the console.
+
 ## Tests
 
 
 ```sh
-yarn test && yarn run cypress
+yarn test
 ```
 
+Launches the test runner in the interactive watch mode.<br>
+See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+
+## Integration tests
+
+```sh
+yarn run cypress
+```
+
+Launches the integration test runner.<br>
+See the section about [The Test Runner](https://docs.cypress.io/guides/core-concepts/test-runner.html)
+
+## Building
+
+```sh
+yarn build
+```
+
+Builds the app for production to the `build` folder.<br>
+It will bundle React in production mode and optimize the build for the best performance.
+
+The build is minified and the filenames include the hashes.<br>
 
 ## Maintainers
 
@@ -37,7 +72,12 @@ yarn test && yarn run cypress
 
 Feel free to dive in! [Open an issue](https://github.com/MaxwellBo/Muncoordinated-2/issues/new) or submit PRs.
 
-Muncoordinated follows the [Contributor Covenant](http://contributor-covenant.org/version/1/3/0/) Code of Conduct.
+## Learn More
+
+You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+
+To learn React, check out the [React documentation](https://reactjs.org/).
+
 
 ### Contributors
 
@@ -48,4 +88,4 @@ This project exists thanks to all the people who contribute. Special thanks to:
 
 ## License
 
-[GNU AGPLv3](LICENSE) © Maxwell Bo
+[GNU GPLv3](LICENSE) © Maxwell Bo

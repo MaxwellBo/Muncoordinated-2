@@ -5,13 +5,23 @@ import App from './App';
 import * as serviceWorker from './serviceWorker';
 import createHistory from 'history/createBrowserHistory';
 import * as ReactGA from 'react-ga';
-import * as Sentry from '@sentry/browser';
+import * as Sentry from "@sentry/react";
+import { Integrations } from "@sentry/tracing";
 import 'semantic-ui-css/semantic.min.css';
-
-Sentry.init({ dsn: 'https://1e4f23a087974ab482cacf50699c6dbd@sentry.io/1296285' });
 
 ReactGA.initialize('UA-122177622-1');
 ReactGA.pageview(window.location.pathname + window.location.search);
+
+Sentry.init({
+  dsn: "https://e1ea501c7fed49d9af75b57440753eed@o456960.ingest.sentry.io/5450534",
+  integrations: [
+    new Integrations.BrowserTracing(),
+  ],
+
+  // We recommend adjusting this value in production, or using tracesSampler
+  // for finer control
+  tracesSampleRate: 1.0,
+});
 
 const history = createHistory();
 

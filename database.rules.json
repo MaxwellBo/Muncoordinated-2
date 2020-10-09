@@ -1,6 +1,7 @@
 {
   "rules": {
     "committees": {
+      ".indexOn": ["creatorUid"],
       ".read": true,
     	"$uid": {
         ".read": true,
@@ -24,7 +25,22 @@
           }
         },
         "files": {
-          ".write": true
+          "$fid": {
+            ".write": "newData.exists()"
+          }
+        },
+        "strawpolls": {
+          "$sid": {
+            "options": {
+              "$oid": {
+                "votes": {
+                  "$vid": {
+                    ".write": true
+                  }
+                }
+              }
+            }
+          }
         }
       }
     }

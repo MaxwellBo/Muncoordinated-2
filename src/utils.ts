@@ -1,3 +1,5 @@
+/* eslint-disable no-mixed-operators */
+/* eslint-disable eqeqeq */
 import { MemberOption } from './constants';
 import { MemberID, nameToMemberOption, MemberData } from './components/Member';
 import * as _ from 'lodash';
@@ -18,6 +20,14 @@ export function makeDropdownOption<T>(x: T) {
 
 export function membersToOptions(members: Dictionary<MemberID, MemberData> | undefined): MemberOption[] {
   const options = objectToList(members || {})
+    .map(x => nameToMemberOption(x.name));
+
+  return _.sortBy(options, (option: MemberOption) => option.text);
+}
+
+export function membersToPresentOptions(members: Dictionary<MemberID, MemberData> | undefined): MemberOption[] {
+  const options = objectToList(members || {})
+    .filter(x => x.present)
     .map(x => nameToMemberOption(x.name));
 
   return _.sortBy(options, (option: MemberOption) => option.text);

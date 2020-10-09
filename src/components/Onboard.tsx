@@ -3,10 +3,11 @@ import { RouteComponentProps } from 'react-router';
 import * as firebase from 'firebase/app';
 import { CommitteeData, DEFAULT_COMMITTEE } from './Committee';
 import { Form, Grid, Header, InputOnChangeData, Divider,
-  Message, Container, List, Segment, Icon } from 'semantic-ui-react';
+  Message, Container, Segment, Icon } from 'semantic-ui-react';
 import { Login } from './Auth';
-import { URLParameters, Dictionary } from '../types';
+import { URLParameters } from '../types';
 import ConnectionStatus from './ConnectionStatus';
+import { logCreateCommittee } from '../analytics';
 
 interface Props extends RouteComponentProps<URLParameters> {
 }
@@ -73,6 +74,8 @@ export default class Onboard extends React.Component<Props, State> {
 
       const newCommitteeRef = this.state.committeesFref.push();
       newCommitteeRef.set(newCommittee);
+
+      logCreateCommittee(newCommitteeRef.key ?? undefined)
 
       this.props.history.push(`/committees/${newCommitteeRef.key}`);
     }

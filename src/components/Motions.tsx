@@ -1,6 +1,6 @@
 import * as React from 'react';
 import firebase from 'firebase/app';
-import { CommitteeData, CommitteeID, DEFAULT_COMMITTEE, recoverCaucus, recoverResolution, recoverMemberOptions } from './Committee';
+import { CommitteeData, CommitteeID, DEFAULT_COMMITTEE, recoverCaucus, recoverResolution, recoverPresentMemberOptions } from './Committee';
 import { RouteComponentProps } from 'react-router';
 import { Icon, Button, Card, Form, Message, Flag, Label, 
   Container, Divider } from 'semantic-ui-react';
@@ -22,7 +22,6 @@ import { ResolutionData, DEFAULT_RESOLUTION, ResolutionID, IDENTITCAL_PROPOSER_S
 import { Stance } from './caucus/SpeakerFeed';
 import { AmendmentData, DEFAULT_AMENDMENT } from './Amendment';
 import { putAmendment, putResolution } from '../actions/resolution-actions';
-import _ from 'lodash';
 import { putStrawpoll } from '../actions/strawpoll-actions';
 import { DEFAULT_STRAWPOLL } from './Strawpoll';
 import { makeCommitteeStats } from './Admin';
@@ -724,7 +723,7 @@ export default class Motions extends React.Component<Props, State> {
       </Form.Group>
     );
 
-    const memberOptions = recoverMemberOptions(this.state.committee);
+    const memberOptions = recoverPresentMemberOptions(this.state.committee);
 
     const proposerTree = (
       <Form.Dropdown

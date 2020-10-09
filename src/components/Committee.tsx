@@ -6,7 +6,7 @@ import { MemberData, MemberID } from './Member';
 import Caucus, { CaucusData, CaucusID, DEFAULT_CAUCUS, DEFAULT_CAUCUS_TIME_SECONDS, CaucusStatus } from './Caucus';
 import Resolution, { ResolutionData, ResolutionID, DEFAULT_RESOLUTION } from './Resolution';
 import Admin from './Admin';
-import { Icon, Menu, SemanticICONS, Dropdown, Container, Responsive, Sidebar, Header, Label, Divider, 
+import { Icon, Menu, SemanticICONS, Dropdown, Container, Responsive, Sidebar, Header, Label,
   List, Input, Button, Segment } from 'semantic-ui-react';
 import Stats from './Stats';
 import { MotionID, MotionData } from './Motions';
@@ -26,7 +26,7 @@ import { CommitteeShareHint } from './ShareHint';
 import Notifications from './Notifications';
 import { putResolution } from '../actions/resolution-actions';
 import ConnectionStatus from './ConnectionStatus';
-import { membersToOptions } from '../utils';
+import { membersToOptions, membersToPresentOptions } from '../utils';
 import { fieldHandler } from '../actions/handlers';
 import { MemberOption } from '../constants';
 import { putStrawpoll } from '../actions/strawpoll-actions';
@@ -35,6 +35,14 @@ import Strawpoll, { DEFAULT_STRAWPOLL, StrawpollID, StrawpollData } from './Stra
 export function recoverMemberOptions(committee?: CommitteeData): MemberOption[] {
   if (committee) {
     return membersToOptions(committee.members);
+  } else {
+    return [];
+  }
+}
+
+export function recoverPresentMemberOptions(committee?: CommitteeData): MemberOption[] {
+  if (committee) {
+    return membersToPresentOptions(committee.members);
   } else {
     return [];
   }
