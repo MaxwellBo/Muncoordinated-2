@@ -171,6 +171,7 @@ export default function Strawpoll(props: StrawpollProps) {
           strawpollFref.child('options').child(oid).child('votes').set({})
         }
       });
+    }
         
     const deleteStrawpoll = () => {
       strawpollFref.remove();
