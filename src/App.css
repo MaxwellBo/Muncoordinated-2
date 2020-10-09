@@ -2,3 +2,7 @@
   -webkit-animation: none !important;
   animation: none !important;
 }
+
+.ui.dropdown.centered {
+  text-align: center;
+}

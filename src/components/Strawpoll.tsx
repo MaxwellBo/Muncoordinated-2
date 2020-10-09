@@ -5,7 +5,7 @@ import { RouteComponentProps } from 'react-router';
 import { URLParameters, Dictionary } from '../types';
 import { getStrawpollRef } from '../actions/strawpoll-actions';
 import { useObject } from 'react-firebase-hooks/database';
-import { Container, Header, Input, Button, List, Icon, Checkbox, Form, CheckboxProps, Progress } from 'semantic-ui-react';
+import { Container, Header, Input, Button, List, Icon, Checkbox, Form, CheckboxProps, Progress, Dropdown } from 'semantic-ui-react';
 import { fieldHandler, clearableZeroableValidatedNumberFieldHandler } from '../actions/handlers';
 import Loading from './Loading';
 import { useAuthState } from 'react-firebase-hooks/auth';
@@ -107,7 +107,7 @@ export default function Strawpoll(props: StrawpollProps) {
     }
 
     const type: StrawpollType = strawpoll ? strawpoll.type || StrawpollType.Checkbox : StrawpollType.Checkbox;
-    const stage: StrawpollStage = strawpoll ? strawpoll.stage || StrawpollStage.Results : StrawpollStage.Voting;
+    const stage: StrawpollStage = strawpoll ? strawpoll.stage || StrawpollStage.Preparing : StrawpollStage.Preparing;
     const medium: StrawpollMedium = strawpoll ? strawpoll.medium || StrawpollMedium.Link : StrawpollMedium.Link;
     const options: Dictionary<StrawpollOptionID, StrawpollOptionData> = 
       strawpoll ? strawpoll.options || {}: {};
@@ -122,13 +122,13 @@ export default function Strawpoll(props: StrawpollProps) {
       strawpollFref.child('options').push(DEFAULT_STRAWPOLL_OPTION);
     }
 
-    const togglePollType = () => {
+    const togglePollType = (event: React.SyntheticEvent, data: Object) => {
       strawpollFref.child('type').set(type === StrawpollType.Checkbox ? StrawpollType.Radio : StrawpollType.Checkbox);
       // reset votes
       Object.keys(options).forEach(oid => {
         const votes = options[oid].votes;
         if (votes) {
-          Object.keys(votes).forEach(vid => strawpollFref.child('options').child(oid).child('votes').child(vid).remove());
+          strawpollFref.child('options').child(oid).child('votes').set({})
         }
       });
     }
@@ -271,14 +271,25 @@ export default function Strawpoll(props: StrawpollProps) {
           >
             <Icon name="plus" />Add Option
           </Button>
-          <Button
-            color="purple"
-            basic
-            onClick={togglePollType}
-          >
-            <Icon name={type === StrawpollType.Checkbox ? "radio" : "check square"} />
-            {type === StrawpollType.Checkbox ? "Choose one" : "Choose many"}
-          </Button>
+          <Dropdown
+            basic 
+            button
+            className="purple centered"
+            upward={false}
+            options={[{
+              key: StrawpollType.Checkbox,
+              text: "Choose many",
+              value: StrawpollType.Checkbox,
+              icon: "check square"
+            }, {
+              key: StrawpollType.Radio,
+              text: "Choose one",
+              value: StrawpollType.Radio,
+              icon: "radio"
+            }]}
+            onChange={togglePollType}
+            value={type}
+          />
           <Button
             primary
             basic
