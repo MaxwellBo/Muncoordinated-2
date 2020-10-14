@@ -200,7 +200,7 @@ export function CaucusNextSpeaking(props: Props) {
 
   return (
     <Segment textAlign="center" loading={!caucus}>
-      <Label attached="top left" size="large">Next Speaking</Label>
+      <Label attached="top left" size="large">Next speaking</Label>
       {button}
       <Popup
         trigger={interlaceButton}

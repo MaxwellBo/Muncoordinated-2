@@ -466,7 +466,7 @@ export default class Committee extends React.Component<Props, State> {
           <CommitteeShareHint committeeID={this.props.match.params.committeeID} />
         </Segment>
         <Segment>
-          <Label attached="top left" size="large">Keyboard Shorcuts</Label>
+          <Label attached="top left" size="large">Keyboard shortcuts</Label>
           {KEYBOARD_SHORTCUT_LIST}
         </Segment>
         <Segment textAlign="center" basic>

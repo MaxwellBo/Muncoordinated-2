@@ -10,7 +10,7 @@ import { stateFieldHandler,
   stateMemberDropdownHandler,
   stateTextAreaHandler
 } from '../actions/handlers';
-import { makeDropdownOption, implies } from '../utils';
+import { implies, sentenceCase, makeSentenceCaseDropdownOption } from '../utils';
 import { TimerSetter, Unit, getSeconds } from './TimerSetter';
 import { nameToMemberOption, parseFlagName } from './Member';
 import { DEFAULT_CAUCUS, CaucusData, CaucusID, CaucusStatus, DEFAULT_SPEAKER_TIME_SECONDS } from './Caucus';
@@ -199,18 +199,18 @@ const hasDuration = (motionType: MotionType): boolean => {
   }
 };
 
-const interpolateTime = (motionType: MotionType, time: string): string => {
+const showMotionType = (motionType: MotionType, time: string): string => {
   switch (motionType) {
     case MotionType.ExtendUnmoderatedCaucus:
       return `Extend unmoderated caucus by ${time}`;
     case MotionType.ExtendModeratedCaucus:
       return `Extend moderated caucus by ${time}`;
     case MotionType.OpenModeratedCaucus:
-      return `${time} Moderated Caucus`;
+      return `${time} moderated caucus`;
     case MotionType.OpenUnmoderatedCaucus:
-      return `${time} Unmoderated Caucus`;
+      return `${time} unmoderated caucus`;
     default:
-      return motionType.toString();
+      return sentenceCase(motionType ?? 'Unknown type');
   }
 };
 
@@ -274,7 +274,7 @@ const MOTION_TYPE_OPTIONS = [
   MotionType.ResumeDebate,
   MotionType.CloseDebate,
   MotionType.ReorderDraftResolutions,
-].map(makeDropdownOption);
+].map(makeSentenceCaseDropdownOption);
 
 const DEFAULT_MOTION: MotionData = {
   proposal: '',
@@ -534,7 +534,7 @@ export default class Motions extends React.Component<Props, State> {
     const caucusTargetTree = (
       <div>
         <Label horizontal>
-          Target Caucus
+          Target caucus
         </Label>
         {caucusTargetText}
       </div>
@@ -543,7 +543,7 @@ export default class Motions extends React.Component<Props, State> {
     const resolutionTargetTree = (
       <div>
         <Label horizontal>
-          Target Resolution
+          Target resolution
         </Label>
         {resolutionTargetText}
       </div>
@@ -562,7 +562,7 @@ export default class Motions extends React.Component<Props, State> {
       >
         <Card.Content>
           <Card.Header>
-            {interpolateTime(type, time)}
+            {showMotionType(type, time)}
           </Card.Header>
           <Card.Meta>
             {proposerTree}
@@ -652,7 +652,7 @@ export default class Motions extends React.Component<Props, State> {
         durationValue={speakerDuration ? speakerDuration.toString() : undefined}
         onUnitChange={stateDropdownHandler<Props, State>(this, 'newMotion', 'speakerUnit')}
         onDurationChange={stateValidatedNumberFieldHandler<Props, State>(this, 'newMotion', 'speakerDuration')}
-        label="Speaking Time"
+        label="Speaking time"
       />
     );
 
@@ -694,7 +694,7 @@ export default class Motions extends React.Component<Props, State> {
         onChange={stateDropdownHandler<Props, State>(this, 'newMotion', 'caucusTarget')}
         options={caucusOptions}
         icon="search"
-        label="Target Caucus"
+        label="Target caucus"
       />
     );
 
@@ -710,7 +710,7 @@ export default class Motions extends React.Component<Props, State> {
         onChange={stateDropdownHandler<Props, State>(this, 'newMotion', 'resolutionTarget')}
         options={resolutionOptions}
         icon="search"
-        label="Target Resolution"
+        label="Target resolution"
       />
     );
 

@@ -147,10 +147,10 @@ export default class Stats extends React.Component<Props, State> {
           <Table.Header>
             <Table.Row>
               <Table.HeaderCell />
-              <Table.HeaderCell textAlign="right">Times Spoken</Table.HeaderCell>
-              <Table.HeaderCell textAlign="right">Total Speaking Time</Table.HeaderCell>
-              <Table.HeaderCell textAlign="right">Motion Proposals</Table.HeaderCell>
-              <Table.HeaderCell textAlign="right">Amendment Proposals</Table.HeaderCell>
+              <Table.HeaderCell textAlign="right">Times spoken</Table.HeaderCell>
+              <Table.HeaderCell textAlign="right">Total speaking time</Table.HeaderCell>
+              <Table.HeaderCell textAlign="right">Motion proposals</Table.HeaderCell>
+              <Table.HeaderCell textAlign="right">Amendment proposals</Table.HeaderCell>
             </Table.Row>
           </Table.Header>
 

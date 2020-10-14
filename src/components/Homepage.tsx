@@ -279,8 +279,8 @@ export default class Homepage extends React.Component<{}, {
                     <List.Item as="li">Moderated and unmoderated caucuses</List.Item>
                     <Popup
                       trigger={<List.Item as="li">Time-saving hotkeys for frequently used actions</List.Item>}
-                      content="Currently implemented hotkeys include 'Next Speaker', 
-                      'Toggle Caucus Timer' and 'Toggle Speaker Timer'"
+                      content="Currently implemented hotkeys include 'Next speaker', 
+                      'Toggle caucus timer' and 'Toggle speaker timer'"
                     />
                     <List.Item as="li">Resolution amendments</List.Item>
                     <List.Item as="li">Roll-call voting</List.Item>

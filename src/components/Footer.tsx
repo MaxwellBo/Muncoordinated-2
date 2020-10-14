@@ -9,11 +9,13 @@ interface State {
 
 export const CLIENT_VERSION = 'v2.19.0';
 
-export const CLIENT_VERSION_LINK = (
-  <a href="https://github.com/MaxwellBo/Muncoordinated-2/releases">
-    {CLIENT_VERSION}
+export function VersionLink(props: { 
+  version: string 
+}) {
+  return <a href="https://github.com/MaxwellBo/Muncoordinated-2/releases">
+    {props.version}
   </a>
-);
+}
 
 const RELEASES_LATEST = 'https://api.github.com/repos/MaxwellBo/Muncoordinated-2/releases/latest';
 
@@ -44,7 +46,7 @@ export default class Footer extends React.PureComponent<Props, State> {
 
     return (
       <div style={{ position: 'fixed', bottom: 5, left: 5, background: '#FFFFFF' }}>
-        {latestVersion || CLIENT_VERSION_LINK} by <a href="https://github.com/MaxwellBo">Max Bo</a> &amp; <a href="https://www.facebook.com/UQUNSA/">UQUNSA</a>
+        <VersionLink version={latestVersion || CLIENT_VERSION} /> by <a href="https://github.com/MaxwellBo">Max Bo</a> &amp; <a href="https://www.facebook.com/UQUNSA/">UQUNSA</a>
       </div>
     );
   }
