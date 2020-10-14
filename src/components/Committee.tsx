@@ -6,14 +6,14 @@ import { MemberData, MemberID } from './Member';
 import Caucus, { CaucusData, CaucusID, DEFAULT_CAUCUS, DEFAULT_CAUCUS_TIME_SECONDS, CaucusStatus } from './Caucus';
 import Resolution, { ResolutionData, ResolutionID, DEFAULT_RESOLUTION } from './Resolution';
 import Admin from './Admin';
-import { Icon, Menu, SemanticICONS, Dropdown, Container, Responsive, Sidebar, Header, Label,
+import { Icon, Menu, SemanticICONS, Dropdown, Container, Responsive, Sidebar, Header,
   List, Input, Button, Segment } from 'semantic-ui-react';
 import Stats from './Stats';
 import { MotionID, MotionData } from './Motions';
 import { TimerData, DEFAULT_TIMER } from './Timer';
 import Unmod from './Unmod';
 import Notes from './Notes';
-import Help, { KEYBOARD_SHORTCUT_LIST } from './Help';
+import Help from './Help';
 import Motions from './Motions';
 import { putCaucus } from '../actions/caucus-actions';
 import { URLParameters, Dictionary } from '../types';
@@ -467,10 +467,6 @@ export default class Committee extends React.Component<Props, State> {
         </List>
         <Segment>
           <CommitteeShareHint committeeID={this.props.match.params.committeeID} />
-        </Segment>
-        <Segment>
-          <Label attached="top left" size="large">Keyboard shortcuts</Label>
-          {KEYBOARD_SHORTCUT_LIST}
         </Segment>
         <Segment textAlign="center" basic>
           <Button as="a" primary size="large" onClick={this.gotoSetup}>
