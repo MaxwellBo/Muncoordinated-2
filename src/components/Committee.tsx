@@ -31,6 +31,7 @@ import { fieldHandler } from '../actions/handlers';
 import { MemberOption } from '../constants';
 import { putStrawpoll } from '../actions/strawpoll-actions';
 import Strawpoll, { DEFAULT_STRAWPOLL, StrawpollID, StrawpollData } from './Strawpoll';
+import { logClickSetupCommittee } from '../analytics';
 
 export function recoverMemberOptions(committee?: CommitteeData): MemberOption[] {
   if (committee) {
@@ -133,7 +134,7 @@ export interface CommitteeData {
 }
 
 const GENERAL_SPEAKERS_LIST: CaucusData = {
-   ...DEFAULT_CAUCUS, name: 'General Speakers List' 
+   ...DEFAULT_CAUCUS, name: 'General Speakers\' List' 
 };
 
 export const DEFAULT_COMMITTEE: CommitteeData = {
@@ -404,6 +405,8 @@ export default class Committee extends React.Component<Props, State> {
 
     this.props.history
       .push(`/committees/${committeeID}/setup`);
+
+    logClickSetupCommittee();
   }
 
   renderAdmin = () => {

@@ -16,6 +16,7 @@ import {
   Visibility,
   Popup
 } from 'semantic-ui-react';
+import { logClickCreateACommitteeButton, logClickLogInButton, logClickSignupButton } from '../analytics';
 import Loading from './Loading';
 
 interface HomepageHeadingProps {
@@ -52,7 +53,7 @@ const HomepageHeading = ({ mobile }: HomepageHeadingProps) => (
       }}
     />
     <br />
-    <Button as="a" primary size="huge" href="/onboard">
+    <Button as="a" primary size="huge" href="/onboard" onClick={logClickCreateACommitteeButton}>
       Create a committee
       <Icon name="arrow right" />
     </Button>
@@ -110,8 +111,10 @@ class DesktopContainer extends React.Component<DesktopContainerProps, DesktopCon
               <Container>
                 <Menu.Item as="a" active>Home</Menu.Item>
                 <Menu.Item position="right">
-                  <Button as="a" href="/onboard" inverted={!fixed}>Log in</Button>
-                  <Button as="a" href="/onboard" inverted={!fixed} primary={fixed} style={{ marginLeft: '0.5em' }}>
+                  <Button as="a" href="/onboard" inverted={!fixed} onClick={logClickLogInButton}>
+                    Log in
+                  </Button>
+                  <Button as="a" href="/onboard" inverted={!fixed} primary={fixed} style={{ marginLeft: '0.5em' }} onClick={logClickSignupButton}>
                     Sign Up
                   </Button>
                 </Menu.Item>

@@ -11,15 +11,9 @@ Muncoordinated is a Model UN committee management service, (re)written with Type
 
 ## Background
 
-This version of Muncoordinated began development at the end of 2017, ahead of SydMUN 2017. It began as a reimplementation of a previous version of Muncoordinated, built in Elm. The current version of Muncoordinated was my (@MaxwellBo) first real foray into frontend development, React, TypeScript, and UI design. This means that some of the old code in here is, frankly, shockingly bad. Furthermore, a lot of features were either rushed out before conferences, or during debate. Neither documentation or tests were written.  
+This version of Muncoordinated began development at the end of 2017, ahead of SydMUN 2017. It began as a reimplementation of a previous version of Muncoordinated, built in Elm. The current version of Muncoordinated was my (@MaxwellBo) first real foray into frontend development, React, TypeScript, and UI design. This means that some of the old code in here is, frankly, shockingly bad. Furthermore, a lot of features were either rushed out before conferences, or during debate. Neither documentation or tests were written.
 
-Ultimately, this is a personal project that ballooned in scope and LOC - contributing to this will be difficult. Absolutely feel free to contact me  if you'd like to contribute; I'll gladly guide you through the ugly hacks and shaky foundations.
-
-## Utilities
-
-- [Public Netlify deployment status](https://app.netlify.com/sites/muncoordinated/deploys)
-- [Public Cypress integration test run recordings](https://dashboard.cypress.io/projects/zxca1q/runs)
-- [Private Sentry error logging](https://sentry.io/organizations/muncoordinated/issues/?project=5450534) (access available upon request)
+Ultimately, this is a personal project that ballooned in scope and LOC - contributing to this will be difficult. Absolutely feel free to contact me if you'd like to contribute; I'll gladly guide you through the ugly hacks and shaky foundations.
 
 ## Development
 
@@ -71,6 +65,13 @@ The build is minified and the filenames include the hashes.<br>
 ## Contributing
 
 Feel free to dive in! [Open an issue](https://github.com/MaxwellBo/Muncoordinated-2/issues/new) or submit PRs.
+
+You might also want access to some of the SaaS services that we've used to build Muncoordinated:
+
+- [Public Netlify deployment status](https://app.netlify.com/sites/muncoordinated/deploys)
+- [Public Cypress integration test run recordings](https://dashboard.cypress.io/projects/zxca1q/runs)
+- [Private Sentry error logging](https://sentry.io/organizations/muncoordinated/issues/?project=5450534) (access available upon request)
+- [Private Google Analytics](https://analytics.google.com/analytics/web/?authuser=0&hl=en#/report-home/a122177622w180239935p178399522) (access available upon request)
 
 ## Learn More
 

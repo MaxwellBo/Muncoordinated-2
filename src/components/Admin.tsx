@@ -11,6 +11,7 @@ import { makeDropdownOption } from '../utils';
 import _ from 'lodash';
 import { Dictionary, URLParameters } from '../types';
 import { RouteComponentProps } from 'react-router';
+import { logClickGeneralSpeakersList, logCreateMember } from '../analytics';
 
 export const canVote = (x: MemberData) => (x.rank === Rank.Veto || x.rank === Rank.Standard);
 export const nonNGO = (x: MemberData) => (x.rank !== Rank.NGO);
@@ -228,8 +229,10 @@ export default class Admin extends React.Component<Props, State> {
       present: this.state.present,
       voting: this.state.voting
     };
-
+    
     this.props.fref.child('members').push().set(member);
+
+    logCreateMember(member.name)
   }
 
   setMember = (event: React.SyntheticEvent<HTMLElement>, data: DropdownProps) => {
@@ -270,6 +273,8 @@ export default class Admin extends React.Component<Props, State> {
 
     this.props.history
       .push(`/committees/${committeeID}/caucuses/gsl`);
+
+    logClickGeneralSpeakersList();
   }
 
   renderAdder() {
@@ -372,7 +377,7 @@ export default class Admin extends React.Component<Props, State> {
             primary
             fluid
           >
-            General Speakers List
+            General Speakers' List
               <Icon name="arrow right" />
           </Button>
         }

@@ -5,7 +5,7 @@ import { CommitteeID, CommitteeData } from './Committee';
 import _ from 'lodash';
 import Loading from './Loading';
 import { Dictionary } from '../types';
-import { logCreateAccount } from '../analytics';
+import { logCreateAccount, logLogin } from '../analytics';
 
 enum Mode {
   Login = 'Login',
@@ -85,8 +85,9 @@ export class Login extends React.Component<Props, State> {
 
     this.setState({ loggingIn: true });
 
-    firebase.auth().signInWithEmailAndPassword(email, password).then(() => {
+    firebase.auth().signInWithEmailAndPassword(email, password).then(credential => {
       this.setState({ loggingIn: false });
+      logLogin(credential.user?.uid)
     }).catch(err => {
       this.setState({ loggingIn: false, error: err });
     });
@@ -97,7 +98,6 @@ export class Login extends React.Component<Props, State> {
     this.setState({ creating: true });
 
     firebase.auth().createUserWithEmailAndPassword(email, password).then(credential => {
-      logCreateAccount(credential.user?.uid)
 
       const success = { 
         name: 'Account created',
@@ -105,6 +105,7 @@ export class Login extends React.Component<Props, State> {
       };
 
       this.setState({ creating: false, success });
+      logCreateAccount(credential.user?.uid)
     }).catch(err => {
       this.setState({ creating: false, error: err });
     });
@@ -258,7 +259,7 @@ export class Login extends React.Component<Props, State> {
     const { loggingIn, creating, user, resetting, email, password, mode } = this.state;
     const { allowSignup } = this.props;
 
-    const signupButton = <Button onClick={handleCreate} loading={creating} >Create Account</Button>;
+    const signupButton = <Button onClick={handleCreate} loading={creating} >Create account</Button>;
 
     const cancelButton = <Button onClick={handleResetPasswordCancel}>Cancel</Button>;
 
