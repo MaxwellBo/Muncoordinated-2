@@ -312,7 +312,7 @@ export default function Strawpoll(props: StrawpollProps) {
         basic
         onClick={()=> setOpen(true)}
       >
-        <Icon name="delete" />Delete Strawpoll
+        <Icon name="delete" />Delete strawpoll?
       </Button>
       
       buttons =
@@ -343,12 +343,14 @@ export default function Strawpoll(props: StrawpollProps) {
             onChange={togglePollType}
             value={type}
           />
+          <StrawpollModal open={modalOpen} onChangeOpenState={setOpen} onConfirm={deleteStrawpoll} trigger={deleteButton} />
           <Button
             primary
             basic
             onClick={createSharablePoll}
           >
             Create sharable poll
+            <Icon name="arrow right" />
             </Button>
           <Button
             primary
@@ -356,8 +358,8 @@ export default function Strawpoll(props: StrawpollProps) {
             onClick={createManualPoll}
           >
             Create manual poll
+            <Icon name="arrow right" />
             </Button>
-          <StrawpollModal open={modalOpen} onChangeOpenState={setOpen} onConfirm={deleteStrawpoll} trigger={deleteButton} />
         </Button.Group>
       break;
     case StrawpollStage.Voting:
@@ -365,9 +367,10 @@ export default function Strawpoll(props: StrawpollProps) {
         <Button.Group fluid>
           <Button
             basic
-            color="purple"
+            secondary
             onClick={editOptions}
           >
+            <Icon name="arrow left" />
             Edit options
           </Button>
           <Button
@@ -377,6 +380,7 @@ export default function Strawpoll(props: StrawpollProps) {
             onClick={viewResults}
           >
             View results
+            <Icon name="arrow right" />
           </Button>
         </Button.Group>
       break;
@@ -384,10 +388,11 @@ export default function Strawpoll(props: StrawpollProps) {
       buttons = 
         <Button
           fluid
-          primary
+          secondary
           basic
           onClick={reopenVoting}
         >
+          <Icon name="arrow left" />
           Reopen voting
         </Button>
       break;
@@ -399,6 +404,17 @@ export default function Strawpoll(props: StrawpollProps) {
     return renderOption(key, options[key])
   })
 
+  const addOptionTree = (
+    <List.Item>
+      <Button
+        basic
+        fluid
+        onClick={addOption}
+      >
+        <Icon name="plus" />Add option
+      </Button>
+    </List.Item>
+  )
 
   return (
       <Container text style={{ padding: '1em 0em' }}>
@@ -415,6 +431,7 @@ export default function Strawpoll(props: StrawpollProps) {
         }
         <List>
           {optionsTree}
+          {stage === StrawpollStage.Preparing && addOptionTree}
         </List>
         {buttons}
       </Container>
