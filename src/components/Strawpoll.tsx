@@ -4,7 +4,7 @@ import { RouteComponentProps } from 'react-router';
 import { URLParameters, Dictionary } from '../types';
 import { getStrawpollRef } from '../actions/strawpoll-actions';
 import { useObject } from 'react-firebase-hooks/database';
-import { Container, Header, Input, Button, List, Icon, Checkbox, Form, Modal, CheckboxProps, Progress, Dropdown } from 'semantic-ui-react';
+import { Container, Header, Input, Button, List, Icon, Checkbox, Form, Modal, CheckboxProps, DropdownProps, Progress, Dropdown } from 'semantic-ui-react';
 import { fieldHandler, clearableZeroableValidatedNumberFieldHandler } from '../actions/handlers';
 import Loading from './Loading';
 import { useAuthState } from 'react-firebase-hooks/auth';
@@ -162,8 +162,8 @@ export default function Strawpoll(props: StrawpollProps) {
       strawpollFref.child('options').push(DEFAULT_STRAWPOLL_OPTION);
     }
 
-    const togglePollType = (event: React.SyntheticEvent, data: Object) => {
-      strawpollFref.child('type').set(type === StrawpollType.Checkbox ? StrawpollType.Radio : StrawpollType.Checkbox);
+    const togglePollType = (event: React.SyntheticEvent, data: DropdownProps) => {
+      strawpollFref.child('type').set(data.value);
       // reset votes
       Object.keys(options).forEach(oid => {
         const votes = options[oid].votes;
