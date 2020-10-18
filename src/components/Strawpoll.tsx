@@ -4,7 +4,7 @@ import { RouteComponentProps } from 'react-router';
 import { URLParameters, Dictionary } from '../types';
 import { getStrawpollRef } from '../actions/strawpoll-actions';
 import { useObject } from 'react-firebase-hooks/database';
-import { Container, Header, Input, Button, List, Icon, Checkbox, Form, Modal, CheckboxProps, Progress } from 'semantic-ui-react';
+import { Container, Header, Input, Button, List, Icon, Checkbox, Form, Modal, CheckboxProps, DropdownProps, Progress, Dropdown } from 'semantic-ui-react';
 import { fieldHandler, clearableZeroableValidatedNumberFieldHandler } from '../actions/handlers';
 import Loading from './Loading';
 import { useAuthState } from 'react-firebase-hooks/auth';
@@ -146,7 +146,8 @@ export default function Strawpoll(props: StrawpollProps) {
       </Container>;
     }
 
-    const stage: StrawpollStage = strawpoll ? strawpoll.stage || StrawpollStage.Results : StrawpollStage.Voting;
+    const type: StrawpollType = strawpoll ? strawpoll.type || StrawpollType.Checkbox : StrawpollType.Checkbox;
+    const stage: StrawpollStage = strawpoll ? strawpoll.stage || StrawpollStage.Preparing : StrawpollStage.Preparing;
     const medium: StrawpollMedium = strawpoll ? strawpoll.medium || StrawpollMedium.Link : StrawpollMedium.Link;
     const options: Dictionary<StrawpollOptionID, StrawpollOptionData> = 
       strawpoll ? strawpoll.options || {}: {};
@@ -161,6 +162,17 @@ export default function Strawpoll(props: StrawpollProps) {
       strawpollFref.child('options').push(DEFAULT_STRAWPOLL_OPTION);
     }
 
+    const togglePollType = (event: React.SyntheticEvent, data: DropdownProps) => {
+      strawpollFref.child('type').set(data.value);
+      // reset votes
+      Object.keys(options).forEach(oid => {
+        const votes = options[oid].votes;
+        if (votes) {
+          strawpollFref.child('options').child(oid).child('votes').set({})
+        }
+      });
+    }
+        
     const deleteStrawpoll = () => {
       strawpollFref.remove();
     }
@@ -188,20 +200,40 @@ export default function Strawpoll(props: StrawpollProps) {
     }
 
     const onCheck = (oid: StrawpollOptionID) => (event: React.FormEvent<HTMLInputElement>, data: CheckboxProps) => {
-      if (data.checked) {
-        strawpollFref
-          .child('options')
-          .child(oid)
-          .child('votes')
-          .child(voterID)
-          .set(true)
-      } else {
-        strawpollFref
-          .child('options')
-          .child(oid)
-          .child('votes')
-          .child(voterID)
-          .remove()
+      if (type === StrawpollType.Checkbox) {
+        if (data.checked) {
+          strawpollFref
+            .child('options')
+            .child(oid)
+            .child('votes')
+            .child(voterID)
+            .set(true)
+        } else {
+          strawpollFref
+            .child('options')
+            .child(oid)
+            .child('votes')
+            .child(voterID)
+            .remove()
+        }
+      } else if (type === StrawpollType.Radio) {
+        if (data.checked) {
+          // Set everything to unchecked
+          Object.keys(options).forEach(id =>
+            strawpollFref
+              .child('options')
+              .child(id)
+              .child('votes')
+              .child(voterID)
+              .remove()
+          );
+          strawpollFref
+            .child('options')
+            .child(oid)
+            .child('votes')
+            .child(voterID)
+            .set(true);
+        }
       }
     }
 
@@ -244,6 +276,7 @@ export default function Strawpoll(props: StrawpollProps) {
             <Checkbox
               label={option.text}
               name='checkboxRadioGroup'
+              radio={type === StrawpollType.Radio || undefined}
               value={option.text}
               checked={isChecked}
               onChange={onCheck(optionID)}
@@ -291,6 +324,25 @@ export default function Strawpoll(props: StrawpollProps) {
           >
             <Icon name="plus" />Add Option
           </Button>
+          <Dropdown
+            basic 
+            button
+            className="purple centered"
+            upward={false}
+            options={[{
+              key: StrawpollType.Checkbox,
+              text: "Choose many",
+              value: StrawpollType.Checkbox,
+              icon: "check square"
+            }, {
+              key: StrawpollType.Radio,
+              text: "Choose one",
+              value: StrawpollType.Radio,
+              icon: "radio"
+            }]}
+            onChange={togglePollType}
+            value={type}
+          />
           <Button
             primary
             basic
