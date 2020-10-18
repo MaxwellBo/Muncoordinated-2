@@ -298,107 +298,142 @@ export default function Strawpoll(props: StrawpollProps) {
             <Progress progress='value' value={votes} total={totalVotes} />
           </List.Item>
         default:
-          return <div />
+          return undefined
       }
     }
 
-  let buttons = <div />;
-
-  switch (stage) {
-    case StrawpollStage.Preparing:
-      let deleteButton =        
+  const renderOptions = () => {
+    return <List>
+      {Object.keys(options).map(key => {
+        return renderOption(key, options[key])
+      })}
+      {stage === StrawpollStage.Preparing && <List.Item>
         <Button
-        color="red"
-        basic
-        onClick={()=> setOpen(true)}
-      >
-        <Icon name="delete" />Delete Strawpoll
-      </Button>
-      
-      buttons =
-        <Button.Group fluid>
-          <Button
-            color="purple"
-            basic
-            onClick={addOption}
-          >
-            <Icon name="plus" />Add Option
-          </Button>
-          <Dropdown
-            basic 
-            button
-            className="purple centered"
-            upward={false}
-            options={[{
-              key: StrawpollType.Checkbox,
-              text: "Choose many",
-              value: StrawpollType.Checkbox,
-              icon: "check square"
-            }, {
-              key: StrawpollType.Radio,
-              text: "Choose one",
-              value: StrawpollType.Radio,
-              icon: "radio"
-            }]}
-            onChange={togglePollType}
-            value={type}
-          />
-          <Button
-            primary
-            basic
-            onClick={createSharablePoll}
-          >
-            Create sharable poll
-            </Button>
-          <Button
-            primary
-            basic
-            onClick={createManualPoll}
-          >
-            Create manual poll
-            </Button>
-          <StrawpollModal open={modalOpen} onChangeOpenState={setOpen} onConfirm={deleteStrawpoll} trigger={deleteButton} />
-        </Button.Group>
-      break;
-    case StrawpollStage.Voting:
-      buttons =
-        <Button.Group fluid>
-          <Button
-            basic
-            color="purple"
-            onClick={editOptions}
-          >
-            Edit options
-          </Button>
-          <Button
-            primary
-            basic
-            disabled={!user}
-            onClick={viewResults}
-          >
-            View results
-          </Button>
-        </Button.Group>
-      break;
-    case StrawpollStage.Results:
-      buttons = 
-        <Button
-          fluid
-          primary
           basic
-          onClick={reopenVoting}
+          fluid
+          onClick={addOption}
         >
-          Reopen voting
+          <Icon name="plus" />Add option
         </Button>
-      break;
-    default:
-      break;
+      </List.Item>
+    }
+    </List>
   }
 
-  const optionsTree = Object.keys(options).map(key => {
-    return renderOption(key, options[key])
-  })
+  const renderMetaButtons = () => {
+    switch (stage) {
+      case StrawpollStage.Preparing:
+        return (
+          <Button.Group fluid>
+            <Dropdown
+              basic 
+              button
+              className="purple centered"
+              upward={false}
+              options={[{
+                key: StrawpollType.Checkbox,
+                text: "Choose many",
+                value: StrawpollType.Checkbox,
+                icon: "check square"
+              }, {
+                key: StrawpollType.Radio,
+                text: "Choose one",
+                value: StrawpollType.Radio,
+                icon: "radio"
+              }]}
+              onChange={togglePollType}
+              value={type}
+            />
+            <StrawpollModal 
+              open={modalOpen} 
+              onChangeOpenState={setOpen} 
+              onConfirm={deleteStrawpoll} 
+              trigger={
+                <Button
+                  color="red"
+                  basic
+                  onClick={()=> setOpen(true)}
+                >
+                  <Icon name="delete" />Delete strawpoll?
+                </Button>
+              } 
+            />
+          </Button.Group>
+        )
+        case StrawpollStage.Voting:
+          return medium === StrawpollMedium.Link 
+            && <StrawpollShareHint 
+              committeeID={committeeID} 
+              strawpollID={strawpollID} 
+            /> 
+        default:
+          return undefined
 
+    }
+  }
+
+  const renderNavButtons = () => {
+    switch (stage) {
+      case StrawpollStage.Preparing:
+        return (
+          <Button.Group fluid>
+            <Button
+              primary
+              basic
+              onClick={createSharablePoll}
+            >
+              Create sharable poll
+              <Icon name="arrow right" />
+              </Button>
+            <Button.Or />
+            <Button
+              primary
+              basic
+              onClick={createManualPoll}
+            >
+              Create manual poll
+              <Icon name="arrow right" />
+              </Button>
+          </Button.Group>
+        );
+      case StrawpollStage.Voting:
+        return (
+          <Button.Group fluid>
+            <Button
+              basic
+              secondary
+              onClick={editOptions}
+            >
+              <Icon name="arrow left" />
+              Edit options
+            </Button>
+            <Button
+              primary
+              basic
+              disabled={!user}
+              onClick={viewResults}
+            >
+              View results
+              <Icon name="arrow right" />
+            </Button>
+          </Button.Group>
+        )
+      case StrawpollStage.Results:
+       return (
+          <Button
+            fluid
+            secondary
+            basic
+            onClick={reopenVoting}
+          >
+            <Icon name="arrow left" />
+            Reopen voting
+          </Button>
+       )
+      default:
+        return <div />;
+    }
+  }
 
   return (
       <Container text style={{ padding: '1em 0em' }}>
@@ -410,13 +445,9 @@ export default function Strawpoll(props: StrawpollProps) {
             placeholder="Type your question here"
           />
         </Header>
-        {stage === StrawpollStage.Voting && medium === StrawpollMedium.Link &&
-          <StrawpollShareHint committeeID={committeeID} strawpollID={strawpollID} />
-        }
-        <List>
-          {optionsTree}
-        </List>
-        {buttons}
+        {renderMetaButtons()}
+        {renderOptions()}
+        {renderNavButtons()}
       </Container>
     );
 }

@@ -119,7 +119,7 @@ export function CaucusNextSpeaking(props: Props) {
     <Button
       basic
       icon
-      positive
+      primary
       disabled={!nextable}
       onClick={nextSpeaker}
     >
