@@ -6,26 +6,23 @@ import * as Sentry from "@sentry/react";
  */
 
 export function logClickCreateACommitteeButton() {
-  send('clickButton', {
+  send('clickCreateACommitteeHomepageButton', {
     action: 'click',
-    category: 'Button',
-    label: '[Create a committee ->] @ Homepage',
+    category: 'CreateACommitteeHomepageButton'
   });
 }
 
 export function logClickLogInButton() {
-  send('clickButton', {
+  send('clickLoginHomepageButton', {
     action: 'click',
-    category: 'Button',
-    label: '[Log in] @ Homepage',
+    category: 'LoginHomepageButton',
   });
 }
 
 export function logClickSignupButton() {
-  send('clickButton', {
+  send('clickSignupHomepageButton', {
     action: 'click',
-    category: 'Button',
-    label: '[Sign Up] @ Homepage',
+    category: 'SignupHomepageButton',
   });
 }
 
@@ -55,8 +52,8 @@ export function logCreateAccount(uid: string | undefined) {
 
 export function logCreateCommittee(committeeID: string | undefined) {
   send('createCommittee', {
-    category: 'Committee',
     action: 'create',
+    category: 'Committee',
     label: committeeID
   });
 }
@@ -66,9 +63,9 @@ export function logCreateCommittee(committeeID: string | undefined) {
  */
 
 export function logClickSetupCommittee() {
-  send('clickButton', {
-    category: 'Button',
+  send('clickSetupCommitteeCommitteeButton', {
     action: 'click',
+    category: 'SetupCommitteeCommitteeButton',
     label: '[Setup committee ->] @ Committee'
   });
 }
@@ -79,17 +76,16 @@ export function logClickSetupCommittee() {
 
 export function logCreateMember(name: string) {
   send('createMember', {
-    category: 'Member',
     action: 'create',
+    category: 'Member',
     label: name
   });
 }
 
 export function logClickGeneralSpeakersList() {
-  send('clickButton', {
-    category: 'Button',
+  send('clickGeneralSpeakersListSetupButton', {
     action: 'click',
-    label: '[General Speaker\'s List ->] @ Setup'
+    category: 'GeneralSpeakersListSetupButton'
   });
 }
 

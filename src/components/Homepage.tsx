@@ -115,7 +115,7 @@ class DesktopContainer extends React.Component<DesktopContainerProps, DesktopCon
                     Log in
                   </Button>
                   <Button as="a" href="/onboard" inverted={!fixed} primary={fixed} style={{ marginLeft: '0.5em' }} onClick={logClickSignupButton}>
-                    Sign Up
+                    Sign up
                   </Button>
                 </Menu.Item>
               </Container>
@@ -169,7 +169,7 @@ class MobileContainer extends React.Component<MobileContainerProps, MobileContai
           <Sidebar as={Menu} animation="uncover" inverted vertical visible={sidebarOpened}>
             <Menu.Item as="a" active>Home</Menu.Item>
             <Menu.Item as="a">Log in</Menu.Item>
-            <Menu.Item as="a">Sign Up</Menu.Item>
+            <Menu.Item as="a">Sign up</Menu.Item>
           </Sidebar>
 
           <Sidebar.Pusher dimmed={sidebarOpened} onClick={this.handlePusherClick} style={{ minHeight: '100vh' }}>
