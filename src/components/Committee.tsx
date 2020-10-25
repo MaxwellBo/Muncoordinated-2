@@ -465,9 +465,7 @@ export default class Committee extends React.Component<Props, State> {
             />
           </List.Item>
         </List>
-        <Segment>
-          <CommitteeShareHint committeeID={this.props.match.params.committeeID} />
-        </Segment>
+        <CommitteeShareHint committeeID={this.props.match.params.committeeID} />
         <Segment textAlign="center" basic>
           <Button as="a" primary size="large" onClick={this.gotoSetup}>
             Setup committee

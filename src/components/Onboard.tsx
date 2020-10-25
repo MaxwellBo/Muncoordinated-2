@@ -8,6 +8,8 @@ import { Login } from './Auth';
 import { URLParameters } from '../types';
 import ConnectionStatus from './ConnectionStatus';
 import { logCreateCommittee } from '../analytics';
+import { meetId } from '../utils';
+import { putCommittee } from '../actions/committee-actions';
 
 interface Props extends RouteComponentProps<URLParameters> {
 }
@@ -72,8 +74,7 @@ export default class Onboard extends React.Component<Props, State> {
         creatorUid: this.state.user.uid
       };
 
-      const newCommitteeRef = this.state.committeesFref.push();
-      newCommitteeRef.set(newCommittee);
+      const newCommitteeRef = putCommittee(meetId(), newCommittee)
 
       this.props.history.push(`/committees/${newCommitteeRef.key}`);
 
