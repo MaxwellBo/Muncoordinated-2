@@ -687,19 +687,17 @@ export default class Resolution extends React.Component<Props, State> {
     );
 
     return (
-        <Segment>
-          <Input
-            value={resolution ? resolution.name : ''}
-            label={statusDropdown}
-            loading={!resolution}
-            labelPosition="right"
-            onChange={fieldHandler<ResolutionData>(resolutionFref, 'name')}
-            attatched="top"
-            size="massive"
-            fluid
-            placeholder="Set resolution name"
-          />
-        </Segment>
+      <Input
+        value={resolution ? resolution.name : ''}
+        label={statusDropdown}
+        loading={!resolution}
+        labelPosition="right"
+        onChange={fieldHandler<ResolutionData>(resolutionFref, 'name')}
+        attatched="top"
+        size="massive"
+        fluid
+        placeholder="Set resolution name"
+      />
     );
   }
 

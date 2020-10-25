@@ -132,18 +132,19 @@ export default class Caucus extends React.Component<Props, State> {
     );
 
     return (
-      <Segment loading={!caucus}>
+      <>
         <Input
           label={statusDropdown}
           labelPosition="right"
           value={caucus ? caucus.name : ''}
           onChange={fieldHandler<CaucusData>(caucusFref, 'name')}
+          loading={!caucus}
           attatched="top"
           size="massive"
           fluid
           placeholder="Set caucus name"
         />
-        <Form>
+        <Form loading={!caucus}>
           <TextArea
             value={caucus ? caucus.topic : ''}
             autoHeight
@@ -153,7 +154,7 @@ export default class Caucus extends React.Component<Props, State> {
             placeholder="Set caucus details"
           />
         </Form>
-      </Segment>
+      </>
     );
   }
 
