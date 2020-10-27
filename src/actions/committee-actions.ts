@@ -1,7 +1,18 @@
 import * as firebase from 'firebase/app';
-import { CommitteeID } from '../components/Committee';
+import { CommitteeData, CommitteeID } from '../components/Committee';
 import { TimerData, DEFAULT_TIMER } from '../components/Timer';
 import { CaucusID } from '../components/Caucus';
+
+export const putCommittee = 
+  (committeeID: CommitteeID, committeeData: CommitteeData): firebase.database.Reference => {
+  const ref = firebase.database()
+    .ref('committees')
+    .child(committeeID)
+
+  ref.set(committeeData);
+
+  return ref;
+};
 
 // tslint:disable-next-line
 export const putUnmodTimer = (committeeID: CommitteeID, timerData: TimerData): Promise<any> => {

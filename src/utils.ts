@@ -84,3 +84,21 @@ export function uuidv4() {
     return v.toString(16);
   });
 }
+
+const ALPHABET = "abcdefghijklmnopqrstuvwxyz"
+
+function randomCharacter() {
+  return ALPHABET[Math.floor(Math.random() * ALPHABET.length)];
+} 
+
+export function meetId() {
+  return 'xxx-xxx-xxx'.replace(/[x]/g, function(c) {
+    return randomCharacter();
+  });
+}
+
+export function shortMeetId() {
+  return 'xxx-xxx'.replace(/[x]/g, function(c) {
+    return randomCharacter();
+  });
+}
