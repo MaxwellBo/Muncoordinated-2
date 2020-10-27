@@ -18,12 +18,14 @@ export interface SettingsData {
   moveQueueUp: boolean;
   timersInSeparateColumns: boolean;
   autoNextSpeaker: boolean;
+  motionVotes?: boolean;
 }
 
-export const DEFAULT_SETTINGS: SettingsData = {
+export const DEFAULT_SETTINGS: Required<SettingsData> = {
   moveQueueUp: false,
   timersInSeparateColumns: false,
-  autoNextSpeaker: false
+  autoNextSpeaker: false,
+  motionVotes: false
 };
 
 export default class Settings extends React.Component<Props, State> {

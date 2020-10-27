@@ -1,16 +1,17 @@
 import * as React from 'react';
 import firebase from 'firebase/app';
-import { CommitteeData, CommitteeID, DEFAULT_COMMITTEE, recoverCaucus, recoverResolution, recoverPresentMemberOptions } from './Committee';
+import { CommitteeData, CommitteeID, DEFAULT_COMMITTEE, recoverCaucus, recoverResolution, recoverPresentMemberOptions, recoverSettings } from './Committee';
 import { RouteComponentProps } from 'react-router';
 import { Icon, Button, Card, Form, Message, Flag, Label, 
-  Container, Divider } from 'semantic-ui-react';
+  Container, Divider, Checkbox } from 'semantic-ui-react';
 import { stateFieldHandler,
   stateDropdownHandler,
   stateValidatedNumberFieldHandler,
   stateMemberDropdownHandler,
-  stateTextAreaHandler
+  stateTextAreaHandler,
+  checkboxHandler
 } from '../actions/handlers';
-import { implies, sentenceCase, makeSentenceCaseDropdownOption } from '../utils';
+import { implies, sentenceCase, makeSentenceCaseDropdownOption, } from '../utils';
 import { TimerSetter, Unit, getSeconds } from './TimerSetter';
 import { nameToMemberOption, parseFlagName } from './Member';
 import { DEFAULT_CAUCUS, CaucusData, CaucusID, CaucusStatus, DEFAULT_SPEAKER_TIME_SECONDS } from './Caucus';
@@ -25,6 +26,10 @@ import { putAmendment, putResolution } from '../actions/resolution-actions';
 import { putStrawpoll } from '../actions/strawpoll-actions';
 import { DEFAULT_STRAWPOLL } from './Strawpoll';
 import { makeCommitteeStats } from './Admin';
+import { SettingsData } from './Settings';
+import { MotionsShareHint } from './ShareHint';
+import { useVoterID, VoterID } from '../hooks';
+import _ from 'lodash';
 
 export type MotionID = string;
 
@@ -235,6 +240,12 @@ const hasResolutionTarget = (motionType: MotionType): boolean => {
   }
 };
 
+enum MotionVote {
+  For = 'for',
+  Abstain = 'abstain',
+  Against = 'against'
+}
+
 export interface MotionData {
   proposal: string;
   proposer?: string;
@@ -246,10 +257,15 @@ export interface MotionData {
   type: MotionType;
   caucusTarget?: CaucusID;
   resolutionTarget?: ResolutionID;
-  deleted?: boolean
+  deleted?: boolean;
+  votes?: Record<VoterID, MotionVote>
 }
 
 interface Props extends RouteComponentProps<URLParameters> {
+}
+
+interface Hooks {
+  voterID: VoterID | undefined
 }
 
 interface State {
@@ -285,8 +301,8 @@ const DEFAULT_MOTION: MotionData = {
   type: MotionType.OpenUnmoderatedCaucus // this will force it to the top of the list
 };
 
-export default class Motions extends React.Component<Props, State> {
-  constructor(props: Props) {
+export class MotionsComponent extends React.Component<Props & Hooks, State> {
+  constructor(props: Props & Hooks) {
     super(props);
 
     const { match } = props;
@@ -503,6 +519,48 @@ export default class Motions extends React.Component<Props, State> {
     const resolution = recoverResolution(committee, resolutionTarget || '');
     const resolutionTargetText = resolution ? resolution.name : resolutionTarget;
 
+
+    const renderVoteCount = () => {
+      const { voterID } = this.props;
+
+      const vote = (vote: MotionVote) => {
+        if (voterID) {
+          motionFref.child('votes').child(voterID).set(vote);
+        }
+      }
+
+      const votes = motionData.votes ?? {};
+      const counts = _.countBy(Object.values(votes))
+
+      return (
+        <Button.Group>
+          <Button
+            color='red'
+            active={votes[voterID ?? ''] === MotionVote.Against}
+            onClick={() => vote(MotionVote.Against)}
+          >
+            <Icon name="thumbs down"/>
+            {counts[MotionVote.Against] ?? 0}
+          </Button>
+          <Button
+            color='yellow'
+            active={votes[voterID ?? ''] === MotionVote.Abstain}
+            onClick={() => vote(MotionVote.Abstain)}
+          >
+            {counts[MotionVote.Abstain] ?? 0}
+          </Button>
+          <Button
+            color='green'
+            active={votes[voterID ?? ''] === MotionVote.For}
+            onClick={() => vote(MotionVote.For)}
+          >
+            <Icon name="thumbs up"/>
+            {counts[MotionVote.For] ?? 0}
+          </Button>
+        </Button.Group>
+      )
+    }
+
     const descriptionTree = (
       <Card.Description>
         <Label horizontal>
@@ -580,6 +638,7 @@ export default class Motions extends React.Component<Props, State> {
           >
             Delete
           </Button>
+          {recoverSettings(committee).motionVotes && renderVoteCount()}
           {approvable(type) && <Button
             disabled={motionData.proposer === ''}
             basic
@@ -840,9 +899,8 @@ export default class Motions extends React.Component<Props, State> {
 
   render() {
     const { renderMotions, renderAdder } = this;
-
-    const { committee } = this.state;
-
+    const { committee, committeeFref } = this.state;
+    const { committeeID } = this.props.match.params;
     const { operative } = makeCommitteeStats(this.state.committee);
 
     const renderedMotions = committee 
@@ -865,6 +923,18 @@ export default class Motions extends React.Component<Props, State> {
           onClick={this.handleClearMotions}
         />
         <Divider />
+        <Checkbox
+          label="Delegates can vote on motions"
+          toggle
+          checked={recoverSettings(committee).motionVotes}
+          onChange={
+            checkboxHandler<SettingsData>(
+              committeeFref.child('settings'), 
+              'motionVotes')}
+        />
+        {recoverSettings(committee).motionVotes 
+          && <MotionsShareHint committeeID={committeeID} />}
+        <Divider />
         <Card.Group
           itemsPerRow={1} 
         >
@@ -873,4 +943,10 @@ export default class Motions extends React.Component<Props, State> {
       </Container>
     );
   }
+}
+
+export default function Motions(props: Props) {
+  const [voterID] = useVoterID();
+
+  return <MotionsComponent {...props} voterID={voterID} />
 }

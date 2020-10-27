@@ -8,9 +8,9 @@ import { Container, Header, Input, Button, List, Icon, Checkbox, Form, Modal, Ch
 import { fieldHandler, clearableZeroableValidatedNumberFieldHandler } from '../actions/handlers';
 import Loading from './Loading';
 import { useAuthState } from 'react-firebase-hooks/auth';
-import { useLocalStorage, uuidv4 } from '../utils';
 import { StrawpollShareHint } from './ShareHint';
 import { NotFound } from './NotFound';
+import { useVoterID } from '../hooks';
 
 enum StrawpollStage {
   Preparing = 'preparing',
@@ -126,13 +126,8 @@ export default function Strawpoll(props: StrawpollProps) {
     const strawpollFref = getStrawpollRef(committeeID, strawpollID)
     const  [value, loading] = useObject(strawpollFref);
     const [user] = useAuthState(firebase.auth());
-    const [voterID, setVoterID] = useLocalStorage('voterID', undefined);
+    const [voterID] = useVoterID()
     const [modalOpen, setOpen] = React.useState(false)
-
-    if (!voterID) {
-      setVoterID(uuidv4())
-    }
-
 
     if (loading) {
       return <Loading />
@@ -332,13 +327,13 @@ export default function Strawpoll(props: StrawpollProps) {
               upward={false}
               options={[{
                 key: StrawpollType.Checkbox,
-                text: "Choose many",
                 value: StrawpollType.Checkbox,
+                text: "Choose many",
                 icon: "check square"
               }, {
                 key: StrawpollType.Radio,
-                text: "Choose one",
                 value: StrawpollType.Radio,
+                text: "Choose one",
                 icon: "radio"
               }]}
               onChange={togglePollType}

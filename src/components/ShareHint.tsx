@@ -33,7 +33,6 @@ function CopyableText(props: {
           content: message,
           onClick: copy
         }}
-        defaultValue={props.value}
       />
   );
 }
@@ -73,7 +72,21 @@ export function StrawpollShareHint(props: {
   const url = `${hostname}/committees/${committeeID}/strawpolls/${strawpollID}`;
   return (
     <Segment>
-      <Header size='medium'>Here's the sharable link to your strawpoll</Header>
+      <Header size='small'>Here's the sharable link to your strawpoll</Header>
+      <CopyableText value={url} />
+    </Segment>
+  );
+}
+
+export function MotionsShareHint(props: {
+  committeeID: CommitteeID;
+}) {
+  const hostname = window.location.hostname;
+  const { committeeID } = props;
+  const url = `${hostname}/committees/${committeeID}/motions`;
+  return (
+    <Segment>
+      <Header size='small'>Here's the sharable link to vote on these motions</Header>
       <CopyableText value={url} />
     </Segment>
   );

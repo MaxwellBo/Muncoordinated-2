@@ -41,6 +41,15 @@
               }
             }
           }
+        },
+      	"motions": {
+          "$mid": {
+            "votes": {
+              "$vid": {
+    						".write": true
+              }
+            }
+          }
         }
       }
     }

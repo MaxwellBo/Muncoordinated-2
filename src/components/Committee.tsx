@@ -53,27 +53,25 @@ export function recoverMembers(committee?: CommitteeData): Dictionary<MemberID, 
   return committee ? (committee.members || {} as Dictionary<MemberID, MemberData>) : undefined;
 }
 
-export function recoverSettings(committee?: CommitteeData): SettingsData {
-  let timersInSeparateColumns: boolean = DEFAULT_SETTINGS.timersInSeparateColumns;
-  let moveQueueUp: boolean = DEFAULT_SETTINGS.moveQueueUp;
-  let autoNextSpeaker: boolean = DEFAULT_SETTINGS.autoNextSpeaker;
+export function recoverSettings(committee?: CommitteeData): Required<SettingsData> {
+  let timersInSeparateColumns: boolean = 
+    committee?.settings.timersInSeparateColumns 
+    ?? DEFAULT_SETTINGS.timersInSeparateColumns;
 
-  if (committee) {
-    if (committee.settings.timersInSeparateColumns !== undefined) {
-      timersInSeparateColumns = committee.settings.timersInSeparateColumns;
-    }
+  const moveQueueUp: boolean = 
+    committee?.settings.moveQueueUp 
+    ?? DEFAULT_SETTINGS.moveQueueUp;
 
-    if (committee.settings.moveQueueUp !== undefined) {
-      moveQueueUp = committee.settings.moveQueueUp;
-    }
+  const autoNextSpeaker: boolean = 
+    committee?.settings.autoNextSpeaker 
+    ?? DEFAULT_SETTINGS.autoNextSpeaker;
 
-    if (committee.settings.autoNextSpeaker !== undefined) {
-      autoNextSpeaker = committee.settings.autoNextSpeaker;
-    }
-  }
+  const motionVotes: boolean = 
+    committee?.settings.motionVotes 
+    ?? DEFAULT_SETTINGS.motionVotes;
 
   return {
-    timersInSeparateColumns, moveQueueUp, autoNextSpeaker
+    timersInSeparateColumns, moveQueueUp, autoNextSpeaker, motionVotes
   };
 }
 
