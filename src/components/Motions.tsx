@@ -268,7 +268,7 @@ interface Props extends RouteComponentProps<URLParameters> {
 }
 
 interface Hooks {
-  voterID: VoterID | undefined
+  voterID: VoterID
 }
 
 interface State {
@@ -526,14 +526,17 @@ export class MotionsComponent extends React.Component<Props & Hooks, State> {
 
     const renderVoteCount = () => {
       const { voterID } = this.props;
+      const votes = motionData.votes ?? {};
 
+      // Remove vote if same vote, otherwise change vote
       const vote = (vote: MotionVote) => {
-        if (voterID) {
+        if (votes[voterID] === vote) {
+          motionFref.child('votes').child(voterID).remove();
+        } else {
           motionFref.child('votes').child(voterID).set(vote);
         }
       }
 
-      const votes = motionData.votes ?? {};
       const counts = _.countBy(Object.values(votes))
 
       return (
@@ -543,10 +546,14 @@ export class MotionsComponent extends React.Component<Props & Hooks, State> {
             trigger={
               <Button
                 color='red'
-                active={votes[voterID ?? ''] === MotionVote.Against}
+                active={votes[voterID] === MotionVote.Against}
                 onClick={() => vote(MotionVote.Against)}
               >
-                <Icon name="thumbs down" />
+                <Icon name={
+                  votes[voterID] === MotionVote.Against
+                    ? "thumbs down"
+                    : "thumbs down outline"}
+                />
                 {counts[MotionVote.Against] ?? 0}
               </Button>
             }
@@ -556,9 +563,14 @@ export class MotionsComponent extends React.Component<Props & Hooks, State> {
             trigger={
               <Button
                 color='yellow'
-                active={votes[voterID ?? ''] === MotionVote.Abstain}
+                active={votes[voterID] === MotionVote.Abstain}
                 onClick={() => vote(MotionVote.Abstain)}
               >
+                <Icon name={
+                  votes[voterID] === MotionVote.Abstain
+                    ? "circle"
+                    : "circle outline"}
+                />
                 {counts[MotionVote.Abstain] ?? 0}
               </Button>
             } />
@@ -567,10 +579,14 @@ export class MotionsComponent extends React.Component<Props & Hooks, State> {
             trigger={
               <Button
                 color='green'
-                active={votes[voterID ?? ''] === MotionVote.For}
+                active={votes[voterID] === MotionVote.For}
                 onClick={() => vote(MotionVote.For)}
               >
-                <Icon name="thumbs up" />
+                <Icon name={
+                  votes[voterID] === MotionVote.For
+                    ? "thumbs up"
+                    : "thumbs up outline"}
+                />
                 {counts[MotionVote.For] ?? 0}
               </Button>
             } />
