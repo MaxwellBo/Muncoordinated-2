@@ -301,7 +301,8 @@ const DEFAULT_MOTION: MotionData = {
   speakerUnit: Unit.Seconds,
   caucusDuration: 10,
   caucusUnit: Unit.Minutes,
-  type: MotionType.OpenUnmoderatedCaucus // this will force it to the top of the list
+  type: MotionType.OpenUnmoderatedCaucus, // this will force it to the top of the list
+  votes: {}
 };
 
 export class MotionsComponent extends React.Component<Props & Hooks, State> {
