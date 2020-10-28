@@ -4,7 +4,7 @@ import { CommitteeData, CommitteeID, DEFAULT_COMMITTEE, recoverCaucus, recoverRe
 import { RouteComponentProps } from 'react-router';
 import {
   Icon, Button, Card, Form, Message, Flag, Label,
-  Container, Divider, Checkbox
+  Container, Divider, Checkbox, Popup
 } from 'semantic-ui-react';
 import {
   stateFieldHandler,
@@ -538,29 +538,42 @@ export class MotionsComponent extends React.Component<Props & Hooks, State> {
 
       return (
         <Button.Group>
-          <Button
-            color='red'
-            active={votes[voterID ?? ''] === MotionVote.Against}
-            onClick={() => vote(MotionVote.Against)}
-          >
-            <Icon name="thumbs down" />
-            {counts[MotionVote.Against] ?? 0}
-          </Button>
-          <Button
-            color='yellow'
-            active={votes[voterID ?? ''] === MotionVote.Abstain}
-            onClick={() => vote(MotionVote.Abstain)}
-          >
-            {counts[MotionVote.Abstain] ?? 0}
-          </Button>
-          <Button
-            color='green'
-            active={votes[voterID ?? ''] === MotionVote.For}
-            onClick={() => vote(MotionVote.For)}
-          >
-            <Icon name="thumbs up" />
-            {counts[MotionVote.For] ?? 0}
-          </Button>
+          <Popup
+            content="Against"
+            trigger={
+              <Button
+                color='red'
+                active={votes[voterID ?? ''] === MotionVote.Against}
+                onClick={() => vote(MotionVote.Against)}
+              >
+                <Icon name="thumbs down" />
+                {counts[MotionVote.Against] ?? 0}
+              </Button>
+            }
+          />
+          <Popup
+            content="Abstain"
+            trigger={
+              <Button
+                color='yellow'
+                active={votes[voterID ?? ''] === MotionVote.Abstain}
+                onClick={() => vote(MotionVote.Abstain)}
+              >
+                {counts[MotionVote.Abstain] ?? 0}
+              </Button>
+            } />
+          <Popup
+            content="In favour"
+            trigger={
+              <Button
+                color='green'
+                active={votes[voterID ?? ''] === MotionVote.For}
+                onClick={() => vote(MotionVote.For)}
+              >
+                <Icon name="thumbs up" />
+                {counts[MotionVote.For] ?? 0}
+              </Button>
+            } />
         </Button.Group>
       )
     }
