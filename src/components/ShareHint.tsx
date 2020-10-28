@@ -49,7 +49,7 @@ export function CommitteeShareHint(props: {
       <Header size='medium'>Here's the shareable link to your committee</Header>
       <CopyableText value={url} />
 
-      <Divider />
+      <Divider hidden />
 
       Copy and send this to your delegates, and they will be able to:
       
