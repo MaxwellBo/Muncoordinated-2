@@ -9,7 +9,6 @@ import * as React from 'react';
 import { Feed, Icon, Flag, Label, FeedEvent } from 'semantic-ui-react';
 import { runLifecycle, Lifecycle } from '../../actions/caucus-actions';
 import { parseFlagName } from '../Member';
-import { Dictionary } from '../../types';
 import { DragDropContext, Droppable, Draggable, DraggableProvided, DropResult } from 'react-beautiful-dnd';
 import { useAuthState } from 'react-firebase-hooks/auth';
 
@@ -126,7 +125,7 @@ function reorder<T>(list: T[], startIndex: number, endIndex: number) {
 };
 
 export const SpeakerFeed = (props: {
-  data?: Dictionary<string, SpeakerEvent>,
+  data?: Record<string, SpeakerEvent>,
   queueFref: firebase.database.Reference,
   speaking?: SpeakerEvent,
   speakerTimer: TimerData

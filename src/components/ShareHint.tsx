@@ -33,7 +33,6 @@ function CopyableText(props: {
           content: message,
           onClick: copy
         }}
-        defaultValue={props.value}
       />
   );
 }
@@ -47,10 +46,10 @@ export function CommitteeShareHint(props: {
 
   return (
     <Segment>
-      <Header size='medium'>Here's the link to your committee</Header>
+      <Header size='medium'>Here's the shareable link to your committee</Header>
       <CopyableText value={url} />
 
-      <Divider />
+      <Divider hidden />
 
       Copy and send this to your delegates, and they will be able to:
       
@@ -58,6 +57,7 @@ export function CommitteeShareHint(props: {
         <List.Item>Upload files</List.Item>
         <List.Item>Add themselves to speaker's lists that have the 'Delegates can queue' flag enabled</List.Item>
         <List.Item>Add and edit amendments on resolutions that have the 'Delegates can amend' flag enabled</List.Item>
+        <List.Item>Vote on motions that have the 'Delegates can vote on motions' flag enabled</List.Item>
         <List.Item>Vote on strawpolls</List.Item>
       </List>
     </Segment>
@@ -73,7 +73,21 @@ export function StrawpollShareHint(props: {
   const url = `${hostname}/committees/${committeeID}/strawpolls/${strawpollID}`;
   return (
     <Segment>
-      <Header size='medium'>Here's the sharable link to your strawpoll</Header>
+      <Header size='small'>Here's the shareable link to your strawpoll</Header>
+      <CopyableText value={url} />
+    </Segment>
+  );
+}
+
+export function MotionsShareHint(props: {
+  committeeID: CommitteeID;
+}) {
+  const hostname = window.location.hostname;
+  const { committeeID } = props;
+  const url = `${hostname}/committees/${committeeID}/motions`;
+  return (
+    <Segment>
+      <Header size='small'>Here's the shareable link to vote on these motions</Header>
       <CopyableText value={url} />
     </Segment>
   );

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import firebase from 'firebase/app';
-import { Form, Segment, Button, Divider, Progress, DropdownProps, Icon, Label } from 'semantic-ui-react';
+import { Form, Segment, Button, Progress, DropdownProps, Icon, Label } from 'semantic-ui-react';
 import { Unit, TimerSetter, getSeconds } from './TimerSetter';
 import _ from 'lodash';
 import { DEFAULT_SPEAKER_TIME_SECONDS } from './Caucus';
@@ -278,11 +278,6 @@ export default class Timer extends React.Component<Props, State> {
         </Button>
 
         <Progress percent={percentage} active={false} indicating={true}/>
-        {/* <Statistic>
-          <Statistic.Value>{this.state.timer.remaining}</Statistic.Value>
-        </Statistic>
-        <Checkbox toggle checked={this.state.timer.ticking} onChange={this.toggleHandler} /> */}
-        <Divider />
         <Form>
           <TimerSetter
             unitValue={this.state.unitDropdown}

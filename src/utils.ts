@@ -4,13 +4,12 @@ import { MemberOption } from './constants';
 import { MemberID, nameToMemberOption, MemberData } from './components/Member';
 import * as _ from 'lodash';
 import * as React from 'react';
-import { Dictionary } from './types';
 
 export function implies(a: boolean, b: boolean) {
   return a ? b : true;
 }
 
-export function objectToList<T>(object: Dictionary<string, T>): T[] {
+export function objectToList<T>(object: Record<string, T>): T[] {
   return Object.keys(object).map(key => object[key]);
 }
 
@@ -27,14 +26,14 @@ export function sentenceCase(CC: string): string {
   return cc.charAt(0).toUpperCase() + cc.slice(1);
 }
 
-export function membersToOptions(members: Dictionary<MemberID, MemberData> | undefined): MemberOption[] {
+export function membersToOptions(members: Record<MemberID, MemberData> | undefined): MemberOption[] {
   const options = objectToList(members || {})
     .map(x => nameToMemberOption(x.name));
 
   return _.sortBy(options, (option: MemberOption) => option.text);
 }
 
-export function membersToPresentOptions(members: Dictionary<MemberID, MemberData> | undefined): MemberOption[] {
+export function membersToPresentOptions(members: Record<MemberID, MemberData> | undefined): MemberOption[] {
   const options = objectToList(members || {})
     .filter(x => x.present)
     .map(x => nameToMemberOption(x.name));
