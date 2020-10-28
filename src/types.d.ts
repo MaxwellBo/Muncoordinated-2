@@ -10,7 +10,3 @@ export interface URLParameters {
   strawpollID: StrawpollID;
   tab: 'feed' | 'text' | 'amendments' | 'voting'
 }
-
-export interface Dictionary<K, V> {
-  [key: string]: V;
-}

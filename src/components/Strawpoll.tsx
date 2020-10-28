@@ -1,7 +1,7 @@
 import * as firebase from 'firebase/app';
 import * as React from 'react';
 import { RouteComponentProps } from 'react-router';
-import { URLParameters, Dictionary } from '../types';
+import { URLParameters } from '../types';
 import { getStrawpollRef } from '../actions/strawpoll-actions';
 import { useObject } from 'react-firebase-hooks/database';
 import { Container, Header, Input, Button, List, Icon, Checkbox, Form, Modal, CheckboxProps, DropdownProps, Progress, Dropdown } from 'semantic-ui-react';
@@ -45,12 +45,12 @@ export interface StrawpollData {
   type: StrawpollType
   stage: StrawpollStage
   medium?: StrawpollMedium
-  options?: Dictionary<StrawpollOptionID, StrawpollOptionData>
+  options?: Record<StrawpollOptionID, StrawpollOptionData>
 }
 
 export interface StrawpollOptionData {
   text: string
-  votes?: Dictionary<StrawpollVoteID, StrawpollVoteData>
+  votes?: Record<StrawpollVoteID, StrawpollVoteData>
   tally?: number
 }
 
@@ -144,7 +144,7 @@ export default function Strawpoll(props: StrawpollProps) {
     const type: StrawpollType = strawpoll ? strawpoll.type || StrawpollType.Checkbox : StrawpollType.Checkbox;
     const stage: StrawpollStage = strawpoll ? strawpoll.stage || StrawpollStage.Preparing : StrawpollStage.Preparing;
     const medium: StrawpollMedium = strawpoll ? strawpoll.medium || StrawpollMedium.Link : StrawpollMedium.Link;
-    const options: Dictionary<StrawpollOptionID, StrawpollOptionData> = 
+    const options: Record<StrawpollOptionID, StrawpollOptionData> = 
       strawpoll ? strawpoll.options || {}: {};
 
     let totalVotes = 0;

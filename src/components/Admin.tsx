@@ -9,7 +9,7 @@ import { COUNTRY_OPTIONS, MemberOption } from '../constants';
 import { checkboxHandler, dropdownHandler } from '../actions/handlers';
 import { makeDropdownOption } from '../utils';
 import _ from 'lodash';
-import { Dictionary, URLParameters } from '../types';
+import { URLParameters } from '../types';
 import { RouteComponentProps } from 'react-router';
 import { logClickGeneralSpeakersList, logCreateMember } from '../analytics';
 
@@ -52,8 +52,8 @@ interface CommitteeStats {
 }
 
 export function makeCommitteeStats(data?: CommitteeData) {
-  const defaultMap = {} as Dictionary<MemberID, MemberData>;
-  const membersMap: Dictionary<MemberID, MemberData> = data ? (data.members || defaultMap) : defaultMap;
+  const defaultMap = {} as Record<MemberID, MemberData>;
+  const membersMap: Record<MemberID, MemberData> = data ? (data.members || defaultMap) : defaultMap;
   const members: MemberData[] = Utils.objectToList(membersMap);
   const present = members.filter(x => x.present);
 

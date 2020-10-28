@@ -16,7 +16,7 @@ import Notes from './Notes';
 import Help from './Help';
 import Motions from './Motions';
 import { putCaucus } from '../actions/caucus-actions';
-import { URLParameters, Dictionary } from '../types';
+import { URLParameters } from '../types';
 import Loading from './Loading';
 import Footer from './Footer';
 import Settings, { SettingsData, DEFAULT_SETTINGS } from './Settings';
@@ -49,8 +49,8 @@ export function recoverPresentMemberOptions(committee?: CommitteeData): MemberOp
   }
 }
 
-export function recoverMembers(committee?: CommitteeData): Dictionary<MemberID, MemberData> | undefined {
-  return committee ? (committee.members || {} as Dictionary<MemberID, MemberData>) : undefined;
+export function recoverMembers(committee?: CommitteeData): Record<MemberID, MemberData> | undefined {
+  return committee ? (committee.members || {} as Record<MemberID, MemberData>) : undefined;
 }
 
 export function recoverSettings(committee?: CommitteeData): Required<SettingsData> {
@@ -120,12 +120,12 @@ export interface CommitteeData {
   topic: string;
   conference?: string; // TODO: Migrate
   creatorUid: firebase.UserInfo['uid'];
-  members?: Dictionary<MemberID, MemberData>;
-  caucuses?: Dictionary<CaucusID, CaucusData>;
-  resolutions?: Dictionary<ResolutionID, ResolutionData>;
-  strawpolls?: Dictionary<StrawpollID, StrawpollData>;
-  motions?: Dictionary<MotionID, MotionData>;
-  files?: Dictionary<PostID, PostData>;
+  members?: Record<MemberID, MemberData>;
+  caucuses?: Record<CaucusID, CaucusData>;
+  resolutions?: Record<ResolutionID, ResolutionData>;
+  strawpolls?: Record<StrawpollID, StrawpollData>;
+  motions?: Record<MotionID, MotionData>;
+  files?: Record<PostID, PostData>;
   timer: TimerData;
   notes: string;
   settings: SettingsData;
@@ -141,13 +141,13 @@ export const DEFAULT_COMMITTEE: CommitteeData = {
   topic: '',
   conference: '',
   creatorUid: '',
-  members: {} as Dictionary<MemberID, MemberData>,
+  members: {} as Record<MemberID, MemberData>,
   caucuses: {
     'gsl': GENERAL_SPEAKERS_LIST
-  } as Dictionary<string, CaucusData>,
-  resolutions: {} as Dictionary<ResolutionID, ResolutionData>,
-  files: {} as Dictionary<PostID, PostData>,
-  strawpolls: {} as Dictionary<StrawpollID, StrawpollData>,
+  } as Record<string, CaucusData>,
+  resolutions: {} as Record<ResolutionID, ResolutionData>,
+  files: {} as Record<PostID, PostData>,
+  strawpolls: {} as Record<StrawpollID, StrawpollData>,
   timer: { ...DEFAULT_TIMER, remaining: DEFAULT_CAUCUS_TIME_SECONDS },
   notes: '',
   settings: DEFAULT_SETTINGS

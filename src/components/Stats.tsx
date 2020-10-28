@@ -6,12 +6,12 @@ import { RouteComponentProps } from 'react-router';
 import { Table, Flag, Container } from 'semantic-ui-react';
 import { MemberData, MemberID, parseFlagName } from './Member';
 import { CaucusID, CaucusData } from './Caucus';
-import { URLParameters, Dictionary } from '../types';
+import { URLParameters } from '../types';
 import Loading from './Loading';
 import { SpeakerEvent } from './caucus/SpeakerFeed';
 import { hhmmss } from './Timer';
 import { ResolutionData, ResolutionID } from './Resolution';
-import { AmendmentData } from './Amendment';
+import { AmendmentData, AmendmentID } from './Amendment';
 import { MotionID, MotionData } from './Motions';
 
 interface Props extends RouteComponentProps<URLParameters> {
@@ -58,7 +58,7 @@ export default class Stats extends React.Component<Props, State> {
   }
 
   memberStats(committee: CommitteeData, memberID: MemberID, member: MemberData): MemberStats {
-    const caucuses = committee.caucuses || {} as Dictionary<CaucusID, CaucusData>;
+    const caucuses = committee.caucuses || {} as Record<CaucusID, CaucusData>;
 
     let times = 0;
     let duration = 0;
@@ -68,7 +68,7 @@ export default class Stats extends React.Component<Props, State> {
     Object.keys(caucuses).forEach(cid => {
       const caucus: CaucusData = caucuses[cid];
 
-      const history = caucus.history || {} as Dictionary<string, SpeakerEvent>;
+      const history = caucus.history || {} as Record<string, SpeakerEvent>;
       
       Object.keys(history).map(hid => history[hid]).forEach((speakerEvent: SpeakerEvent) => {
         if (speakerEvent.who === member.name) { // I fucked up and used name in SpeakerEvent, not MemberID
@@ -79,7 +79,7 @@ export default class Stats extends React.Component<Props, State> {
       );
     });
 
-    const motions = committee.motions || {} as Dictionary<MotionID, MotionData>;
+    const motions = committee.motions || {} as Record<MotionID, MotionData>;
 
     Object.keys(motions).forEach(mid => {
       const motion: MotionData = motions[mid];
@@ -89,12 +89,12 @@ export default class Stats extends React.Component<Props, State> {
       }
     });
 
-    const resolutions = committee.resolutions || {} as Dictionary<ResolutionID, ResolutionData>;
+    const resolutions = committee.resolutions || {} as Record<ResolutionID, ResolutionData>;
 
     Object.keys(resolutions).forEach(rid => {
       const resolution: ResolutionData = resolutions[rid];
 
-      const amendments = resolution.amendments || {} as Dictionary<AmendmentData, AmendmentData>;
+      const amendments = resolution.amendments || {} as Record<AmendmentID, AmendmentData>;
       
       Object.keys(amendments).map(aid => amendments[aid]).forEach((amendment: AmendmentData) => {
         if (amendment.proposer === member.name) { // I fucked up and used name in SpeakerEvent, not MemberID
@@ -110,7 +110,7 @@ export default class Stats extends React.Component<Props, State> {
   renderCommittee = (committee: CommitteeData) => {
     const { memberStats } = this;
 
-    const members = committee.members || {} as Dictionary<MemberID, MemberData>;
+    const members = committee.members || {} as Record<MemberID, MemberData>;
 
     const rows = _.sortBy(
       Object.keys(members), 

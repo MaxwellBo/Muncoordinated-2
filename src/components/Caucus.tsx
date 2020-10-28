@@ -10,7 +10,7 @@ import { CommitteeData, recoverMembers, recoverSettings, recoverCaucus } from '.
 import CaucusQueuer from './caucus/CaucusQueuer';
 import { textAreaHandler, dropdownHandler, fieldHandler } from '../actions/handlers';
 import { makeDropdownOption } from '../utils';
-import { URLParameters, Dictionary } from '../types';
+import { URLParameters } from '../types';
 import { CaucusNextSpeaking } from './caucus/CaucusNextSpeaking';
 import { SpeakerEvent, SpeakerFeedEntry } from './caucus/SpeakerFeed';
 import { NotFound } from './NotFound';
@@ -59,8 +59,8 @@ export interface CaucusData {
   caucusTimer: TimerData;
   queueIsPublic?: boolean; // TODO: Migrate
   speaking?: SpeakerEvent;
-  queue?: Dictionary<string, SpeakerEvent>;
-  history?: Dictionary<string, SpeakerEvent>;
+  queue?: Record<string, SpeakerEvent>;
+  history?: Record<string, SpeakerEvent>;
 }
 
 const CAUCUS_STATUS_OPTIONS = [
@@ -77,8 +77,8 @@ export const DEFAULT_CAUCUS: CaucusData = {
   speakerUnit: Unit.Seconds,
   caucusTimer: { ...DEFAULT_TIMER, remaining: DEFAULT_CAUCUS_TIME_SECONDS },
   queueIsPublic: false,
-  queue: {} as Dictionary<string, SpeakerEvent>,
-  history: {} as Dictionary<string, SpeakerEvent>,
+  queue: {} as Record<string, SpeakerEvent>,
+  history: {} as Record<string, SpeakerEvent>,
 };
 
 export default class Caucus extends React.Component<Props, State> {

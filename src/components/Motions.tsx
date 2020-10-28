@@ -18,7 +18,7 @@ import { DEFAULT_CAUCUS, CaucusData, CaucusID, CaucusStatus, DEFAULT_SPEAKER_TIM
 import { putCaucus, closeCaucus, putSpeaking } from '../actions/caucus-actions';
 import { TimerData } from './Timer';
 import { putUnmodTimer, extendUnmodTimer, extendModTimer } from '../actions/committee-actions';
-import { URLParameters, Dictionary } from '../types';
+import { URLParameters } from '../types';
 import { ResolutionData, DEFAULT_RESOLUTION, ResolutionID, IDENTITCAL_PROPOSER_SECONDER } from './Resolution';
 import { Stance } from './caucus/SpeakerFeed';
 import { AmendmentData, DEFAULT_AMENDMENT } from './Amendment';
@@ -355,8 +355,8 @@ export class MotionsComponent extends React.Component<Props & Hooks, State> {
     const { committeeFref } = this.state;
 
     const motions = committee 
-      ? committee.motions || {} as Dictionary<string, MotionData> 
-      : {} as Dictionary<string, MotionData>;
+      ? committee.motions || {} as Record<string, MotionData> 
+      : {} as Record<string, MotionData>;
 
     Object.keys(motions).forEach(key => {
       committeeFref
@@ -862,7 +862,7 @@ export class MotionsComponent extends React.Component<Props & Hooks, State> {
     );
   }
 
-  renderMotions = (motions: Dictionary<MotionID, MotionData>) => {
+  renderMotions = (motions: Record<MotionID, MotionData>) => {
     const { renderMotion } = this;
     const { committeeFref } = this.state;
 
@@ -904,7 +904,7 @@ export class MotionsComponent extends React.Component<Props & Hooks, State> {
     const { operative } = makeCommitteeStats(this.state.committee);
 
     const renderedMotions = committee 
-      ? renderMotions(committee.motions || {} as Dictionary<string, MotionData>)
+      ? renderMotions(committee.motions || {} as Record<string, MotionData>)
       : []; // TODO: This could probably do with a nice spinner
 
     return (
