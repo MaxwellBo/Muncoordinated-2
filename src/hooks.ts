@@ -6,7 +6,7 @@ export function useVoterID(): [string] {
   let [voterID, setVoterID] = useLocalStorage('voterID', undefined);
 
   if (!voterID) {
-    const voterID = uuidv4();
+    voterID = uuidv4();
     setVoterID(voterID);
   }
   
