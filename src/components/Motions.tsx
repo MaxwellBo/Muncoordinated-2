@@ -2,9 +2,12 @@ import * as React from 'react';
 import firebase from 'firebase/app';
 import { CommitteeData, CommitteeID, DEFAULT_COMMITTEE, recoverCaucus, recoverResolution, recoverPresentMemberOptions, recoverSettings } from './Committee';
 import { RouteComponentProps } from 'react-router';
-import { Icon, Button, Card, Form, Message, Flag, Label, 
-  Container, Divider, Checkbox } from 'semantic-ui-react';
-import { stateFieldHandler,
+import {
+  Icon, Button, Card, Form, Message, Flag, Label,
+  Container, Divider, Checkbox
+} from 'semantic-ui-react';
+import {
+  stateFieldHandler,
   stateDropdownHandler,
   stateValidatedNumberFieldHandler,
   stateMemberDropdownHandler,
@@ -284,7 +287,7 @@ const MOTION_TYPE_OPTIONS = [
   MotionType.IntroduceAmendment, // implemented
   MotionType.VoteOnResolution,
   MotionType.ProposeStrawpoll,
-  MotionType.SuspendDraftResolutionSpeakersList, 
+  MotionType.SuspendDraftResolutionSpeakersList,
   MotionType.OpenDebate,
   MotionType.SuspendDebate,
   MotionType.ResumeDebate,
@@ -354,8 +357,8 @@ export class MotionsComponent extends React.Component<Props & Hooks, State> {
 
     const { committeeFref } = this.state;
 
-    const motions = committee 
-      ? committee.motions || {} as Record<string, MotionData> 
+    const motions = committee
+      ? committee.motions || {} as Record<string, MotionData>
       : {} as Record<string, MotionData>;
 
     Object.keys(motions).forEach(key => {
@@ -374,13 +377,13 @@ export class MotionsComponent extends React.Component<Props & Hooks, State> {
   }
 
   handleApproveMotion = (
-      motionFref: firebase.database.Reference, 
-      motionData: MotionData
+    motionFref: firebase.database.Reference,
+    motionData: MotionData
   ): void => {
     const committeeID: CommitteeID = this.props.match.params.committeeID;
     const { committee } = this.state;
 
-    const { proposer, speakerDuration, speakerUnit, 
+    const { proposer, speakerDuration, speakerUnit,
       caucusDuration, caucusUnit, seconder, proposal } = motionData;
 
     const caucusID = motionData.caucusTarget;
@@ -463,14 +466,14 @@ export class MotionsComponent extends React.Component<Props & Hooks, State> {
       const caucusSeconds = getSeconds(caucusDuration, caucusUnit);
 
       extendModTimer(committeeID, caucusID, caucusSeconds);
-          
+
       // @ts-ignore Assert that this exists
       const caucus: CaucusData = committee.caucuses[caucusID];
-      const speakerSeconds = !caucus.speakerDuration || !caucus.speakerUnit ? 
+      const speakerSeconds = !caucus.speakerDuration || !caucus.speakerUnit ?
         DEFAULT_SPEAKER_TIME_SECONDS
         : getSeconds(caucus.speakerDuration, caucus.speakerUnit);
 
-      putSpeaking(committeeID, caucusID, { 
+      putSpeaking(committeeID, caucusID, {
         who: proposer,
         stance: Stance.For,
         duration: speakerSeconds
@@ -505,12 +508,12 @@ export class MotionsComponent extends React.Component<Props & Hooks, State> {
       this.props.history
         .push(`/committees/${committeeID}/strawpolls/${strawpollRef.key}`);
     }
-  } 
+  }
 
   renderMotion = (id: MotionID, motionData: MotionData, motionFref: firebase.database.Reference) => {
     const { handleApproveMotion } = this;
     const { committee } = this.state;
-    const { proposer, proposal, type, caucusUnit, caucusDuration, speakerUnit, 
+    const { proposer, proposal, type, caucusUnit, caucusDuration, speakerUnit,
       speakerDuration, seconder, caucusTarget, resolutionTarget } = motionData;
 
     const caucus = recoverCaucus(committee, caucusTarget || '');
@@ -539,7 +542,7 @@ export class MotionsComponent extends React.Component<Props & Hooks, State> {
             active={votes[voterID ?? ''] === MotionVote.Against}
             onClick={() => vote(MotionVote.Against)}
           >
-            <Icon name="thumbs down"/>
+            <Icon name="thumbs down" />
             {counts[MotionVote.Against] ?? 0}
           </Button>
           <Button
@@ -554,7 +557,7 @@ export class MotionsComponent extends React.Component<Props & Hooks, State> {
             active={votes[voterID ?? ''] === MotionVote.For}
             onClick={() => vote(MotionVote.For)}
           >
-            <Icon name="thumbs up"/>
+            <Icon name="thumbs up" />
             {counts[MotionVote.For] ?? 0}
           </Button>
         </Button.Group>
@@ -607,8 +610,8 @@ export class MotionsComponent extends React.Component<Props & Hooks, State> {
       </div>
     );
 
-    const time = hasDuration(type) ? 
-      hasSpeakers(type) 
+    const time = hasDuration(type) ?
+      hasSpeakers(type)
         ? `${caucusDuration || 0} ${caucusUnit} / ${speakerDuration || 0} ${speakerUnit} `
         : `${caucusDuration || 0} ${caucusUnit} `
       : '';
@@ -653,7 +656,7 @@ export class MotionsComponent extends React.Component<Props & Hooks, State> {
   }
 
   hasDivisiblityError = () => {
-    const { type, caucusDuration, caucusUnit, speakerDuration, speakerUnit} = this.state.newMotion;
+    const { type, caucusDuration, caucusUnit, speakerDuration, speakerUnit } = this.state.newMotion;
 
     const caucusSeconds = getSeconds(caucusDuration || 0, caucusUnit);
     const speakerSeconds = getSeconds(speakerDuration || 0, speakerUnit);
@@ -671,7 +674,7 @@ export class MotionsComponent extends React.Component<Props & Hooks, State> {
 
   renderAdder = (committee?: CommitteeData): JSX.Element => {
     const { newMotion } = this.state;
-    const { proposer, proposal, type, caucusUnit, caucusDuration, speakerUnit, 
+    const { proposer, proposal, type, caucusUnit, caucusDuration, speakerUnit,
       speakerDuration, seconder, caucusTarget, resolutionTarget } = newMotion;
 
     const boxForAmmendments = (
@@ -686,19 +689,19 @@ export class MotionsComponent extends React.Component<Props & Hooks, State> {
     );
 
     const boxForNames = (
-      <Form.Input 
+      <Form.Input
         label="Name"
         placeholder="Name"
         value={proposal}
-        onChange={stateFieldHandler<Props, State>(this, 'newMotion', 'proposal')} 
-        fluid 
-      /> 
+        onChange={stateFieldHandler<Props, State>(this, 'newMotion', 'proposal')}
+        fluid
+      />
     );
 
     const description = (
       <Form.Group widths="equal">
         {hasTextArea(newMotion.type)
-          ? boxForAmmendments 
+          ? boxForAmmendments
           : boxForNames
         }
       </Form.Group>
@@ -726,7 +729,7 @@ export class MotionsComponent extends React.Component<Props & Hooks, State> {
       />
     );
 
-    const { caucuses, resolutions } = this.state.committee || { caucuses:  {}, resolutions: {} };
+    const { caucuses, resolutions } = this.state.committee || { caucuses: {}, resolutions: {} };
 
     // BADCODE: Filter predicate shared with menu in Committee, also update when changing
     // Prioritize recency
@@ -804,7 +807,7 @@ export class MotionsComponent extends React.Component<Props & Hooks, State> {
       <Form.Dropdown
         icon="search"
         key="seconder"
-        error={!seconder || this.hasIdenticalProposerSeconder()} 
+        error={!seconder || this.hasIdenticalProposerSeconder()}
         value={seconder ? nameToMemberOption(seconder).key : undefined}
         loading={!committee}
         search
@@ -819,46 +822,46 @@ export class MotionsComponent extends React.Component<Props & Hooks, State> {
     const hasError = this.hasDivisiblityError() || this.hasIdenticalProposerSeconder();
 
     return (
-        <Form 
-          error={hasError}
-        >
-          <Form.Dropdown
-            placeholder="Select type"
-            search
-            selection
-            fluid
-            label="Type"
-            icon="search"
-            options={MOTION_TYPE_OPTIONS}
-            onChange={stateDropdownHandler<Props, State>(this, 'newMotion', 'type')}
-            value={type}
-          />
-          {hasDetail(type) && description}
-          <Form.Group widths="equal">
-            {proposerTree}
-            {hasSeconder(type) && seconderTree}
-          </Form.Group>
-          {(hasSpeakers(type) 
-            || hasDuration(type) 
-            || hasCaucusTarget(type) 
-            || hasResolutionTarget(type) 
-            ) && setters}
-          {this.hasDivisiblityError() && DIVISIBILITY_ERROR}
-          {this.hasIdenticalProposerSeconder() && IDENTITCAL_PROPOSER_SECONDER}
-          <Button 
-            icon="plus"
-            basic
-            primary
-            fluid
-            disabled={!proposer 
-              || !implies(hasSeconder(type), !!seconder)
-              || !implies(hasCaucusTarget(type), !!caucusTarget)
-              || !implies(hasResolutionTarget(type), !!resolutionTarget)
-              || hasError
-            }
-            onClick={this.handlePushMotion}
-          />
-        </Form>
+      <Form
+        error={hasError}
+      >
+        <Form.Dropdown
+          placeholder="Select type"
+          search
+          selection
+          fluid
+          label="Type"
+          icon="search"
+          options={MOTION_TYPE_OPTIONS}
+          onChange={stateDropdownHandler<Props, State>(this, 'newMotion', 'type')}
+          value={type}
+        />
+        {hasDetail(type) && description}
+        <Form.Group widths="equal">
+          {proposerTree}
+          {hasSeconder(type) && seconderTree}
+        </Form.Group>
+        {(hasSpeakers(type)
+          || hasDuration(type)
+          || hasCaucusTarget(type)
+          || hasResolutionTarget(type)
+        ) && setters}
+        {this.hasDivisiblityError() && DIVISIBILITY_ERROR}
+        {this.hasIdenticalProposerSeconder() && IDENTITCAL_PROPOSER_SECONDER}
+        <Button
+          icon="plus"
+          basic
+          primary
+          fluid
+          disabled={!proposer
+            || !implies(hasSeconder(type), !!seconder)
+            || !implies(hasCaucusTarget(type), !!caucusTarget)
+            || !implies(hasResolutionTarget(type), !!resolutionTarget)
+            || hasError
+          }
+          onClick={this.handlePushMotion}
+        />
+      </Form>
     );
   }
 
@@ -869,32 +872,32 @@ export class MotionsComponent extends React.Component<Props & Hooks, State> {
     return Object.keys(motions)
       .filter(key => !motions[key].deleted)
       .sort((a, b) => {
-      const ma: MotionData = motions[a];
-      const mb: MotionData = motions[b];
-      const ca = disruptiveness(ma.type);
-      const cb = disruptiveness(mb.type);
+        const ma: MotionData = motions[a];
+        const mb: MotionData = motions[b];
+        const ca = disruptiveness(ma.type);
+        const cb = disruptiveness(mb.type);
 
-      if (ca < cb) {
-        return -1; 
-      } else if (ca === cb) {
-
-        const sa = (ma.caucusDuration || 0) * (ma.caucusUnit === Unit.Minutes ? 60 : 1);
-        const sb = (mb.caucusDuration || 0) * (mb.caucusUnit === Unit.Minutes ? 60 : 1);
-
-        // FIXME: Could be replaced by some sort of comapre function that I know exists
-        if (sa < sb) {
-          return 1;
-        } else if (sa === sb) {
-          return 0;
-        } else {
+        if (ca < cb) {
           return -1;
+        } else if (ca === cb) {
+
+          const sa = (ma.caucusDuration || 0) * (ma.caucusUnit === Unit.Minutes ? 60 : 1);
+          const sb = (mb.caucusDuration || 0) * (mb.caucusUnit === Unit.Minutes ? 60 : 1);
+
+          // FIXME: Could be replaced by some sort of comapre function that I know exists
+          if (sa < sb) {
+            return 1;
+          } else if (sa === sb) {
+            return 0;
+          } else {
+            return -1;
+          }
+        } else {
+          return 1;
         }
-      } else {
-        return 1;
-      }
-    }).map(key => {
-      return renderMotion(key, motions[key], committeeFref.child('motions').child(key));
-    });
+      }).map(key => {
+        return renderMotion(key, motions[key], committeeFref.child('motions').child(key));
+      });
   }
 
   render() {
@@ -903,7 +906,7 @@ export class MotionsComponent extends React.Component<Props & Hooks, State> {
     const { committeeID } = this.props.match.params;
     const { operative } = makeCommitteeStats(this.state.committee);
 
-    const renderedMotions = committee 
+    const renderedMotions = committee
       ? renderMotions(committee.motions || {} as Record<string, MotionData>)
       : []; // TODO: This could probably do with a nice spinner
 
@@ -929,14 +932,14 @@ export class MotionsComponent extends React.Component<Props & Hooks, State> {
           checked={recoverSettings(committee).motionVotes}
           onChange={
             checkboxHandler<SettingsData>(
-              committeeFref.child('settings'), 
+              committeeFref.child('settings'),
               'motionVotes')}
         />
-        {recoverSettings(committee).motionVotes 
+        {recoverSettings(committee).motionVotes
           && <MotionsShareHint committeeID={committeeID} />}
         <Divider />
         <Card.Group
-          itemsPerRow={1} 
+          itemsPerRow={1}
         >
           {renderedMotions}
         </Card.Group>
