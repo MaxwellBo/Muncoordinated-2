@@ -377,7 +377,7 @@ export default function Strawpoll(props: StrawpollProps) {
               basic
               onClick={createSharablePoll}
             >
-              Create sharable poll
+              Create shareable poll
               <Icon name="arrow right" />
               </Button>
             <Button.Or />
