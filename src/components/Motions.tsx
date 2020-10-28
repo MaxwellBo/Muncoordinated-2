@@ -927,19 +927,7 @@ export class MotionsComponent extends React.Component<Props & Hooks, State> {
     return (
       <Container text style={{ padding: '1em 0em' }}>
         {renderAdder(committee)}
-        <Divider />
-        <Icon name="sort numeric ascending" /> Sorted from most to least disruptive. {operative} votes required to pass a motion
-        <Button
-          negative
-          disabled={renderedMotions.length <= 0}
-          floated="right"
-          icon="eraser"
-          content="Clear"
-          compact
-          basic
-          onClick={this.handleClearMotions}
-        />
-        <Divider />
+        <Divider hidden />
         <Checkbox
           label="Delegates can vote on motions"
           toggle
@@ -952,6 +940,18 @@ export class MotionsComponent extends React.Component<Props & Hooks, State> {
         {recoverSettings(committee).motionVotes
           && <MotionsShareHint committeeID={committeeID} />}
         <Divider />
+        <Icon name="sort numeric ascending" /> Sorted from most to least disruptive. {operative} votes required to pass a motion
+        <Button
+          negative
+          disabled={renderedMotions.length <= 0}
+          floated="right"
+          icon="eraser"
+          content="Clear"
+          compact
+          basic
+          onClick={this.handleClearMotions}
+        />
+        <Divider hidden />
         <Card.Group
           itemsPerRow={1}
         >
