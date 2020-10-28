@@ -244,9 +244,9 @@ const hasResolutionTarget = (motionType: MotionType): boolean => {
 };
 
 enum MotionVote {
-  For = 'for',
-  Abstain = 'abstain',
-  Against = 'against'
+  For = 'For',
+  Abstain = 'Abstaining',
+  Against = 'Against'
 }
 
 export interface MotionData {
