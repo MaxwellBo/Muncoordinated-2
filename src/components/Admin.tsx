@@ -9,8 +9,9 @@ import { COUNTRY_OPTIONS, MemberOption } from '../constants';
 import { checkboxHandler, dropdownHandler } from '../actions/handlers';
 import { makeDropdownOption } from '../utils';
 import _ from 'lodash';
-import { Dictionary, URLParameters } from '../types';
+import { URLParameters } from '../types';
 import { RouteComponentProps } from 'react-router';
+import { logClickGeneralSpeakersList, logCreateMember } from '../analytics';
 
 export const canVote = (x: MemberData) => (x.rank === Rank.Veto || x.rank === Rank.Standard);
 export const nonNGO = (x: MemberData) => (x.rank !== Rank.NGO);
@@ -51,8 +52,8 @@ interface CommitteeStats {
 }
 
 export function makeCommitteeStats(data?: CommitteeData) {
-  const defaultMap = {} as Dictionary<MemberID, MemberData>;
-  const membersMap: Dictionary<MemberID, MemberData> = data ? (data.members || defaultMap) : defaultMap;
+  const defaultMap = {} as Record<MemberID, MemberData>;
+  const membersMap: Record<MemberID, MemberData> = data ? (data.members || defaultMap) : defaultMap;
   const members: MemberData[] = Utils.objectToList(membersMap);
   const present = members.filter(x => x.present);
 
@@ -228,8 +229,10 @@ export default class Admin extends React.Component<Props, State> {
       present: this.state.present,
       voting: this.state.voting
     };
-
+    
     this.props.fref.child('members').push().set(member);
+
+    logCreateMember(member.name)
   }
 
   setMember = (event: React.SyntheticEvent<HTMLElement>, data: DropdownProps) => {
@@ -270,6 +273,8 @@ export default class Admin extends React.Component<Props, State> {
 
     this.props.history
       .push(`/committees/${committeeID}/caucuses/gsl`);
+
+    logClickGeneralSpeakersList();
   }
 
   renderAdder() {
@@ -372,7 +377,7 @@ export default class Admin extends React.Component<Props, State> {
             primary
             fluid
           >
-            General Speakers List
+            General Speakers' List
               <Icon name="arrow right" />
           </Button>
         }

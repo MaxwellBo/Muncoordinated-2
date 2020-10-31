@@ -16,6 +16,7 @@ import {
   Visibility,
   Popup
 } from 'semantic-ui-react';
+import { logClickCreateACommitteeButton, logClickLogInButton, logClickSignupButton } from '../analytics';
 import Loading from './Loading';
 
 interface HomepageHeadingProps {
@@ -52,7 +53,7 @@ const HomepageHeading = ({ mobile }: HomepageHeadingProps) => (
       }}
     />
     <br />
-    <Button as="a" primary size="huge" href="/onboard">
+    <Button as="a" primary size="huge" href="/onboard" onClick={logClickCreateACommitteeButton}>
       Create a committee
       <Icon name="arrow right" />
     </Button>
@@ -110,9 +111,11 @@ class DesktopContainer extends React.Component<DesktopContainerProps, DesktopCon
               <Container>
                 <Menu.Item as="a" active>Home</Menu.Item>
                 <Menu.Item position="right">
-                  <Button as="a" href="/onboard" inverted={!fixed}>Log in</Button>
-                  <Button as="a" href="/onboard" inverted={!fixed} primary={fixed} style={{ marginLeft: '0.5em' }}>
-                    Sign Up
+                  <Button as="a" href="/onboard" inverted={!fixed} onClick={logClickLogInButton}>
+                    Log in
+                  </Button>
+                  <Button as="a" href="/onboard" inverted={!fixed} primary={fixed} style={{ marginLeft: '0.5em' }} onClick={logClickSignupButton}>
+                    Sign up
                   </Button>
                 </Menu.Item>
               </Container>
@@ -166,7 +169,7 @@ class MobileContainer extends React.Component<MobileContainerProps, MobileContai
           <Sidebar as={Menu} animation="uncover" inverted vertical visible={sidebarOpened}>
             <Menu.Item as="a" active>Home</Menu.Item>
             <Menu.Item as="a">Log in</Menu.Item>
-            <Menu.Item as="a">Sign Up</Menu.Item>
+            <Menu.Item as="a">Sign up</Menu.Item>
           </Sidebar>
 
           <Sidebar.Pusher dimmed={sidebarOpened} onClick={this.handlePusherClick} style={{ minHeight: '100vh' }}>
@@ -279,8 +282,8 @@ export default class Homepage extends React.Component<{}, {
                     <List.Item as="li">Moderated and unmoderated caucuses</List.Item>
                     <Popup
                       trigger={<List.Item as="li">Time-saving hotkeys for frequently used actions</List.Item>}
-                      content="Currently implemented hotkeys include 'Next Speaker', 
-                      'Toggle Caucus Timer' and 'Toggle Speaker Timer'"
+                      content="Currently implemented hotkeys include 'Next speaker', 
+                      'Toggle caucus timer' and 'Toggle speaker timer'"
                     />
                     <List.Item as="li">Resolution amendments</List.Item>
                     <List.Item as="li">Roll-call voting</List.Item>

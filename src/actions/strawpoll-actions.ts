@@ -1,15 +1,16 @@
 import * as firebase from 'firebase/app';
 import { StrawpollData, StrawpollID } from '../components/Strawpoll';
 import { CommitteeID } from '../components/Committee';
+import { shortMeetId } from '../utils';
 
 export const putStrawpoll = 
-  (committeeID: CommitteeID, strawpollData: StrawpollData): firebase.database.ThenableReference => {
+  (committeeID: CommitteeID, strawpollData: StrawpollData): firebase.database.Reference => {
 
   const ref = firebase.database()
     .ref('committees')
     .child(committeeID)
     .child('strawpolls')
-    .push();
+    .child(shortMeetId());
 
   ref.set(strawpollData);
 

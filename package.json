@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "private": true,
   "dependencies": {
-    "@sentry/browser": "5.7.1",
+    "@sentry/react": "^5.24.2",
+    "@sentry/tracing": "^5.24.2",
     "@types/file-saver": "^2.0.1",
     "@types/jest": "24.0.22",
     "@types/lodash": "^4.14.116",
@@ -21,13 +22,14 @@
     "react-firebase-hooks": "^2.1.0",
     "react-ga": "^2.5.3",
     "react-router-dom": "^5.1.2",
-    "react-scripts": "3.2.0",
+    "react-scripts": "3.4.3",
     "semantic-ui-css": "^2.4.0",
     "semantic-ui-react": "^0.88.1",
     "typescript": "3.7.2"
   },
   "devDependencies": {
-    "cypress": "3.6.1"
+    "cypress": "3.6.1",
+    "netlify-plugin-cypress": "^1.4.1"
   },
   "scripts": {
     "start": "react-scripts start",

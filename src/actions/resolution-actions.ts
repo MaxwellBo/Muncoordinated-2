@@ -3,6 +3,7 @@ import { MemberID } from '../components/Member';
 import { ResolutionID, Vote, ResolutionData } from '../components/Resolution';
 import { CommitteeID } from '../components/Committee';
 import { AmendmentData } from '../components/Amendment';
+import { shortMeetId } from '../utils';
 
 export const voteOnResolution = (
   committeeID: CommitteeID, 
@@ -47,13 +48,13 @@ export const putAmendment = (
 };
 
 export const putResolution = 
-  (committeeID: CommitteeID, resolutionData: ResolutionData): firebase.database.ThenableReference => {
+  (committeeID: CommitteeID, resolutionData: ResolutionData): firebase.database.Reference => {
 
   const ref = firebase.database()
     .ref('committees')
     .child(committeeID)
     .child('resolutions')
-    .push();
+    .child(shortMeetId());
 
   ref.set(resolutionData);
 

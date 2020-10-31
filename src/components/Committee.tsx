@@ -6,17 +6,17 @@ import { MemberData, MemberID } from './Member';
 import Caucus, { CaucusData, CaucusID, DEFAULT_CAUCUS, DEFAULT_CAUCUS_TIME_SECONDS, CaucusStatus } from './Caucus';
 import Resolution, { ResolutionData, ResolutionID, DEFAULT_RESOLUTION } from './Resolution';
 import Admin from './Admin';
-import { Icon, Menu, SemanticICONS, Dropdown, Container, Responsive, Sidebar, Header, Label,
+import { Icon, Menu, SemanticICONS, Dropdown, Container, Responsive, Sidebar, Header,
   List, Input, Button, Segment } from 'semantic-ui-react';
 import Stats from './Stats';
 import { MotionID, MotionData } from './Motions';
 import { TimerData, DEFAULT_TIMER } from './Timer';
 import Unmod from './Unmod';
 import Notes from './Notes';
-import Help, { KEYBOARD_SHORTCUT_LIST } from './Help';
+import Help from './Help';
 import Motions from './Motions';
 import { putCaucus } from '../actions/caucus-actions';
-import { URLParameters, Dictionary } from '../types';
+import { URLParameters } from '../types';
 import Loading from './Loading';
 import Footer from './Footer';
 import Settings, { SettingsData, DEFAULT_SETTINGS } from './Settings';
@@ -26,11 +26,12 @@ import { CommitteeShareHint } from './ShareHint';
 import Notifications from './Notifications';
 import { putResolution } from '../actions/resolution-actions';
 import ConnectionStatus from './ConnectionStatus';
-import { membersToOptions } from '../utils';
+import { membersToOptions, membersToPresentOptions } from '../utils';
 import { fieldHandler } from '../actions/handlers';
 import { MemberOption } from '../constants';
 import { putStrawpoll } from '../actions/strawpoll-actions';
 import Strawpoll, { DEFAULT_STRAWPOLL, StrawpollID, StrawpollData } from './Strawpoll';
+import { logClickSetupCommittee } from '../analytics';
 
 export function recoverMemberOptions(committee?: CommitteeData): MemberOption[] {
   if (committee) {
@@ -40,31 +41,37 @@ export function recoverMemberOptions(committee?: CommitteeData): MemberOption[] 
   }
 }
 
-export function recoverMembers(committee?: CommitteeData): Dictionary<MemberID, MemberData> | undefined {
-  return committee ? (committee.members || {} as Dictionary<MemberID, MemberData>) : undefined;
+export function recoverPresentMemberOptions(committee?: CommitteeData): MemberOption[] {
+  if (committee) {
+    return membersToPresentOptions(committee.members);
+  } else {
+    return [];
+  }
 }
 
-export function recoverSettings(committee?: CommitteeData): SettingsData {
-  let timersInSeparateColumns: boolean = DEFAULT_SETTINGS.timersInSeparateColumns;
-  let moveQueueUp: boolean = DEFAULT_SETTINGS.moveQueueUp;
-  let autoNextSpeaker: boolean = DEFAULT_SETTINGS.autoNextSpeaker;
+export function recoverMembers(committee?: CommitteeData): Record<MemberID, MemberData> | undefined {
+  return committee ? (committee.members || {} as Record<MemberID, MemberData>) : undefined;
+}
 
-  if (committee) {
-    if (committee.settings.timersInSeparateColumns !== undefined) {
-      timersInSeparateColumns = committee.settings.timersInSeparateColumns;
-    }
+export function recoverSettings(committee?: CommitteeData): Required<SettingsData> {
+  let timersInSeparateColumns: boolean = 
+    committee?.settings.timersInSeparateColumns 
+    ?? DEFAULT_SETTINGS.timersInSeparateColumns;
 
-    if (committee.settings.moveQueueUp !== undefined) {
-      moveQueueUp = committee.settings.moveQueueUp;
-    }
+  const moveQueueUp: boolean = 
+    committee?.settings.moveQueueUp 
+    ?? DEFAULT_SETTINGS.moveQueueUp;
 
-    if (committee.settings.autoNextSpeaker !== undefined) {
-      autoNextSpeaker = committee.settings.autoNextSpeaker;
-    }
-  }
+  const autoNextSpeaker: boolean = 
+    committee?.settings.autoNextSpeaker 
+    ?? DEFAULT_SETTINGS.autoNextSpeaker;
+
+  const motionVotes: boolean = 
+    committee?.settings.motionVotes 
+    ?? DEFAULT_SETTINGS.motionVotes;
 
   return {
-    timersInSeparateColumns, moveQueueUp, autoNextSpeaker
+    timersInSeparateColumns, moveQueueUp, autoNextSpeaker, motionVotes
   };
 }
 
@@ -114,19 +121,19 @@ export interface CommitteeData {
   conference?: string; // TODO: Migrate
   template: string;
   creatorUid: firebase.UserInfo['uid'];
-  members?: Dictionary<MemberID, MemberData>;
-  caucuses?: Dictionary<CaucusID, CaucusData>;
-  resolutions?: Dictionary<ResolutionID, ResolutionData>;
-  strawpolls?: Dictionary<StrawpollID, StrawpollData>;
-  motions?: Dictionary<MotionID, MotionData>;
-  files?: Dictionary<PostID, PostData>;
+  members?: Record<MemberID, MemberData>;
+  caucuses?: Record<CaucusID, CaucusData>;
+  resolutions?: Record<ResolutionID, ResolutionData>;
+  strawpolls?: Record<StrawpollID, StrawpollData>;
+  motions?: Record<MotionID, MotionData>;
+  files?: Record<PostID, PostData>;
   timer: TimerData;
   notes: string;
   settings: SettingsData;
 }
 
 const GENERAL_SPEAKERS_LIST: CaucusData = {
-   ...DEFAULT_CAUCUS, name: 'General Speakers List' 
+   ...DEFAULT_CAUCUS, name: 'General Speakers\' List' 
 };
 
 export const DEFAULT_COMMITTEE: CommitteeData = {
@@ -136,13 +143,13 @@ export const DEFAULT_COMMITTEE: CommitteeData = {
   conference: '',
   creatorUid: '',
   template: '',
-  members: {} as Dictionary<MemberID, MemberData>,
+  members: {} as Record<MemberID, MemberData>,
   caucuses: {
     'gsl': GENERAL_SPEAKERS_LIST
-  } as Dictionary<string, CaucusData>,
-  resolutions: {} as Dictionary<ResolutionID, ResolutionData>,
-  files: {} as Dictionary<PostID, PostData>,
-  strawpolls: {} as Dictionary<StrawpollID, StrawpollData>,
+  } as Record<string, CaucusData>,
+  resolutions: {} as Record<ResolutionID, ResolutionData>,
+  files: {} as Record<PostID, PostData>,
+  strawpolls: {} as Record<StrawpollID, StrawpollData>,
   timer: { ...DEFAULT_TIMER, remaining: DEFAULT_CAUCUS_TIME_SECONDS },
   notes: '',
   settings: DEFAULT_SETTINGS
@@ -398,6 +405,8 @@ export default class Committee extends React.Component<Props, State> {
 
     this.props.history
       .push(`/committees/${committeeID}/setup`);
+
+    logClickSetupCommittee();
   }
 
   renderAdmin = () => {
@@ -456,13 +465,7 @@ export default class Committee extends React.Component<Props, State> {
             />
           </List.Item>
         </List>
-        <Segment>
-          <CommitteeShareHint committeeID={this.props.match.params.committeeID} />
-        </Segment>
-        <Segment>
-          <Label attached="top left" size="large">Keyboard Shorcuts</Label>
-          {KEYBOARD_SHORTCUT_LIST}
-        </Segment>
+        <CommitteeShareHint committeeID={this.props.match.params.committeeID} />
         <Segment textAlign="center" basic>
           <Button as="a" primary size="large" onClick={this.gotoSetup}>
             Setup committee

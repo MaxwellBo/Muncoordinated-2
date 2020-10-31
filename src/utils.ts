@@ -4,22 +4,38 @@ import { MemberOption } from './constants';
 import { MemberID, nameToMemberOption, MemberData } from './components/Member';
 import * as _ from 'lodash';
 import * as React from 'react';
-import { Dictionary } from './types';
 
 export function implies(a: boolean, b: boolean) {
   return a ? b : true;
 }
 
-export function objectToList<T>(object: Dictionary<string, T>): T[] {
+export function objectToList<T>(object: Record<string, T>): T[] {
   return Object.keys(object).map(key => object[key]);
 }
 
-export function makeDropdownOption<T>(x: T) {
-  return { key: x, value: x, text: x };
+export function makeDropdownOption(label: string) {
+  return { key: label, value: label, text: label };
 }
 
-export function membersToOptions(members: Dictionary<MemberID, MemberData> | undefined): MemberOption[] {
+export function makeSentenceCaseDropdownOption(label: string) {
+  return { key: label, value: label, text: sentenceCase(label) };
+}
+
+export function sentenceCase(CC: string): string {
+  const cc = CC.toLowerCase();
+  return cc.charAt(0).toUpperCase() + cc.slice(1);
+}
+
+export function membersToOptions(members: Record<MemberID, MemberData> | undefined): MemberOption[] {
   const options = objectToList(members || {})
+    .map(x => nameToMemberOption(x.name));
+
+  return _.sortBy(options, (option: MemberOption) => option.text);
+}
+
+export function membersToPresentOptions(members: Record<MemberID, MemberData> | undefined): MemberOption[] {
+  const options = objectToList(members || {})
+    .filter(x => x.present)
     .map(x => nameToMemberOption(x.name));
 
   return _.sortBy(options, (option: MemberOption) => option.text);
@@ -65,5 +81,23 @@ export function uuidv4() {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
     var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
     return v.toString(16);
+  });
+}
+
+const ALPHABET = "abcdefghijklmnopqrstuvwxyz"
+
+function randomCharacter() {
+  return ALPHABET[Math.floor(Math.random() * ALPHABET.length)];
+} 
+
+export function meetId() {
+  return 'xxx-xxx-xxx'.replace(/[x]/g, function(c) {
+    return randomCharacter();
+  });
+}
+
+export function shortMeetId() {
+  return 'xxx-xxx'.replace(/[x]/g, function(c) {
+    return randomCharacter();
   });
 }

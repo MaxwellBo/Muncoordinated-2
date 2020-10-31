@@ -4,7 +4,7 @@ import { Card, Button, Form, Message, Modal, Icon, List, Segment } from 'semanti
 import { CommitteeID, CommitteeData } from './Committee';
 import _ from 'lodash';
 import Loading from './Loading';
-import { Dictionary } from '../types';
+import { logCreateAccount, logLogin } from '../analytics';
 
 enum Mode {
   Login = 'Login',
@@ -22,7 +22,7 @@ interface State {
   mode: Mode;
   resetting: boolean;
   unsubscribe?: () => void;
-  committees?: Dictionary<CommitteeID, CommitteeData>;
+  committees?: Record<CommitteeID, CommitteeData>;
 }
 
 interface Props {
@@ -84,8 +84,9 @@ export class Login extends React.Component<Props, State> {
 
     this.setState({ loggingIn: true });
 
-    firebase.auth().signInWithEmailAndPassword(email, password).then(() => {
+    firebase.auth().signInWithEmailAndPassword(email, password).then(credential => {
       this.setState({ loggingIn: false });
+      logLogin(credential.user?.uid)
     }).catch(err => {
       this.setState({ loggingIn: false, error: err });
     });
@@ -95,13 +96,15 @@ export class Login extends React.Component<Props, State> {
     const { email, password } = this.state;
     this.setState({ creating: true });
 
-    firebase.auth().createUserWithEmailAndPassword(email, password).then(() => {
+    firebase.auth().createUserWithEmailAndPassword(email, password).then(credential => {
+
       const success = { 
         name: 'Account created',
         message: 'Your account was successfully created' 
       };
 
       this.setState({ creating: false, success });
+      logCreateAccount(credential.user?.uid)
     }).catch(err => {
       this.setState({ creating: false, error: err });
     });
@@ -149,7 +152,7 @@ export class Login extends React.Component<Props, State> {
     const { renderCommittee } = this;
     const { committees } = this.state;
 
-    const defaulted = committees || {} as Dictionary<CommitteeID, CommitteeData>;
+    const defaulted = committees || {} as Record<CommitteeID, CommitteeData>;
     const owned = _.keys(defaulted);
 
     return (
@@ -255,7 +258,7 @@ export class Login extends React.Component<Props, State> {
     const { loggingIn, creating, user, resetting, email, password, mode } = this.state;
     const { allowSignup } = this.props;
 
-    const signupButton = <Button onClick={handleCreate} loading={creating} >Create Account</Button>;
+    const signupButton = <Button onClick={handleCreate} loading={creating} >Create account</Button>;
 
     const cancelButton = <Button onClick={handleResetPasswordCancel}>Cancel</Button>;
 

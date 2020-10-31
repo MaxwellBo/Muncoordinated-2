@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Button, Segment, Header, List, Container } from 'semantic-ui-react';
-import { CLIENT_VERSION_LINK } from './Footer';
+import { CLIENT_VERSION, VersionLink } from './Footer';
 
 export const KEYBOARD_SHORTCUT_LIST = (
   <List>
@@ -11,7 +11,7 @@ export const KEYBOARD_SHORTCUT_LIST = (
       <Button size="mini">
         N
       </Button>
-      Next Speaker
+      Next speaker
     </List.Item>
     <List.Item>
       <Button size="mini">
@@ -20,7 +20,7 @@ export const KEYBOARD_SHORTCUT_LIST = (
       <Button size="mini">
         S
       </Button>
-      Toggle Speaker Timer
+      Toggle speaker timer
     </List.Item>
     <List.Item>
       <Button size="mini">
@@ -29,7 +29,7 @@ export const KEYBOARD_SHORTCUT_LIST = (
       <Button size="mini">
         C
       </Button>
-      Toggle Caucus Timer
+      Toggle caucus timer
     </List.Item>
   </List>
 );
@@ -37,7 +37,7 @@ export const KEYBOARD_SHORTCUT_LIST = (
 export default class Help extends React.PureComponent<{}, {}> {
   gpl = ( 
     <a href="https://github.com/MaxwellBo/Muncoordinated-2/blob/master/LICENSE">
-      GNU AGPLv3
+      GNU GPLv3
     </a>
   );
 
@@ -46,11 +46,11 @@ export default class Help extends React.PureComponent<{}, {}> {
 
     return (
       <Container text style={{ padding: '1em 0em' }}>
-        <Header as="h3" attached="top">Keyboard Shortcuts</Header>
+        <Header as="h3" attached="top">Keyboard shortcuts</Header>
         <Segment attached="bottom">
         {KEYBOARD_SHORTCUT_LIST}
         </Segment>
-        <Header as="h3" attached="top">Bug Reporting &amp; Help Requests</Header>
+        <Header as="h3" attached="top">Bug reporting &amp; help requests</Header>
         <Segment attached="bottom">
           In the event that a bug or issue crops up, follow these steps:
           <br />
@@ -67,14 +67,12 @@ export default class Help extends React.PureComponent<{}, {}> {
               Describe what happened instead 
             </List.Item>
             <List.Item>
-              List the version of the app you're using ({CLIENT_VERSION_LINK})
+              List the version of the app you're using (<VersionLink version={CLIENT_VERSION} />)
             </List.Item>
             <List.Item>
               List the time, date, and browser that you were using when this occured
             </List.Item>
           </List>
-          <br />
-          If you're at an Australian MUN, I'll see if I can push a fix within the hour.
         </Segment>
         <Header as="h3" attached="top">License</Header>
         <Segment attached="bottom">

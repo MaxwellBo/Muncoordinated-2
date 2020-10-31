@@ -61,7 +61,7 @@ describe('Adds motions, checks that they\'re ranked properly, and entertains the
   })
 
   it('gets an error when trying to create a motion for a draft resolution with an identical proposer and seconder', () => {
-    cy.contains('Type').siblings().children('input').click().type("Introduce Draft Resolution{enter}")
+    cy.contains('Type').siblings().children('input').click().type("Introduce draft resolution{enter}")
     cy.contains('Name').siblings().find('input').click().type("Draft resolution{enter}")
     cy.contains('Proposer').siblings().find('input').click().type("Afghanistan{enter}")
     cy.contains('Seconder').siblings().find('input').click().type("Afghanistan{enter}")
@@ -83,7 +83,7 @@ describe('Adds motions, checks that they\'re ranked properly, and entertains the
 
 
   it('adds an 10/1 moderated caucus', () => {
-    cy.contains('Type').siblings().children('input').click().type("Open Moderated Caucus{enter}")
+    cy.contains('Type').siblings().children('input').click().type("Open moderated caucus{enter}")
     cy.contains('Name').siblings().find('input').click().type("Alpha{enter}")
     cy.contains('Proposer').siblings().find('input').click().type("China{enter}")
 
@@ -109,11 +109,11 @@ describe('Adds motions, checks that they\'re ranked properly, and entertains the
   })
 
   it('adds an 11/30 moderated caucus', () => {
-    cy.get('.form > :nth-child(1) > .ui > input.search').type('Open Moderated Caucus{enter}')
+    cy.get('.form > :nth-child(1) > .ui > input.search').type('Open moderated caucus{enter}')
     cy.contains('Name').siblings().find('input').click().type("Beta{enter}")
     cy.contains('Proposer').siblings().find('input').click().type("Bolivia{enter}")
     cy.contains('Duration').siblings().find('input').click().type("{backspace}{backspace}11")
-    cy.contains('Speaking Time').siblings().find('input').click().type("{backspace}{backspace}30")
+    cy.contains('Speaking time').siblings().find('input').click().type("{backspace}{backspace}30")
 
     clickAddMotion()
 

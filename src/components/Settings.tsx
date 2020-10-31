@@ -18,12 +18,14 @@ export interface SettingsData {
   moveQueueUp: boolean;
   timersInSeparateColumns: boolean;
   autoNextSpeaker: boolean;
+  motionVotes?: boolean;
 }
 
-export const DEFAULT_SETTINGS: SettingsData = {
+export const DEFAULT_SETTINGS: Required<SettingsData> = {
   moveQueueUp: false,
   timersInSeparateColumns: false,
-  autoNextSpeaker: false
+  autoNextSpeaker: false,
+  motionVotes: false
 };
 
 export default class Settings extends React.Component<Props, State> {
@@ -78,14 +80,14 @@ export default class Settings extends React.Component<Props, State> {
       <Container text style={{ padding: '1em 0em' }}>
         <Header as="h3" attached="top">Settings</Header>
         <Segment attached="bottom" loading={!committee}>
-          {renderSetting('moveQueueUp', '\'Queue\' should appear above \'Next Speaking\'')}
+          {renderSetting('moveQueueUp', '\'Queue\' should appear above \'Next speaking\'')}
           {renderSetting(
             'timersInSeparateColumns',
-            'Alternate arrangement with \'Speaker Timer\' and \'Caucus Timer\' in separate columns'
+            'Alternate arrangement with \'Speaker timer\' and \'Caucus timer\' in separate columns'
           )}
           {/* {renderSetting(
             'autoNextSpeaker',
-            'The next speaker will automatically be moved to the \'Now Speaking\' position after the time has elapsed for the current speaker'
+            'The next speaker will automatically be moved to the \'Now speaking\' position after the time has elapsed for the current speaker'
           )} */}
         </Segment>
       </Container>

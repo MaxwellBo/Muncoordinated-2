@@ -1,8 +1,9 @@
 {
   "rules": {
     "committees": {
+      ".indexOn": ["creatorUid"],
       ".read": true,
-    	"$uid": {
+      "$uid": {
         ".read": true,
         ".write": "auth != null && (newData.child('creatorUid').val() === auth.uid || data.child('creatorUid').val() === auth.uid)",
         "caucuses": {
@@ -24,7 +25,31 @@
           }
         },
         "files": {
-          ".write": true
+          "$fid": {
+            ".write": "newData.exists()"
+          }
+        },
+        "strawpolls": {
+          "$sid": {
+            "options": {
+              "$oid": {
+                "votes": {
+                  "$vid": {
+                    ".write": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "motions": {
+          "$mid": {
+            "votes": {
+              "$vid": {
+                ".write": true
+              }
+            }
+          }
         }
       }
     }

@@ -10,7 +10,7 @@ import {
 import { CommitteeData, recoverMemberOptions } from './Committee';
 import { CaucusID, DEFAULT_CAUCUS, CaucusData } from './Caucus';
 import { RouteComponentProps } from 'react-router';
-import { URLParameters, Dictionary } from '../types';
+import { URLParameters } from '../types';
 import {
   dropdownHandler, fieldHandler, textAreaHandler, memberDropdownHandler,
   checkboxHandler
@@ -110,7 +110,7 @@ export interface ResolutionData {
   seconder?: MemberID;
   status: ResolutionStatus;
   caucus?: CaucusID;
-  amendments?: Dictionary<AmendmentID, AmendmentData>;
+  amendments?: Record<AmendmentID, AmendmentData>;
   votes?: Votes;
   amendmentsArePublic?: boolean; // TODO: Migrate
   requiredMajority?: Majority; // TODO: Migrate
@@ -122,13 +122,13 @@ export enum Vote {
   Against = 'Against'
 }
 
-type Votes = Dictionary<string, Vote>;
+type Votes = Record<string, Vote>;
 
 export const DEFAULT_RESOLUTION: ResolutionData = {
   name: 'untitled resolution',
   link: '',
   status: ResolutionStatus.Introduced,
-  amendments: {} as Dictionary<AmendmentID, AmendmentData>,
+  amendments: {} as Record<AmendmentID, AmendmentData>,
   votes: {} as Votes,
   amendmentsArePublic: false,
   requiredMajority: Majority.Simple
@@ -296,16 +296,19 @@ export default class Resolution extends React.Component<Props, State> {
     const provisionTree = recoverLinkedCaucus(amendment) ? (
       <Button
         floated="right"
-        content="Associated Caucus"
         onClick={() => this.gotoCaucus(amendment!.caucus)}
-      />
+      >
+        Associated caucus
+        <Icon name="arrow right" />
+      </Button>
     ):(
       <Button
         floated="right"
         disabled={!amendment || amendment.proposer === '' || !hasAuth}
-        content="Provision Caucus"
         onClick={() => handleProvisionAmendment(id, amendment!)}
-      />
+      >
+        Provision caucus
+      </Button>
     );
 
     return (
@@ -616,17 +619,20 @@ export default class Resolution extends React.Component<Props, State> {
       <Form.Button
         loading={!resolution}
         disabled={!resolution}
-        content="Associated Caucus"
         onClick={() => this.gotoCaucus(resolution!.caucus)}
-      />
+      >
+        Associated caucus
+        <Icon name="arrow right" />
+      </Form.Button>
     ) : (
         // if there's no linked caucus
         <Form.Button
           loading={!resolution}
           disabled={!resolution || !resolution.proposer || !resolution.seconder || hasError}
-          content="Provision Caucus"
           onClick={() => handleProvisionResolution(resolution!)}
-        />
+        >
+          Provision caucus
+        </Form.Button>
       );
 
     return (
@@ -681,23 +687,21 @@ export default class Resolution extends React.Component<Props, State> {
     );
 
     return (
-        <Segment>
-          <Input
-            value={resolution ? resolution.name : ''}
-            label={statusDropdown}
-            loading={!resolution}
-            labelPosition="right"
-            onChange={fieldHandler<ResolutionData>(resolutionFref, 'name')}
-            attatched="top"
-            size="massive"
-            fluid
-            placeholder="Set resolution name"
-          />
-        </Segment>
+      <Input
+        value={resolution ? resolution.name : ''}
+        label={statusDropdown}
+        loading={!resolution}
+        labelPosition="right"
+        onChange={fieldHandler<ResolutionData>(resolutionFref, 'name')}
+        attatched="top"
+        size="massive"
+        fluid
+        placeholder="Set resolution name"
+      />
     );
   }
 
-  renderAmendments = (amendments: Dictionary<AmendmentID, AmendmentData>) => {
+  renderAmendments = (amendments: Record<AmendmentID, AmendmentData>) => {
     const { renderAmendment, recoverResolutionFref } = this;
 
     const resolutionRef = recoverResolutionFref();
@@ -730,7 +734,7 @@ export default class Resolution extends React.Component<Props, State> {
         itemsPerRow={1}
       >
         {adder}
-        {renderAmendments(amendments || {} as Dictionary<string, AmendmentData>)}
+        {renderAmendments(amendments || {} as Record<string, AmendmentData>)}
       </Card.Group>
     );
   }

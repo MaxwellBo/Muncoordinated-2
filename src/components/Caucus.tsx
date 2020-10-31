@@ -10,7 +10,7 @@ import { CommitteeData, recoverMembers, recoverSettings, recoverCaucus } from '.
 import CaucusQueuer from './caucus/CaucusQueuer';
 import { textAreaHandler, dropdownHandler, fieldHandler } from '../actions/handlers';
 import { makeDropdownOption } from '../utils';
-import { URLParameters, Dictionary } from '../types';
+import { URLParameters } from '../types';
 import { CaucusNextSpeaking } from './caucus/CaucusNextSpeaking';
 import { SpeakerEvent, SpeakerFeedEntry } from './caucus/SpeakerFeed';
 import { NotFound } from './NotFound';
@@ -59,8 +59,8 @@ export interface CaucusData {
   caucusTimer: TimerData;
   queueIsPublic?: boolean; // TODO: Migrate
   speaking?: SpeakerEvent;
-  queue?: Dictionary<string, SpeakerEvent>;
-  history?: Dictionary<string, SpeakerEvent>;
+  queue?: Record<string, SpeakerEvent>;
+  history?: Record<string, SpeakerEvent>;
 }
 
 const CAUCUS_STATUS_OPTIONS = [
@@ -77,8 +77,8 @@ export const DEFAULT_CAUCUS: CaucusData = {
   speakerUnit: Unit.Seconds,
   caucusTimer: { ...DEFAULT_TIMER, remaining: DEFAULT_CAUCUS_TIME_SECONDS },
   queueIsPublic: false,
-  queue: {} as Dictionary<string, SpeakerEvent>,
-  history: {} as Dictionary<string, SpeakerEvent>,
+  queue: {} as Record<string, SpeakerEvent>,
+  history: {} as Record<string, SpeakerEvent>,
 };
 
 export default class Caucus extends React.Component<Props, State> {
@@ -132,18 +132,19 @@ export default class Caucus extends React.Component<Props, State> {
     );
 
     return (
-      <Segment loading={!caucus}>
+      <>
         <Input
           label={statusDropdown}
           labelPosition="right"
           value={caucus ? caucus.name : ''}
           onChange={fieldHandler<CaucusData>(caucusFref, 'name')}
+          loading={!caucus}
           attatched="top"
           size="massive"
           fluid
           placeholder="Set caucus name"
         />
-        <Form>
+        <Form loading={!caucus}>
           <TextArea
             value={caucus ? caucus.topic : ''}
             autoHeight
@@ -153,7 +154,7 @@ export default class Caucus extends React.Component<Props, State> {
             placeholder="Set caucus details"
           />
         </Form>
-      </Segment>
+      </>
     );
   }
 
@@ -166,7 +167,7 @@ export default class Caucus extends React.Component<Props, State> {
 
     return (
       <Segment loading={!caucus}>
-        <Label attached="top left" size="large">Now Speaking</Label>
+        <Label attached="top left" size="large">Now speaking</Label>
         <Feed size="large">
           <SpeakerFeedEntry data={entryData} fref={caucusFref.child('speaking')} speakerTimer={speakerTimer}/>
         </Feed>
@@ -193,7 +194,7 @@ export default class Caucus extends React.Component<Props, State> {
 
     const renderedSpeakerTimer = (
       <Timer
-        name="Speaker Timer"
+        name="Speaker timer"
         timerFref={caucusFref.child('speakerTimer')}
         key={caucusID + 'speakerTimer'}
         onChange={this.setSpeakerTimer}
@@ -205,7 +206,7 @@ export default class Caucus extends React.Component<Props, State> {
 
     const renderedCaucusTimer = (
       <Timer
-        name="Caucus Timer"
+        name="Caucus timer"
         timerFref={caucusFref.child('caucusTimer')}
         key={caucusID + 'caucusTimer'}
         onChange={this.setCaucusTimer}

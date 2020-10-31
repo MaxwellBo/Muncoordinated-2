@@ -1,23 +1,27 @@
 import * as React from 'react';
 import firebase from 'firebase/app';
-import { CommitteeData, CommitteeID, DEFAULT_COMMITTEE, recoverCaucus, recoverResolution, recoverMemberOptions } from './Committee';
+import { CommitteeData, CommitteeID, DEFAULT_COMMITTEE, recoverCaucus, recoverResolution, recoverPresentMemberOptions, recoverSettings } from './Committee';
 import { RouteComponentProps } from 'react-router';
-import { Icon, Button, Card, Form, Message, Flag, Label, 
-  Container, Divider } from 'semantic-ui-react';
-import { stateFieldHandler,
+import {
+  Icon, Button, Card, Form, Message, Flag, Label,
+  Container, Divider, Checkbox, Popup
+} from 'semantic-ui-react';
+import {
+  stateFieldHandler,
   stateDropdownHandler,
   stateValidatedNumberFieldHandler,
   stateMemberDropdownHandler,
-  stateTextAreaHandler
+  stateTextAreaHandler,
+  checkboxHandler
 } from '../actions/handlers';
-import { makeDropdownOption, implies } from '../utils';
+import { implies, sentenceCase, makeSentenceCaseDropdownOption, } from '../utils';
 import { TimerSetter, Unit, getSeconds } from './TimerSetter';
 import { nameToMemberOption, parseFlagName } from './Member';
 import { DEFAULT_CAUCUS, CaucusData, CaucusID, CaucusStatus, DEFAULT_SPEAKER_TIME_SECONDS } from './Caucus';
 import { putCaucus, closeCaucus, putSpeaking } from '../actions/caucus-actions';
 import { TimerData } from './Timer';
 import { putUnmodTimer, extendUnmodTimer, extendModTimer } from '../actions/committee-actions';
-import { URLParameters, Dictionary } from '../types';
+import { URLParameters } from '../types';
 import { ResolutionData, DEFAULT_RESOLUTION, ResolutionID, IDENTITCAL_PROPOSER_SECONDER } from './Resolution';
 import { Stance } from './caucus/SpeakerFeed';
 import { AmendmentData, DEFAULT_AMENDMENT } from './Amendment';
@@ -25,6 +29,10 @@ import { putAmendment, putResolution } from '../actions/resolution-actions';
 import { putStrawpoll } from '../actions/strawpoll-actions';
 import { DEFAULT_STRAWPOLL } from './Strawpoll';
 import { makeCommitteeStats } from './Admin';
+import { SettingsData } from './Settings';
+import { MotionsShareHint } from './ShareHint';
+import { useVoterID, VoterID } from '../hooks';
+import _ from 'lodash';
 
 export type MotionID = string;
 
@@ -199,18 +207,18 @@ const hasDuration = (motionType: MotionType): boolean => {
   }
 };
 
-const interpolateTime = (motionType: MotionType, time: string): string => {
+const showMotionType = (motionType: MotionType, time: string): string => {
   switch (motionType) {
     case MotionType.ExtendUnmoderatedCaucus:
       return `Extend unmoderated caucus by ${time}`;
     case MotionType.ExtendModeratedCaucus:
       return `Extend moderated caucus by ${time}`;
     case MotionType.OpenModeratedCaucus:
-      return `${time} Moderated Caucus`;
+      return `${time} moderated caucus`;
     case MotionType.OpenUnmoderatedCaucus:
-      return `${time} Unmoderated Caucus`;
+      return `${time} unmoderated caucus`;
     default:
-      return motionType.toString();
+      return sentenceCase(motionType ?? 'Unknown type');
   }
 };
 
@@ -235,6 +243,12 @@ const hasResolutionTarget = (motionType: MotionType): boolean => {
   }
 };
 
+enum MotionVote {
+  For = 'For',
+  Abstain = 'Abstaining',
+  Against = 'Against'
+}
+
 export interface MotionData {
   proposal: string;
   proposer?: string;
@@ -246,10 +260,15 @@ export interface MotionData {
   type: MotionType;
   caucusTarget?: CaucusID;
   resolutionTarget?: ResolutionID;
-  deleted?: boolean
+  deleted?: boolean;
+  votes?: Record<VoterID, MotionVote>
 }
 
 interface Props extends RouteComponentProps<URLParameters> {
+}
+
+interface Hooks {
+  voterID: VoterID
 }
 
 interface State {
@@ -268,13 +287,13 @@ const MOTION_TYPE_OPTIONS = [
   MotionType.IntroduceAmendment, // implemented
   MotionType.VoteOnResolution,
   MotionType.ProposeStrawpoll,
-  MotionType.SuspendDraftResolutionSpeakersList, 
+  MotionType.SuspendDraftResolutionSpeakersList,
   MotionType.OpenDebate,
   MotionType.SuspendDebate,
   MotionType.ResumeDebate,
   MotionType.CloseDebate,
   MotionType.ReorderDraftResolutions,
-].map(makeDropdownOption);
+].map(makeSentenceCaseDropdownOption);
 
 const DEFAULT_MOTION: MotionData = {
   proposal: '',
@@ -282,11 +301,12 @@ const DEFAULT_MOTION: MotionData = {
   speakerUnit: Unit.Seconds,
   caucusDuration: 10,
   caucusUnit: Unit.Minutes,
-  type: MotionType.OpenUnmoderatedCaucus // this will force it to the top of the list
+  type: MotionType.OpenUnmoderatedCaucus, // this will force it to the top of the list
+  votes: {}
 };
 
-export default class Motions extends React.Component<Props, State> {
-  constructor(props: Props) {
+export class MotionsComponent extends React.Component<Props & Hooks, State> {
+  constructor(props: Props & Hooks) {
     super(props);
 
     const { match } = props;
@@ -338,9 +358,9 @@ export default class Motions extends React.Component<Props, State> {
 
     const { committeeFref } = this.state;
 
-    const motions = committee 
-      ? committee.motions || {} as Dictionary<string, MotionData> 
-      : {} as Dictionary<string, MotionData>;
+    const motions = committee
+      ? committee.motions || {} as Record<string, MotionData>
+      : {} as Record<string, MotionData>;
 
     Object.keys(motions).forEach(key => {
       committeeFref
@@ -358,13 +378,13 @@ export default class Motions extends React.Component<Props, State> {
   }
 
   handleApproveMotion = (
-      motionFref: firebase.database.Reference, 
-      motionData: MotionData
+    motionFref: firebase.database.Reference,
+    motionData: MotionData
   ): void => {
     const committeeID: CommitteeID = this.props.match.params.committeeID;
     const { committee } = this.state;
 
-    const { proposer, speakerDuration, speakerUnit, 
+    const { proposer, speakerDuration, speakerUnit,
       caucusDuration, caucusUnit, seconder, proposal } = motionData;
 
     const caucusID = motionData.caucusTarget;
@@ -447,14 +467,14 @@ export default class Motions extends React.Component<Props, State> {
       const caucusSeconds = getSeconds(caucusDuration, caucusUnit);
 
       extendModTimer(committeeID, caucusID, caucusSeconds);
-          
+
       // @ts-ignore Assert that this exists
       const caucus: CaucusData = committee.caucuses[caucusID];
-      const speakerSeconds = !caucus.speakerDuration || !caucus.speakerUnit ? 
+      const speakerSeconds = !caucus.speakerDuration || !caucus.speakerUnit ?
         DEFAULT_SPEAKER_TIME_SECONDS
         : getSeconds(caucus.speakerDuration, caucus.speakerUnit);
 
-      putSpeaking(committeeID, caucusID, { 
+      putSpeaking(committeeID, caucusID, {
         who: proposer,
         stance: Stance.For,
         duration: speakerSeconds
@@ -489,12 +509,12 @@ export default class Motions extends React.Component<Props, State> {
       this.props.history
         .push(`/committees/${committeeID}/strawpolls/${strawpollRef.key}`);
     }
-  } 
+  }
 
   renderMotion = (id: MotionID, motionData: MotionData, motionFref: firebase.database.Reference) => {
     const { handleApproveMotion } = this;
     const { committee } = this.state;
-    const { proposer, proposal, type, caucusUnit, caucusDuration, speakerUnit, 
+    const { proposer, proposal, type, caucusUnit, caucusDuration, speakerUnit,
       speakerDuration, seconder, caucusTarget, resolutionTarget } = motionData;
 
     const caucus = recoverCaucus(committee, caucusTarget || '');
@@ -502,6 +522,77 @@ export default class Motions extends React.Component<Props, State> {
 
     const resolution = recoverResolution(committee, resolutionTarget || '');
     const resolutionTargetText = resolution ? resolution.name : resolutionTarget;
+
+
+    const renderVoteCount = () => {
+      const { voterID } = this.props;
+      const votes = motionData.votes ?? {};
+
+      // Remove vote if same vote, otherwise change vote
+      const vote = (vote: MotionVote) => {
+        if (votes[voterID] === vote) {
+          motionFref.child('votes').child(voterID).remove();
+        } else {
+          motionFref.child('votes').child(voterID).set(vote);
+        }
+      }
+
+      const counts = _.countBy(Object.values(votes))
+
+      return (
+        <Button.Group>
+          <Popup
+            content="Against"
+            trigger={
+              <Button
+                color='red'
+                active={votes[voterID] === MotionVote.Against}
+                onClick={() => vote(MotionVote.Against)}
+              >
+                <Icon name={
+                  votes[voterID] === MotionVote.Against
+                    ? "thumbs down"
+                    : "thumbs down outline"}
+                />
+                {counts[MotionVote.Against] ?? 0}
+              </Button>
+            }
+          />
+          <Popup
+            content="Abstain"
+            trigger={
+              <Button
+                color='yellow'
+                active={votes[voterID] === MotionVote.Abstain}
+                onClick={() => vote(MotionVote.Abstain)}
+              >
+                <Icon name={
+                  votes[voterID] === MotionVote.Abstain
+                    ? "circle"
+                    : "circle outline"}
+                />
+                {counts[MotionVote.Abstain] ?? 0}
+              </Button>
+            } />
+          <Popup
+            content="In favour"
+            trigger={
+              <Button
+                color='green'
+                active={votes[voterID] === MotionVote.For}
+                onClick={() => vote(MotionVote.For)}
+              >
+                <Icon name={
+                  votes[voterID] === MotionVote.For
+                    ? "thumbs up"
+                    : "thumbs up outline"}
+                />
+                {counts[MotionVote.For] ?? 0}
+              </Button>
+            } />
+        </Button.Group>
+      )
+    }
 
     const descriptionTree = (
       <Card.Description>
@@ -534,7 +625,7 @@ export default class Motions extends React.Component<Props, State> {
     const caucusTargetTree = (
       <div>
         <Label horizontal>
-          Target Caucus
+          Target caucus
         </Label>
         {caucusTargetText}
       </div>
@@ -543,14 +634,14 @@ export default class Motions extends React.Component<Props, State> {
     const resolutionTargetTree = (
       <div>
         <Label horizontal>
-          Target Resolution
+          Target resolution
         </Label>
         {resolutionTargetText}
       </div>
     );
 
-    const time = hasDuration(type) ? 
-      hasSpeakers(type) 
+    const time = hasDuration(type) ?
+      hasSpeakers(type)
         ? `${caucusDuration || 0} ${caucusUnit} / ${speakerDuration || 0} ${speakerUnit} `
         : `${caucusDuration || 0} ${caucusUnit} `
       : '';
@@ -562,7 +653,7 @@ export default class Motions extends React.Component<Props, State> {
       >
         <Card.Content>
           <Card.Header>
-            {interpolateTime(type, time)}
+            {showMotionType(type, time)}
           </Card.Header>
           <Card.Meta>
             {proposerTree}
@@ -580,6 +671,7 @@ export default class Motions extends React.Component<Props, State> {
           >
             Delete
           </Button>
+          {recoverSettings(committee).motionVotes && renderVoteCount()}
           {approvable(type) && <Button
             disabled={motionData.proposer === ''}
             basic
@@ -594,7 +686,7 @@ export default class Motions extends React.Component<Props, State> {
   }
 
   hasDivisiblityError = () => {
-    const { type, caucusDuration, caucusUnit, speakerDuration, speakerUnit} = this.state.newMotion;
+    const { type, caucusDuration, caucusUnit, speakerDuration, speakerUnit } = this.state.newMotion;
 
     const caucusSeconds = getSeconds(caucusDuration || 0, caucusUnit);
     const speakerSeconds = getSeconds(speakerDuration || 0, speakerUnit);
@@ -612,7 +704,7 @@ export default class Motions extends React.Component<Props, State> {
 
   renderAdder = (committee?: CommitteeData): JSX.Element => {
     const { newMotion } = this.state;
-    const { proposer, proposal, type, caucusUnit, caucusDuration, speakerUnit, 
+    const { proposer, proposal, type, caucusUnit, caucusDuration, speakerUnit,
       speakerDuration, seconder, caucusTarget, resolutionTarget } = newMotion;
 
     const boxForAmmendments = (
@@ -627,19 +719,19 @@ export default class Motions extends React.Component<Props, State> {
     );
 
     const boxForNames = (
-      <Form.Input 
+      <Form.Input
         label="Name"
         placeholder="Name"
         value={proposal}
-        onChange={stateFieldHandler<Props, State>(this, 'newMotion', 'proposal')} 
-        fluid 
-      /> 
+        onChange={stateFieldHandler<Props, State>(this, 'newMotion', 'proposal')}
+        fluid
+      />
     );
 
     const description = (
       <Form.Group widths="equal">
         {hasTextArea(newMotion.type)
-          ? boxForAmmendments 
+          ? boxForAmmendments
           : boxForNames
         }
       </Form.Group>
@@ -652,7 +744,7 @@ export default class Motions extends React.Component<Props, State> {
         durationValue={speakerDuration ? speakerDuration.toString() : undefined}
         onUnitChange={stateDropdownHandler<Props, State>(this, 'newMotion', 'speakerUnit')}
         onDurationChange={stateValidatedNumberFieldHandler<Props, State>(this, 'newMotion', 'speakerDuration')}
-        label="Speaking Time"
+        label="Speaking time"
       />
     );
 
@@ -667,7 +759,7 @@ export default class Motions extends React.Component<Props, State> {
       />
     );
 
-    const { caucuses, resolutions } = this.state.committee || { caucuses:  {}, resolutions: {} };
+    const { caucuses, resolutions } = this.state.committee || { caucuses: {}, resolutions: {} };
 
     // BADCODE: Filter predicate shared with menu in Committee, also update when changing
     // Prioritize recency
@@ -694,7 +786,7 @@ export default class Motions extends React.Component<Props, State> {
         onChange={stateDropdownHandler<Props, State>(this, 'newMotion', 'caucusTarget')}
         options={caucusOptions}
         icon="search"
-        label="Target Caucus"
+        label="Target caucus"
       />
     );
 
@@ -710,7 +802,7 @@ export default class Motions extends React.Component<Props, State> {
         onChange={stateDropdownHandler<Props, State>(this, 'newMotion', 'resolutionTarget')}
         options={resolutionOptions}
         icon="search"
-        label="Target Resolution"
+        label="Target resolution"
       />
     );
 
@@ -723,7 +815,7 @@ export default class Motions extends React.Component<Props, State> {
       </Form.Group>
     );
 
-    const memberOptions = recoverMemberOptions(this.state.committee);
+    const memberOptions = recoverPresentMemberOptions(this.state.committee);
 
     const proposerTree = (
       <Form.Dropdown
@@ -745,7 +837,7 @@ export default class Motions extends React.Component<Props, State> {
       <Form.Dropdown
         icon="search"
         key="seconder"
-        error={!seconder || this.hasIdenticalProposerSeconder()} 
+        error={!seconder || this.hasIdenticalProposerSeconder()}
         value={seconder ? nameToMemberOption(seconder).key : undefined}
         loading={!committee}
         search
@@ -760,98 +852,109 @@ export default class Motions extends React.Component<Props, State> {
     const hasError = this.hasDivisiblityError() || this.hasIdenticalProposerSeconder();
 
     return (
-        <Form 
-          error={hasError}
-        >
-          <Form.Dropdown
-            placeholder="Select type"
-            search
-            selection
-            fluid
-            label="Type"
-            icon="search"
-            options={MOTION_TYPE_OPTIONS}
-            onChange={stateDropdownHandler<Props, State>(this, 'newMotion', 'type')}
-            value={type}
-          />
-          {hasDetail(type) && description}
-          <Form.Group widths="equal">
-            {proposerTree}
-            {hasSeconder(type) && seconderTree}
-          </Form.Group>
-          {(hasSpeakers(type) 
-            || hasDuration(type) 
-            || hasCaucusTarget(type) 
-            || hasResolutionTarget(type) 
-            ) && setters}
-          {this.hasDivisiblityError() && DIVISIBILITY_ERROR}
-          {this.hasIdenticalProposerSeconder() && IDENTITCAL_PROPOSER_SECONDER}
-          <Button 
-            icon="plus"
-            basic
-            primary
-            fluid
-            disabled={!proposer 
-              || !implies(hasSeconder(type), !!seconder)
-              || !implies(hasCaucusTarget(type), !!caucusTarget)
-              || !implies(hasResolutionTarget(type), !!resolutionTarget)
-              || hasError
-            }
-            onClick={this.handlePushMotion}
-          />
-        </Form>
+      <Form
+        error={hasError}
+      >
+        <Form.Dropdown
+          placeholder="Select type"
+          search
+          selection
+          fluid
+          label="Type"
+          icon="search"
+          options={MOTION_TYPE_OPTIONS}
+          onChange={stateDropdownHandler<Props, State>(this, 'newMotion', 'type')}
+          value={type}
+        />
+        {hasDetail(type) && description}
+        <Form.Group widths="equal">
+          {proposerTree}
+          {hasSeconder(type) && seconderTree}
+        </Form.Group>
+        {(hasSpeakers(type)
+          || hasDuration(type)
+          || hasCaucusTarget(type)
+          || hasResolutionTarget(type)
+        ) && setters}
+        {this.hasDivisiblityError() && DIVISIBILITY_ERROR}
+        {this.hasIdenticalProposerSeconder() && IDENTITCAL_PROPOSER_SECONDER}
+        <Button
+          icon="plus"
+          basic
+          primary
+          fluid
+          disabled={!proposer
+            || !implies(hasSeconder(type), !!seconder)
+            || !implies(hasCaucusTarget(type), !!caucusTarget)
+            || !implies(hasResolutionTarget(type), !!resolutionTarget)
+            || hasError
+          }
+          onClick={this.handlePushMotion}
+        />
+      </Form>
     );
   }
 
-  renderMotions = (motions: Dictionary<MotionID, MotionData>) => {
+  renderMotions = (motions: Record<MotionID, MotionData>) => {
     const { renderMotion } = this;
     const { committeeFref } = this.state;
 
     return Object.keys(motions)
       .filter(key => !motions[key].deleted)
       .sort((a, b) => {
-      const ma: MotionData = motions[a];
-      const mb: MotionData = motions[b];
-      const ca = disruptiveness(ma.type);
-      const cb = disruptiveness(mb.type);
+        const ma: MotionData = motions[a];
+        const mb: MotionData = motions[b];
+        const ca = disruptiveness(ma.type);
+        const cb = disruptiveness(mb.type);
 
-      if (ca < cb) {
-        return -1; 
-      } else if (ca === cb) {
-
-        const sa = (ma.caucusDuration || 0) * (ma.caucusUnit === Unit.Minutes ? 60 : 1);
-        const sb = (mb.caucusDuration || 0) * (mb.caucusUnit === Unit.Minutes ? 60 : 1);
-
-        // FIXME: Could be replaced by some sort of comapre function that I know exists
-        if (sa < sb) {
-          return 1;
-        } else if (sa === sb) {
-          return 0;
-        } else {
+        if (ca < cb) {
           return -1;
+        } else if (ca === cb) {
+
+          const sa = (ma.caucusDuration || 0) * (ma.caucusUnit === Unit.Minutes ? 60 : 1);
+          const sb = (mb.caucusDuration || 0) * (mb.caucusUnit === Unit.Minutes ? 60 : 1);
+
+          // FIXME: Could be replaced by some sort of comapre function that I know exists
+          if (sa < sb) {
+            return 1;
+          } else if (sa === sb) {
+            return 0;
+          } else {
+            return -1;
+          }
+        } else {
+          return 1;
         }
-      } else {
-        return 1;
-      }
-    }).map(key => {
-      return renderMotion(key, motions[key], committeeFref.child('motions').child(key));
-    });
+      }).map(key => {
+        return renderMotion(key, motions[key], committeeFref.child('motions').child(key));
+      });
   }
 
   render() {
     const { renderMotions, renderAdder } = this;
-
-    const { committee } = this.state;
-
+    const { committee, committeeFref } = this.state;
+    const { committeeID } = this.props.match.params;
     const { operative } = makeCommitteeStats(this.state.committee);
 
-    const renderedMotions = committee 
-      ? renderMotions(committee.motions || {} as Dictionary<string, MotionData>)
+    const renderedMotions = committee
+      ? renderMotions(committee.motions || {} as Record<string, MotionData>)
       : []; // TODO: This could probably do with a nice spinner
 
     return (
       <Container text style={{ padding: '1em 0em' }}>
         {renderAdder(committee)}
+        <Divider hidden />
+        <Checkbox
+          label="Delegates can vote on motions"
+          toggle
+          checked={recoverSettings(committee).motionVotes}
+          onChange={
+            checkboxHandler<SettingsData>(
+              committeeFref.child('settings'),
+              'motionVotes')}
+        />
+        {recoverSettings(committee).motionVotes
+          && <MotionsShareHint committeeID={committeeID} />}
         <Divider />
         <Icon name="sort numeric ascending" /> Sorted from most to least disruptive. {operative} votes required to pass a motion
         <Button
@@ -864,13 +967,19 @@ export default class Motions extends React.Component<Props, State> {
           basic
           onClick={this.handleClearMotions}
         />
-        <Divider />
+        <Divider hidden />
         <Card.Group
-          itemsPerRow={1} 
+          itemsPerRow={1}
         >
           {renderedMotions}
         </Card.Group>
       </Container>
     );
   }
+}
+
+export default function Motions(props: Props) {
+  const [voterID] = useVoterID();
+
+  return <MotionsComponent {...props} voterID={voterID} />
 }

@@ -4,14 +4,15 @@ import { CommitteeID } from '../components/Committee';
 import { CaucusData, CaucusID, CaucusStatus } from '../components/Caucus';
 import { TimerData } from '../components/Timer';
 import { SpeakerEvent } from '../components/caucus/SpeakerFeed';
+import { shortMeetId } from '../utils';
 
 export const putCaucus = 
-  (committeeID: CommitteeID, caucusData: CaucusData): firebase.database.ThenableReference => {
+  (committeeID: CommitteeID, caucusData: CaucusData): firebase.database.Reference => {
   const ref = firebase.database()
     .ref('committees')
     .child(committeeID)
     .child('caucuses')
-    .push();
+    .child(shortMeetId());
 
   ref.set(caucusData);
 
