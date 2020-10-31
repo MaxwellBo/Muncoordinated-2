@@ -80,14 +80,29 @@ export function StrawpollShareHint(props: {
 }
 
 export function MotionsShareHint(props: {
+  canVote: boolean,
+  canPropose: boolean,
   committeeID: CommitteeID;
 }) {
   const hostname = window.location.hostname;
-  const { committeeID } = props;
+  const { committeeID, canVote, canPropose } = props;
   const url = `${hostname}/committees/${committeeID}/motions`;
+
+  let action: string
+
+  if (canVote && canPropose) {
+    action = 'vote on and propose motions'
+  } else if (canVote) {
+    action = 'vote on motions'
+  } else if (canPropose) {
+    action = 'propose motions'
+  } else {
+    action = 'vote on and propose motions'
+  }
+
   return (
     <Segment>
-      <Header size='small'>Here's the shareable link to vote on these motions</Header>
+      <Header size='small'>Here's the shareable link to {action}</Header>
       <CopyableText value={url} />
     </Segment>
   );
