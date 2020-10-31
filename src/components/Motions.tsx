@@ -821,7 +821,7 @@ export class MotionsComponent extends React.Component<Props & Hooks, State> {
       <Form.Dropdown
         icon="search"
         key="proposer"
-        value={proposer ? nameToMemberOption(proposer).key : undefined}
+        value={proposer ? nameToMemberOption(proposer).key : false}
         search
         error={!proposer || this.hasIdenticalProposerSeconder()}
         loading={!committee}
@@ -838,7 +838,7 @@ export class MotionsComponent extends React.Component<Props & Hooks, State> {
         icon="search"
         key="seconder"
         error={!seconder || this.hasIdenticalProposerSeconder()}
-        value={seconder ? nameToMemberOption(seconder).key : undefined}
+        value={seconder ? nameToMemberOption(seconder).key : false}
         loading={!committee}
         search
         selection
