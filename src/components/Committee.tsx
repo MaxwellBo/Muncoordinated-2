@@ -28,7 +28,7 @@ import { putResolution } from '../actions/resolution-actions';
 import ConnectionStatus from './ConnectionStatus';
 import { membersToOptions, membersToPresentOptions } from '../utils';
 import { fieldHandler } from '../actions/handlers';
-import { MemberOption } from '../constants';
+import { CommitteeTemplate, MemberOption } from '../constants';
 import { putStrawpoll } from '../actions/strawpoll-actions';
 import Strawpoll, { DEFAULT_STRAWPOLL, StrawpollID, StrawpollData } from './Strawpoll';
 import { logClickSetupCommittee } from '../analytics';
@@ -114,11 +114,13 @@ interface State {
 
 export type CommitteeID = string;
 
+
 export interface CommitteeData {
   name: string;
   chair: string;
   topic: string;
   conference?: string; // TODO: Migrate
+  template?: CommitteeTemplate;
   creatorUid: firebase.UserInfo['uid'];
   members?: Record<MemberID, MemberData>;
   caucuses?: Record<CaucusID, CaucusData>;

@@ -2,14 +2,19 @@ import * as React from 'react';
 import { RouteComponentProps } from 'react-router';
 import * as firebase from 'firebase/app';
 import { CommitteeData, DEFAULT_COMMITTEE } from './Committee';
-import { Form, Grid, Header, InputOnChangeData, Divider,
-  Message, Container, Segment, Icon } from 'semantic-ui-react';
+import {
+  Form, Grid, Header, InputOnChangeData, DropdownProps, Divider,
+  Message, Container, Segment, Icon
+} from 'semantic-ui-react';
 import { Login } from './Auth';
 import { URLParameters } from '../types';
+import { makeDropdownOption } from '../utils';
+import { CommitteeTemplate, TEMPLATE_TO_MEMBERS } from '../constants';
 import ConnectionStatus from './ConnectionStatus';
 import { logCreateCommittee } from '../analytics';
 import { meetId } from '../utils';
 import { putCommittee } from '../actions/committee-actions';
+import { Rank } from './Member';
 
 interface Props extends RouteComponentProps<URLParameters> {
 }
@@ -20,6 +25,7 @@ interface State {
   chair: string;
   conference: string;
   user: firebase.User | null;
+  template?: CommitteeTemplate,
   committeesFref: firebase.database.Reference;
   unsubscribe?: () => void;
 }
@@ -63,22 +69,47 @@ export default class Onboard extends React.Component<Props, State> {
     this.setState({ [data.name]: data.value });
   }
 
+  onChangeTemplateDropdown = (event: React.SyntheticEvent<HTMLElement, Event>, data: DropdownProps): void => {
+    // @ts-ignore
+    this.setState({ template: data.value });
+  }
+
   handleSubmit = () => {
-    if (this.state.user) {
+    const { name, topic, chair, conference, template, user } = this.state;
+
+    if (user) {
       const newCommittee: CommitteeData = {
         ...DEFAULT_COMMITTEE,
-        name: this.state.name,
-        topic: this.state.topic,
-        chair: this.state.chair,
-        conference: this.state.conference,
-        creatorUid: this.state.user.uid
+        name,
+        topic,
+        chair,
+        conference,
+        creatorUid: user.uid
       };
 
       const newCommitteeRef = putCommittee(meetId(), newCommittee)
-
       this.props.history.push(`/committees/${newCommitteeRef.key}`);
-
       logCreateCommittee(newCommitteeRef.key ?? undefined)
+
+      if (template) {
+        // We can't send `undefined` properties to Firebase or it will complain.
+        newCommittee.template = template;
+
+        // Add countries as per selected templates
+        [...TEMPLATE_TO_MEMBERS[template]]
+          .reverse()
+          .forEach(
+            member =>
+              newCommitteeRef
+                .child('members')
+                .push({
+                  name: member.name,
+                  rank: member.rank ?? Rank.Standard,
+                  present: true,
+                  voting: false
+                })
+          );
+      }
     }
   }
 
@@ -88,27 +119,27 @@ export default class Onboard extends React.Component<Props, State> {
     return (
       <React.Fragment>
         {!user && <Message
-          error 
+          error
           attached="top"
           content="Please login or create an account before creating a committee"
         />}
         <Segment attached={!user ? 'bottom' : undefined} >
           <Form onSubmit={this.handleSubmit}>
-            <Form.Input 
-              label="Name" 
-              name="name" 
+            <Form.Input
+              label="Name"
+              name="name"
               fluid
               required
               error={this.state.name === ''}
-              placeholder="Committee name" 
-              onChange={this.handleInput} 
+              placeholder="Committee name"
+              onChange={this.handleInput}
             />
-            <Form.Input 
-              label="Topic" 
-              name="topic" 
+            <Form.Input
+              label="Topic"
+              name="topic"
               fluid
-              placeholder="Committee topic" 
-              onChange={this.handleInput} 
+              placeholder="Committee topic"
+              onChange={this.handleInput}
             />
             <Form.Input
               label="Chairpeople"
@@ -124,9 +155,20 @@ export default class Onboard extends React.Component<Props, State> {
               placeholder="Conference name"
               onChange={this.handleInput}
             />
-            <Form.Button 
-              primary 
-              fluid 
+            <Form.Dropdown
+              label="Template"
+              name="template"
+              fluid
+              search
+              clearable
+              selection
+              placeholder="Template for committee"
+              options={Object.values(CommitteeTemplate).map(makeDropdownOption)}
+              onChange={this.onChangeTemplateDropdown}
+            />
+            <Form.Button
+              primary
+              fluid
               disabled={!this.state.user || this.state.name === ''}
             >
               Create committee
@@ -143,23 +185,23 @@ export default class Onboard extends React.Component<Props, State> {
       <Container style={{ padding: '1em 0em' }}>
         <ConnectionStatus />
         <Grid
-          columns="equal" 
+          columns="equal"
           stackable
         >
           <Grid.Row>
             <Grid.Column>
               <Header as="h1" dividing>
-              Muncoordinated
+                Muncoordinated
               </Header>
-              <Divider hidden/>
-              Muncoordinated officially supports recent versions of Google Chrome. 
+              <Divider hidden />
+              Muncoordinated officially supports recent versions of Google Chrome.
                 Use of older and other browsers has been known to cause bugs and data loss.
             </Grid.Column>
           </Grid.Row>
           <Divider />
           <Grid.Row>
             <Grid.Column>
-              <Login allowSignup={true} allowNewCommittee={false}/>
+              <Login allowSignup={true} allowNewCommittee={false} />
             </Grid.Column>
             <Grid.Column>
               {this.renderNewCommitteeForm()}

@@ -1,3 +1,5 @@
+import { MemberData, Rank } from "./components/Member";
+
 export const STATE_OPTIONS = [
   { key: 'AL', value: 'AL', text: 'Alabama' },
   { key: 'AK', value: 'AK', text: 'Alaska' },
@@ -303,6 +305,108 @@ export const COUNTRY_OPTIONS: MemberOption[] = [
   { key: 'zm', value: 'zm', flag: 'zm', text: 'Zambia' },
   { key: 'zw', value: 'zw', flag: 'zw', text: 'Zimbabwe' },
 ];
+
+interface TemplateMember {
+  name: MemberData['name']
+  rank?: keyof typeof Rank // not allowed to use members due to import order
+}
+
+export enum CommitteeTemplate {
+  AfricanUnion = 'African Union',
+  G20 = 'G20',
+  SecurityCouncil = 'UN Security Council',
+}
+
+export const TEMPLATE_TO_MEMBERS: Record<CommitteeTemplate, TemplateMember[]> = {
+  'African Union': [
+    { name: 'Algeria' },
+    { name: 'Angola' },
+    { name: 'Benin' },
+    { name: 'Botswana' },
+    { name: 'Burkina Faso' },
+    { name: 'Burundi' },
+    { name: 'Cameroon' },
+    { name: 'Cape Verde' },
+    { name: 'Central African Republic' },
+    { name: 'Chad' },
+    { name: 'Comoros' },
+    { name: 'Congo' },
+    { name: 'Cote Divoire' },
+    { name: 'Djibouti' },
+    { name: 'Egypt' },
+    { name: 'Equatorial Guinea' },
+    { name: 'Eritrea' },
+    { name: 'Ethiopia' },
+    { name: 'Gabon' },
+    { name: 'Ghana' },
+    { name: 'Guinea-Bissau' },
+    { name: 'Guinea' },
+    { name: 'Kenya' },
+    { name: 'Lesotho' },
+    { name: 'Liberia' },
+    { name: 'Libya' },
+    { name: 'Madagascar' },
+    { name: 'Malawi' },
+    { name: 'Mali' },
+    { name: 'Mauritania' },
+    { name: 'Mauritius' },
+    { name: 'Morocco' },
+    { name: 'Mozambique' },
+    { name: 'Namibia' },
+    { name: 'Niger' },
+    { name: 'Nigeria' },
+    { name: 'Rwanda' },
+    { name: 'Sao Tome' },
+    { name: 'Senegal' },
+    { name: 'Sierra Leone' },
+    { name: 'Sudan' },
+    { name: 'Tanzania' },
+    { name: 'Togo' },
+    { name: 'Tunisia' },
+    { name: 'Uganda' },
+    { name: 'Zambia' },
+    { name: 'Zimbabwe'}
+  ],
+  [CommitteeTemplate.SecurityCouncil]: [
+    { name: 'Belgium' },
+    { name: 'China', rank: 'Veto' },
+    { name: 'Dominican Republic' },
+    { name: 'Estonia' },
+    { name: 'France', rank: 'Veto' },
+    { name: 'Germany' },
+    { name: 'Indonesia' },
+    { name: 'Niger' },
+    { name: 'Russia', rank: 'Veto'  },
+    { name: 'Saint Vincent' },
+    { name: 'South Africa' },
+    { name: 'Tunisia' },
+    { name: 'United Kingdom', rank: 'Veto' },
+    { name: 'United States', rank: 'Veto' },
+    { name: 'Vietnam' }
+  ],
+  [CommitteeTemplate.G20]: [
+    { name: 'Argentina' },
+    { name: 'Australia' },
+    { name: 'Brazil' },
+    { name: 'Canada' },
+    { name: 'China' },
+    { name: 'European Union' },
+    { name: 'France' },
+    { name: 'Germany' },
+    { name: 'India' },
+    { name: 'Indonesia' },
+    { name: 'Italy' },
+    { name: 'Japan' },
+    { name: 'Mexico' },
+    { name: 'Russia' },
+    { name: 'Saudi Arabia' },
+    { name: 'South Africa' },
+    { name: 'South Korea' },
+    { name: 'Turkey' },
+    { name: 'United Kingdom' },
+    { name: 'United States' },
+  ]
+}
 
 export const LANGUAGE_OPTIONS = [
   { key: 'Arabic', text: 'Arabic', value: 'Arabic' },
