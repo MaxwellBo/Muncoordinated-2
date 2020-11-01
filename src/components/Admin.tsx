@@ -373,6 +373,7 @@ export default class Admin extends React.Component<Props, State> {
             Add at least one committee member to proceed
           </Message>
           : <Button
+            as='a'
             onClick={this.gotoGSL}
             primary
             fluid

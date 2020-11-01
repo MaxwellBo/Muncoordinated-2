@@ -84,7 +84,6 @@ export default class Onboard extends React.Component<Props, State> {
         topic,
         chair,
         conference,
-        template,
         creatorUid: user.uid
       };
 
@@ -93,6 +92,9 @@ export default class Onboard extends React.Component<Props, State> {
       logCreateCommittee(newCommitteeRef.key ?? undefined)
 
       if (template) {
+        // We can't send `undefined` properties to Firebase or it will complain.
+        newCommittee.template = template;
+
         // Add countries as per selected templates
         [...TEMPLATE_TO_MEMBERS[template]]
           .reverse()
@@ -157,6 +159,7 @@ export default class Onboard extends React.Component<Props, State> {
               label="Template"
               name="template"
               fluid
+              search
               clearable
               selection
               placeholder="Template for committee"

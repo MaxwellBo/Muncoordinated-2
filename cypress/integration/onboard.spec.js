@@ -4,6 +4,7 @@ const CHAIRPERSON = 'Test chairperson'
 const TOPIC = 'Test topic'
 const COMMITTEE = 'Test committee'
 const CONFERENCE = 'Test conference'
+const TEMPLATE = 'Security Council'
 
 describe('Run through creating a new committee', function () {
   before(function() {
@@ -27,7 +28,7 @@ describe('Run through creating a new committee', function () {
     })
   })
 
-  it('creates a new committee', function () {
+  it('creates a new Security Council committee', function () {
     cy.get('input[placeholder="Committee name"')
       .type(COMMITTEE)
       .should('have.value', COMMITTEE)
@@ -44,6 +45,10 @@ describe('Run through creating a new committee', function () {
       .type(CONFERENCE)
       .should('have.value', CONFERENCE)
 
+    cy.get('div')
+      .contains('Template for committee')
+      .type(TEMPLATE + '{enter}')
+      .contains(TEMPLATE)
 
     const createButton = cy.get('button').contains('Create committee')
 
@@ -60,8 +65,22 @@ describe('Run through creating a new committee', function () {
 
     cy.get('input[placeholder="Name(s) of chairperson or chairpeople"')
       .should('have.value', CHAIRPERSON)
+  })
 
-    cy.get('input[placeholder="Conference name"')
-      .should('have.value', CONFERENCE)
+  it('observes the templated prepopulated member list for the Security Council', function () {
+    const setupCommitteeButton = cy.get('a').contains('Setup committee')
+
+    setupCommitteeButton.click()
+    cy.url().should('include', '/setup')
+    cy.wait(2000)
+
+    cy.get('table').should('contain', 'China')
+    cy.get('table').should('contain', 'France')
+    cy.get('table').should('contain', 'Russia')
+    cy.get('table').should('contain', 'United States')
+    cy.get('table').should('contain', 'United Kingdom')
+
+    cy.contains('Thresholds').click()
+    cy.get('table').contains('Total').siblings().should('contain', '15')
   })
 })
