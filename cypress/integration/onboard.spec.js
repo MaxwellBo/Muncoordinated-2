@@ -46,7 +46,7 @@ describe('Run through creating a new committee', function () {
       .should('have.value', CONFERENCE)
 
     cy.get('div')
-      .contains('Template for committee')
+      .contains('Template to skip manual member creation (optional)')
       .type(TEMPLATE + '{enter}')
       .contains(TEMPLATE)
 
