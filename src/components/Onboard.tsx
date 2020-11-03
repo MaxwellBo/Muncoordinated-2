@@ -162,7 +162,7 @@ export default class Onboard extends React.Component<Props, State> {
               search
               clearable
               selection
-              placeholder="Template for committee"
+              placeholder="Template to skip manual member creation (optional)"
               options={Object.values(CommitteeTemplate).map(makeDropdownOption)}
               onChange={this.onChangeTemplateDropdown}
             />
