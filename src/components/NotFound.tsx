@@ -22,7 +22,7 @@ export class NotFound extends React.PureComponent<Props, State> {
         <Icon name="question" />
         <Message.Content>
           <Message.Header as="h1">Not found</Message.Header>
-          The {item} you were looking (ID: {id}) for could not be found.
+          The {item} you were looking for (ID: {id}) could not be found.
           It may have been deleted, or the URL you navigated to was incorrect.
         </Message.Content>
       </Message>
