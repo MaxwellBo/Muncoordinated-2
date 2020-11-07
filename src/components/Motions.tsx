@@ -285,8 +285,8 @@ const MOTION_TYPE_OPTIONS = [
   MotionType.CloseModeratedCaucus, // implemented
   MotionType.IntroduceDraftResolution, // implemented
   MotionType.IntroduceAmendment, // implemented
-  MotionType.VoteOnResolution,
-  MotionType.ProposeStrawpoll,
+  MotionType.VoteOnResolution, // implemented
+  MotionType.ProposeStrawpoll, // implemented
   MotionType.SuspendDraftResolutionSpeakersList,
   MotionType.OpenDebate,
   MotionType.SuspendDebate,
@@ -487,7 +487,7 @@ export class MotionsComponent extends React.Component<Props & Hooks, State> {
       closeCaucus(committeeID, caucusID);
     } else if (motionData.type === MotionType.IntroduceAmendment && resolutionID && proposer) {
       this.props.history
-        .push(`/committees/${committeeID}/resolutions/${resolutionID}`);
+        .push(`/committees/${committeeID}/resolutions/${resolutionID}/amendments`);
 
       const newAmendment: AmendmentData = {
         ...DEFAULT_AMENDMENT,
