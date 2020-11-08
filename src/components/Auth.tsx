@@ -212,6 +212,8 @@ export class Login extends React.Component<Props, State> {
   renderNotice = () => {
     const list = [
       'Login to access your previously created committees, or to create a new committee',
+      'Create an account with an email and password',
+      'Note that the email is only used to reset passwords and may be fake if you value your privacy (no need to confirm account creation via email)',
       'Multiple directors may use the same account concurrently from different computers - use a password you\'re willing to share'
     ];
 
