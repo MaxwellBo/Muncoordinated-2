@@ -15,7 +15,6 @@ import { logCreateCommittee } from '../analytics';
 import { meetId } from '../utils';
 import { putCommittee } from '../actions/committee-actions';
 import { Rank } from './Member';
-import { memberDropdownHandler } from '../actions/handlers';
 
 interface Props extends RouteComponentProps<URLParameters> {
 }
