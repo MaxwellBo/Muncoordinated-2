@@ -142,7 +142,7 @@ export default class Stats extends React.Component<Props, State> {
     });
 
     return (
-      <Container text style={{ padding: '1em 0em' }}>
+      <Container text style={{ padding: '1em 0em 1.5em' }}>
         <Table compact celled definition>
           <Table.Header>
             <Table.Row>

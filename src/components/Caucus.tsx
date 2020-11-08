@@ -275,7 +275,7 @@ export default class Caucus extends React.Component<Props, State> {
     );
 
     return (
-      <Container>
+      <Container style={{ 'padding-bottom': '2em' }}>
         <Grid columns="equal" stackable>
           {header}
           {body}
@@ -292,7 +292,7 @@ export default class Caucus extends React.Component<Props, State> {
 
     if (!loading && !caucus) {
       return (
-        <Container text>
+        <Container text style={{ 'padding-bottom': '2em' }}>
           <NotFound item="caucus" id={caucusID} />
         </Container>
       );

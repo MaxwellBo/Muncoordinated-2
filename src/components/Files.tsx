@@ -630,6 +630,7 @@ export default class Files extends React.Component<Props, State> {
           menu={{ attached: true, tabular: false }}
           panes={panes} 
         />
+        <div>&nbsp;</div> {/* Whitespace */}
         {this.renderFilter()}
         <Feed size="large">
           {committee ? Object.keys(files).reverse()
