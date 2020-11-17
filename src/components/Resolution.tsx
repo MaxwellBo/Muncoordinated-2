@@ -798,7 +798,7 @@ export default class Resolution extends React.Component<Props, State> {
     ];
 
     return (
-      <Container>
+      <Container style={{ 'padding-bottom': '2em' }}>
         <Grid columns="equal" stackable>
           <Grid.Row>
             <Grid.Column>
@@ -827,7 +827,7 @@ export default class Resolution extends React.Component<Props, State> {
 
     if (!loading && !resolution) {
       return (
-        <Container text>
+        <Container text style={{ 'padding-bottom': '2em' }}>
           <NotFound item="resolution" id={resolutionID} />
         </Container>
       );
