@@ -44,16 +44,14 @@ const HomepageHeading = ({ mobile }: HomepageHeadingProps) => (
     />
     <Header
       as="h2"
+      content="The collaborative browser-based Model UN committee management app"
       inverted
       style={{
         fontSize: mobile ? '1.5em' : '1.7em',
         fontWeight: 'normal',
         marginTop: mobile ? '0.5em' : '1.5em',
       }}
-    >
-      The collaborative Model UN committee management app.
-      For directors <b>and</b> delgates.
-    </Header>
+    />
     <br />
     <Button as="a" primary size="huge" href="/onboard" onClick={logClickCreateACommitteeButton}>
       Create a committee
@@ -240,12 +238,15 @@ export default class Homepage extends React.Component<{}, {
           <Grid container stackable verticalAlign="middle">
             <Grid.Row>
               <Grid.Column width={8}>
-                <Header as="h3" style={{ fontSize: '2em' }}>Collaborative &amp; remote friendly</Header>
+                <Header as="h3" style={{ fontSize: '2em' }}>Collaborative</Header>
                 <p style={{ fontSize: '1.33em' }}>
-                  Using a shareable link, multiple directors can run the committee at once. Delegates can also add themselves to speaker's lists, propose resolution amendments, upload files, &amp; vote on strawpolls or motions.<br />
+                  Using a shareable link, multiple directors can run the committee at once. Delegates can also add themselves to speaker's lists, propose resolution amendments and upload files.<br />
                 </p>
                 <p style={{ fontSize: '1.33em' }}>
                   Everyone will see all updates in real-time, without needing to refresh the page. It's like Google Docs, but for MUN.
+                </p>
+                <p style={{ fontSize: '1.33em' }}>
+                 We recommend pairing Muncoordinated with <a href="https://classroom.google.com">Google Classroom</a>, which allows you to share files, links, Google docs and strawpolls.
                 </p>
                 <Header as="h3" style={{ fontSize: '2em' }}>Cloud based</Header>
                 <p style={{ fontSize: '1.33em' }}>
