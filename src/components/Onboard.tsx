@@ -113,33 +113,31 @@ export default class Onboard extends React.Component<Props, State> {
     }
   }
 
+  renderCountriesTable = (template: CommitteeTemplate | undefined) => {
+    if (!template) {
+      return (
+          <p>Select a template to see which members will be added</p>
+      );
+    }
+
+    const countryRows =
+      TEMPLATE_TO_MEMBERS[template]
+        .map(member => (<Table.Row>
+          <Table.Cell>{member.name}</Table.Cell>
+        </Table.Row>)
+      );
+
+    return (
+      <Table basic='very' padded={false} celled={false}>
+        <Table.Body>
+          {countryRows}
+        </Table.Body>
+      </Table>
+    );
+  }
+
   renderNewCommitteeForm = () => {
-    const { user } = this.state;
-
-    interface TableProps{
-      template?: CommitteeTemplate;
-    }
-
-    const CountriesTable = (props: TableProps) => {
-      var countryRows;
-      if (props.template) {
-        countryRows = TEMPLATE_TO_MEMBERS[props.template]
-          .map(member => (<Table.Row>
-                            <Table.Cell>{member.name}</Table.Cell>
-                          </Table.Row>)
-          );
-      }
-
-      return (props.template ?
-              (<Table basic='very' padded={false} celled={false}>
-                <Table.Body>
-                    {countryRows}
-                </Table.Body>
-              </Table>)
-              : (<Message>
-                  Select a template to see which countries will be added with it!
-                </Message>));
-    }
+    const { user, template } = this.state;
 
     return (
       <React.Fragment>
@@ -192,10 +190,10 @@ export default class Onboard extends React.Component<Props, State> {
                 options={Object.values(CommitteeTemplate).map(makeDropdownOption)}
                 onChange={this.onChangeTemplateDropdown}
               />
-              <Popup pinned hoverable size='tiny' position='right center' 
+              <Popup basic pinned hoverable size='tiny' position='right center' 
                   trigger={<Button icon='question circle outline' />}>
                 <Popup.Content>
-                  <CountriesTable {...{template: this.state.template}} />
+                  {this.renderCountriesTable(template)}
                 </Popup.Content>
               </Popup>
             </Form.Group>
