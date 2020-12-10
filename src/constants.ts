@@ -325,7 +325,7 @@ export enum CommitteeTemplate {
 }
 
 export const TEMPLATE_TO_MEMBERS: Record<CommitteeTemplate, TemplateMember[]> = {
-  [CommitteeTemplate.AfricanUnion]: [
+  'African Union': [
     { name: 'Algeria' },
     { name: 'Angola' },
     { name: 'Benin' },
@@ -374,7 +374,7 @@ export const TEMPLATE_TO_MEMBERS: Record<CommitteeTemplate, TemplateMember[]> = 
     { name: 'Zambia' },
     { name: 'Zimbabwe'}
   ],
-  [CommitteeTemplate.ASEAN]: [
+  'Association of Southeast Asian Nations': [
     { name: 'Brunei' },
     { name: 'Cambodia' },
     { name: 'Indonesia' },
@@ -386,14 +386,14 @@ export const TEMPLATE_TO_MEMBERS: Record<CommitteeTemplate, TemplateMember[]> = 
     { name: 'Thailand' },
     { name: 'Vietnam' }
   ],
-  [CommitteeTemplate.BRICS]: [
+  'BRICS': [
     { name: 'Brazil' },
     { name: 'China' },
     { name: 'India' },
     { name: 'Russia' },
     { name: 'South Africa' }
   ],
-  [CommitteeTemplate.EU]: [
+  'European Union': [
     { name: 'Austria' },
     { name: 'Belgium' },
     { name: 'Bulgaria' },
@@ -422,7 +422,7 @@ export const TEMPLATE_TO_MEMBERS: Record<CommitteeTemplate, TemplateMember[]> = 
     { name: 'Spain' },
     { name: 'Sweden' },    
   ],
-  [CommitteeTemplate.G20]: [
+  'G20': [
     { name: 'Argentina' },
     { name: 'Australia' },
     { name: 'Brazil' },
@@ -444,7 +444,7 @@ export const TEMPLATE_TO_MEMBERS: Record<CommitteeTemplate, TemplateMember[]> = 
     { name: 'United Kingdom' },
     { name: 'United States' },
   ],
-  [CommitteeTemplate.NATO]: [
+  'North Atlantic Treaty Organization': [
     { name: 'Albania' },
     { name: 'Belgium' },
     { name: 'Bulgaria' },
@@ -478,7 +478,7 @@ export const TEMPLATE_TO_MEMBERS: Record<CommitteeTemplate, TemplateMember[]> = 
     { name: 'United Arab Emirates' },
     { name: 'United States' },
   ],
-  [CommitteeTemplate.SecurityCouncil]: [
+  'UN Security Council': [
     { name: 'Belgium' },
     { name: 'China', rank: 'Veto' },
     { name: 'Dominican Republic' },
@@ -495,7 +495,7 @@ export const TEMPLATE_TO_MEMBERS: Record<CommitteeTemplate, TemplateMember[]> = 
     { name: 'United States', rank: 'Veto' },
     { name: 'Vietnam' }
   ],
-  [CommitteeTemplate.WHOHealthBoard]: [
+  'WHO Health Board': [
     { name: 'Argentina' },
     { name: 'Australia' },
     { name: 'Austria' },
@@ -531,7 +531,7 @@ export const TEMPLATE_TO_MEMBERS: Record<CommitteeTemplate, TemplateMember[]> = 
     { name: 'United Arab Emirates' },
     { name: 'United States' }
   ],
-  [CommitteeTemplate.UNHRC]: [
+  'UN Human Rights Council': [
     { name: 'Afghanistan' },
     { name: 'Angola' },
     { name: 'Argentina' },
@@ -580,7 +580,7 @@ export const TEMPLATE_TO_MEMBERS: Record<CommitteeTemplate, TemplateMember[]> = 
     { name: 'United Arab Emirates' },
     { name: 'Uruguay' }
   ],
-  [CommitteeTemplate.UNICEF]: [
+  'UN Children\'s Fund': [
     { name: 'Bangladesh' },
     { name: 'Benin' },
     { name: 'Brazil' },
