@@ -4,7 +4,7 @@ import * as firebase from 'firebase/app';
 import { CommitteeData, DEFAULT_COMMITTEE } from './Committee';
 import {
   Form, Grid, Header, InputOnChangeData, DropdownProps, Divider,
-  Message, Button, Popup, Table, Container, Segment, Icon,
+  Message, Button, Popup, Container, Segment, Icon, Flag,
 } from 'semantic-ui-react';
 import { Login } from './Auth';
 import { URLParameters } from '../types';
@@ -14,7 +14,7 @@ import ConnectionStatus from './ConnectionStatus';
 import { logCreateCommittee } from '../analytics';
 import { meetId } from '../utils';
 import { putCommittee } from '../actions/committee-actions';
-import { Rank } from './Member';
+import { parseFlagName, Rank } from './Member';
 
 interface Props extends RouteComponentProps<URLParameters> {
 }
@@ -120,19 +120,16 @@ export default class Onboard extends React.Component<Props, State> {
       );
     }
 
-    const countryRows =
-      TEMPLATE_TO_MEMBERS[template]
-        .map(member => (<Table.Row>
-          <Table.Cell>{member.name}</Table.Cell>
-        </Table.Row>)
-      );
-
     return (
-      <Table basic='very' padded={false} celled={false}>
-        <Table.Body>
-          {countryRows}
-        </Table.Body>
-      </Table>
+      <>
+        {TEMPLATE_TO_MEMBERS[template]
+          .map(member => 
+          <div>
+            <Flag name={parseFlagName(member.name)} />
+            {member.name}
+          </div>
+        )}
+      </>
     );
   }
 
@@ -190,7 +187,7 @@ export default class Onboard extends React.Component<Props, State> {
                 options={Object.values(CommitteeTemplate).map(makeDropdownOption)}
                 onChange={this.onChangeTemplateDropdown}
               />
-              <Popup basic pinned hoverable size='tiny' position='right center' 
+              <Popup basic pinned hoverable position="top left"
                   trigger={<Button icon='question circle outline' />}>
                 <Popup.Content>
                   {this.renderCountriesTable(template)}
