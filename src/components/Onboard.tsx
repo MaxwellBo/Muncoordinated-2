@@ -4,7 +4,7 @@ import * as firebase from 'firebase/app';
 import { CommitteeData, DEFAULT_COMMITTEE } from './Committee';
 import {
   Form, Grid, Header, InputOnChangeData, DropdownProps, Divider,
-  Message, Container, Segment, Icon
+  Message, Button, Popup, Container, Segment, Icon, Flag,
 } from 'semantic-ui-react';
 import { Login } from './Auth';
 import { URLParameters } from '../types';
@@ -14,7 +14,7 @@ import ConnectionStatus from './ConnectionStatus';
 import { logCreateCommittee } from '../analytics';
 import { meetId } from '../utils';
 import { putCommittee } from '../actions/committee-actions';
-import { Rank } from './Member';
+import { parseFlagName, Rank } from './Member';
 
 interface Props extends RouteComponentProps<URLParameters> {
 }
@@ -113,8 +113,28 @@ export default class Onboard extends React.Component<Props, State> {
     }
   }
 
+  renderCountriesTable = (template: CommitteeTemplate | undefined) => {
+    if (!template) {
+      return (
+          <p>Select a template to see which members will be added</p>
+      );
+    }
+
+    return (
+      <>
+        {TEMPLATE_TO_MEMBERS[template]
+          .map(member => 
+          <div>
+            <Flag name={parseFlagName(member.name)} />
+            {member.name}
+          </div>
+        )}
+      </>
+    );
+  }
+
   renderNewCommitteeForm = () => {
-    const { user } = this.state;
+    const { user, template } = this.state;
 
     return (
       <React.Fragment>
@@ -155,17 +175,25 @@ export default class Onboard extends React.Component<Props, State> {
               placeholder="Conference name"
               onChange={this.handleInput}
             />
-            <Form.Dropdown
-              label="Template"
-              name="template"
-              fluid
-              search
-              clearable
-              selection
-              placeholder="Template to skip manual member creation (optional)"
-              options={Object.values(CommitteeTemplate).map(makeDropdownOption)}
-              onChange={this.onChangeTemplateDropdown}
-            />
+            <Form.Group unstackable widths='equal'>
+              <Form.Dropdown
+                label="Template"
+                name="template"
+                fluid
+                search
+                clearable
+                selection
+                placeholder="Template to skip manual member creation (optional)"
+                options={Object.values(CommitteeTemplate).map(makeDropdownOption)}
+                onChange={this.onChangeTemplateDropdown}
+              />
+              <Popup basic pinned hoverable position="top left"
+                  trigger={<Button icon='question circle outline' />}>
+                <Popup.Content>
+                  {this.renderCountriesTable(template)}
+                </Popup.Content>
+              </Popup>
+            </Form.Group>
             <Form.Button
               primary
               fluid
