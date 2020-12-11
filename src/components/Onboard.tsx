@@ -188,7 +188,7 @@ export default class Onboard extends React.Component<Props, State> {
                 onChange={this.onChangeTemplateDropdown}
               />
               <Popup basic pinned hoverable position="top left"
-                  trigger={<Button icon='question circle outline' />}>
+                  trigger={<Button type="button" icon='question circle outline' />}>
                 <Popup.Content>
                   {this.renderCountriesTable(template)}
                 </Popup.Content>
