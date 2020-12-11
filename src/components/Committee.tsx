@@ -70,8 +70,16 @@ export function recoverSettings(committee?: CommitteeData): Required<SettingsDat
     committee?.settings.motionVotes 
     ?? DEFAULT_SETTINGS.motionVotes;
 
+  const motionsArePublic: boolean = 
+    committee?.settings.motionsArePublic 
+    ?? DEFAULT_SETTINGS.motionsArePublic;
+
   return {
-    timersInSeparateColumns, moveQueueUp, autoNextSpeaker, motionVotes
+    timersInSeparateColumns,
+    moveQueueUp, 
+    autoNextSpeaker, 
+    motionVotes,
+    motionsArePublic
   };
 }
 
@@ -150,6 +158,7 @@ export const DEFAULT_COMMITTEE: CommitteeData = {
   resolutions: {} as Record<ResolutionID, ResolutionData>,
   files: {} as Record<PostID, PostData>,
   strawpolls: {} as Record<StrawpollID, StrawpollData>,
+  motions: {} as Record<MotionID, MotionData>,
   timer: { ...DEFAULT_TIMER, remaining: DEFAULT_CAUCUS_TIME_SECONDS },
   notes: '',
   settings: DEFAULT_SETTINGS

@@ -303,6 +303,8 @@ const DEFAULT_MOTION: MotionData = {
   caucusUnit: Unit.Minutes,
   type: MotionType.OpenUnmoderatedCaucus, // this will force it to the top of the list
   votes: {}
+  // deleted field must not exist for delegates to be able to propose
+  // don't blame me, I didn't write the database.rules (badum-tsh)
 };
 
 export class MotionsComponent extends React.Component<Props & Hooks, State> {
@@ -935,6 +937,7 @@ export class MotionsComponent extends React.Component<Props & Hooks, State> {
     const { committee, committeeFref } = this.state;
     const { committeeID } = this.props.match.params;
     const { operative } = makeCommitteeStats(this.state.committee);
+    const { motionVotes, motionsArePublic } = recoverSettings(committee);
 
     const renderedMotions = committee
       ? renderMotions(committee.motions || {} as Record<string, MotionData>)
@@ -945,16 +948,29 @@ export class MotionsComponent extends React.Component<Props & Hooks, State> {
         {renderAdder(committee)}
         <Divider hidden />
         <Checkbox
+          style={{ 'padding-right': '50px' }}
+          label="Delegates can propose motions"
+          toggle
+          checked={motionsArePublic}
+          onChange={
+            checkboxHandler<SettingsData>(
+              committeeFref.child('settings'),
+              'motionsArePublic')}
+        />
+        <Checkbox
           label="Delegates can vote on motions"
           toggle
-          checked={recoverSettings(committee).motionVotes}
+          checked={motionVotes}
           onChange={
             checkboxHandler<SettingsData>(
               committeeFref.child('settings'),
               'motionVotes')}
         />
-        {recoverSettings(committee).motionVotes
-          && <MotionsShareHint committeeID={committeeID} />}
+        {(motionVotes || motionsArePublic)
+          && <MotionsShareHint 
+            committeeID={committeeID}
+            canVote={motionVotes}
+            canPropose={motionsArePublic} />}
         <Divider />
         <Icon name="sort numeric ascending" /> Sorted from most to least disruptive. {operative} votes required to pass a motion
         <Button
