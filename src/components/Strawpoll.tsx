@@ -88,7 +88,7 @@ function getNumberOfVotes(option: StrawpollOptionData, medium: StrawpollMedium) 
   }
 }
 
-export function StrawpollModal(props: ModalProps) {
+export function DeleteStrawpollModal(props: ModalProps) {
   const onYesClick = () => {
     props.onConfirm()
     props.onChangeOpenState(false)
@@ -339,7 +339,7 @@ export default function Strawpoll(props: StrawpollProps) {
               onChange={togglePollType}
               value={type}
             />
-            <StrawpollModal 
+            <DeleteStrawpollModal 
               open={modalOpen} 
               onChangeOpenState={setOpen} 
               onConfirm={deleteStrawpoll} 

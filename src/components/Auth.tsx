@@ -343,7 +343,7 @@ export class Login extends React.Component<Props, State> {
   }
 }
 
-export class ModalLogin extends React.Component<{}, 
+export class LoginModal extends React.Component<{}, 
   { user?: firebase.User | null 
     unsubscribe?: () => void
   }> {

@@ -21,7 +21,7 @@ import Loading from './Loading';
 import Footer from './Footer';
 import Settings, { SettingsData, DEFAULT_SETTINGS } from './Settings';
 import Files, { PostID, PostData } from './Files';
-import { ModalLogin } from './Auth';
+import { LoginModal } from './Auth';
 import { CommitteeShareHint } from './ShareHint';
 import Notifications from './Notifications';
 import { putResolution } from '../actions/resolution-actions';
@@ -370,7 +370,7 @@ function ResponsiveNav(props: ResponsiveContainerProps) {
           {makeMenuIcon('Help', 'help')}
         </Menu.Menu>
         <Menu.Item key="login">
-          <ModalLogin />
+          <LoginModal />
         </Menu.Item>
       </React.Fragment>
     );
