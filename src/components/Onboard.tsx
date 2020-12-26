@@ -4,7 +4,7 @@ import * as firebase from 'firebase/app';
 import { CommitteeData, DEFAULT_COMMITTEE } from './Committee';
 import {
   Form, Grid, Header, InputOnChangeData, DropdownProps, Divider,
-  Message, Button, Popup, Container, Segment, Icon, Flag,
+  Message, Popup, Container, Segment, Icon, Flag,
 } from 'semantic-ui-react';
 import { Login } from './Auth';
 import { URLParameters } from '../types';
@@ -175,11 +175,11 @@ export default class Onboard extends React.Component<Props, State> {
               placeholder="Conference name"
               onChange={this.handleInput}
             />
-            <Form.Group unstackable widths='equal'>
+            <Form.Group unstackable>
               <Form.Dropdown
                 label="Template"
                 name="template"
-                fluid
+                width={14}
                 search
                 clearable
                 selection
@@ -187,8 +187,17 @@ export default class Onboard extends React.Component<Props, State> {
                 options={Object.values(CommitteeTemplate).map(makeDropdownOption)}
                 onChange={this.onChangeTemplateDropdown}
               />
-              <Popup basic pinned hoverable position="top left"
-                  trigger={<Button type="button" icon='question circle outline' />}>
+              <Popup 
+                basic 
+                pinned 
+                hoverable 
+                position="top left"
+                trigger={
+                  <Form.Button 
+                    type="button"
+                    icon='question circle outline'
+                    width={1}
+                  />}>
                 <Popup.Content>
                   {this.renderCountriesTable(template)}
                 </Popup.Content>
