@@ -211,8 +211,8 @@ export class Login extends React.Component<Props, State> {
 
   renderNotice = () => {
     const list = [
-      'Login to access your previously created committees, or to create a new committee',
-      'Multiple directors may use the same account concurrently from different computers - use a password you\'re willing to share'
+      'Login to create a new committee, or access your previously created committees',
+      'Multiple directors may use the same account simultaneously - use a password you\'re willing to share'
     ];
 
     return (
@@ -258,13 +258,13 @@ export class Login extends React.Component<Props, State> {
     const { loggingIn, creating, user, resetting, email, password, mode } = this.state;
     const { allowSignup } = this.props;
 
-    const signupButton = <Button onClick={handleCreate} loading={creating} >Create account</Button>;
+    const renderSignupButton = () => (
+      <Button onClick={handleCreate} loading={creating} >Create account</Button>
+    );
 
-    const cancelButton = <Button onClick={handleResetPasswordCancel}>Cancel</Button>;
-
-    const usernameInput = <input autoComplete="email" />;
-
-    const passwordInput = <input autoComplete="current-password" />;
+    const renderCancelButton = () => (
+      <Button onClick={handleResetPasswordCancel}>Cancel</Button>
+    );
 
     const err = this.state.error;
     const succ = this.state.success;
@@ -279,7 +279,7 @@ export class Login extends React.Component<Props, State> {
             value={email}
             onChange={setEmail}
           >
-            {usernameInput}
+            <input autoComplete="email" />
           </Form.Input>
           {mode === Mode.Login && <Form.Input
             key="password"
@@ -289,7 +289,7 @@ export class Login extends React.Component<Props, State> {
             value={password}
             onChange={setPassword}
           >
-            {passwordInput}
+            <input autoComplete="current-password" />
           </Form.Input>}
           {this.renderSuccess()}
           {this.renderError()}
@@ -314,8 +314,8 @@ export class Login extends React.Component<Props, State> {
               </Button>
             }
           {allowSignup && mode === Mode.Login && <Button.Or />}
-          {allowSignup && mode === Mode.Login && signupButton}
-          {mode === Mode.ForgotPassword && cancelButton}
+          {allowSignup && mode === Mode.Login && renderSignupButton()}
+          {mode === Mode.ForgotPassword && renderCancelButton()}
           </Button.Group>
           {mode === Mode.Login && 
             // eslint-disable-next-line jsx-a11y/anchor-is-valid
