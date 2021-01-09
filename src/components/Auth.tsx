@@ -381,6 +381,8 @@ export class Login extends React.Component<Props, State> {
           <Form.Input
             key="email"
             label="Email"
+            error={mode === Mode.CreateAccount && !email}
+            required={mode === Mode.CreateAccount}
             placeholder="joe@schmoe.com"
             value={email}
             onChange={this.setEmail}
@@ -391,6 +393,8 @@ export class Login extends React.Component<Props, State> {
             key="password"
             label="Password"
             type="password"
+            error={mode === Mode.CreateAccount && !password}
+            required={mode === Mode.CreateAccount}
             placeholder="correct horse battery staple"
             value={password}
             onChange={this.setPassword}
