@@ -239,7 +239,11 @@ export class Login extends React.Component<Props, State> {
   }
 
   renderNotice = () => {
-    const { mode } = this.state;
+    const { user, mode } = this.state;
+
+    if (user) {
+      return;
+    }
 
     if (mode === Mode.Login) {
       return (
@@ -412,7 +416,7 @@ export class Login extends React.Component<Props, State> {
 
     return (
       <React.Fragment>
-        {!user && this.renderNotice()}
+        {this.renderNotice()}
         {user ? this.renderLoggedIn(user) : this.renderLogin()}
       </React.Fragment>
     );
