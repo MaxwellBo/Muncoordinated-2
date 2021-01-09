@@ -27,7 +27,7 @@ export function enterUsernameAndPasswordAndHitsEnter() {
 }
 
 export function invokeModalAndLogin() {
-  cy.get('button').contains('Login').click()
+  cy.get('button').contains('Log in').click()
   enterUsernameAndPassword()
   cy.get('.modal').find('button').contains('Login').click()
   cy.get('body').type('{esc}')
