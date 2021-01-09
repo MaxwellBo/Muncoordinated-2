@@ -87,14 +87,17 @@ export default class Onboard extends React.Component<Props, State> {
         creatorUid: user.uid
       };
 
+      // We can't send `undefined` properties to Firebase or it will complain
+      // so we only set this property if the template exists
+      if (template) {
+        newCommittee.template = template;
+      }
+
       const newCommitteeRef = putCommittee(meetId(), newCommittee)
       this.props.history.push(`/committees/${newCommitteeRef.key}`);
       logCreateCommittee(newCommitteeRef.key ?? undefined)
 
       if (template) {
-        // We can't send `undefined` properties to Firebase or it will complain.
-        newCommittee.template = template;
-
         // Add countries as per selected templates
         [...TEMPLATE_TO_MEMBERS[template]]
           .reverse()
