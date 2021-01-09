@@ -9,12 +9,13 @@ import 'firebase/database';
 import 'firebase/firestore';
 import 'firebase/storage';
 
-import { Route } from 'react-router-dom';
+import { Route, Switch } from 'react-router-dom';
 import './App.css';
 
 import Onboard from './components/Onboard';
 import Homepage from './components/Homepage';
 import Committee from './components/Committee';
+import { NotFound } from './components/NotFound';
 
 const firebaseConfig = {
   apiKey: 'AIzaSyA9EuEf7m3YOTBhBNhoe7DcOIZJP2toL6w',
@@ -27,17 +28,18 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 
-
-
 class App extends React.Component {
   render() {
     return (
-      <React.Fragment>
+      <Switch>
         <Route exact path="/" component={Homepage} />
         <Route exact path="/onboard" component={Onboard} />
         <Route exact path="/committees" component={Onboard} />
         <Route path="/committees/:committeeID" component={Committee} />
-      </React.Fragment>
+        <Route path="*">
+          <NotFound item="page" id="unknown" />
+        </Route>
+      </Switch>
     );
   }
 }
