@@ -142,11 +142,13 @@ export class Login extends React.Component<Props, State> {
     this.setState( { mode: Mode.Login });
   }
 
-  setEmail = (e: React.FormEvent<HTMLInputElement>) =>
+  setEmail = (e: React.FormEvent<HTMLInputElement>) => {
     this.setState({ email: e.currentTarget.value })
+  }
 
-  setPassword = (e: React.FormEvent<HTMLInputElement>) =>
+  setPassword = (e: React.FormEvent<HTMLInputElement>) => {
     this.setState({ password: e.currentTarget.value })
+  }
 
   renderCommittee = (committeeID: CommitteeID, committee: CommitteeData) => {
     return (
@@ -180,7 +182,7 @@ export class Login extends React.Component<Props, State> {
     const { committees } = this.state;
 
     const defaulted = committees || {} as Record<CommitteeID, CommitteeData>;
-    const owned = _.keys(defaulted);
+    const owned = _.keys(defaulted || {});
 
     return (
       <List relaxed>
@@ -249,10 +251,15 @@ export class Login extends React.Component<Props, State> {
             Logged in
           </Card.Meta>
         </Card.Content>
-        <Card.Content key="committees">
+        <Card.Content key="committees" style={{ 
+          'max-height': '50vh',
+          'overflow' : 'auto'
+        }}>
           {committees ? renderCommittees() : <Loading />}
-          {allowNewCommittee && renderNewCommitteeButton()}
         </Card.Content>
+        {allowNewCommittee && <Card.Content key="create">
+          {renderNewCommitteeButton()}
+        </Card.Content>}
         <Card.Content extra key="extra">
           <Button basic color="red" fluid onClick={handleLogout}>Logout</Button>
         </Card.Content>
