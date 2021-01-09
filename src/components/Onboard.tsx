@@ -233,19 +233,19 @@ export default class Onboard extends React.Component<Props, State> {
               <Header as="h1" textAlign='center'>
                 Muncoordinated
               </Header>
-              <Message warning>
+              <Message>
                 <Message.Header>Browser compatability notice</Message.Header>
                   <p>
                   Muncoordinated works best with newer versions of <a 
                     href="https://www.google.com/chrome/">Google Chrome</a>.
-                  Use of older/other browsers has caused bugs and data loss.
+                   Use of older/other browsers has caused bugs and data loss.
                   </p>
               </Message>
             </Grid.Column>
           </Grid.Row>
           <Grid.Row>
             <Grid.Column>
-              <Login allowSignup={true} allowNewCommittee={false} />
+              <Login allowNewCommittee={false} />
             </Grid.Column>
             <Grid.Column>
               {this.renderNewCommitteeForm()}

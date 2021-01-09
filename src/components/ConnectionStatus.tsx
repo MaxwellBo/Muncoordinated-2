@@ -57,7 +57,7 @@ export default class ConnectionStatus extends React.Component<Props, State> {
         <Message.Content>
           <Message.Header>Connection Lost</Message.Header>
           Changes are no longer being committed to the server. Either wait for a reconnection
-          or refresh the page. If you refresh the page, you will need to login again.
+          or refresh the page. If you refresh the page, you will need to log in again.
         </Message.Content>
       </Message>
     ) : <div />;

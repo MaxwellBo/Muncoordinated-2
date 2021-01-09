@@ -8,6 +8,7 @@ import { logCreateAccount, logLogin } from '../analytics';
 
 enum Mode {
   Login = 'Login',
+  CreateAccount = 'CreateAccount',
   ForgotPassword = 'ForgotPassword'
 }
 
@@ -26,7 +27,6 @@ interface State {
 }
 
 interface Props {
-  allowSignup?: boolean; 
   allowNewCommittee?: boolean;
 }
 
@@ -73,13 +73,13 @@ export class Login extends React.Component<Props, State> {
     }
   }
 
-  handleLogout = () => {
+  logout = () => {
     firebase.auth().signOut().catch(err => {
       this.setState({ error: err });
     });
   }
 
-  handleLogin = () => {
+  login = () => {
     const { email, password } = this.state;
 
     this.setState({ loggingIn: true });
@@ -92,7 +92,7 @@ export class Login extends React.Component<Props, State> {
     });
   }
 
-  handleCreate = () => {
+  createAccount = () => {
     const { email, password } = this.state;
     this.setState({ creating: true });
 
@@ -110,7 +110,7 @@ export class Login extends React.Component<Props, State> {
     });
   }
 
-  handlePasswordReset = () => {
+  resetPassword = () => {
     const { email } = this.state;
     this.setState({ resetting: true });
 
@@ -126,20 +126,33 @@ export class Login extends React.Component<Props, State> {
     });
   }
 
-  handleDismissError = () => {
+  dismissError = () => {
     this.setState({ error: undefined });
   }
 
-  handleDismissSuccess = () => {
+  dismissSuccess = () => {
     this.setState({ success: undefined });
   }
 
-  handleForgotPassword = () => {
-    this.setState({ mode: Mode.ForgotPassword });
+  toLoginMode = () => {
+    this.setState( {
+      password: '',
+      mode: Mode.Login
+    });
   }
 
-  handleResetPasswordCancel = () => {
-    this.setState( { mode: Mode.Login });
+  toCreateAccountMode = () => {
+    this.setState({ 
+      password: '',
+      mode: Mode.CreateAccount 
+    });
+  }
+
+  toForgotPasswordMode = () => {
+    this.setState({ 
+      password: '',
+      mode: Mode.ForgotPassword 
+    });
   }
 
   setEmail = (e: React.FormEvent<HTMLInputElement>) => {
@@ -192,7 +205,7 @@ export class Login extends React.Component<Props, State> {
   }
 
   renderError = () => {
-    const { handleDismissError } = this;
+    const { dismissError } = this;
 
     const err = this.state.error;
     
@@ -200,7 +213,7 @@ export class Login extends React.Component<Props, State> {
       <Message
         key="error"
         error
-        onDismiss={handleDismissError}
+        onDismiss={dismissError}
       >
         <Message.Header>{err ? err.name : ''}</Message.Header>
         <Message.Content>{err ? err.message : ''}</Message.Content>
@@ -209,7 +222,7 @@ export class Login extends React.Component<Props, State> {
   }
 
   renderSuccess = () => {
-    const { handleDismissSuccess } = this;
+    const { dismissSuccess } = this;
 
     const succ = this.state.success;
 
@@ -217,7 +230,7 @@ export class Login extends React.Component<Props, State> {
       <Message
         key="success"
         success
-        onDismiss={handleDismissSuccess}
+        onDismiss={dismissSuccess}
       >
         <Message.Header>{succ ? succ.name : ''}</Message.Header>
         <Message.Content>{succ ? succ.message : ''}</Message.Content>
@@ -226,19 +239,27 @@ export class Login extends React.Component<Props, State> {
   }
 
   renderNotice = () => {
-    const list = [
-      'Multiple directors may use the same account simultaneously - use a password you\'re willing to share'
-    ];
+    const { mode } = this.state;
 
-    return (
-      <Message attached="top" info>
-        Login to create a new committee, or access an older committee
-      </Message>
-    );
+    if (mode === Mode.Login) {
+      return (
+        <Message attached="top" info>
+          Log in to create a new committee, or access an older committee
+        </Message>
+      );
+    };
+
+    if (mode === Mode.CreateAccount) {
+      return (
+        <Message attached="top" info>
+          Multiple directors may use the same account simultaneously. Use a password you're willing to share.
+        </Message>
+      );
+    };
   }
 
   renderLoggedIn = (u: firebase.User) => {
-    const { handleLogout, renderCommittees, renderNewCommitteeButton } = this;
+    const { logout, renderCommittees, renderNewCommitteeButton } = this;
     const { committees } = this.state;
     const { allowNewCommittee } = this.props;
 
@@ -262,24 +283,90 @@ export class Login extends React.Component<Props, State> {
           {renderNewCommitteeButton()}
         </Card.Content>}
         <Card.Content extra key="extra">
-          <Button basic color="red" fluid onClick={handleLogout}>Logout</Button>
+          <Button basic color="red" fluid onClick={logout}>Logout</Button>
         </Card.Content>
       </Card>
     );
   }
 
   renderLogin = () => {
-    const { setEmail, setPassword, handleCreate, 
-      handleLogin, handlePasswordReset, handleForgotPassword, handleResetPasswordCancel } = this;
     const { loggingIn, creating, user, resetting, email, password, mode } = this.state;
-    const { allowSignup } = this.props;
 
-    const renderSignupButton = () => (
-      <Button onClick={handleCreate} loading={creating} >Create account</Button>
+    const renderLogInButton = () => (
+      <Button 
+        primary 
+        fluid
+        disabled={!email || !password}
+        onClick={this.login} 
+        loading={loggingIn} 
+        style={{
+          'margin-bottom': '8px'
+        }}
+      >
+        Log in
+      </Button>
+    );
+
+    const renderCreateAccountButton = () => (
+      <Button 
+        positive
+        fluid 
+        onClick={this.toCreateAccountMode}
+        style={{
+          'margin-bottom': '8px'
+        }}
+      >
+        Create account <Icon name="arrow right" />
+      </Button>
+    );
+
+    const renderRealCreateAccountButton = () => (
+      <Button 
+        fluid
+        positive
+        onClick={this.createAccount} 
+        loading={creating} 
+        disabled={!email || !password}
+        style={{
+          'margin-bottom': '8px'
+        }}
+      >
+        Create account
+      </Button>
+    )
+
+    const renderForgotPasswordButton = () => (
+      // eslint-disable-next-line jsx-a11y/anchor-is-valid
+      <a 
+        onClick={this.toForgotPasswordMode} 
+        style={{'cursor': 'pointer'}}
+      >
+        Forgot password?
+      </a>
     );
 
     const renderCancelButton = () => (
-      <Button onClick={handleResetPasswordCancel}>Cancel</Button>
+      <Button 
+        onClick={this.toLoginMode}
+        fluid
+      >
+        <Icon name="arrow left" /> Login
+      </Button>
+    );
+
+    const renderSendResetEmailButton = () => (
+      <Button 
+        primary
+        fluid
+        onClick={this.resetPassword} 
+        loading={resetting} 
+        disabled={!email}
+        style={{
+          'margin-bottom': '8px'
+        }}
+      >
+        Send reset email
+      </Button>
     );
 
     const err = this.state.error;
@@ -293,65 +380,38 @@ export class Login extends React.Component<Props, State> {
             label="Email"
             placeholder="joe@schmoe.com"
             value={email}
-            onChange={setEmail}
+            onChange={this.setEmail}
           >
             <input autoComplete="email" />
           </Form.Input>
-          {mode === Mode.Login && <Form.Input
+          {mode !== Mode.ForgotPassword && <Form.Input
             key="password"
             label="Password"
             type="password"
             placeholder="correct horse battery staple"
             value={password}
-            onChange={setPassword}
+            onChange={this.setPassword}
           >
             <input autoComplete="current-password" />
           </Form.Input>}
           {this.renderSuccess()}
           {this.renderError()}
-          <Button.Group fluid>
-            {mode === Mode.Login && 
-              <Button 
-                primary 
-                onClick={handleLogin} 
-                loading={loggingIn} 
-              >
-                Login
-              </Button>
-            }
-            {mode === Mode.ForgotPassword &&
-              <Button 
-                primary
-                onClick={handlePasswordReset} 
-                loading={resetting} 
-                disabled={!email}
-              >
-                Reset Password
-              </Button>
-            }
-          {allowSignup && mode === Mode.Login && <Button.Or />}
-          {allowSignup && mode === Mode.Login && renderSignupButton()}
-          {mode === Mode.ForgotPassword && renderCancelButton()}
-          </Button.Group>
-          {mode === Mode.Login && 
-            // eslint-disable-next-line jsx-a11y/anchor-is-valid
-            <a 
-              onClick={handleForgotPassword} 
-              style={{'cursor': 'pointer'}}
-            >
-              Forgot password?
-            </a>}
+          {mode === Mode.Login && renderLogInButton()}
+          {mode === Mode.Login && renderCreateAccountButton()}
+          {mode === Mode.Login && renderForgotPasswordButton()}
+          {mode === Mode.ForgotPassword && renderSendResetEmailButton()}
+          {mode === Mode.CreateAccount && renderRealCreateAccountButton()}
+          {mode !== Mode.Login && renderCancelButton()}
         </Form>
       </Segment>
     );
   }
 
   render() {
-    const { user, success } = this.state;
+    const { user } = this.state;
 
     return (
       <React.Fragment>
-        {success && this.renderSuccess()}
         {!user && this.renderNotice()}
         {user ? this.renderLoggedIn(user) : this.renderLogin()}
       </React.Fragment>
@@ -409,7 +469,7 @@ export class LoginModal extends React.Component<{},
         basic={true} // strip out the outer window
       >
         <Modal.Content>
-          <Login allowSignup={false} allowNewCommittee={true}/>
+          <Login allowNewCommittee={true}/>
         </Modal.Content>
       </Modal>
     );
