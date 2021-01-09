@@ -144,7 +144,7 @@ export default class Onboard extends React.Component<Props, State> {
         {!user && <Message
           error
           attached="top"
-          content="Please login or create an account to create a committee"
+          content="Please log in or create an account to create a committee"
         />}
         <Segment attached={!user ? 'bottom' : undefined} >
           <Form onSubmit={this.handleSubmit}>
