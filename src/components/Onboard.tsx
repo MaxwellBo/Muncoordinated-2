@@ -230,15 +230,18 @@ export default class Onboard extends React.Component<Props, State> {
         >
           <Grid.Row>
             <Grid.Column>
-              <Header as="h1" dividing>
+              <Header as="h1" textAlign='center'>
                 Muncoordinated
               </Header>
-              <Divider hidden />
-              Muncoordinated officially supports recent versions of Google Chrome.
-                Use of older and other browsers has been known to cause bugs and data loss.
+              <Message>
+                <Message.Header>Browser compatability notice</Message.Header>
+                  <p>
+                  Muncoordinated officially supports recent versions of Google Chrome.
+                    Use of older/other browsers has been known to cause bugs and data loss.
+                  </p>
+              </Message>
             </Grid.Column>
           </Grid.Row>
-          <Divider />
           <Grid.Row>
             <Grid.Column>
               <Login allowSignup={true} allowNewCommittee={false} />
