@@ -148,6 +148,33 @@ export class Login extends React.Component<Props, State> {
   setPassword = (e: React.FormEvent<HTMLInputElement>) =>
     this.setState({ password: e.currentTarget.value })
 
+  renderCommittee = (committeeID: CommitteeID, committee: CommitteeData) => {
+    return (
+      <List.Item key={committeeID}>
+        <List.Content>
+          <List.Header as="a" href={`/committees/${committeeID}`}>
+            {committee.name}
+          </List.Header>
+          <List.Description>
+            {committee.topic}
+          </List.Description>
+        </List.Content>
+      </List.Item>
+    );
+  }
+
+  renderNewCommitteeButton = () => {
+    return (
+      <List.Item key={'add'}>
+        <List.Content>
+          <List.Header as="a" href={'/onboard'}>
+            <Icon name="plus" />Create new committee
+          </List.Header>
+        </List.Content>
+      </List.Item>
+    );
+  }
+
   renderCommittees = () => {
     const { renderCommittee } = this;
     const { committees } = this.state;
@@ -159,19 +186,6 @@ export class Login extends React.Component<Props, State> {
       <List relaxed>
         {owned.map(k => renderCommittee(k, defaulted[k]))}
       </List>
-    );
-  }
-
-  renderCommittee = (committeeID: CommitteeID, committee: CommitteeData) => {
-    const target = `/committees/${committeeID}`;
-
-    return (
-      <List.Item key={committeeID}>
-        <List.Content>
-          <List.Header as="a" href={target}>{committee.name}</List.Header>
-          <List.Description>{committee.topic}</List.Description>
-        </List.Content>
-      </List.Item>
     );
   }
 
@@ -221,12 +235,12 @@ export class Login extends React.Component<Props, State> {
   }
 
   renderLoggedIn = (u: firebase.User) => {
-    const { handleLogout, renderCommittees } = this;
+    const { handleLogout, renderCommittees, renderNewCommitteeButton } = this;
     const { committees } = this.state;
     const { allowNewCommittee } = this.props;
 
     return (
-      <Card centered>
+      <Card centered fluid>
         <Card.Content key="main">
           <Card.Header>
             {u.email}
@@ -237,13 +251,7 @@ export class Login extends React.Component<Props, State> {
         </Card.Content>
         <Card.Content key="committees">
           {committees ? renderCommittees() : <Loading />}
-          {allowNewCommittee && <List.Item key={'add'}>
-            <List.Content>
-                <List.Header as="a" href={'/onboard'}>
-                <Icon name="plus" />Create new committee
-              </List.Header>
-            </List.Content>
-          </List.Item>}
+          {allowNewCommittee && renderNewCommitteeButton()}
         </Card.Content>
         <Card.Content extra key="extra">
           <Button basic color="red" fluid onClick={handleLogout}>Logout</Button>
