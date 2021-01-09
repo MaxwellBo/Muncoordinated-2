@@ -194,7 +194,7 @@ export class Login extends React.Component<Props, State> {
     const { committees } = this.state;
 
     const defaulted = committees || {} as Record<CommitteeID, CommitteeData>;
-    const owned = _.keys(defaulted || {});
+    const owned = _.keys(defaulted);
 
     return (
       <List relaxed>
