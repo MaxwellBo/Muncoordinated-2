@@ -143,7 +143,6 @@ export class Login extends React.Component<Props, State> {
 
   toCreateAccountMode = () => {
     this.setState({ 
-      password: '',
       mode: Mode.CreateAccount 
     });
   }
