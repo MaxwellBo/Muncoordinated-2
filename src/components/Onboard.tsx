@@ -234,7 +234,7 @@ export default class Onboard extends React.Component<Props, State> {
                 Muncoordinated
               </Header>
               <Message>
-                <Message.Header>Browser compatability notice</Message.Header>
+                <Message.Header>Browser compatibility notice</Message.Header>
                   <p>
                   Muncoordinated works best with newer versions of <a 
                     href="https://www.google.com/chrome/">Google Chrome</a>.
