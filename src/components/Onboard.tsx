@@ -3,7 +3,7 @@ import { RouteComponentProps } from 'react-router';
 import * as firebase from 'firebase/app';
 import { CommitteeData, DEFAULT_COMMITTEE } from './Committee';
 import {
-  Form, Grid, Header, InputOnChangeData, DropdownProps, Divider,
+  Form, Grid, Header, InputOnChangeData, DropdownProps,
   Message, Popup, Container, Segment, Icon, Flag,
 } from 'semantic-ui-react';
 import { Login } from './Auth';
@@ -144,7 +144,7 @@ export default class Onboard extends React.Component<Props, State> {
         {!user && <Message
           error
           attached="top"
-          content="Please login or create an account before creating a committee"
+          content="Please login or create an account to create a committee"
         />}
         <Segment attached={!user ? 'bottom' : undefined} >
           <Form onSubmit={this.handleSubmit}>
@@ -233,11 +233,12 @@ export default class Onboard extends React.Component<Props, State> {
               <Header as="h1" textAlign='center'>
                 Muncoordinated
               </Header>
-              <Message>
+              <Message warning>
                 <Message.Header>Browser compatability notice</Message.Header>
                   <p>
-                  Muncoordinated officially supports recent versions of Google Chrome.
-                    Use of older/other browsers has been known to cause bugs and data loss.
+                  Muncoordinated works best with newer versions of <a 
+                    href="https://www.google.com/chrome/">Google Chrome</a>.
+                  Use of older/other browsers has caused bugs and data loss.
                   </p>
               </Message>
             </Grid.Column>
