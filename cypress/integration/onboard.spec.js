@@ -1,4 +1,4 @@
-import { purge, enterUsernameAndPassword } from './utils'
+import { purge, enterUsername, enterPassword } from './utils'
 
 const CHAIRPERSON = 'Test chairperson'
 const TOPIC = 'Test topic'
@@ -18,13 +18,21 @@ describe('Run through creating a new committee', function () {
   })
 
   it('attempts to create an account that is already in use, and then logs in', function () {
-    cy.get('button').contains('Login').then(() => {
-      enterUsernameAndPassword()
+    cy.get('button').contains('Log in').then(() => {
+      cy.contains('Create account').click()
+
+      enterUsername()
+      enterPassword()
 
       cy.contains('Create account').click()
+
       cy.contains('in use by another account')
 
       cy.get('button').contains('Login').click()
+
+      enterPassword()
+
+      cy.get('button').contains('Log in').click()
     })
   })
 

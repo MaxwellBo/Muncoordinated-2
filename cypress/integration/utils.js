@@ -6,30 +6,24 @@ export function purge() {
   cy.clearLocalStorage()
 }
 
-export function enterUsernameAndPassword() {
+export function enterUsername() {
   cy.get('input[autocomplete=email]')
     .type('fake@email.com')
     .should('have.value', 'fake@email.com')
+}
 
+export function enterPassword() {
   cy.get('input[autocomplete=current-password]')
     .type('fakepassword')
     .should('have.value', 'fakepassword')
 }
 
-export function enterUsernameAndPasswordAndHitsEnter() {
-  cy.get('input[autocomplete=email]')
-    .type('fake@email.com')
-    .should('have.value', 'fake@email.com')
-
-  cy.get('input[autocomplete=current-password]')
-    .type('fakepassword{enter}')
-    .should('have.value', 'fakepassword')
-}
 
 export function invokeModalAndLogin() {
-  cy.get('button').contains('Log in').click()
-  enterUsernameAndPassword()
-  cy.get('.modal').find('button').contains('Login').click()
+  cy.get('button').contains('Login').click()
+  enterUsername()
+  enterPassword()
+  cy.get('.modal').find('button').contains('Log in').click()
   cy.get('body').type('{esc}')
   cy.wait(2000)
 }
