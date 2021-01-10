@@ -85,7 +85,11 @@ export class Login extends React.Component<Props, State> {
     this.setState({ loggingIn: true });
 
     firebase.auth().signInWithEmailAndPassword(email, password).then(credential => {
-      this.setState({ loggingIn: false });
+      this.setState({ 
+        loggingIn: false,
+        email: '',
+        password: ''
+      });
       logLogin(credential.user?.uid)
     }).catch(err => {
       this.setState({ loggingIn: false, error: err });
@@ -103,7 +107,12 @@ export class Login extends React.Component<Props, State> {
         message: 'Your account was successfully created' 
       };
 
-      this.setState({ creating: false, success });
+      this.setState({ 
+        creating: false,
+        email: '',
+        password: '',
+        success 
+      });
       logCreateAccount(credential.user?.uid)
     }).catch(err => {
       this.setState({ creating: false, error: err });
