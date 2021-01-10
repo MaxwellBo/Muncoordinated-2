@@ -70,8 +70,11 @@ export default class Onboard extends React.Component<Props, State> {
   }
 
   onChangeTemplateDropdown = (event: React.SyntheticEvent<HTMLElement, Event>, data: DropdownProps): void => {
-    // @ts-ignore
-    this.setState({ template: data.value });
+    this.setState(old => ({ 
+      template: data.value as CommitteeTemplate,
+      // don't clear the name if the template is deselected
+      name: data.value as string || old.name
+    }));
   }
 
   handleSubmit = () => {
@@ -127,7 +130,7 @@ export default class Onboard extends React.Component<Props, State> {
       <>
         {TEMPLATE_TO_MEMBERS[template]
           .map(member => 
-          <div>
+          <div key={member.name}>
             <Flag name={parseFlagName(member.name)} />
             {member.name}
           </div>
@@ -148,36 +151,6 @@ export default class Onboard extends React.Component<Props, State> {
         />}
         <Segment attached={!user ? 'bottom' : undefined} >
           <Form onSubmit={this.handleSubmit}>
-            <Form.Input
-              label="Name"
-              name="name"
-              fluid
-              required
-              error={this.state.name === ''}
-              placeholder="Committee name"
-              onChange={this.handleInput}
-            />
-            <Form.Input
-              label="Topic"
-              name="topic"
-              fluid
-              placeholder="Committee topic"
-              onChange={this.handleInput}
-            />
-            <Form.Input
-              label="Chairpeople"
-              name="chair"
-              fluid
-              placeholder="Name(s) of chairperson or chairpeople"
-              onChange={this.handleInput}
-            />
-            <Form.Input
-              label="Conference"
-              name="conference"
-              fluid
-              placeholder="Conference name"
-              onChange={this.handleInput}
-            />
             <Form.Group unstackable>
               <Form.Dropdown
                 label="Template"
@@ -206,6 +179,32 @@ export default class Onboard extends React.Component<Props, State> {
                 </Popup.Content>
               </Popup>
             </Form.Group>
+            <Form.Input
+              label="Name"
+              name="name"
+              fluid
+              value={this.state.name}
+              required
+              error={!this.state.name}
+              placeholder="Committee name"
+              onChange={this.handleInput}
+            />
+            <Form.Input
+              label="Topic"
+              name="topic"
+              value={this.state.topic}
+              fluid
+              placeholder="Committee topic"
+              onChange={this.handleInput}
+            />
+            <Form.Input
+              label="Conference"
+              name="conference"
+              value={this.state.conference}
+              fluid
+              placeholder="Conference name"
+              onChange={this.handleInput}
+            />
             <Form.Button
               primary
               fluid
