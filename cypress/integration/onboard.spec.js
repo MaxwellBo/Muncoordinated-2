@@ -1,10 +1,8 @@
 import { purge, enterUsername, enterPassword } from './utils'
 
-const CHAIRPERSON = 'Test chairperson'
+const TEMPLATE = 'UN Security Council'
 const TOPIC = 'Test topic'
-const COMMITTEE = 'Test committee'
 const CONFERENCE = 'Test conference'
-const TEMPLATE = 'Security Council'
 
 describe('Run through creating a new committee', function () {
   before(function() {
@@ -37,26 +35,21 @@ describe('Run through creating a new committee', function () {
   })
 
   it('creates a new Security Council committee', function () {
+    cy.get('div')
+      .contains('Template to skip manual member creation (optional)')
+      .type(TEMPLATE + '{enter}')
+      .contains(TEMPLATE)
+
     cy.get('input[placeholder="Committee name"')
-      .type(COMMITTEE)
-      .should('have.value', COMMITTEE)
+      .should('have.value', TEMPLATE)
 
     cy.get('input[placeholder="Committee topic"')
       .type(TOPIC)
       .should('have.value', TOPIC)
 
-    cy.get('input[placeholder="Name(s) of chairperson or chairpeople"')
-      .type(CHAIRPERSON)
-      .should('have.value', CHAIRPERSON)
-
     cy.get('input[placeholder="Conference name"')
       .type(CONFERENCE)
       .should('have.value', CONFERENCE)
-
-    cy.get('div')
-      .contains('Template to skip manual member creation (optional)')
-      .type(TEMPLATE + '{enter}')
-      .contains(TEMPLATE)
 
     const createButton = cy.get('button').contains('Create committee')
 
@@ -66,13 +59,10 @@ describe('Run through creating a new committee', function () {
     cy.url().should('include', '/committees')
 
     cy.get('input[placeholder="Committee name"')
-      .should('have.value', COMMITTEE)
+      .should('have.value', TEMPLATE)
 
     cy.get('input[placeholder="Committee topic"')
       .should('have.value', TOPIC)
-
-    cy.get('input[placeholder="Name(s) of chairperson or chairpeople"')
-      .should('have.value', CHAIRPERSON)
   })
 
   it('observes the templated prepopulated member list for the Security Council', function () {
