@@ -9,12 +9,12 @@ function CopyableText(props: {
   const [message, setMessage] = React.useState<string>('Copy');
 
   const copy = () => {
-
     // We have to try-catch because this API might not be available
     try {
       navigator.clipboard.writeText(props.value)
         .then(() => {
-          setMessage('Copy again')
+          setMessage('Copied')
+          setTimeout(() => setMessage('Copy'), 3000)
         })
         .catch(() => {
           setMessage('Please copy manually')
