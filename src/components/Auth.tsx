@@ -253,7 +253,7 @@ export class Login extends React.Component<Props, State> {
           </Card.Meta>
         </Card.Content>
         <Card.Content key="committees" style={{ 
-          'max-height': '50vh',
+          'maxHeight': '50vh',
           'overflow' : 'auto'
         }}>
           {committees ? renderCommittees() : <Loading />}
@@ -276,7 +276,8 @@ export class Login extends React.Component<Props, State> {
         primary 
         disabled={!email || !password}
         onClick={this.login} 
-        loading={loggingIn} 
+        loading={loggingIn}
+        type="submit"
       >
         Log in
       </Button>
@@ -291,12 +292,14 @@ export class Login extends React.Component<Props, State> {
       </Button>
     );
 
-    const renderRealCreateAccountButton = () => (
+    const renderSubmitCreateAccountButton = () => (
       <Button 
         positive
+        fluid
         onClick={this.createAccount} 
         loading={creating} 
         disabled={!email || !password}
+        type="submit"
       >
         Create account
       </Button>
@@ -312,20 +315,29 @@ export class Login extends React.Component<Props, State> {
       </a>
     );
 
-    const renderCancelButton = () => (
-      <Button 
-        onClick={this.toLoginMode}
-      >
-        <Icon name="arrow left" /> Login
-      </Button>
+    const renderToLoginButton = () => (
+      <div style={{ marginBottom: '8px' }}>
+        {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+        <a 
+          onClick={this.toLoginMode} 
+          style={{
+            cursor: 'pointer',
+          }}
+        >
+          <Icon name="arrow left" />
+          Back to login
+        </a>
+      </div>
     );
 
     const renderSendResetEmailButton = () => (
       <Button 
         primary
+        fluid
         onClick={this.resetPassword} 
         loading={resetting} 
         disabled={!email}
+        type="submit"
       >
         Send reset email
       </Button>
@@ -348,7 +360,7 @@ export class Login extends React.Component<Props, State> {
             Create account
             <Header.Subheader>
                 Multiple directors may use the same account simultaneously. 
-                Use a password you're willing to share.
+                Choose a password you're willing to share.
             </Header.Subheader>
           </Header>}
         {mode === Mode.ForgotPassword && 
@@ -356,6 +368,7 @@ export class Login extends React.Component<Props, State> {
             Reset password
           </Header>}
         <Segment attached="bottom">
+          {mode !== Mode.Login && renderToLoginButton()}
           <Form error={!!err} success={!!succ} loading={user === undefined}>
             <Form.Input
               key="email"
@@ -368,28 +381,37 @@ export class Login extends React.Component<Props, State> {
             >
               <input autoComplete="email" />
             </Form.Input>
-            {mode !== Mode.ForgotPassword && <Form.Input
-              key="password"
+            {mode === Mode.Login && <Form.Input
+              key="current-password"
               label="Password"
               type="password"
-              error={mode === Mode.CreateAccount && !password}
-              required={mode === Mode.CreateAccount}
               placeholder="correct horse battery staple"
               value={password}
               onChange={this.setPassword}
             >
               <input autoComplete="current-password" />
             </Form.Input>}
+            {mode === Mode.CreateAccount && <Form.Input
+              key="new-password"
+              label="Password"
+              type="password"
+              error={!password}
+              required
+              placeholder="correct horse battery staple"
+              value={password}
+              onChange={this.setPassword}
+            >
+              <input autoComplete="new-password" />
+            </Form.Input>}
             {this.renderSuccess()}
             {this.renderError()}
-            <Button.Group fluid widths='2'>
-              {mode !== Mode.Login && renderCancelButton()}
-              {mode === Mode.Login && renderLogInButton()}
-              {mode === Mode.Login && <Button.Or />}
-              {mode === Mode.Login && renderCreateAccountButton()}
-              {mode === Mode.CreateAccount && renderRealCreateAccountButton()}
-              {mode === Mode.ForgotPassword && renderSendResetEmailButton()}
-            </Button.Group>
+            {mode === Mode.Login && <Button.Group fluid widths='2'>
+               {renderLogInButton()}
+               <Button.Or />
+               {renderCreateAccountButton()}
+            </Button.Group>}
+            {mode === Mode.ForgotPassword && renderSendResetEmailButton()}
+            {mode === Mode.CreateAccount && renderSubmitCreateAccountButton()}
             {mode === Mode.Login && renderForgotPasswordButton()}
           </Form>
         </Segment>

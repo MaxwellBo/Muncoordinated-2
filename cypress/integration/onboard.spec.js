@@ -1,4 +1,4 @@
-import { purge, enterUsername, enterPassword } from './utils'
+import { purge, enterUsername, enterCurrentPassword, enterNewPassword } from './utils'
 
 const TEMPLATE = 'UN Security Council'
 const TOPIC = 'Test topic'
@@ -20,15 +20,15 @@ describe('Run through creating a new committee', function () {
       cy.contains('Create account').click()
 
       enterUsername()
-      enterPassword()
+      enterNewPassword()
 
       cy.get('button').contains('Create account').click()
 
       cy.contains('in use by another account')
 
-      cy.get('button').contains('Login').click()
+      cy.get('a').contains('Back to login').click()
 
-      enterPassword()
+      enterCurrentPassword()
 
       cy.get('button').contains('Log in').click()
     })

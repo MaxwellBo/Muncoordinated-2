@@ -12,8 +12,14 @@ export function enterUsername() {
     .should('have.value', 'fake@email.com')
 }
 
-export function enterPassword() {
+export function enterCurrentPassword() {
   cy.get('input[autocomplete=current-password]')
+    .type('fakepassword')
+    .should('have.value', 'fakepassword')
+}
+
+export function enterNewPassword() {
+  cy.get('input[autocomplete=new-password]')
     .type('fakepassword')
     .should('have.value', 'fakepassword')
 }
@@ -21,7 +27,7 @@ export function enterPassword() {
 export function invokeModalAndLogin() {
   cy.get('button').contains('Login').click()
   enterUsername()
-  enterPassword()
+  enterCurrentPassword()
   cy.get('.modal').find('button').contains('Log in').click()
   cy.get('body').type('{esc}')
   cy.wait(2000)
