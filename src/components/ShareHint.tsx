@@ -52,16 +52,37 @@ export function CommitteeShareHint(props: {
       <Divider hidden />
 
       Copy and send this to your delegates, and they will be able to:
+
+      <VerboseShareCapabilities />
       
-      <List bulleted>
-        <List.Item>Upload files</List.Item>
-        <List.Item>Add themselves to speaker's lists that have the 'Delegates can queue' flag enabled</List.Item>
-        <List.Item>Add and edit amendments on resolutions that have the 'Delegates can amend' flag enabled</List.Item>
-        <List.Item>Vote on motions that have the 'Delegates can vote on motions' flag enabled</List.Item>
-        <List.Item>Vote on strawpolls</List.Item>
-      </List>
     </Segment>
   );
+}
+
+export function ShareCapabilities() {
+  return (
+      <List bulleted>
+        <List.Item>Upload files</List.Item>
+        <List.Item>Add themselves to speakers' lists</List.Item>
+        <List.Item>Add and edit amendments on resolutions</List.Item>
+        <List.Item>Propose motions</List.Item>
+        <List.Item>Vote on motions</List.Item>
+        <List.Item>Vote on strawpolls</List.Item>
+      </List>
+  )
+}
+
+export function VerboseShareCapabilities() {
+  return (
+      <List bulleted>
+        <List.Item>Upload files</List.Item>
+        <List.Item>Add themselves to speakers' lists that have the <i>Delegates can queue</i> flag enabled</List.Item>
+        <List.Item>Add and edit amendments on resolutions that have the <i>Delegates can amend</i> flag enabled</List.Item>
+        <List.Item>Propose motions that have the <i>Delegates can propose motions</i> flag enabled</List.Item>
+        <List.Item>Vote on motions that have the <i>Delegates can vote on motions</i> flag enabled</List.Item>
+        <List.Item>Vote on strawpolls</List.Item>
+      </List>
+  )
 }
 
 export function StrawpollShareHint(props: {
