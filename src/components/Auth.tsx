@@ -382,7 +382,7 @@ export class Login extends React.Component<Props, State> {
             </Form.Input>}
             {this.renderSuccess()}
             {this.renderError()}
-            <Button.Group fluid>
+            <Button.Group fluid widths='2'>
               {mode !== Mode.Login && renderCancelButton()}
               {mode === Mode.Login && renderLogInButton()}
               {mode === Mode.Login && <Button.Or />}
