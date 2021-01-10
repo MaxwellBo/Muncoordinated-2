@@ -2,7 +2,6 @@ import * as React from 'react';
 import {
   Button,
   Container,
-  Divider,
   Grid,
   Header,
   Icon,
@@ -14,7 +13,6 @@ import {
   Statistic,
   Sidebar,
   Visibility,
-  Popup
 } from 'semantic-ui-react';
 import { logClickCreateACommitteeButton, logClickLogInButton, logClickSignupButton } from '../analytics';
 import Loading from './Loading';
