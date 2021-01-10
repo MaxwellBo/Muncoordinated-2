@@ -22,7 +22,7 @@ describe('Run through creating a new committee', function () {
       enterUsername()
       enterPassword()
 
-      cy.contains('Create account').click()
+      cy.get('button').contains('Create account').click()
 
       cy.contains('in use by another account')
 

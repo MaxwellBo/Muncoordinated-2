@@ -1,6 +1,6 @@
 import * as React from 'react';
 import firebase from 'firebase/app';
-import { Card, Button, Form, Message, Modal, Icon, List, Segment } from 'semantic-ui-react';
+import { Card, Button, Form, Message, Modal, Icon, List, Segment, Header } from 'semantic-ui-react';
 import { CommitteeID, CommitteeData } from './Committee';
 import _ from 'lodash';
 import Loading from './Loading';
@@ -237,30 +237,6 @@ export class Login extends React.Component<Props, State> {
     );
   }
 
-  renderNotice = () => {
-    const { user, mode } = this.state;
-
-    if (user) {
-      return;
-    }
-
-    if (mode === Mode.Login) {
-      return (
-        <Message attached="top" info>
-          Log in to create a new committee, or access an older committee
-        </Message>
-      );
-    };
-
-    if (mode === Mode.CreateAccount) {
-      return (
-        <Message attached="top" info>
-          Multiple directors may use the same account simultaneously. Use a password you're willing to share.
-        </Message>
-      );
-    };
-  }
-
   renderLoggedIn = (u: firebase.User) => {
     const { logout, renderCommittees, renderNewCommitteeButton } = this;
     const { committees } = this.state;
@@ -298,13 +274,9 @@ export class Login extends React.Component<Props, State> {
     const renderLogInButton = () => (
       <Button 
         primary 
-        fluid
         disabled={!email || !password}
         onClick={this.login} 
         loading={loggingIn} 
-        style={{
-          'margin-bottom': '8px'
-        }}
       >
         Log in
       </Button>
@@ -313,11 +285,7 @@ export class Login extends React.Component<Props, State> {
     const renderCreateAccountButton = () => (
       <Button 
         positive
-        fluid 
         onClick={this.toCreateAccountMode}
-        style={{
-          'margin-bottom': '8px'
-        }}
       >
         Create account <Icon name="arrow right" />
       </Button>
@@ -325,14 +293,10 @@ export class Login extends React.Component<Props, State> {
 
     const renderRealCreateAccountButton = () => (
       <Button 
-        fluid
         positive
         onClick={this.createAccount} 
         loading={creating} 
         disabled={!email || !password}
-        style={{
-          'margin-bottom': '8px'
-        }}
       >
         Create account
       </Button>
@@ -351,7 +315,6 @@ export class Login extends React.Component<Props, State> {
     const renderCancelButton = () => (
       <Button 
         onClick={this.toLoginMode}
-        fluid
       >
         <Icon name="arrow left" /> Login
       </Button>
@@ -360,13 +323,9 @@ export class Login extends React.Component<Props, State> {
     const renderSendResetEmailButton = () => (
       <Button 
         primary
-        fluid
         onClick={this.resetPassword} 
         loading={resetting} 
         disabled={!email}
-        style={{
-          'margin-bottom': '8px'
-        }}
       >
         Send reset email
       </Button>
@@ -376,53 +335,74 @@ export class Login extends React.Component<Props, State> {
     const succ = this.state.success;
     
     return (
-      <Segment attached="bottom">
-        <Form error={!!err} success={!!succ} loading={user === undefined}>
-          <Form.Input
-            key="email"
-            label="Email"
-            error={mode === Mode.CreateAccount && !email}
-            required={mode === Mode.CreateAccount}
-            placeholder="joe@schmoe.com"
-            value={email}
-            onChange={this.setEmail}
-          >
-            <input autoComplete="email" />
-          </Form.Input>
-          {mode !== Mode.ForgotPassword && <Form.Input
-            key="password"
-            label="Password"
-            type="password"
-            error={mode === Mode.CreateAccount && !password}
-            required={mode === Mode.CreateAccount}
-            placeholder="correct horse battery staple"
-            value={password}
-            onChange={this.setPassword}
-          >
-            <input autoComplete="current-password" />
-          </Form.Input>}
-          {this.renderSuccess()}
-          {this.renderError()}
-          {mode === Mode.Login && renderLogInButton()}
-          {mode === Mode.Login && renderCreateAccountButton()}
-          {mode === Mode.Login && renderForgotPasswordButton()}
-          {mode === Mode.ForgotPassword && renderSendResetEmailButton()}
-          {mode === Mode.CreateAccount && renderRealCreateAccountButton()}
-          {mode !== Mode.Login && renderCancelButton()}
-        </Form>
-      </Segment>
+      <React.Fragment>
+        {mode === Mode.Login && 
+          <Header as="h3" attached="top">
+            Login
+            <Header.Subheader>
+              to create a new committee, or access an older committee.
+            </Header.Subheader>
+          </Header>}
+        {mode === Mode.CreateAccount && 
+          <Header as="h3" attached="top">
+            Create account
+            <Header.Subheader>
+                Multiple directors may use the same account simultaneously. 
+                Use a password you're willing to share.
+            </Header.Subheader>
+          </Header>}
+        {mode === Mode.ForgotPassword && 
+          <Header as="h3" attached="top">
+            Reset password
+          </Header>}
+        <Segment attached="bottom">
+          <Form error={!!err} success={!!succ} loading={user === undefined}>
+            <Form.Input
+              key="email"
+              label="Email"
+              error={mode === Mode.CreateAccount && !email}
+              required={mode === Mode.CreateAccount}
+              placeholder="joe@schmoe.com"
+              value={email}
+              onChange={this.setEmail}
+            >
+              <input autoComplete="email" />
+            </Form.Input>
+            {mode !== Mode.ForgotPassword && <Form.Input
+              key="password"
+              label="Password"
+              type="password"
+              error={mode === Mode.CreateAccount && !password}
+              required={mode === Mode.CreateAccount}
+              placeholder="correct horse battery staple"
+              value={password}
+              onChange={this.setPassword}
+            >
+              <input autoComplete="current-password" />
+            </Form.Input>}
+            {this.renderSuccess()}
+            {this.renderError()}
+            <Button.Group fluid>
+              {mode !== Mode.Login && renderCancelButton()}
+              {mode === Mode.Login && renderLogInButton()}
+              {mode === Mode.Login && <Button.Or />}
+              {mode === Mode.Login && renderCreateAccountButton()}
+              {mode === Mode.CreateAccount && renderRealCreateAccountButton()}
+              {mode === Mode.ForgotPassword && renderSendResetEmailButton()}
+            </Button.Group>
+            {mode === Mode.Login && renderForgotPasswordButton()}
+          </Form>
+        </Segment>
+      </React.Fragment>
     );
   }
 
   render() {
     const { user } = this.state;
 
-    return (
-      <React.Fragment>
-        {this.renderNotice()}
-        {user ? this.renderLoggedIn(user) : this.renderLogin()}
-      </React.Fragment>
-    );
+    return user 
+      ? this.renderLoggedIn(user)
+      : this.renderLogin()
   }
 }
 

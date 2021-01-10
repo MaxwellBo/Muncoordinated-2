@@ -18,7 +18,6 @@ export function enterPassword() {
     .should('have.value', 'fakepassword')
 }
 
-
 export function invokeModalAndLogin() {
   cy.get('button').contains('Login').click()
   enterUsername()
