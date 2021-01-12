@@ -205,10 +205,17 @@ export class Login extends React.Component<Props, State> {
     const defaulted = committees || {} as Record<CommitteeID, CommitteeData>;
     const owned = _.keys(defaulted);
 
-    return (
+    return (owned.length > 0) ? 
+    (
       <List relaxed>
         {owned.map(k => renderCommittee(k, defaulted[k]))}
       </List>
+    ) : (
+      <Header as='h4'> No committees created
+        <Header.Subheader>
+          Create a new committee and it'll appear here!
+        </Header.Subheader>
+      </Header>
     );
   }
 
