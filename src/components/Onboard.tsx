@@ -237,7 +237,7 @@ export default class Onboard extends React.Component<Props, State> {
                   <p>
                   Muncoordinated works best with newer versions of <a 
                     href="https://www.google.com/chrome/">Google Chrome</a>.
-                   Use of older/other browsers has caused bugs and data loss.
+                   Use of other/older browsers has caused bugs and data loss.
                   </p>
               </Message>
             </Grid.Column>
