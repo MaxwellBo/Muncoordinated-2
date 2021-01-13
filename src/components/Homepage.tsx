@@ -2,7 +2,6 @@ import * as React from 'react';
 import {
   Button,
   Container,
-  Divider,
   Grid,
   Header,
   Icon,
@@ -14,10 +13,10 @@ import {
   Statistic,
   Sidebar,
   Visibility,
-  Popup
 } from 'semantic-ui-react';
 import { logClickCreateACommitteeButton, logClickLogInButton, logClickSignupButton } from '../analytics';
 import Loading from './Loading';
+import { ShareCapabilities } from './ShareHint';
 
 interface HomepageHeadingProps {
   mobile: boolean;
@@ -240,25 +239,22 @@ export default class Homepage extends React.Component<{}, {
               <Grid.Column width={8}>
                 <Header as="h3" style={{ fontSize: '2em' }}>Collaborative</Header>
                 <p style={{ fontSize: '1.33em' }}>
-                  Using a shareable link, multiple directors can run the committee at once. Delegates can also add themselves to speaker's lists, propose resolution amendments and upload files.<br />
+                  Using a shareable link delegates can: <br />
+                  <ShareCapabilities />
                 </p>
                 <p style={{ fontSize: '1.33em' }}>
                   Everyone will see all updates in real-time, without needing to refresh the page. It's like Google Docs, but for MUN.
                 </p>
                 <p style={{ fontSize: '1.33em' }}>
-                 We recommend pairing Muncoordinated with <a href="https://classroom.google.com">Google Classroom</a>, which allows you to share files, links, Google docs and strawpolls.
+                 For virtual MUNs, we recommend pairing Muncoordinated with <a href="https://discord.com/">Discord</a>, which allows you to speak, pass notes, &amp; share files and links.
                 </p>
-                <Header as="h3" style={{ fontSize: '2em' }}>Cloud based</Header>
+                <p style={{ fontSize: '1.33em' }}>
+                  If you've got a big committee, multiple directors can manage it at the same time, using the same account.
+                </p>
+                <Header as="h3" style={{ fontSize: '2em' }}>Backed up to the cloud</Header>
                 <p style={{ fontSize: '1.33em' }}>
                   You won't have to worry about data loss ever again. All committee activity is automatically saved to the server, 
                   so you can start sessions with all data available from the day before.
-                </p>
-                <Header as="h3" style={{ fontSize: '2em' }}>Free and open-source</Header>
-                <p style={{ fontSize: '1.33em' }}>
-                  All of Muncoordinated's features are available for free, not locked behind paywalls.
-                </p>
-                <p style={{ fontSize: '1.33em' }}>
-                  It's also <a href="https://github.com/MaxwellBo/Muncoordinated-2">open-source</a>, so you're free to customize it to your needs and liking.
                 </p>
               </Grid.Column>
               <Grid.Column floated="right" width={8}>
@@ -274,28 +270,24 @@ export default class Homepage extends React.Component<{}, {
               <Grid.Column width={8}>
                 <Header as="h3" style={{ fontSize: '2em' }}>A comprehensive feature set</Header>
                 <div style={{ fontSize: '1.33em' }}>
-                  Muncoordinated supports <br />
+                  Muncoordinated supports: <br />
                   <List as="ul">
-                    <List.Item as="li">Custom delegations</List.Item>
-                    <List.Item as="li">Committee statistics</List.Item>
-                    <List.Item as="li">Motions</List.Item>
                     <List.Item as="li">Moderated and unmoderated caucuses</List.Item>
-                    <Popup
-                      trigger={<List.Item as="li">Time-saving hotkeys for frequently used actions</List.Item>}
-                      content="Currently implemented hotkeys include 'Next speaker', 
-                      'Toggle caucus timer' and 'Toggle speaker timer'"
-                    />
-                    <List.Item as="li">Resolution amendments</List.Item>
+                    <List.Item as="li">Resolutions and amendments</List.Item>
+                    <List.Item as="li">Motions</List.Item>
                     <List.Item as="li">Roll-call voting</List.Item>
-                    <List.Item as="li">File uploads</List.Item>
-                    <List.Item as="li">Notes</List.Item>
+                    <List.Item as="li">Custom delegations</List.Item>
                     <List.Item as="li">Strawpolls</List.Item>
+                    <List.Item as="li">File uploads</List.Item>
+                    <List.Item as="li">Delegate performance statistics</List.Item>
                   </List>
                 </div>
-                <Header as="h3" style={{ fontSize: '2em' }}>Mobile friendly</Header>
+                <Header as="h3" style={{ fontSize: '2em' }}>Free and open-source</Header>
                 <p style={{ fontSize: '1.33em' }}>
-                  Prefer to pack light? We know the pain of not having a laptop while in committee; 
-                  that's why we've built Muncoordinated to be as mobile friendly as possible.
+                  All of Muncoordinated's features are available for free, not locked behind paywalls.
+                </p>
+                <p style={{ fontSize: '1.33em' }}>
+                  It's also <a href="https://github.com/MaxwellBo/Muncoordinated-2">open-source</a>, so you're free to customize it to your needs and liking.
                 </p>
               </Grid.Column>
               <Grid.Column floated="right" width={8}>
@@ -315,19 +307,16 @@ export default class Homepage extends React.Component<{}, {
             </Grid.Row> */}
           </Grid>
         </Segment>
-        <Divider
+        {/* <Divider
           as="h4"
           className="header"
           horizontal
           style={{ margin: '3em 0em', textTransform: 'uppercase' }}
         >
           Conferences using Muncoordinated
-        </Divider>
-        <Segment style={{ padding: '0em' }} vertical>
+        </Divider> */}
+        {/* <Segment style={{ padding: '0em' }} vertical>
           <Grid celled="internally" columns="equal" stackable>
-            {/* <Grid.Row textAlign="center">
-              {this.renderStatistics()}
-            </Grid.Row> */}
             <Grid.Row textAlign="center">
               <Grid.Column style={{ paddingBottom: '5em', paddingTop: '5em' }}>
                 <Header as="h3" style={{ fontSize: '2em' }}>
@@ -344,7 +333,6 @@ export default class Homepage extends React.Component<{}, {
                 <Header as="h3" style={{ fontSize: '2em' }}>
                   <a href="https://brismun18.com/">Brismun 2018</a>
                 </Header>
-                {/* <p style={{ fontSize: '1.33em' }}>That is what they all say about us</p> */}
                 <Image 
                   centered 
                   size="small" 
@@ -400,7 +388,7 @@ export default class Homepage extends React.Component<{}, {
               </Grid.Column>
             </Grid.Row>
           </Grid>
-        </Segment>
+        </Segment> */}
         {/* <Segment style={{ padding: '8em 0em' }} vertical>
           <Container text>
             <Header as="h3" style={{ fontSize: '2em' }}>Breaking The Grid, Grabs Your Attention</Header>
