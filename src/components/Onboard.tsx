@@ -3,7 +3,7 @@ import { RouteComponentProps } from 'react-router';
 import * as firebase from 'firebase/app';
 import { CommitteeData, DEFAULT_COMMITTEE } from './Committee';
 import {
-  Form, Grid, Header, InputOnChangeData, DropdownProps, Divider,
+  Form, Grid, Header, InputOnChangeData, DropdownProps,
   Message, Popup, Container, Segment, Icon, Flag,
 } from 'semantic-ui-react';
 import { Login } from './Auth';
@@ -70,8 +70,11 @@ export default class Onboard extends React.Component<Props, State> {
   }
 
   onChangeTemplateDropdown = (event: React.SyntheticEvent<HTMLElement, Event>, data: DropdownProps): void => {
-    // @ts-ignore
-    this.setState({ template: data.value });
+    this.setState(old => ({ 
+      template: data.value as CommitteeTemplate,
+      // don't clear the name if the template is deselected
+      name: data.value as string || old.name
+    }));
   }
 
   handleSubmit = () => {
@@ -87,14 +90,17 @@ export default class Onboard extends React.Component<Props, State> {
         creatorUid: user.uid
       };
 
+      // We can't send `undefined` properties to Firebase or it will complain
+      // so we only set this property if the template exists
+      if (template) {
+        newCommittee.template = template;
+      }
+
       const newCommitteeRef = putCommittee(meetId(), newCommittee)
       this.props.history.push(`/committees/${newCommitteeRef.key}`);
       logCreateCommittee(newCommitteeRef.key ?? undefined)
 
       if (template) {
-        // We can't send `undefined` properties to Firebase or it will complain.
-        newCommittee.template = template;
-
         // Add countries as per selected templates
         [...TEMPLATE_TO_MEMBERS[template]]
           .reverse()
@@ -124,7 +130,7 @@ export default class Onboard extends React.Component<Props, State> {
       <>
         {TEMPLATE_TO_MEMBERS[template]
           .map(member => 
-          <div>
+          <div key={member.name}>
             <Flag name={parseFlagName(member.name)} />
             {member.name}
           </div>
@@ -141,40 +147,10 @@ export default class Onboard extends React.Component<Props, State> {
         {!user && <Message
           error
           attached="top"
-          content="Please login or create an account before creating a committee"
+          content="Log in or create an account to continue"
         />}
         <Segment attached={!user ? 'bottom' : undefined} >
           <Form onSubmit={this.handleSubmit}>
-            <Form.Input
-              label="Name"
-              name="name"
-              fluid
-              required
-              error={this.state.name === ''}
-              placeholder="Committee name"
-              onChange={this.handleInput}
-            />
-            <Form.Input
-              label="Topic"
-              name="topic"
-              fluid
-              placeholder="Committee topic"
-              onChange={this.handleInput}
-            />
-            <Form.Input
-              label="Chairpeople"
-              name="chair"
-              fluid
-              placeholder="Name(s) of chairperson or chairpeople"
-              onChange={this.handleInput}
-            />
-            <Form.Input
-              label="Conference"
-              name="conference"
-              fluid
-              placeholder="Conference name"
-              onChange={this.handleInput}
-            />
             <Form.Group unstackable>
               <Form.Dropdown
                 label="Template"
@@ -203,6 +179,32 @@ export default class Onboard extends React.Component<Props, State> {
                 </Popup.Content>
               </Popup>
             </Form.Group>
+            <Form.Input
+              label="Name"
+              name="name"
+              fluid
+              value={this.state.name}
+              required
+              error={!this.state.name}
+              placeholder="Committee name"
+              onChange={this.handleInput}
+            />
+            <Form.Input
+              label="Topic"
+              name="topic"
+              value={this.state.topic}
+              fluid
+              placeholder="Committee topic"
+              onChange={this.handleInput}
+            />
+            <Form.Input
+              label="Conference"
+              name="conference"
+              value={this.state.conference}
+              fluid
+              placeholder="Conference name"
+              onChange={this.handleInput}
+            />
             <Form.Button
               primary
               fluid
@@ -227,18 +229,22 @@ export default class Onboard extends React.Component<Props, State> {
         >
           <Grid.Row>
             <Grid.Column>
-              <Header as="h1" dividing>
+              <Header as="h1" textAlign='center'>
                 Muncoordinated
               </Header>
-              <Divider hidden />
-              Muncoordinated officially supports recent versions of Google Chrome.
-                Use of older and other browsers has been known to cause bugs and data loss.
+              <Message>
+                <Message.Header>Browser compatibility notice</Message.Header>
+                  <p>
+                  Muncoordinated works best with newer versions of <a 
+                    href="https://www.google.com/chrome/">Google Chrome</a>.
+                   Use of other/older browsers has caused bugs and data loss.
+                  </p>
+              </Message>
             </Grid.Column>
           </Grid.Row>
-          <Divider />
           <Grid.Row>
             <Grid.Column>
-              <Login allowSignup={true} allowNewCommittee={false} />
+              <Login allowNewCommittee={false} />
             </Grid.Column>
             <Grid.Column>
               {this.renderNewCommitteeForm()}

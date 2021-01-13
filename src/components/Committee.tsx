@@ -455,16 +455,6 @@ export default class Committee extends React.Component<Props, State> {
           </List.Item>
           <List.Item>
             <Input
-              label="Chairpeople"
-              value={committee ? committee.chair : ''}
-              onChange={fieldHandler<CommitteeData>(committeeFref, 'chair')}
-              fluid
-              loading={!committee}
-              placeholder="Name(s) of chairperson or chairpeople"
-            />
-          </List.Item>
-          <List.Item>
-            <Input
               label="Conference"
               value={committee ? (committee.conference || '') : ''}
               onChange={fieldHandler<CommitteeData>(committeeFref, 'conference')}
