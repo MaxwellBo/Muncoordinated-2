@@ -367,7 +367,6 @@ export default function Strawpoll(props: StrawpollProps) {
                 checked={strawpoll ? (strawpoll.addingOptionsIsPublic || false) : false}
                 onClick={checkboxHandler<StrawpollData>(strawpollFref, 'addingOptionsIsPublic')}
               />
-
             </List.Item>
           </List>
         )
