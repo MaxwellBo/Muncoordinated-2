@@ -5,6 +5,7 @@ import { CommitteeData, CommitteeID, recoverMemberOptions } from './Committee';
 import { RouteComponentProps } from 'react-router';
 import { URLParameters } from '../types';
 import { Form, Button, Progress, DropdownProps, Flag, Container, Tab, TextAreaProps, Feed, SemanticICONS } from 'semantic-ui-react';
+import { Helmet } from 'react-helmet';
 import { parseFlagName } from './Member';
 import Loading from './Loading';
 import { MemberOption, COUNTRY_OPTIONS } from '../constants';
@@ -653,6 +654,9 @@ export default class Files extends React.Component<Props, State> {
       ? inner:
       (
         <Container text style={{ padding: '1em 0em' }}>
+          <Helmet>
+            <title>{`Posts - Muncoordinated`}</title>
+          </Helmet>
           {inner}
         </Container>
       );

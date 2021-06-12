@@ -4,6 +4,7 @@ import { CommitteeData } from './Committee';
 import { RouteComponentProps } from 'react-router';
 import { URLParameters } from '../types';
 import { TextArea, Form, Container } from 'semantic-ui-react';
+import { Helmet } from 'react-helmet';
 import { textAreaHandler } from '../actions/handlers';
 import Loading from './Loading';
 
@@ -48,6 +49,9 @@ export default class Notes extends React.Component<Props, State> {
 
     return committee ? (
       <Container text style={{ padding: '1em 0em' }}>
+        <Helmet>
+          <title>{`Notes - Muncoordinated`}</title>
+        </Helmet>
         <Form>
           <TextArea
             value={committee ? committee.notes : ''}

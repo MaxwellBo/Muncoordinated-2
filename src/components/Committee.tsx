@@ -8,6 +8,7 @@ import Resolution, { ResolutionData, ResolutionID, DEFAULT_RESOLUTION } from './
 import Admin from './Admin';
 import { Icon, Menu, SemanticICONS, Dropdown, Container, Responsive, Sidebar, Header,
   List, Input, Button, Segment } from 'semantic-ui-react';
+import { Helmet } from 'react-helmet';
 import Stats from './Stats';
 import { MotionID, MotionData } from './Motions';
 import { TimerData, DEFAULT_TIMER } from './Timer';
@@ -433,6 +434,9 @@ export default class Committee extends React.Component<Props, State> {
 
     return (
       <Container text style={{ padding: '1em 0em' }}>
+        <Helmet>
+          <title>{`${committee?.name} - Muncoordinated`}</title>
+        </Helmet>
         <Header as="h1">
           <Input
             value={committee ? committee.name : ''}

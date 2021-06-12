@@ -7,6 +7,7 @@ import {
   Card, Button, Form, Dropdown, Segment, Input, TextArea,
   List, SemanticICONS, Icon, Tab, Grid, SemanticCOLORS, Container, Message, Label, Popup, Statistic, DropdownItemProps, TabProps
 } from 'semantic-ui-react';
+import { Helmet } from 'react-helmet';
 import { CommitteeData, recoverMemberOptions } from './Committee';
 import { CaucusID, DEFAULT_CAUCUS, CaucusData } from './Caucus';
 import { RouteComponentProps } from 'react-router';
@@ -799,6 +800,9 @@ export default class Resolution extends React.Component<Props, State> {
 
     return (
       <Container style={{ 'padding-bottom': '2em' }}>
+        <Helmet>
+          <title>{`${resolution?.name} - Muncoordinated`}</title>
+        </Helmet>
         <Grid columns="equal" stackable>
           <Grid.Row>
             <Grid.Column>

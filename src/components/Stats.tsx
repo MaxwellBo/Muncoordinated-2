@@ -4,6 +4,7 @@ import * as _ from 'lodash';
 import { CommitteeData } from './Committee';
 import { RouteComponentProps } from 'react-router';
 import { Table, Flag, Container } from 'semantic-ui-react';
+import { Helmet } from 'react-helmet';
 import { MemberData, MemberID, parseFlagName } from './Member';
 import { CaucusID, CaucusData } from './Caucus';
 import { URLParameters } from '../types';
@@ -143,6 +144,9 @@ export default class Stats extends React.Component<Props, State> {
 
     return (
       <Container text style={{ padding: '1em 0em 1.5em' }}>
+        <Helmet>
+          <title>{`Stats - Muncoordinated`}</title>
+        </Helmet>
         <Table compact celled definition>
           <Table.Header>
             <Table.Row>

@@ -6,6 +6,7 @@ import {
   Icon, Button, Card, Form, Message, Flag, Label,
   Container, Divider, Checkbox, Popup
 } from 'semantic-ui-react';
+import { Helmet } from 'react-helmet';
 import {
   stateFieldHandler,
   stateDropdownHandler,
@@ -945,6 +946,9 @@ export class MotionsComponent extends React.Component<Props & Hooks, State> {
 
     return (
       <Container text style={{ padding: '1em 0em' }}>
+        <Helmet>
+          <title>{`Motions - Muncoordinated`}</title>
+        </Helmet>
         {renderAdder(committee)}
         <Divider hidden />
         <Checkbox
