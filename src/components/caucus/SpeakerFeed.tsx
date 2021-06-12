@@ -196,6 +196,7 @@ export const SpeakerFeed = (props: {
               size="large" 
             >
               {eventItems}
+              {provided.placeholder}
             </Feed>
           </div>
         }
