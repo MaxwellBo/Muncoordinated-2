@@ -5,6 +5,7 @@ import { URLParameters } from '../types';
 import { getStrawpollRef } from '../actions/strawpoll-actions';
 import { useObject } from 'react-firebase-hooks/database';
 import { Container, Header, Input, Button, List, Icon, Checkbox, Form, Modal, CheckboxProps, DropdownProps, Progress, Dropdown } from 'semantic-ui-react';
+import { Helmet } from 'react-helmet';
 import { fieldHandler, clearableZeroableValidatedNumberFieldHandler } from '../actions/handlers';
 import Loading from './Loading';
 import { useAuthState } from 'react-firebase-hooks/auth';
@@ -432,6 +433,9 @@ export default function Strawpoll(props: StrawpollProps) {
 
   return (
       <Container text style={{ padding: '1em 0em' }}>
+        <Helmet>
+          <title>{`${strawpoll.question} - Muncoordinated`}</title>
+        </Helmet>
         <Header as="h2">
           <Input
             value={strawpoll ? strawpoll.question : ''}
