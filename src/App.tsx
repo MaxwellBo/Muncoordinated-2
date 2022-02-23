@@ -8,6 +8,7 @@ import 'firebase/auth';
 import 'firebase/database';
 import 'firebase/firestore';
 import 'firebase/storage';
+import 'firebase/analytics';
 
 import { Route, Switch } from 'react-router-dom';
 import './App.css';
@@ -24,10 +25,12 @@ const firebaseConfig = {
   projectId: 'muncoordinated',
   storageBucket: 'muncoordinated.appspot.com',
   messagingSenderId: '308589918735',
-  appId: "1:308589918735:web:f3567ce28d637eba40017a"
+  appId: "1:308589918735:web:f3567ce28d637eba40017a",
+  measurementId: "G-DPWPPBRD4M"
 };
 
-firebase.initializeApp(firebaseConfig);
+const app = firebase.initializeApp(firebaseConfig);
+const analytics = firebase.analytics();
 
 class App extends React.Component {
   render() {
