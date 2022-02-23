@@ -23,7 +23,8 @@ const firebaseConfig = {
   databaseURL: 'https://muncoordinated.firebaseio.com',
   projectId: 'muncoordinated',
   storageBucket: 'muncoordinated.appspot.com',
-  messagingSenderId: '308589918735'
+  messagingSenderId: '308589918735',
+  appId: "1:308589918735:web:f3567ce28d637eba40017a"
 };
 
 firebase.initializeApp(firebaseConfig);
