@@ -29,8 +29,8 @@ const firebaseConfig = {
   measurementId: "G-DPWPPBRD4M"
 };
 
-const app = firebase.initializeApp(firebaseConfig);
-const analytics = firebase.analytics();
+firebase.initializeApp(firebaseConfig);
+firebase.analytics();
 
 class App extends React.Component {
   render() {
