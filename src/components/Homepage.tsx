@@ -435,6 +435,7 @@ export default class Homepage extends React.Component<{}, {
                 <Grid.Column width={3}>
                   <Header inverted as="h4" content="Services" />
                   <List link inverted>
+                    <List.Item as="a" href="https://github.com/MaxwellBo/Muncoordinated-2/discussions">Forum</List.Item>
                     <List.Item as="a" href="https://github.com/MaxwellBo/Muncoordinated-2/issues">Support</List.Item>
                     <List.Item as="a" href="https://www.helpmymun.com/">MUN Resources</List.Item>
                     {/* <List.Item as="a">FAQ</List.Item> TODO*/}
