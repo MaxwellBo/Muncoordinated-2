@@ -5,6 +5,7 @@ import { URLParameters } from '../types';
 import { getStrawpollRef } from '../actions/strawpoll-actions';
 import { useObject } from 'react-firebase-hooks/database';
 import { Container, Header, Input, Button, List, Icon, Checkbox, Form, Modal, CheckboxProps, DropdownProps, Progress, Dropdown } from 'semantic-ui-react';
+import { checkboxHandler } from '../actions/handlers';
 import { Helmet } from 'react-helmet';
 import { fieldHandler, clearableZeroableValidatedNumberFieldHandler } from '../actions/handlers';
 import Loading from './Loading';
@@ -39,6 +40,7 @@ export const DEFAULT_STRAWPOLL: StrawpollData = {
   type: StrawpollType.Checkbox,
   medium: StrawpollMedium.Link,
   options: {},
+  addingOptionsIsPublic: false
 }
 
 export interface StrawpollData {
@@ -46,7 +48,8 @@ export interface StrawpollData {
   type: StrawpollType
   stage: StrawpollStage
   medium?: StrawpollMedium
-  options?: Record<StrawpollOptionID, StrawpollOptionData>
+  options?: Record<StrawpollOptionID, StrawpollOptionData>,
+  addingOptionsIsPublic?: boolean
 }
 
 export interface StrawpollOptionData {
@@ -320,41 +323,53 @@ export default function Strawpoll(props: StrawpollProps) {
     switch (stage) {
       case StrawpollStage.Preparing:
         return (
-          <Button.Group fluid>
-            <Dropdown
-              basic 
-              button
-              className="purple centered"
-              upward={false}
-              options={[{
-                key: StrawpollType.Checkbox,
-                value: StrawpollType.Checkbox,
-                text: "Choose many",
-                icon: "check square"
-              }, {
-                key: StrawpollType.Radio,
-                value: StrawpollType.Radio,
-                text: "Choose one",
-                icon: "radio"
-              }]}
-              onChange={togglePollType}
-              value={type}
-            />
-            <DeleteStrawpollModal 
-              open={modalOpen} 
-              onChangeOpenState={setOpen} 
-              onConfirm={deleteStrawpoll} 
-              trigger={
-                <Button
-                  color="red"
+          <List>
+            <List.Item>
+              <Button.Group fluid>
+                <Dropdown
                   basic
-                  onClick={()=> setOpen(true)}
-                >
-                  <Icon name="delete" />Delete strawpoll?
-                </Button>
-              } 
-            />
-          </Button.Group>
+                  button
+                  className="purple centered"
+                  upward={false}
+                  options={[{
+                    key: StrawpollType.Checkbox,
+                    value: StrawpollType.Checkbox,
+                    text: "Choose many",
+                    icon: "check square"
+                  }, {
+                    key: StrawpollType.Radio,
+                    value: StrawpollType.Radio,
+                    text: "Choose one",
+                    icon: "radio"
+                  }]}
+                  onChange={togglePollType}
+                  value={type}
+                />
+                <DeleteStrawpollModal
+                  open={modalOpen}
+                  onChangeOpenState={setOpen}
+                  onConfirm={deleteStrawpoll}
+                  trigger={
+                    <Button
+                      color="red"
+                      basic
+                      onClick={()=> setOpen(true)}
+                    >
+                      <Icon name="delete" />Delete strawpoll?
+                    </Button>
+                  }
+                />
+              </Button.Group>
+            </List.Item>
+            <List.Item >
+              <Checkbox
+                label="Delegates can add options"
+                toggle
+                checked={strawpoll ? (strawpoll.addingOptionsIsPublic || false) : false}
+                onClick={checkboxHandler<StrawpollData>(strawpollFref, 'addingOptionsIsPublic')}
+              />
+            </List.Item>
+          </List>
         )
         case StrawpollStage.Voting:
           return medium === StrawpollMedium.Link 
