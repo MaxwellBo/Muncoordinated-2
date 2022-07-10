@@ -84,8 +84,8 @@ export default class Help extends React.PureComponent<{}, {}> {
         </Segment>
         <Header as="h3" attached="top">Social media</Header>
         <Segment attached="bottom">
-          Want to meet likeminded Muncoordinators? Come check out our forum
-          <a href="https://github.com/MaxwellBo/Muncoordinated-2/discussions">The Muncoordinator's Discussion Space</a>.
+          Want to meet likeminded Muncoordinators? Come check out our 
+          forum <a href="https://github.com/MaxwellBo/Muncoordinated-2/discussions">The Muncoordinator's Discussion Space</a>.
         </Segment>
       </Container>
     );
