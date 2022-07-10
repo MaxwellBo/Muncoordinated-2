@@ -4,7 +4,7 @@ import * as _ from 'lodash';
 import { MemberID, nameToMemberOption, MemberData, Rank } from './Member';
 import { AmendmentID, AmendmentData, DEFAULT_AMENDMENT, AMENDMENT_STATUS_OPTIONS, recoverLinkedCaucus } from './Amendment';
 import {
-  Card, Button, Form, Dropdown, Segment, Input, TextArea,
+  Card, Button, Form, Dropdown, Segment, Input, TextArea, Confirm,
   List, SemanticICONS, Icon, Tab, Grid, SemanticCOLORS, Container, Message, Label, Popup, Statistic, DropdownItemProps, TabProps
 } from 'semantic-ui-react';
 import { Helmet } from 'react-helmet';
@@ -51,6 +51,7 @@ interface State {
   authUnsubscribe?: () => void;
   user?: firebase.User | null;
   loading: boolean;
+  askToDeleteResolution: boolean
 }
 
 export enum ResolutionStatus {
@@ -143,7 +144,8 @@ export default class Resolution extends React.Component<Props, State> {
 
     this.state = {
       committeeFref: firebase.database().ref('committees').child(match.params.committeeID),
-      loading: true
+      loading: true,
+      askToDeleteResolution: false
     };
   }
 
@@ -773,6 +775,26 @@ export default class Resolution extends React.Component<Props, State> {
     }
   }
 
+  deleteResolution = () => {
+    return (<div>
+        <Button negative fluid basic
+            onClick={() => {this.setState({ askToDeleteResolution: true })}}
+        >
+          <Icon name="delete" /> Delete resolution?
+        </Button>
+        <Confirm
+          open={this.state.askToDeleteResolution}
+          header='Delete resolution?'
+          content='Are you sure? This is irreversible and will delete all
+                   posts, text, amendments and voting history. You may be
+                   looking to close the resolution (top right dropdown).'
+          onCancel={() => {this.setState({ askToDeleteResolution: false })}}
+          onConfirm={() => {this.setState({ askToDeleteResolution: false });
+                            this.recoverResolutionFref().remove()}}
+        />
+      </div>)
+  }
+
   renderResolution = (resolution?: ResolutionData) => {
     const { renderAmendmentsGroup, renderVoting, renderFeed, renderText } = this;
     const { tab } = this.props.match.params;
@@ -815,6 +837,7 @@ export default class Resolution extends React.Component<Props, State> {
             </Grid.Column>
             <Grid.Column width={5}>
               {this.renderMeta(resolution)}
+              {this.deleteResolution()}
             </Grid.Column>
           </Grid.Row>
         </Grid >
