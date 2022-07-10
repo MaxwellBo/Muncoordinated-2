@@ -40,7 +40,7 @@ export const DEFAULT_STRAWPOLL: StrawpollData = {
   type: StrawpollType.Checkbox,
   medium: StrawpollMedium.Link,
   options: {},
-  addingOptionsIsPublic: false
+  optionsArePublic: false
 }
 
 export interface StrawpollData {
@@ -49,7 +49,7 @@ export interface StrawpollData {
   stage: StrawpollStage
   medium?: StrawpollMedium
   options?: Record<StrawpollOptionID, StrawpollOptionData>,
-  addingOptionsIsPublic?: boolean
+  optionsArePublic?: boolean
 }
 
 export interface StrawpollOptionData {
@@ -365,8 +365,8 @@ export default function Strawpoll(props: StrawpollProps) {
               <Checkbox
                 label="Delegates can add options"
                 toggle
-                checked={strawpoll ? (strawpoll.addingOptionsIsPublic || false) : false}
-                onClick={checkboxHandler<StrawpollData>(strawpollFref, 'addingOptionsIsPublic')}
+                checked={strawpoll ? (strawpoll.optionsArePublic || false) : false}
+                onClick={checkboxHandler<StrawpollData>(strawpollFref, 'optionsArePublic')}
               />
             </List.Item>
           </List>
