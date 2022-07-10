@@ -5,6 +5,7 @@ import { MemberData, MemberID, Rank, parseFlagName, nameToMemberOption } from '.
 import * as Utils from '../utils';
 import { Dropdown, Flag, Table, Button, Checkbox,
   CheckboxProps, DropdownProps, ButtonProps, Tab, Container, Message, Icon } from 'semantic-ui-react';
+import { Helmet } from 'react-helmet';
 import { COUNTRY_OPTIONS, MemberOption } from '../constants';
 import { checkboxHandler, dropdownHandler } from '../actions/handlers';
 import { makeDropdownOption } from '../utils';
@@ -403,6 +404,9 @@ export default class Admin extends React.Component<Props, State> {
 
     return (
       <Container text style={{ padding: '1em 0em 1.5em' }}>
+        <Helmet>
+          <title>Setup - Muncoordinated</title>
+        </Helmet>
         <Tab panes={panes} />
       </Container>
     );

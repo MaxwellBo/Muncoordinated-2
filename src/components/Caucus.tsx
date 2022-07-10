@@ -4,6 +4,7 @@ import {
   Segment, Dropdown, TextArea, Input, Grid, Feed,
   Label, Form, Container
 } from 'semantic-ui-react';
+import { Helmet } from 'react-helmet';
 import Timer, { TimerData, DEFAULT_TIMER } from './Timer';
 import { RouteComponentProps } from 'react-router';
 import { CommitteeData, recoverMembers, recoverSettings, recoverCaucus } from './Committee';
@@ -276,6 +277,9 @@ export default class Caucus extends React.Component<Props, State> {
 
     return (
       <Container style={{ 'padding-bottom': '2em' }}>
+        <Helmet>
+          <title>{`${caucus?.name} - Muncoordinated`}</title>
+        </Helmet>
         <Grid columns="equal" stackable>
           {header}
           {body}

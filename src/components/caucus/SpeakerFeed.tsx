@@ -106,9 +106,11 @@ export class SpeakerFeedEntry extends React.PureComponent<{
       <div
         className="event" // XXX: quite possibly the most bullshit hack known to man
         ref={draggableProvided.innerRef}
-          {...draggableProvided.dragHandleProps}
           {...draggableProvided.draggableProps}>
             {this.renderContent()}
+            <div {...draggableProvided.dragHandleProps}
+                style={{ paddingLeft: '120px'}
+            }> ⠿ </div>
       </div>
     ) : <FeedEvent>
       {this.renderContent()}
@@ -196,6 +198,7 @@ export const SpeakerFeed = (props: {
               size="large" 
             >
               {eventItems}
+              {provided.placeholder}
             </Feed>
           </div>
         }
