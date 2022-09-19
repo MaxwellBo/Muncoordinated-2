@@ -4,7 +4,7 @@ import { CommitteeData } from './Committee';
 import { MemberData, MemberID, Rank, parseFlagName, nameToMemberOption } from './Member';
 import * as Utils from '../utils';
 import { Dropdown, Flag, Table, Button, Checkbox,
-  CheckboxProps, DropdownProps, ButtonProps, Tab, Container, Message, Icon } from 'semantic-ui-react';
+  CheckboxProps, DropdownProps, ButtonProps, Container, Message, Icon, Grid } from 'semantic-ui-react';
 import { Helmet } from 'react-helmet';
 import { COUNTRY_OPTIONS, MemberOption } from '../constants';
 import { checkboxHandler, dropdownHandler } from '../actions/handlers';
@@ -391,23 +391,21 @@ export default class Admin extends React.Component<Props, State> {
     const { CommitteeMembers } = this;
     const { committee, fref } = this.props;
 
-    const panes = [
-      { 
-        menuItem: 'Members', 
-        render: () => <Tab.Pane><CommitteeMembers data={committee} fref={fref} /></Tab.Pane> 
-      },
-      { 
-        menuItem: 'Thresholds', 
-        render: () => <Tab.Pane><CommitteeStats verbose={true} data={committee} /></Tab.Pane>
-      }
-    ];
-
     return (
-      <Container text style={{ padding: '1em 0em 1.5em' }}>
+      <Container style={{ padding: '1em 0em 1.5em' }}>
         <Helmet>
           <title>Setup - Muncoordinated</title>
         </Helmet>
-        <Tab panes={panes} />
+        <Grid columns="2" stackable>
+          <Grid.Row>
+            <Grid.Column width={9}>
+              <CommitteeMembers data={committee} fref={fref} />
+            </Grid.Column>
+            <Grid.Column width={7}>
+              <CommitteeStats verbose={true} data={committee} />
+            </Grid.Column>
+          </Grid.Row>
+        </Grid >
       </Container>
     );
   }
