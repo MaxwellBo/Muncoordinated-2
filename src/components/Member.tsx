@@ -7,6 +7,9 @@ export enum Rank {
     Observer = 'Observer'
 }
 
+export const canVote = (x: MemberData) => (x.rank === Rank.Veto || x.rank === Rank.Standard);
+export const nonNGO = (x: MemberData) => (x.rank !== Rank.NGO);
+
 export type MemberID = string;
 
 export interface MemberData {

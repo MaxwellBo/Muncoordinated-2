@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as firebase from 'firebase/app';
 import * as _ from 'lodash';
-import { MemberID, nameToMemberOption, MemberData, Rank } from './Member';
+import { MemberID, nameToMemberOption, MemberData, Rank, canVote } from './Member';
 import { AmendmentID, AmendmentData, DEFAULT_AMENDMENT, AMENDMENT_STATUS_OPTIONS, recoverLinkedCaucus } from './Amendment';
 import {
   Card, Button, Form, Dropdown, Segment, Input, TextArea, Confirm,
@@ -17,12 +17,12 @@ import {
   checkboxHandler
 } from '../actions/handlers';
 import { makeDropdownOption } from '../utils';
-import { canVote, CommitteeStats, makeCommitteeStats } from './Admin';
 import { voteOnResolution } from '../actions/resolution-actions';
 import { putCaucus } from '../actions/caucus-actions';
 import { Stance } from './caucus/SpeakerFeed';
 import { NotFound } from './NotFound';
 import Files from './Files';
+import { CommitteeStatsTable, makeCommitteeStats } from './committee-stats';
 
 const TAB_ORDER = ['feed', 'text', 'amendments', 'voting'];
 
@@ -448,7 +448,7 @@ export default class Resolution extends React.Component<Props, State> {
   renderStats = () => {
     const { committee } = this.state;
 
-    return <CommitteeStats verbose={false} data={committee} />;
+    return <CommitteeStatsTable verbose={false} data={committee} />;
   }
 
   renderCount = (key: string, color: SemanticCOLORS, icon: SemanticICONS, count: number) => {

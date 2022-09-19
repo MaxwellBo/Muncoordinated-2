@@ -29,11 +29,11 @@ import { AmendmentData, DEFAULT_AMENDMENT } from './Amendment';
 import { putAmendment, putResolution } from '../actions/resolution-actions';
 import { putStrawpoll } from '../actions/strawpoll-actions';
 import { DEFAULT_STRAWPOLL } from './Strawpoll';
-import { makeCommitteeStats } from './Admin';
 import { SettingsData } from './Settings';
 import { MotionsShareHint } from './ShareHint';
 import { useVoterID, VoterID } from '../hooks';
 import _ from 'lodash';
+import { makeCommitteeStats } from './committee-stats';
 
 export type MotionID = string;
 
