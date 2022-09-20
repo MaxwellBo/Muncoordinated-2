@@ -13,7 +13,7 @@ Muncoordinated is a Model UN committee management service, (re)written with Type
 
 This version of Muncoordinated began development at the end of 2017, ahead of SydMUN 2017. It began as a reimplementation of a previous version of Muncoordinated, built in Elm. The current version of Muncoordinated was my (@MaxwellBo) first real foray into frontend development, React, TypeScript, and UI design. This means that some of the old code in here is, frankly, shockingly bad. Furthermore, a lot of features were either rushed out before conferences, or during debate. Neither documentation or tests were written.
 
-Ultimately, this is a personal project that ballooned in scope and LOC - contributing to this will be difficult. Absolutely feel free to contact me if you'd like to contribute; I'll gladly guide you through the ugly hacks and shaky foundations.
+Ultimately, this is a personal project that ballooned in scope and LOC - contributing to some parts of the app may be difficult. Absolutely feel free to contact me if you'd like to contribute; I'll gladly guide you through the ugly hacks and shaky foundations on a Zoom call. 
 
 ## Development
 
