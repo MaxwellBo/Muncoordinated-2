@@ -58,8 +58,6 @@ describe('Add members and checks that the thresholds are sensible', function () 
     })
 
     it('goes to the Thresholds page', function () {
-      cy.contains('Thresholds').click()
-
       cy.get('table').contains('Total').siblings().should('contain', '3')
       cy.get('table').contains('Present').siblings().should('contain', '3')
       cy.get('table').contains('Have voting rights').siblings().should('contain', '2')
