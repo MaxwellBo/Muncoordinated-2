@@ -2,6 +2,10 @@ import * as firebase from 'firebase/app';
 import { CommitteeData, CommitteeID } from '../components/Committee';
 import { TimerData, DEFAULT_TIMER } from '../components/Timer';
 import { CaucusID } from '../components/Caucus';
+import { MemberData, MemberID, Rank } from '../components/Member';
+import { logCreateMember } from '../analytics';
+import { Template, TEMPLATE_TO_MEMBERS } from '../components/template';
+import _ from 'lodash';
 
 export const putCommittee = 
   (committeeID: CommitteeID, committeeData: CommitteeData): firebase.database.Reference => {
@@ -70,3 +74,40 @@ export const extendUnmodTimer = (committeeID: CommitteeID, seconds: number): Pro
 
   return extendTimer(ref, seconds);
 };
+
+export const pushMember = (committeeID: CommitteeID, member: MemberData) =>{
+  const ref = firebase.database()
+    .ref('committees')
+    .child(committeeID);
+
+
+  ref.child('members').push().set(member);
+
+  logCreateMember(member.name)
+}
+
+export const pushTemplateMembers = (committeeID: CommitteeID, template: Template) => {
+  const ref = firebase.database()
+    .ref('committees')
+    .child(committeeID);
+
+  ref.child('members').once('value', (snapshot) => {
+    const members: Record<MemberID, MemberData> = snapshot.val() || {};
+    const memberNames = Object.keys(members).map(id =>
+      members[id].name
+    );
+
+    [...TEMPLATE_TO_MEMBERS[template]]
+      // Don't try and readd members that already exist
+      .filter(member => !_.includes(memberNames, member.name))
+      .forEach(
+        member =>
+          pushMember(committeeID, {
+            name: member.name,
+            rank: member.rank ?? Rank.Standard,
+            present: true,
+            voting: false
+          })
+      );
+  });
+}

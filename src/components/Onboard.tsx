@@ -4,18 +4,17 @@ import * as firebase from 'firebase/app';
 import { CommitteeData, DEFAULT_COMMITTEE } from './Committee';
 import {
   Form, Grid, Header, InputOnChangeData, DropdownProps,
-  Message, Popup, Container, Segment, Icon, Flag,
+  Message, Popup, Container, Segment, Icon,
 } from 'semantic-ui-react';
 import { Login } from './Auth';
 import { URLParameters } from '../types';
 import { makeDropdownOption } from '../utils';
-import { CommitteeTemplate, TEMPLATE_TO_MEMBERS } from '../constants';
 import ConnectionStatus from './ConnectionStatus';
 import { logCreateCommittee } from '../analytics';
 import { meetId } from '../utils';
-import { putCommittee } from '../actions/committee-actions';
-import { parseFlagName, Rank } from './Member';
+import { pushTemplateMembers, putCommittee } from '../actions/committee-actions';
 import { Helmet } from 'react-helmet';
+import { Template, TemplatePreview } from './template';
 
 interface Props extends RouteComponentProps<URLParameters> {
 }
@@ -26,7 +25,7 @@ interface State {
   chair: string;
   conference: string;
   user: firebase.User | null;
-  template?: CommitteeTemplate,
+  template?: Template,
   committeesFref: firebase.database.Reference;
   unsubscribe?: () => void;
 }
@@ -72,7 +71,7 @@ export default class Onboard extends React.Component<Props, State> {
 
   onChangeTemplateDropdown = (event: React.SyntheticEvent<HTMLElement, Event>, data: DropdownProps): void => {
     this.setState(old => ({ 
-      template: data.value as CommitteeTemplate,
+      template: data.value as Template,
       // don't clear the name if the template is deselected
       name: data.value as string || old.name
     }));
@@ -103,42 +102,11 @@ export default class Onboard extends React.Component<Props, State> {
 
       if (template) {
         // Add countries as per selected templates
-        [...TEMPLATE_TO_MEMBERS[template]]
-          .reverse()
-          .forEach(
-            member =>
-              newCommitteeRef
-                .child('members')
-                .push({
-                  name: member.name,
-                  rank: member.rank ?? Rank.Standard,
-                  present: true,
-                  voting: false
-                })
-          );
+        pushTemplateMembers(newCommitteeRef.key!, template);
       }
     }
   }
 
-  renderCountriesTable = (template: CommitteeTemplate | undefined) => {
-    if (!template) {
-      return (
-          <p>Select a template to see which members will be added</p>
-      );
-    }
-
-    return (
-      <>
-        {TEMPLATE_TO_MEMBERS[template]
-          .map(member => 
-          <div key={member.name}>
-            <Flag name={parseFlagName(member.name)} />
-            {member.name}
-          </div>
-        )}
-      </>
-    );
-  }
 
   renderNewCommitteeForm = () => {
     const { user, template } = this.state;
@@ -161,14 +129,14 @@ export default class Onboard extends React.Component<Props, State> {
                 clearable
                 selection
                 placeholder="Template to skip manual member creation (optional)"
-                options={Object.values(CommitteeTemplate).map(makeDropdownOption)}
+                options={Object.values(Template).map(makeDropdownOption)}
                 onChange={this.onChangeTemplateDropdown}
               />
               <Popup 
                 basic 
                 pinned 
                 hoverable 
-                position="top left"
+                position="bottom left"
                 trigger={
                   <Form.Button 
                     type="button"
@@ -176,7 +144,7 @@ export default class Onboard extends React.Component<Props, State> {
                     width={1}
                   />}>
                 <Popup.Content>
-                  {this.renderCountriesTable(template)}
+                  <TemplatePreview template={template} />
                 </Popup.Content>
               </Popup>
             </Form.Group>

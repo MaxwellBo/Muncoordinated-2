@@ -29,10 +29,11 @@ import { putResolution } from '../actions/resolution-actions';
 import ConnectionStatus from './ConnectionStatus';
 import { membersToOptions, membersToPresentOptions } from '../utils';
 import { fieldHandler } from '../actions/handlers';
-import { CommitteeTemplate, MemberOption } from '../constants';
+import { MemberOption } from '../constants';
 import { putStrawpoll } from '../actions/strawpoll-actions';
 import Strawpoll, { DEFAULT_STRAWPOLL, StrawpollID, StrawpollData } from './Strawpoll';
 import { logClickSetupCommittee } from '../analytics';
+import { Template } from './template';
 
 export function recoverMemberOptions(committee?: CommitteeData): MemberOption[] {
   if (committee) {
@@ -129,7 +130,7 @@ export interface CommitteeData {
   chair: string;
   topic: string;
   conference?: string; // TODO: Migrate
-  template?: CommitteeTemplate;
+  template?: Template;
   creatorUid: firebase.UserInfo['uid'];
   members?: Record<MemberID, MemberData>;
   caucuses?: Record<CaucusID, CaucusData>;

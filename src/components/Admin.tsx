@@ -1,18 +1,20 @@
 import * as React from 'react';
 import firebase from 'firebase/app';
-import { CommitteeData } from './Committee';
+import { CommitteeData, CommitteeID } from './Committee';
 import { MemberData, MemberID, Rank, parseFlagName, nameToMemberOption } from './Member';
 import { Dropdown, Flag, Table, Button, Checkbox,
   CheckboxProps, DropdownProps, ButtonProps, Container, Message, Icon, Grid } from 'semantic-ui-react';
 import { Helmet } from 'react-helmet';
-import { CommitteeTemplate, COUNTRY_OPTIONS, MemberOption } from '../constants';
+import { COUNTRY_OPTIONS, MemberOption } from '../constants';
 import { checkboxHandler, dropdownHandler } from '../actions/handlers';
 import { makeDropdownOption } from '../utils';
 import _ from 'lodash';
 import { URLParameters } from '../types';
 import { RouteComponentProps } from 'react-router';
-import { logClickGeneralSpeakersList, logCreateMember } from '../analytics';
+import { logClickGeneralSpeakersList } from '../analytics';
 import { CommitteeStatsTable } from './committee-stats';
+import { pushMember } from '../actions/committee-actions';
+import { Template, TemplateAdder } from './template';
 
 interface Props extends RouteComponentProps<URLParameters> {
   committee: CommitteeData;
@@ -20,6 +22,7 @@ interface Props extends RouteComponentProps<URLParameters> {
 }
 
 interface State {
+  template?: Template;
   member: MemberOption;
   options: MemberOption[];
   rank: Rank;
@@ -91,30 +94,27 @@ export default class Admin extends React.Component<Props, State> {
     );
   }
 
-  canPush = () => { 
-    const { member: newMember } = this.state;
-
+  canPushMember = (member: MemberOption) => { 
     const members = this.props.committee.members || {};
     const memberNames = Object.keys(members).map(id => 
       members[id].name
     );
 
-    return !_.includes(memberNames, newMember.text);
+    return !_.includes(memberNames, member.text);
   }
 
-  pushMember = (event: React.MouseEvent<HTMLButtonElement>, data: ButtonProps) => {
+  pushSelectedMember = (event: React.MouseEvent<HTMLButtonElement>, data: ButtonProps) => {
     event.preventDefault();
 
+    const committeeID: CommitteeID = this.props.match.params.committeeID;
     const member: MemberData = {
       name: this.state.member.text,
       rank: this.state.rank,
       present: this.state.present,
       voting: this.state.voting
     };
-    
-    this.props.fref.child('members').push().set(member);
 
-    logCreateMember(member.name)
+    pushMember(committeeID, member);
   }
 
   setMember = (event: React.SyntheticEvent<HTMLElement>, data: DropdownProps) => {
@@ -127,15 +127,15 @@ export default class Admin extends React.Component<Props, State> {
   }
 
   setPresent = (event: React.FormEvent<HTMLInputElement>, data: CheckboxProps) => {
-    this.setState({ present: data.checked || false });
+    this.setState({ present: data.checked ?? false });
   }
 
   setVoting = (event: React.FormEvent<HTMLInputElement>, data: CheckboxProps) => {
-    this.setState({ voting: data.checked || false });
+    this.setState({ voting: data.checked ?? false });
   }
 
   setRank = (event: React.SyntheticEvent<HTMLElement>, data: DropdownProps) => {
-    this.setState({ rank: data.value as Rank || Rank.Standard });
+    this.setState({ rank: data.value as Rank ?? Rank.Standard });
   }
 
   handleAdd = (event: React.KeyboardEvent<HTMLElement>, data: DropdownProps) => {
@@ -159,25 +159,10 @@ export default class Admin extends React.Component<Props, State> {
     logClickGeneralSpeakersList();
   }
 
-  renderTemplateSetter = () => {
-    return (
-      <Dropdown
-        label="Template"
-        name="template"
-        width={14}
-        search
-        clearable
-        selection
-        placeholder="Template to skip manual member creation (optional)"
-        options={Object.values(CommitteeTemplate).map(makeDropdownOption)}
-        onChange={dropdownHandler<CommitteeData>(this.props.fref, 'template')}
-      />
-    )
-  }
 
   renderAdder() {
     const { handleAdd, setMember, setRank, setPresent, setVoting } = this;
-    const { present: newMemberPresent, voting: newMemberVoting, options: newOptions, member: newMember } = this.state;
+    const { present: newMemberPresent, voting: newMemberVoting, options: newOptions, member } = this.state;
 
     return (
       <Table.Row>
@@ -190,11 +175,11 @@ export default class Admin extends React.Component<Props, State> {
             selection
             fluid
             allowAdditions
-            error={!this.canPush()}
+            error={!this.canPushMember(member)}
             options={[...newOptions, ...COUNTRY_OPTIONS]}
             onAddItem={handleAdd}
             onChange={setMember}
-            value={newMember.key}
+            value={member.key}
           />
         </Table.HeaderCell>
         <Table.HeaderCell>
@@ -230,8 +215,8 @@ export default class Admin extends React.Component<Props, State> {
             icon="plus"
             primary
             basic
-            disabled={!this.canPush()}
-            onClick={this.pushMember}
+            disabled={!this.canPushMember(member)}
+            onClick={this.pushSelectedMember}
           />
         </Table.HeaderCell>
       </Table.Row>
@@ -294,6 +279,7 @@ export default class Admin extends React.Component<Props, State> {
         <Grid columns="2" stackable>
           <Grid.Row>
             <Grid.Column width={9}>
+              <TemplateAdder committeeID={this.props.match.params.committeeID} />
               {this.renderCommitteeMembers({ data: committee, fref })}
             </Grid.Column>
             <Grid.Column width={7}>
