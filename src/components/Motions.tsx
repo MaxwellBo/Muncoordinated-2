@@ -62,6 +62,28 @@ enum MotionType {
   ProposeStrawpoll = 'Propose Strawpoll'
 }
 
+/**
+ * Whether the motion is considered 'procedural' or not.
+ * 
+ * Motions that are procedural cannot be abstained on.
+ */
+const procedural = (motionType: MotionType): boolean => {
+  switch (motionType) {
+    case MotionType.OpenUnmoderatedCaucus:
+    case MotionType.OpenModeratedCaucus:
+    case MotionType.ExtendUnmoderatedCaucus:
+    case MotionType.ExtendModeratedCaucus:
+    case MotionType.CloseModeratedCaucus:
+    case MotionType.OpenDebate:
+    case MotionType.SuspendDebate:
+    case MotionType.ResumeDebate:
+    case MotionType.CloseDebate:
+      return true;
+    default:
+      return false;
+  }
+};
+
 const disruptiveness = (motionType: MotionType): number => {
   switch (motionType) {
     case MotionType.ExtendUnmoderatedCaucus:
@@ -566,6 +588,7 @@ export class MotionsComponent extends React.Component<Props & Hooks, State> {
             trigger={
               <Button
                 color='yellow'
+                disabled={procedural(motionData.type)}
                 active={votes[voterID] === MotionVote.Abstain}
                 onClick={() => vote(MotionVote.Abstain)}
               >
