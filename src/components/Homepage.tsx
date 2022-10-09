@@ -165,7 +165,7 @@ class MobileContainer extends React.Component<MobileContainerProps, MobileContai
     return (
       <Responsive {...Responsive.onlyMobile}>
         <Sidebar.Pushable>
-          <Sidebar as={Menu} animation="uncover" inverted vertical visible={sidebarOpened}>
+          <Sidebar as={Menu} animation="push" inverted vertical visible={sidebarOpened}>
             <Menu.Item as="a" active>Home</Menu.Item>
             <Menu.Item as="a">Log in</Menu.Item>
             <Menu.Item as="a">Sign up</Menu.Item>
