@@ -5,7 +5,7 @@ const TOPIC = 'Test topic'
 const CONFERENCE = 'Test conference'
 
 describe('Run through creating a new committee', function () {
-  before(function() {
+  before(function () {
     purge()
     cy.visit("/")
   })
@@ -79,6 +79,6 @@ describe('Run through creating a new committee', function () {
     cy.get('table').should('contain', 'United Kingdom')
 
     cy.contains('Thresholds').click()
-    cy.get('table').contains('Total').siblings().should('contain', '15')
+    cy.get('table').eq(1).contains('Total').siblings().should('contain', '15')
   })
 })
