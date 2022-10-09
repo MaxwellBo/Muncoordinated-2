@@ -167,8 +167,8 @@ class MobileContainer extends React.Component<MobileContainerProps, MobileContai
         <Sidebar.Pushable>
           <Sidebar as={Menu} animation="push" inverted vertical visible={sidebarOpened}>
             <Menu.Item as="a" active>Home</Menu.Item>
-            <Menu.Item as="a">Log in</Menu.Item>
-            <Menu.Item as="a">Sign up</Menu.Item>
+            <Menu.Item as="a" href="/onboard">Log in</Menu.Item>
+            <Menu.Item as="a" href="/onboard">Sign up</Menu.Item>
           </Sidebar>
 
           <Sidebar.Pusher dimmed={sidebarOpened} onClick={this.handlePusherClick} style={{ minHeight: '100vh' }}>
