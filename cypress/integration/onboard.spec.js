@@ -78,7 +78,6 @@ describe('Run through creating a new committee', function () {
     cy.get('table').should('contain', 'United States')
     cy.get('table').should('contain', 'United Kingdom')
 
-    cy.contains('Thresholds').click()
     cy.get('table').eq(1).contains('Total').siblings().should('contain', '15')
   })
 })
