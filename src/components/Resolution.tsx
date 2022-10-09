@@ -452,32 +452,16 @@ export default class Resolution extends React.Component<Props, State> {
   }
 
   renderCount = (key: string, color: SemanticCOLORS, icon: SemanticICONS, count: number) => {
-    const trigger = (
-      <Button
-        key={'count' + key}
-        color={color}
-        icon
-        fluid
-      >
-        {key.toUpperCase()}: {count}
-      </Button>
-    );
-
-    return (
+   return (
       <Grid.Column key={key}>
-        {/* <Button
-          key={'icon' + key}
+        <Button
+          key={'count' + key}
           color={color}
           icon
+          fluid
         >
-          <Icon 
-            name={icon}
-            color={color === 'yellow' ? 'black' : undefined}
-          />
-        </Button> */}
-        <Popup trigger={trigger}>
-          {this.renderStats()}
-        </Popup>
+          {key.toUpperCase()}: {count}
+        </Button>
       </Grid.Column>
     );
   }
@@ -555,34 +539,37 @@ export default class Resolution extends React.Component<Props, State> {
 
 
     return (
-      <Segment inverted loading={!resolution} textAlign="center">
-        <Grid columns="equal">
-          {columns}
-        </Grid>
-        <Grid columns="equal">
-          {renderCount('yes', 'green', 'plus', fors)}
-          {renderCount('no', 'red', 'remove', againsts)}
-          {renderCount('abstaining', 'yellow', 'minus', abstains)}
-        </Grid>
-        {resolutionPassed && <Statistic inverted>
-          <Statistic.Value>Passed</Statistic.Value>
-          <Statistic.Label>{fors} clears the required {thresholdName} of {threshold}</Statistic.Label>
-          {requiredMajority === Majority.TwoThirdsNoAbstentions && 
-            <Statistic.Label>Further votes may change the result from 'Passed'</Statistic.Label>
-          }
-        </Statistic>} 
-        {resolutionFailed && <Statistic inverted>
-          <Statistic.Value>Failed</Statistic.Value>
-          <Statistic.Label>There are insufficient votes remaining to achieve a {thresholdName}</Statistic.Label>
-        </Statistic>} 
-        {resolutionVetoed && <Statistic inverted>
-          <Statistic.Value>Vetoed</Statistic.Value>
-          <Statistic.Label>{vetoes[0].name} was the first to veto the resolution</Statistic.Label>
-        </Statistic>} 
-        <Segment inverted>
-          {this.renderMajoritySelector(resolution)}
+      <>
+        <Segment inverted loading={!resolution} textAlign="center">
+          <Grid columns="equal">
+            {columns}
+          </Grid>
+          <Grid columns="equal">
+            {renderCount('yes', 'green', 'plus', fors)}
+            {renderCount('no', 'red', 'remove', againsts)}
+            {renderCount('abstaining', 'yellow', 'minus', abstains)}
+          </Grid>
+          {resolutionPassed && <Statistic inverted>
+            <Statistic.Value>Passed</Statistic.Value>
+            <Statistic.Label>{fors} clears the required {thresholdName} of {threshold}</Statistic.Label>
+            {requiredMajority === Majority.TwoThirdsNoAbstentions &&
+              <Statistic.Label>Further votes may change the result from 'Passed'</Statistic.Label>
+            }
+          </Statistic>}
+          {resolutionFailed && <Statistic inverted>
+            <Statistic.Value>Failed</Statistic.Value>
+            <Statistic.Label>There are insufficient votes remaining to achieve a {thresholdName}</Statistic.Label>
+          </Statistic>}
+          {resolutionVetoed && <Statistic inverted>
+            <Statistic.Value>Vetoed</Statistic.Value>
+            <Statistic.Label>{vetoes[0].name} was the first to veto the resolution</Statistic.Label>
+          </Statistic>}
+          <Segment inverted>
+            {this.renderMajoritySelector(resolution)}
+          </Segment>
         </Segment>
-      </Segment>
+        {this.renderStats()}
+      </>
     );
   }
 

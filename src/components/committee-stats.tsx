@@ -45,7 +45,7 @@ export function makeCommitteeStats(data?: CommitteeData) {
     procedural, operative, hasQuorum, draftResolution, amendment, twoThirdsMajority, simpleMajority };
 }
 
-export function CommitteeStatsTable(props: { data?: CommitteeData, verbose: boolean }) {
+export function CommitteeStatsTable(props: { data?: CommitteeData, verbose?: boolean }) {
   const { data, verbose } = props;
 
   // TODO: Fill this table out with all fields.
