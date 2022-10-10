@@ -5,14 +5,14 @@ import { CommitteeData } from './Committee';
 import { RouteComponentProps } from 'react-router';
 import { Table, Flag, Container } from 'semantic-ui-react';
 import { Helmet } from 'react-helmet';
-import { MemberData, MemberID, parseFlagName } from './Member';
+import { MemberData, MemberID, parseFlagName } from '../modules/member';
 import { CaucusID, CaucusData } from './Caucus';
 import { URLParameters } from '../types';
-import Loading from './Loading';
-import { SpeakerEvent } from './caucus/SpeakerFeed';
-import { hhmmss } from './Timer';
+import Loading from '../components/aux/Loading';
+import { SpeakerEvent } from '../components/caucus/SpeakerFeed';
+import { hhmmss } from '../components/timer/Timer';
 import { ResolutionData, ResolutionID } from './Resolution';
-import { AmendmentData, AmendmentID } from './Amendment';
+import { AmendmentData, AmendmentID } from '../modules/amendment';
 import { MotionID, MotionData } from './Motions';
 
 interface Props extends RouteComponentProps<URLParameters> {

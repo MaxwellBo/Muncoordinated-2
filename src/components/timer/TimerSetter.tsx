@@ -1,4 +1,4 @@
-import { makeDropdownOption } from '../utils';
+import { makeDropdownOption } from '../../utils';
 import { Form, DropdownProps, Select, Button } from 'semantic-ui-react';
 import * as React from 'react';
 

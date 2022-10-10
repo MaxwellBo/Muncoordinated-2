@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Button, Segment, Header, List, Container } from 'semantic-ui-react';
 import { Helmet } from 'react-helmet';
-import { CLIENT_VERSION, VersionLink } from './Footer';
+import { CLIENT_VERSION, VersionLink } from '../components/aux/Footer';
 
 export const KEYBOARD_SHORTCUT_LIST = (
   <List>

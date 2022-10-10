@@ -1,10 +1,10 @@
 import { Accordion, AccordionTitleProps, ButtonProps, Flag, Form, Icon, Popup } from "semantic-ui-react";
 import * as React from 'react';
-import { MemberData, parseFlagName, Rank } from "./Member"
+import { MemberData, parseFlagName, Rank } from "./member"
 import { makeDropdownOption } from "../utils";
 import { useState } from "react";
 import { pushTemplateMembers } from "../actions/committee-actions";
-import { CommitteeID } from "./Committee";
+import { CommitteeID } from "../pages/Committee";
 
 export enum Template {
   AfricanUnion = 'African Union',

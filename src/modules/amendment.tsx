@@ -1,4 +1,4 @@
-import { CaucusID } from './Caucus';
+import { CaucusID } from '../pages/Caucus';
 import { makeDropdownOption } from '../utils';
 
 export enum AmendmentStatus {

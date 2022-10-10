@@ -14,9 +14,9 @@ import {
   Sidebar,
   Visibility,
 } from 'semantic-ui-react';
-import { logClickCreateACommitteeButton, logClickLogInButton, logClickSignupButton } from '../analytics';
-import Loading from './Loading';
-import { ShareCapabilities } from './ShareHint';
+import { logClickCreateACommitteeButton, logClickLogInButton, logClickSignupButton } from '../modules/analytics';
+import Loading from '../components/aux/Loading';
+import { ShareCapabilities } from '../components/aux/share-hints';
 
 interface HomepageHeadingProps {
   mobile: boolean;

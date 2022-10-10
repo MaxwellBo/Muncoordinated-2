@@ -1,8 +1,8 @@
 import * as firebase from 'firebase/app';
 
-import { CommitteeID } from '../components/Committee';
-import { CaucusData, CaucusID, CaucusStatus } from '../components/Caucus';
-import { TimerData } from '../components/Timer';
+import { CommitteeID } from '../pages/Committee';
+import { CaucusData, CaucusID, CaucusStatus } from '../pages/Caucus';
+import { TimerData } from '../components/timer/Timer';
 import { SpeakerEvent } from '../components/caucus/SpeakerFeed';
 import { shortMeetId } from '../utils';
 

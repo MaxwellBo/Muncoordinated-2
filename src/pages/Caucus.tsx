@@ -5,17 +5,17 @@ import {
   Label, Form, Container
 } from 'semantic-ui-react';
 import { Helmet } from 'react-helmet';
-import Timer, { TimerData, DEFAULT_TIMER } from './Timer';
+import Timer, { TimerData, DEFAULT_TIMER } from '../components/timer/Timer';
 import { RouteComponentProps } from 'react-router';
 import { CommitteeData, recoverMembers, recoverSettings, recoverCaucus } from './Committee';
-import CaucusQueuer from './caucus/CaucusQueuer';
+import CaucusQueuer from '../components/caucus/CaucusQueuer';
 import { textAreaHandler, dropdownHandler, fieldHandler } from '../actions/handlers';
 import { makeDropdownOption } from '../utils';
 import { URLParameters } from '../types';
-import { CaucusNextSpeaking } from './caucus/CaucusNextSpeaking';
-import { SpeakerEvent, SpeakerFeedEntry } from './caucus/SpeakerFeed';
-import { NotFound } from './NotFound';
-import { Unit } from './TimerSetter';
+import { CaucusNextSpeaking } from '../components/caucus/CaucusNextSpeaking';
+import { SpeakerEvent, SpeakerFeedEntry } from '../components/caucus/SpeakerFeed';
+import { NotFound } from '../components/aux/NotFound';
+import { Unit } from '../components/timer/TimerSetter';
 
 export const DEFAULT_CAUCUS_TIME_SECONDS = 10 * 60;
 export const DEFAULT_SPEAKER_TIME_SECONDS = 1 * 60;

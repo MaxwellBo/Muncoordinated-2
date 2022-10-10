@@ -1,8 +1,8 @@
 import * as firebase from 'firebase/app';
-import { MemberID } from '../components/Member';
-import { ResolutionID, Vote, ResolutionData } from '../components/Resolution';
-import { CommitteeID } from '../components/Committee';
-import { AmendmentData } from '../components/Amendment';
+import { MemberID } from '../modules/member';
+import { ResolutionID, Vote, ResolutionData } from '../pages/Resolution';
+import { CommitteeID } from '../pages/Committee';
+import { AmendmentData } from '../modules/amendment';
 import { shortMeetId } from '../utils';
 
 export const voteOnResolution = (

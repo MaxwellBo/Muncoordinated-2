@@ -3,9 +3,9 @@ import * as firebase from 'firebase/app';
 import { Container } from 'semantic-ui-react';
 import { Helmet } from 'react-helmet';
 import { RouteComponentProps } from 'react-router';
-import Timer, { TimerData } from './Timer';
+import Timer, { TimerData } from '../components/timer/Timer';
 import { URLParameters } from '../types';
-import { Unit } from './TimerSetter';
+import { Unit } from '../components/timer/TimerSetter';
 
 interface Props extends RouteComponentProps<URLParameters> {
 }

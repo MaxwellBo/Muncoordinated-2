@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { CommitteeID } from './Committee';
+import { CommitteeID } from '../../pages/Committee';
 import { Divider, Header, Input, List, Segment } from 'semantic-ui-react';
-import { StrawpollID } from './Strawpoll';
+import { StrawpollID } from '../../pages/Strawpoll';
 
 function CopyableText(props: {
   value: string

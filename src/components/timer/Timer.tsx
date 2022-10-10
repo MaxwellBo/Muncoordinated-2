@@ -3,7 +3,7 @@ import firebase from 'firebase/app';
 import { Form, Segment, Button, Progress, DropdownProps, Icon, Label } from 'semantic-ui-react';
 import { Unit, TimerSetter, getSeconds } from './TimerSetter';
 import _ from 'lodash';
-import { DEFAULT_SPEAKER_TIME_SECONDS } from './Caucus';
+import { DEFAULT_SPEAKER_TIME_SECONDS } from '../../pages/Caucus';
 
 interface Props {
   name: string;

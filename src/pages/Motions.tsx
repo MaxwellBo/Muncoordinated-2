@@ -16,24 +16,24 @@ import {
   checkboxHandler
 } from '../actions/handlers';
 import { implies, sentenceCase, makeSentenceCaseDropdownOption, } from '../utils';
-import { TimerSetter, Unit, getSeconds } from './TimerSetter';
-import { nameToMemberOption, parseFlagName } from './Member';
+import { TimerSetter, Unit, getSeconds } from '../components/timer/TimerSetter';
+import { nameToMemberOption, parseFlagName } from '../modules/member';
 import { DEFAULT_CAUCUS, CaucusData, CaucusID, CaucusStatus, DEFAULT_SPEAKER_TIME_SECONDS } from './Caucus';
 import { putCaucus, closeCaucus, putSpeaking } from '../actions/caucus-actions';
-import { TimerData } from './Timer';
+import { TimerData } from '../components/timer/Timer';
 import { putUnmodTimer, extendUnmodTimer, extendModTimer } from '../actions/committee-actions';
 import { URLParameters } from '../types';
 import { ResolutionData, DEFAULT_RESOLUTION, ResolutionID, IDENTITCAL_PROPOSER_SECONDER } from './Resolution';
-import { Stance } from './caucus/SpeakerFeed';
-import { AmendmentData, DEFAULT_AMENDMENT } from './Amendment';
+import { Stance } from '../components/caucus/SpeakerFeed';
+import { AmendmentData, DEFAULT_AMENDMENT } from '../modules/amendment';
 import { putAmendment, putResolution } from '../actions/resolution-actions';
 import { putStrawpoll } from '../actions/strawpoll-actions';
 import { DEFAULT_STRAWPOLL } from './Strawpoll';
 import { SettingsData } from './Settings';
-import { MotionsShareHint } from './ShareHint';
+import { MotionsShareHint } from '../components/aux/share-hints';
 import { useVoterID, VoterID } from '../hooks';
 import _ from 'lodash';
-import { makeCommitteeStats } from './committee-stats';
+import { makeCommitteeStats } from '../modules/committee-stats';
 
 export type MotionID = string;
 

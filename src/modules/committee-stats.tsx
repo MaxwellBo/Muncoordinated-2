@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { CommitteeData } from "./Committee";
+import { CommitteeData } from "../pages/Committee";
 import * as Utils from '../utils';
-import { canVote, MemberData, MemberID, nonNGO } from './Member';
+import { canVote, MemberData, MemberID, nonNGO } from './member';
 import { Table } from 'semantic-ui-react';
 
 export interface CommitteeStats {

@@ -8,10 +8,10 @@ import { Container, Header, Input, Button, List, Icon, Checkbox, Form, Modal, Ch
 import { checkboxHandler } from '../actions/handlers';
 import { Helmet } from 'react-helmet';
 import { fieldHandler, clearableZeroableValidatedNumberFieldHandler } from '../actions/handlers';
-import Loading from './Loading';
+import Loading from '../components/aux/Loading';
 import { useAuthState } from 'react-firebase-hooks/auth';
-import { StrawpollShareHint } from './ShareHint';
-import { NotFound } from './NotFound';
+import { StrawpollShareHint } from '../components/aux/share-hints';
+import { NotFound } from '../components/aux/NotFound';
 import { useVoterID } from '../hooks';
 
 enum StrawpollStage {

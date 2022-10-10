@@ -1,13 +1,13 @@
 import * as React from 'react';
 import firebase from 'firebase/app';
-import { CaucusData, recoverUnit, recoverDuration } from '../Caucus';
-import { TimerData, toggleTicking } from '../Timer';
+import { CaucusData, recoverUnit, recoverDuration } from '../../pages/Caucus';
+import { TimerData, toggleTicking } from '../timer/Timer';
 import { Segment, Button, Icon, Label, Popup } from 'semantic-ui-react';
 import { runLifecycle, Lifecycle } from '../../actions/caucus-actions';
 import { SpeakerEvent, Stance } from './SpeakerFeed';
 import { SpeakerFeed } from './SpeakerFeed';
 import _ from 'lodash';
-import { Unit } from '../TimerSetter';
+import { Unit } from '../timer/TimerSetter';
 import { useObjectVal } from 'react-firebase-hooks/database';
 import { useAuthState } from 'react-firebase-hooks/auth';
 

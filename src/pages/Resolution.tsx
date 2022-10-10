@@ -1,8 +1,8 @@
 import * as React from 'react';
 import * as firebase from 'firebase/app';
 import * as _ from 'lodash';
-import { MemberID, nameToMemberOption, MemberData, Rank, canVote } from './Member';
-import { AmendmentID, AmendmentData, DEFAULT_AMENDMENT, AMENDMENT_STATUS_OPTIONS, recoverLinkedCaucus } from './Amendment';
+import { MemberID, nameToMemberOption, MemberData, Rank, canVote } from '../modules/member';
+import { AmendmentID, AmendmentData, DEFAULT_AMENDMENT, AMENDMENT_STATUS_OPTIONS, recoverLinkedCaucus } from '../modules/amendment';
 import {
   Card, Button, Form, Dropdown, Segment, Input, TextArea, Confirm,
   List, SemanticICONS, Icon, Tab, Grid, SemanticCOLORS, Container, Message, Label, Popup, Statistic, DropdownItemProps, TabProps
@@ -19,10 +19,10 @@ import {
 import { makeDropdownOption } from '../utils';
 import { voteOnResolution } from '../actions/resolution-actions';
 import { putCaucus } from '../actions/caucus-actions';
-import { Stance } from './caucus/SpeakerFeed';
-import { NotFound } from './NotFound';
+import { Stance } from '../components/caucus/SpeakerFeed';
+import { NotFound } from '../components/aux/NotFound';
 import Files from './Files';
-import { CommitteeStatsTable, makeCommitteeStats } from './committee-stats';
+import { CommitteeStatsTable, makeCommitteeStats } from '../modules/committee-stats';
 
 const TAB_ORDER = ['feed', 'text', 'amendments', 'voting'];
 

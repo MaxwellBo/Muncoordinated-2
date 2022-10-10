@@ -1,7 +1,7 @@
-import { CommitteeID } from "./components/Committee";
-import { CaucusID } from "./components/Caucus";
-import { ResolutionID } from "./components/Resolution";
-import { StrawpollID } from "./components/Strawpoll";
+import { CommitteeID } from "./pages/Committee";
+import { CaucusID } from "./pages/Caucus";
+import { ResolutionID } from "./pages/Resolution";
+import { StrawpollID } from "./pages/Strawpoll";
 
 export interface URLParameters {
   committeeID: CommitteeID;

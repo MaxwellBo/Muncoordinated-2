@@ -2,7 +2,7 @@ import * as React from 'react';
 import firebase from 'firebase/app';
 import { RouteComponentProps } from 'react-router';
 import { Route } from 'react-router-dom';
-import { MemberData, MemberID } from './Member';
+import { MemberData, MemberID } from '../modules/member';
 import Caucus, { CaucusData, CaucusID, DEFAULT_CAUCUS, DEFAULT_CAUCUS_TIME_SECONDS, CaucusStatus } from './Caucus';
 import Resolution, { ResolutionData, ResolutionID, DEFAULT_RESOLUTION } from './Resolution';
 import Admin from './Admin';
@@ -11,29 +11,29 @@ import { Icon, Menu, SemanticICONS, Dropdown, Container, Responsive, Sidebar, He
 import { Helmet } from 'react-helmet';
 import Stats from './Stats';
 import { MotionID, MotionData } from './Motions';
-import { TimerData, DEFAULT_TIMER } from './Timer';
+import { TimerData, DEFAULT_TIMER } from '../components/timer/Timer';
 import Unmod from './Unmod';
 import Notes from './Notes';
 import Help from './Help';
 import Motions from './Motions';
 import { putCaucus } from '../actions/caucus-actions';
 import { URLParameters } from '../types';
-import Loading from './Loading';
-import Footer from './Footer';
+import Loading from '../components/aux/Loading';
+import Footer from '../components/aux/Footer';
 import Settings, { SettingsData, DEFAULT_SETTINGS } from './Settings';
 import Files, { PostID, PostData } from './Files';
-import { LoginModal } from './Auth';
-import { CommitteeShareHint } from './ShareHint';
-import Notifications from './Notifications';
+import { LoginModal } from '../modules/auth';
+import { CommitteeShareHint } from '../components/aux/share-hints';
+import Notifications from '../components/aux/Notifications';
 import { putResolution } from '../actions/resolution-actions';
-import ConnectionStatus from './ConnectionStatus';
+import ConnectionStatus from '../components/aux/ConnectionStatus';
 import { membersToOptions, membersToPresentOptions } from '../utils';
 import { fieldHandler } from '../actions/handlers';
 import { MemberOption } from '../constants';
 import { putStrawpoll } from '../actions/strawpoll-actions';
 import Strawpoll, { DEFAULT_STRAWPOLL, StrawpollID, StrawpollData } from './Strawpoll';
-import { logClickSetupCommittee } from '../analytics';
-import { Template } from './template';
+import { logClickSetupCommittee } from '../modules/analytics';
+import { Template } from '../modules/template';
 
 export function recoverMemberOptions(committee?: CommitteeData): MemberOption[] {
   if (committee) {

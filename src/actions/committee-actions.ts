@@ -1,10 +1,10 @@
 import * as firebase from 'firebase/app';
-import { CommitteeData, CommitteeID } from '../components/Committee';
-import { TimerData, DEFAULT_TIMER } from '../components/Timer';
-import { CaucusID } from '../components/Caucus';
-import { MemberData, MemberID, Rank } from '../components/Member';
-import { logCreateMember } from '../analytics';
-import { Template, TEMPLATE_TO_MEMBERS } from '../components/template';
+import { CommitteeData, CommitteeID } from '../pages/Committee';
+import { TimerData, DEFAULT_TIMER } from '../components/timer/Timer';
+import { CaucusID } from '../pages/Caucus';
+import { MemberData, MemberID, Rank } from '../modules/member';
+import { logCreateMember } from '../modules/analytics';
+import { Template, TEMPLATE_TO_MEMBERS } from '../modules/template';
 import _ from 'lodash';
 
 export const putCommittee = 

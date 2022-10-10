@@ -6,15 +6,15 @@ import {
   Form, Grid, Header, InputOnChangeData, DropdownProps,
   Message, Popup, Container, Segment, Icon,
 } from 'semantic-ui-react';
-import { Login } from './Auth';
+import { Login } from '../modules/auth';
 import { URLParameters } from '../types';
 import { makeDropdownOption } from '../utils';
-import ConnectionStatus from './ConnectionStatus';
-import { logCreateCommittee } from '../analytics';
+import ConnectionStatus from '../components/aux/ConnectionStatus';
+import { logCreateCommittee } from '../modules/analytics';
 import { meetId } from '../utils';
 import { pushTemplateMembers, putCommittee } from '../actions/committee-actions';
 import { Helmet } from 'react-helmet';
-import { Template, TemplatePreview } from './template';
+import { Template, TemplatePreview } from '../modules/template';
 
 interface Props extends RouteComponentProps<URLParameters> {
 }

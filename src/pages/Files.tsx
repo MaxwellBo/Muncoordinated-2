@@ -6,12 +6,12 @@ import { RouteComponentProps } from 'react-router';
 import { URLParameters } from '../types';
 import { Form, Button, Progress, DropdownProps, Flag, Container, Tab, TextAreaProps, Feed, SemanticICONS } from 'semantic-ui-react';
 import { Helmet } from 'react-helmet';
-import { parseFlagName } from './Member';
-import Loading from './Loading';
+import { parseFlagName } from '../modules/member';
+import Loading from '../components/aux/Loading';
 import { MemberOption, COUNTRY_OPTIONS } from '../constants';
 import { ResolutionID } from './Resolution';
 import { putAmendment } from '../actions/resolution-actions';
-import { DEFAULT_AMENDMENT } from './Amendment';
+import { DEFAULT_AMENDMENT } from '../modules/amendment';
 
 const TEXT_ICON: SemanticICONS = 'align left';
 const FILE_ICON: SemanticICONS = 'file outline';

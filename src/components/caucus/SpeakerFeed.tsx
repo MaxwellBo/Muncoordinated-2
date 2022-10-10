@@ -4,11 +4,11 @@
  */
 
 import * as firebase from 'firebase/app';
-import { TimerData } from '../Timer';
+import { TimerData } from '../timer/Timer';
 import * as React from 'react';
 import { Feed, Icon, Flag, Label, FeedEvent } from 'semantic-ui-react';
 import { runLifecycle, Lifecycle } from '../../actions/caucus-actions';
-import { parseFlagName } from '../Member';
+import { parseFlagName } from '../../modules/member';
 import { DragDropContext, Droppable, Draggable, DraggableProvided, DropResult } from 'react-beautiful-dnd';
 import { useAuthState } from 'react-firebase-hooks/auth';
 

@@ -1,6 +1,6 @@
 import * as firebase from 'firebase/app';
-import { StrawpollData, StrawpollID } from '../components/Strawpoll';
-import { CommitteeID } from '../components/Committee';
+import { StrawpollData, StrawpollID } from '../pages/Strawpoll';
+import { CommitteeID } from '../pages/Committee';
 import { shortMeetId } from '../utils';
 
 export const putStrawpoll = 
