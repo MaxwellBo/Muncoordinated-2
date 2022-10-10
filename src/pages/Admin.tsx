@@ -6,7 +6,6 @@ import {
   Rank,
   parseFlagName,
   nameToMemberOption,
-  COUNTRY_OPTIONS,
   MemberOption
 } from '../modules/member';
 import { Dropdown, Flag, Table, Button, Checkbox,
@@ -21,6 +20,7 @@ import { logClickGeneralSpeakersList } from '../modules/analytics';
 import { CommitteeStatsTable } from '../modules/committee-stats';
 import {CommitteeData, CommitteeID, pushMember, Template} from '../models/committee';
 import { TemplateAdder } from '../components/template';
+import {COUNTRY_OPTIONS} from "../constants";
 
 interface Props extends RouteComponentProps<URLParameters> {
   committee: CommitteeData;

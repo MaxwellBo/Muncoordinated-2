@@ -16,11 +16,12 @@ import {
   TextAreaProps
 } from 'semantic-ui-react';
 import {Helmet} from 'react-helmet';
-import {COUNTRY_OPTIONS, MemberOption, parseFlagName} from '../modules/member';
+import {MemberOption, parseFlagName} from '../modules/member';
 import Loading from '../components/Loading';
 import {DEFAULT_AMENDMENT, putAmendment, ResolutionID} from '../models/resolution';
 import {CommitteeData, CommitteeID, recoverMemberOptions} from "../models/committee";
 import {File, Link, PostData, PostID, PostType, Text} from "../models/post";
+import {COUNTRY_OPTIONS} from "../constants";
 
 const TEXT_ICON: SemanticICONS = 'align left';
 const FILE_ICON: SemanticICONS = 'file outline';
