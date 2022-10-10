@@ -13,7 +13,7 @@ function CopyableText(props: {
     try {
       navigator.clipboard.writeText(props.value)
         .then(() => {
-          setMessage('Copied')
+          setMessage('Copied!')
           setTimeout(() => setMessage('Copy'), 3000)
         })
         .catch(() => {
