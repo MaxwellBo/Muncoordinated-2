@@ -13,9 +13,9 @@ import 'firebase/analytics';
 import { Route, Switch } from 'react-router-dom';
 import './App.css';
 
-import Onboard from './components/Onboard';
-import Homepage from './components/Homepage';
-import Committee from './components/Committee';
+import Onboard from './pages/Onboard';
+import Homepage from './pages/Homepage';
+import Committee from './pages/Committee';
 import { NotFound } from './components/NotFound';
 
 const firebaseConfig = {
