@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { RouteComponentProps } from 'react-router';
 import * as firebase from 'firebase/app';
-import { CommitteeData, DEFAULT_COMMITTEE } from './Committee';
 import {
   Form, Grid, Header, InputOnChangeData, DropdownProps,
   Message, Popup, Container, Segment, Icon,
@@ -12,7 +11,7 @@ import { makeDropdownOption } from '../utils';
 import ConnectionStatus from '../components/aux/ConnectionStatus';
 import { logCreateCommittee } from '../modules/analytics';
 import { meetId } from '../utils';
-import { pushTemplateMembers, putCommittee } from '../models/committee';
+import {CommitteeData, DEFAULT_COMMITTEE, pushTemplateMembers, putCommittee} from '../models/committee';
 import { Helmet } from 'react-helmet';
 import { Template, TemplatePreview } from '../modules/template';
 

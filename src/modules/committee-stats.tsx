@@ -1,23 +1,8 @@
 import * as React from 'react';
-import { CommitteeData } from "../pages/Committee";
 import * as Utils from '../utils';
-import { canVote, MemberData, MemberID, nonNGO } from './member';
+import { canVote, MemberData, MemberID, nonNGO } from '../models/member';
 import { Table } from 'semantic-ui-react';
-
-export interface CommitteeStats {
-  delegatesNo: number;
-  presentNo: number;
-  absCanVote: number;
-  canVoteNo: number;
-  nonNGONo: number;
-  quorum: number;
-  procedural: number;
-  operative: number;
-  hasQuorum: boolean;
-  draftResolution: number;
-  amendment: number;
-  twoThirdsMajority: number;
-}
+import {CommitteeData} from "../models/committee";
 
 export function makeCommitteeStats(data?: CommitteeData) {
   const defaultMap = {} as Record<MemberID, MemberData>;

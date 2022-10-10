@@ -1,54 +1,31 @@
 import * as React from 'react';
 import firebase from 'firebase/app';
 import FileSaver from 'file-saver';
-import { CommitteeData, CommitteeID, recoverMemberOptions } from './Committee';
-import { RouteComponentProps } from 'react-router';
-import { URLParameters } from '../types';
-import { Form, Button, Progress, DropdownProps, Flag, Container, Tab, TextAreaProps, Feed, SemanticICONS } from 'semantic-ui-react';
-import { Helmet } from 'react-helmet';
-import { parseFlagName } from '../modules/member';
+import {RouteComponentProps} from 'react-router';
+import {URLParameters} from '../types';
+import {
+  Button,
+  Container,
+  DropdownProps,
+  Feed,
+  Flag,
+  Form,
+  Progress,
+  SemanticICONS,
+  Tab,
+  TextAreaProps
+} from 'semantic-ui-react';
+import {Helmet} from 'react-helmet';
+import {parseFlagName} from '../models/member';
 import Loading from '../components/aux/Loading';
-import { MemberOption, COUNTRY_OPTIONS } from '../constants';
-import { ResolutionID } from './Resolution';
-import { putAmendment } from '../models/resolution';
-import { DEFAULT_AMENDMENT } from '../modules/amendment';
+import {COUNTRY_OPTIONS, MemberOption} from '../constants';
+import {DEFAULT_AMENDMENT, putAmendment, ResolutionID} from '../models/resolution';
+import {CommitteeData, CommitteeID, recoverMemberOptions} from "../models/committee";
+import {File, Link, PostData, PostID, PostType, Text} from "../models/post";
 
 const TEXT_ICON: SemanticICONS = 'align left';
 const FILE_ICON: SemanticICONS = 'file outline';
 const LINK_ICON: SemanticICONS = 'linkify';
-
-enum PostType {
-  Link = 'link',
-  File = 'file',
-  Text = 'text'
-}
-
-export type PostID = string;
-
-export interface Post {
-  type: PostType
-  uploader: string;
-  forResolution?: ResolutionID
-  timestamp?: number; // we're just going to have to cop the undefined here
-}
-
-interface Link extends Post {
-  type: PostType.Link;
-  url: string;
-  name: string;
-}
-
-interface File extends Post {
-  type: PostType.File;
-  filename: string;
-}
-
-interface Text extends Post {
-  type: PostType.Text;
-  body: string;
-}
-
-export type PostData = Link | File | Text;
 
 interface EntryProps {
   committeeID: CommitteeID;

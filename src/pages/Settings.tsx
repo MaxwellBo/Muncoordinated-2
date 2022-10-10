@@ -1,11 +1,12 @@
 import * as React from 'react';
 import * as firebase from 'firebase/app';
-import { CommitteeData } from './Committee';
-import { RouteComponentProps } from 'react-router';
-import { URLParameters } from '../types';
-import { Header, Segment, Checkbox, Container } from 'semantic-ui-react';
-import { Helmet } from 'react-helmet';
-import { checkboxHandler } from '../models/handlers';
+import {RouteComponentProps} from 'react-router';
+import {URLParameters} from '../types';
+import {Checkbox, Container, Header, Segment} from 'semantic-ui-react';
+import {Helmet} from 'react-helmet';
+import {checkboxHandler} from '../models/handlers';
+import {CommitteeData} from "../models/committee";
+import {DEFAULT_SETTINGS, SettingsData} from "../models/settings";
 
 interface Props extends RouteComponentProps<URLParameters> {
 }
@@ -14,22 +15,6 @@ interface State {
   committee?: CommitteeData;
   committeeFref: firebase.database.Reference;
 }
-
-export interface SettingsData {
-  moveQueueUp: boolean;
-  timersInSeparateColumns: boolean;
-  autoNextSpeaker: boolean;
-  motionVotes?: boolean;
-  motionsArePublic?: boolean;
-}
-
-export const DEFAULT_SETTINGS: Required<SettingsData> = {
-  moveQueueUp: false,
-  timersInSeparateColumns: false,
-  autoNextSpeaker: false,
-  motionVotes: false,
-  motionsArePublic: false
-};
 
 export default class Settings extends React.Component<Props, State> {
   constructor(props: Props) {

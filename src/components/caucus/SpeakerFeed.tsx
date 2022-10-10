@@ -4,13 +4,13 @@
  */
 
 import * as firebase from 'firebase/app';
-import { TimerData } from '../timer/Timer';
 import * as React from 'react';
 import { Feed, Icon, Flag, Label, FeedEvent } from 'semantic-ui-react';
 import { runLifecycle, Lifecycle } from '../../models/caucus';
-import { parseFlagName } from '../../modules/member';
+import { parseFlagName } from '../../models/member';
 import { DragDropContext, Droppable, Draggable, DraggableProvided, DropResult } from 'react-beautiful-dnd';
 import { useAuthState } from 'react-firebase-hooks/auth';
+import {TimerData} from "../../models/time";
 
 export enum Stance {
   For = 'For',

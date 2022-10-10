@@ -1,9 +1,10 @@
 import * as React from 'react';
 import firebase from 'firebase/app';
-import { Form, Segment, Button, Progress, DropdownProps, Icon, Label } from 'semantic-ui-react';
-import { Unit, TimerSetter, getSeconds } from './TimerSetter';
+import {Button, DropdownProps, Form, Icon, Label, Progress, Segment} from 'semantic-ui-react';
+import {TimerSetter} from './TimerSetter';
 import _ from 'lodash';
-import { DEFAULT_SPEAKER_TIME_SECONDS } from '../../pages/Caucus';
+import {DEFAULT_SPEAKER_TIME_SECONDS} from "../../models/caucus";
+import {getSeconds, TimerData, Unit} from "../../models/time";
 
 interface Props {
   name: string;
@@ -22,12 +23,6 @@ interface State {
   unitDropdown: Unit;
   durationField: string;
   mute: boolean;
-}
-
-export interface TimerData {
-  elapsed: number;
-  remaining: number;
-  ticking: boolean | number;
 }
 
 export const DEFAULT_TIMER = {

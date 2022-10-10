@@ -1,7 +1,7 @@
 /* eslint-disable no-mixed-operators */
 /* eslint-disable eqeqeq */
 import { MemberOption } from './constants';
-import { MemberID, nameToMemberOption, MemberData } from './modules/member';
+import { MemberID, nameToMemberOption, MemberData } from './models/member';
 import * as _ from 'lodash';
 import * as React from 'react';
 

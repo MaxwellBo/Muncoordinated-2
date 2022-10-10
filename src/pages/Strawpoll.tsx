@@ -1,71 +1,40 @@
 import * as firebase from 'firebase/app';
 import * as React from 'react';
-import { RouteComponentProps } from 'react-router';
-import { URLParameters } from '../types';
-import { getStrawpollRef } from '../models/strawpoll';
-import { useObject } from 'react-firebase-hooks/database';
-import { Container, Header, Input, Button, List, Icon, Checkbox, Form, Modal, CheckboxProps, DropdownProps, Progress, Dropdown } from 'semantic-ui-react';
-import { checkboxHandler } from '../models/handlers';
-import { Helmet } from 'react-helmet';
-import { fieldHandler, clearableZeroableValidatedNumberFieldHandler } from '../models/handlers';
+import {RouteComponentProps} from 'react-router';
+import {URLParameters} from '../types';
+import {
+  DEFAULT_STRAWPOLL_OPTION,
+  getStrawpollRef,
+  StrawpollData,
+  StrawpollMedium,
+  StrawpollOptionData,
+  StrawpollOptionID,
+  StrawpollStage,
+  StrawpollType
+} from '../models/strawpoll';
+import {useObject} from 'react-firebase-hooks/database';
+import {
+  Button,
+  Checkbox,
+  CheckboxProps,
+  Container,
+  Dropdown,
+  DropdownProps,
+  Form,
+  Header,
+  Icon,
+  Input,
+  List,
+  Modal,
+  Progress
+} from 'semantic-ui-react';
+import {checkboxHandler, clearableZeroableValidatedNumberFieldHandler, fieldHandler} from '../models/handlers';
+import {Helmet} from 'react-helmet';
 import Loading from '../components/aux/Loading';
-import { useAuthState } from 'react-firebase-hooks/auth';
-import { StrawpollShareHint } from '../components/aux/share-hints';
-import { NotFound } from '../components/aux/NotFound';
-import { useVoterID } from '../hooks';
-
-enum StrawpollStage {
-  Preparing = 'preparing',
-  Voting = 'voting',
-  Results = 'results',
-}
-
-enum StrawpollType {
-  Checkbox = 'checkbox',
-  Radio = 'radio'
-}
-
-enum StrawpollMedium {
-  Manual = 'manual',
-  Link = 'link'
-}
-
-export type StrawpollID = string;
-export type StrawpollOptionID = string;
-export type StrawpollVoteID = string;
-
-export const DEFAULT_STRAWPOLL: StrawpollData = {
-  question: 'undefined question',
-  stage: StrawpollStage.Preparing,
-  type: StrawpollType.Checkbox,
-  medium: StrawpollMedium.Link,
-  options: {},
-  optionsArePublic: false
-}
-
-export interface StrawpollData {
-  question: string
-  type: StrawpollType
-  stage: StrawpollStage
-  medium?: StrawpollMedium
-  options?: Record<StrawpollOptionID, StrawpollOptionData>,
-  optionsArePublic?: boolean
-}
-
-export interface StrawpollOptionData {
-  text: string
-  votes?: Record<StrawpollVoteID, StrawpollVoteData>
-  tally?: number
-}
-
-const DEFAULT_STRAWPOLL_OPTION: StrawpollOptionData = {
-  text: '',
-  votes: {}
-}
-
-export interface StrawpollVoteData {
-  voterID: string
-}
+import {useAuthState} from 'react-firebase-hooks/auth';
+import {StrawpollShareHint} from '../components/aux/share-hints';
+import {NotFound} from '../components/aux/NotFound';
+import {useVoterID} from '../hooks';
 
 export interface StrawpollProps extends RouteComponentProps<URLParameters> {
 } 

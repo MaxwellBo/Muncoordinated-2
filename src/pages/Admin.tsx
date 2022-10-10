@@ -1,7 +1,6 @@
 import * as React from 'react';
 import firebase from 'firebase/app';
-import { CommitteeData, CommitteeID } from './Committee';
-import { MemberData, MemberID, Rank, parseFlagName, nameToMemberOption } from '../modules/member';
+import { MemberData, MemberID, Rank, parseFlagName, nameToMemberOption } from '../models/member';
 import { Dropdown, Flag, Table, Button, Checkbox,
   CheckboxProps, DropdownProps, ButtonProps, Container, Message, Icon, Grid } from 'semantic-ui-react';
 import { Helmet } from 'react-helmet';
@@ -13,7 +12,7 @@ import { URLParameters } from '../types';
 import { RouteComponentProps } from 'react-router';
 import { logClickGeneralSpeakersList } from '../modules/analytics';
 import { CommitteeStatsTable } from '../modules/committee-stats';
-import { pushMember } from '../models/committee';
+import {CommitteeData, CommitteeID, pushMember} from '../models/committee';
 import { Template, TemplateAdder } from '../modules/template';
 
 interface Props extends RouteComponentProps<URLParameters> {

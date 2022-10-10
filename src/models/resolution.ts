@@ -1,9 +1,68 @@
 import * as firebase from 'firebase/app';
-import { MemberID } from '../modules/member';
-import { ResolutionID, Vote, ResolutionData } from '../pages/Resolution';
-import { CommitteeID } from '../pages/Committee';
-import { AmendmentData } from '../modules/amendment';
-import { shortMeetId } from '../utils';
+import {MemberID} from './member';
+import {makeDropdownOption, shortMeetId} from '../utils';
+import {CaucusID} from "./caucus";
+import {CommitteeID} from "./committee";
+import {DropdownItemProps} from "semantic-ui-react";
+
+export enum ResolutionStatus {
+  Introduced = 'Introduced',
+  Passed = 'Passed',
+  Failed = 'Failed'
+}
+
+export const RESOLUTION_STATUS_OPTIONS = [
+  ResolutionStatus.Introduced,
+  ResolutionStatus.Passed,
+  ResolutionStatus.Failed
+].map(makeDropdownOption)
+
+export enum Majority {
+  Simple = "Simple majority",
+  TwoThirds = "Two-thirds majority",
+  TwoThirdsNoAbstentions = "Two-thirds majority, ignoring abstentions"
+}
+
+export const MAJORITY_OPTIONS: DropdownItemProps[] = [
+  {key: Majority.Simple, value: Majority.Simple, text: "Simple (50%) majority required"},
+  {key: Majority.TwoThirds, value: Majority.TwoThirds, text: "Two-thirds majority required"},
+  {
+    key: Majority.TwoThirdsNoAbstentions,
+    value: Majority.TwoThirdsNoAbstentions,
+    text: "Two-thirds majority required, ignoring abstentions"
+  },
+]
+export type ResolutionID = string;
+
+export interface ResolutionData {
+  name: string;
+  link: string;
+  proposer?: MemberID;
+  seconder?: MemberID;
+  status: ResolutionStatus;
+  caucus?: CaucusID;
+  amendments?: Record<AmendmentID, AmendmentData>;
+  votes?: Votes;
+  amendmentsArePublic?: boolean; // TODO: Migrate
+  requiredMajority?: Majority; // TODO: Migrate
+}
+
+export enum Vote {
+  For = 'For',
+  Abstaining = 'Abstaining',
+  Against = 'Against'
+}
+
+type Votes = Record<string, Vote>;
+export const DEFAULT_RESOLUTION: ResolutionData = {
+  name: 'untitled resolution',
+  link: '',
+  status: ResolutionStatus.Introduced,
+  amendments: {} as Record<AmendmentID, AmendmentData>,
+  votes: {} as Votes,
+  amendmentsArePublic: false,
+  requiredMajority: Majority.Simple
+};
 
 export const voteOnResolution = (
   committeeID: CommitteeID, 
@@ -27,6 +86,36 @@ export const voteOnResolution = (
     return target.remove();
   }
 };
+
+export enum AmendmentStatus {
+  Proposed = 'Proposed',
+  Incorporated = 'Incorporated',
+  Rejected = 'Rejected'
+}
+
+export const AMENDMENT_STATUS_OPTIONS = [
+  AmendmentStatus.Proposed,
+  AmendmentStatus.Incorporated,
+  AmendmentStatus.Rejected
+].map(makeDropdownOption);
+export type AmendmentID = string;
+
+export interface AmendmentData {
+  proposer: string;
+  status: AmendmentStatus;
+  text: string;
+  caucus?: CaucusID;
+}
+
+export const DEFAULT_AMENDMENT = {
+  proposer: '',
+  status: AmendmentStatus.Proposed,
+  text: ''
+};
+
+export function recoverLinkedCaucus(amendment?: AmendmentData) {
+  return amendment ? amendment.caucus : undefined;
+}
 
 export const putAmendment = (
   committeeID: CommitteeID, 

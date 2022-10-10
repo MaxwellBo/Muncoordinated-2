@@ -1,101 +1,46 @@
 import * as React from 'react';
 import firebase from 'firebase/app';
-import { RouteComponentProps } from 'react-router';
-import { Route } from 'react-router-dom';
-import { MemberData, MemberID } from '../modules/member';
-import Caucus, { CaucusData, CaucusID, DEFAULT_CAUCUS, DEFAULT_CAUCUS_TIME_SECONDS, CaucusStatus } from './Caucus';
-import Resolution, { ResolutionData, ResolutionID, DEFAULT_RESOLUTION } from './Resolution';
+import {RouteComponentProps} from 'react-router';
+import {Route} from 'react-router-dom';
+import Caucus from './Caucus';
+import Resolution from './Resolution';
 import Admin from './Admin';
-import { Icon, Menu, SemanticICONS, Dropdown, Container, Responsive, Sidebar, Header,
-  List, Input, Button, Segment } from 'semantic-ui-react';
-import { Helmet } from 'react-helmet';
+import {
+  Button,
+  Container,
+  Dropdown,
+  Header,
+  Icon,
+  Input,
+  List,
+  Menu,
+  Responsive,
+  Segment,
+  SemanticICONS,
+  Sidebar
+} from 'semantic-ui-react';
+import {Helmet} from 'react-helmet';
 import Stats from './Stats';
-import { MotionID, MotionData } from './Motions';
-import { TimerData, DEFAULT_TIMER } from '../components/timer/Timer';
+import Motions from './Motions';
 import Unmod from './Unmod';
 import Notes from './Notes';
 import Help from './Help';
-import Motions from './Motions';
-import { putCaucus } from '../models/caucus';
-import { URLParameters } from '../types';
+import {CaucusStatus, DEFAULT_CAUCUS, putCaucus} from '../models/caucus';
+import {URLParameters} from '../types';
 import Loading from '../components/aux/Loading';
 import Footer from '../components/aux/Footer';
-import Settings, { SettingsData, DEFAULT_SETTINGS } from './Settings';
-import Files, { PostID, PostData } from './Files';
-import { LoginModal } from '../modules/auth';
-import { CommitteeShareHint } from '../components/aux/share-hints';
+import Settings from './Settings';
+import Files from './Files';
+import {LoginModal} from '../modules/auth';
+import {CommitteeShareHint} from '../components/aux/share-hints';
 import Notifications from '../components/aux/Notifications';
-import { putResolution } from '../models/resolution';
+import {DEFAULT_RESOLUTION, putResolution} from '../models/resolution';
 import ConnectionStatus from '../components/aux/ConnectionStatus';
-import { membersToOptions, membersToPresentOptions } from '../utils';
-import { fieldHandler } from '../models/handlers';
-import { MemberOption } from '../constants';
-import { putStrawpoll } from '../models/strawpoll';
-import Strawpoll, { DEFAULT_STRAWPOLL, StrawpollID, StrawpollData } from './Strawpoll';
-import { logClickSetupCommittee } from '../modules/analytics';
-import { Template } from '../modules/template';
-
-export function recoverMemberOptions(committee?: CommitteeData): MemberOption[] {
-  if (committee) {
-    return membersToOptions(committee.members);
-  } else {
-    return [];
-  }
-}
-
-export function recoverPresentMemberOptions(committee?: CommitteeData): MemberOption[] {
-  if (committee) {
-    return membersToPresentOptions(committee.members);
-  } else {
-    return [];
-  }
-}
-
-export function recoverMembers(committee?: CommitteeData): Record<MemberID, MemberData> | undefined {
-  return committee ? (committee.members || {} as Record<MemberID, MemberData>) : undefined;
-}
-
-export function recoverSettings(committee?: CommitteeData): Required<SettingsData> {
-  let timersInSeparateColumns: boolean = 
-    committee?.settings.timersInSeparateColumns 
-    ?? DEFAULT_SETTINGS.timersInSeparateColumns;
-
-  const moveQueueUp: boolean = 
-    committee?.settings.moveQueueUp 
-    ?? DEFAULT_SETTINGS.moveQueueUp;
-
-  const autoNextSpeaker: boolean = 
-    committee?.settings.autoNextSpeaker 
-    ?? DEFAULT_SETTINGS.autoNextSpeaker;
-
-  const motionVotes: boolean = 
-    committee?.settings.motionVotes 
-    ?? DEFAULT_SETTINGS.motionVotes;
-
-  const motionsArePublic: boolean = 
-    committee?.settings.motionsArePublic 
-    ?? DEFAULT_SETTINGS.motionsArePublic;
-
-  return {
-    timersInSeparateColumns,
-    moveQueueUp, 
-    autoNextSpeaker, 
-    motionVotes,
-    motionsArePublic
-  };
-}
-
-export function recoverCaucus(committee: CommitteeData | undefined, caucusID: CaucusID): CaucusData | undefined {
-  const caucuses = committee ? committee.caucuses : {};
-  
-  return (caucuses || {})[caucusID];
-}
-
-export function recoverResolution(committee: CommitteeData | undefined, resolutionID: ResolutionID): ResolutionData | undefined {
-  const resolutions = committee ? committee.resolutions : {};
-  
-  return (resolutions || {})[resolutionID];
-}
+import {fieldHandler} from '../models/handlers';
+import {DEFAULT_STRAWPOLL, putStrawpoll} from '../models/strawpoll';
+import Strawpoll from './Strawpoll';
+import {logClickSetupCommittee} from '../modules/analytics';
+import {CommitteeData, CommitteeID, DEFAULT_COMMITTEE} from "../models/committee";
 
 interface DesktopContainerProps {
   menu?: React.ReactNode;
@@ -122,49 +67,6 @@ interface State {
   committeeFref: firebase.database.Reference;
 }
 
-export type CommitteeID = string;
-
-
-export interface CommitteeData {
-  name: string;
-  chair: string;
-  topic: string;
-  conference?: string; // TODO: Migrate
-  template?: Template;
-  creatorUid: firebase.UserInfo['uid'];
-  members?: Record<MemberID, MemberData>;
-  caucuses?: Record<CaucusID, CaucusData>;
-  resolutions?: Record<ResolutionID, ResolutionData>;
-  strawpolls?: Record<StrawpollID, StrawpollData>;
-  motions?: Record<MotionID, MotionData>;
-  files?: Record<PostID, PostData>;
-  timer: TimerData;
-  notes: string;
-  settings: SettingsData;
-}
-
-const GENERAL_SPEAKERS_LIST: CaucusData = {
-   ...DEFAULT_CAUCUS, name: 'General Speakers\' List' 
-};
-
-export const DEFAULT_COMMITTEE: CommitteeData = {
-  name: '',
-  chair: '',
-  topic: '',
-  conference: '',
-  creatorUid: '',
-  members: {} as Record<MemberID, MemberData>,
-  caucuses: {
-    'gsl': GENERAL_SPEAKERS_LIST
-  } as Record<string, CaucusData>,
-  resolutions: {} as Record<ResolutionID, ResolutionData>,
-  files: {} as Record<PostID, PostData>,
-  strawpolls: {} as Record<StrawpollID, StrawpollData>,
-  motions: {} as Record<MotionID, MotionData>,
-  timer: { ...DEFAULT_TIMER, remaining: DEFAULT_CAUCUS_TIME_SECONDS },
-  notes: '',
-  settings: DEFAULT_SETTINGS
-};
 
 class DesktopContainer extends React.Component<DesktopContainerProps, DesktopContainerState> {
   render() {

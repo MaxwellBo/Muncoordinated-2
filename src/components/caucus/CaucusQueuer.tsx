@@ -1,13 +1,14 @@
 import * as React from 'react';
 import firebase from 'firebase/app';
-import { MemberData } from '../../modules/member';
-import { CaucusData, recoverDuration, recoverUnit } from '../../pages/Caucus';
+import { MemberData } from '../../models/member';
 import { MemberOption } from '../../constants';
 import { Segment, Button, Form, DropdownProps, Label } from 'semantic-ui-react';
-import { TimerSetter, Unit } from '../timer/TimerSetter';
+import { TimerSetter} from '../timer/TimerSetter';
 import { SpeakerEvent, Stance } from '..//caucus/SpeakerFeed';
 import { checkboxHandler, validatedNumberFieldHandler, dropdownHandler } from '../../models/handlers';
 import { membersToPresentOptions } from '../../utils';
+import {CaucusData, recoverDuration, recoverUnit} from "../../models/caucus";
+import {Unit} from "../../models/time";
 
 interface Props {
   caucus?: CaucusData;

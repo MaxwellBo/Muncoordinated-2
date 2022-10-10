@@ -1,36 +1,26 @@
 import * as React from 'react';
 import firebase from 'firebase/app';
-import {
-  Segment, Dropdown, TextArea, Input, Grid, Feed,
-  Label, Form, Container
-} from 'semantic-ui-react';
-import { Helmet } from 'react-helmet';
-import Timer, { TimerData, DEFAULT_TIMER } from '../components/timer/Timer';
-import { RouteComponentProps } from 'react-router';
-import { CommitteeData, recoverMembers, recoverSettings, recoverCaucus } from './Committee';
+import {Container, Dropdown, Feed, Form, Grid, Input, Label, Segment, TextArea} from 'semantic-ui-react';
+import {Helmet} from 'react-helmet';
+import Timer from '../components/timer/Timer';
+import {RouteComponentProps} from 'react-router';
 import CaucusQueuer from '../components/caucus/CaucusQueuer';
-import { textAreaHandler, dropdownHandler, fieldHandler } from '../models/handlers';
-import { makeDropdownOption } from '../utils';
-import { URLParameters } from '../types';
-import { CaucusNextSpeaking } from '../components/caucus/CaucusNextSpeaking';
-import { SpeakerEvent, SpeakerFeedEntry } from '../components/caucus/SpeakerFeed';
-import { NotFound } from '../components/aux/NotFound';
-import { Unit } from '../components/timer/TimerSetter';
-
-export const DEFAULT_CAUCUS_TIME_SECONDS = 10 * 60;
-export const DEFAULT_SPEAKER_TIME_SECONDS = 1 * 60;
-
-export function recoverUnit(caucus?: CaucusData): Unit {
-  return caucus ? (caucus.speakerUnit || Unit.Seconds) : Unit.Seconds;
-}
-
-export function recoverDuration(caucus?: CaucusData): number | undefined {
-  return caucus
-    ? caucus.speakerDuration
-      ? caucus.speakerDuration
-      : undefined
-    : undefined;
-}
+import {dropdownHandler, fieldHandler, textAreaHandler} from '../models/handlers';
+import {URLParameters} from '../types';
+import {CaucusNextSpeaking} from '../components/caucus/CaucusNextSpeaking';
+import {SpeakerFeedEntry} from '../components/caucus/SpeakerFeed';
+import {NotFound} from '../components/aux/NotFound';
+import {
+  CAUCUS_STATUS_OPTIONS,
+  CaucusData,
+  CaucusID,
+  CaucusStatus,
+  DEFAULT_CAUCUS,
+  recoverDuration,
+  recoverUnit
+} from "../models/caucus";
+import {CommitteeData, recoverCaucus, recoverMembers, recoverSettings} from "../models/committee";
+import {TimerData, Unit} from "../models/time";
 
 interface Props extends RouteComponentProps<URLParameters> {
 }
@@ -42,45 +32,6 @@ interface State {
   committeeFref: firebase.database.Reference;
   loading: boolean;
 }
-
-export type CaucusID = string;
-
-export enum CaucusStatus {
-  Open = 'Open',
-  Closed = 'Closed'
-}
-
-export interface CaucusData {
-  name: string;
-  topic: string;
-  status: CaucusStatus;
-  speakerTimer: TimerData;
-  speakerDuration?: number; // TODO: Migrate
-  speakerUnit?: Unit; // TODO: Migrate
-  caucusTimer: TimerData;
-  queueIsPublic?: boolean; // TODO: Migrate
-  speaking?: SpeakerEvent;
-  queue?: Record<string, SpeakerEvent>;
-  history?: Record<string, SpeakerEvent>;
-}
-
-const CAUCUS_STATUS_OPTIONS = [
-  CaucusStatus.Open,
-  CaucusStatus.Closed
-].map(makeDropdownOption);
-
-export const DEFAULT_CAUCUS: CaucusData = {
-  name: 'untitled caucus',
-  topic: '',
-  status: CaucusStatus.Open,
-  speakerTimer: { ...DEFAULT_TIMER, remaining: DEFAULT_SPEAKER_TIME_SECONDS },
-  speakerDuration: DEFAULT_SPEAKER_TIME_SECONDS,
-  speakerUnit: Unit.Seconds,
-  caucusTimer: { ...DEFAULT_TIMER, remaining: DEFAULT_CAUCUS_TIME_SECONDS },
-  queueIsPublic: false,
-  queue: {} as Record<string, SpeakerEvent>,
-  history: {} as Record<string, SpeakerEvent>,
-};
 
 export default class Caucus extends React.Component<Props, State> {
   constructor(props: Props) {

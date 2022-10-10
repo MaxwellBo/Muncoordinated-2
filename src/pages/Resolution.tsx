@@ -1,28 +1,54 @@
 import * as React from 'react';
 import * as firebase from 'firebase/app';
 import * as _ from 'lodash';
-import { MemberID, nameToMemberOption, MemberData, Rank, canVote } from '../modules/member';
-import { AmendmentID, AmendmentData, DEFAULT_AMENDMENT, AMENDMENT_STATUS_OPTIONS, recoverLinkedCaucus } from '../modules/amendment';
+import {canVote, MemberData, MemberID, nameToMemberOption, Rank} from '../models/member';
 import {
-  Card, Button, Form, Dropdown, Segment, Input, TextArea, Confirm,
-  List, SemanticICONS, Icon, Tab, Grid, SemanticCOLORS, Container, Message, Label, Popup, Statistic, DropdownItemProps, TabProps
+  Button,
+  Card,
+  Confirm,
+  Container,
+  Dropdown,
+  Form,
+  Grid,
+  Icon,
+  Input,
+  Label,
+  List,
+  Message,
+  Popup,
+  Segment,
+  SemanticCOLORS,
+  SemanticICONS,
+  Statistic,
+  Tab,
+  TabProps,
+  TextArea
 } from 'semantic-ui-react';
-import { Helmet } from 'react-helmet';
-import { CommitteeData, recoverMemberOptions } from './Committee';
-import { CaucusID, DEFAULT_CAUCUS, CaucusData } from './Caucus';
-import { RouteComponentProps } from 'react-router';
-import { URLParameters } from '../types';
+import {Helmet} from 'react-helmet';
+import {RouteComponentProps} from 'react-router';
+import {URLParameters} from '../types';
 import {
-  dropdownHandler, fieldHandler, textAreaHandler, memberDropdownHandler,
-  checkboxHandler
+  checkboxHandler,
+  dropdownHandler,
+  fieldHandler,
+  memberDropdownHandler,
+  textAreaHandler
 } from '../models/handlers';
-import { makeDropdownOption } from '../utils';
-import { voteOnResolution } from '../models/resolution';
-import { putCaucus } from '../models/caucus';
-import { Stance } from '../components/caucus/SpeakerFeed';
-import { NotFound } from '../components/aux/NotFound';
+import {
+  AMENDMENT_STATUS_OPTIONS,
+  AmendmentData,
+  AmendmentID,
+  DEFAULT_AMENDMENT, DEFAULT_RESOLUTION, Majority, MAJORITY_OPTIONS,
+  recoverLinkedCaucus, RESOLUTION_STATUS_OPTIONS, ResolutionData, ResolutionID, ResolutionStatus, Vote,
+  voteOnResolution
+} from '../models/resolution';
+import {CaucusData, CaucusID, DEFAULT_CAUCUS, putCaucus} from '../models/caucus';
+import {Stance} from '../components/caucus/SpeakerFeed';
+import {NotFound} from '../components/aux/NotFound';
 import Files from './Files';
-import { CommitteeStatsTable, makeCommitteeStats } from '../modules/committee-stats';
+import {CommitteeStatsTable} from '../modules/committee-stats';
+import {CommitteeData, recoverMemberOptions} from "../models/committee";
+import {getThreshold, getThresholdName} from "../viewmodel/resolution";
 
 const TAB_ORDER = ['feed', 'text', 'amendments', 'voting'];
 
@@ -73,88 +99,6 @@ interface State {
   user?: firebase.User | null;
   loading: boolean;
 }
-
-export enum ResolutionStatus {
-  Introduced = 'Introduced',
-  Passed = 'Passed',
-  Failed = 'Failed'
-}
-
-const RESOLUTION_STATUS_OPTIONS = [
-  ResolutionStatus.Introduced,
-  ResolutionStatus.Passed,
-  ResolutionStatus.Failed
-].map(makeDropdownOption)
-
-enum Majority {
-  Simple = "Simple majority",
-  TwoThirds = "Two-thirds majority",
-  TwoThirdsNoAbstentions = "Two-thirds majority, ignoring abstentions"
-}
-
-const MAJORITY_OPTIONS: DropdownItemProps[] = [
-  { key: Majority.Simple, value: Majority.Simple, text: "Simple (50%) majority required" },
-  { key: Majority.TwoThirds, value: Majority.TwoThirds, text: "Two-thirds majority required" },
-  { key: Majority.TwoThirdsNoAbstentions, value: Majority.TwoThirdsNoAbstentions, text: "Two-thirds majority required, ignoring abstentions" },
-]
-
-function getThreshold(requiredMajority: Majority, committee: CommitteeData | undefined, fors: number, againsts: number): number {
-  const stats = makeCommitteeStats(committee)
-  switch (requiredMajority) {
-    case Majority.TwoThirds:
-      return stats.twoThirdsMajority;
-    case Majority.TwoThirdsNoAbstentions:
-      return Math.ceil((2/3) * (fors + againsts));
-    case Majority.Simple:
-    default:
-      return stats.simpleMajority;
-  }
-}
-
-function getThresholdName(majority: Majority): string {
-  switch (majority) {
-    case Majority.TwoThirds:
-      return "two-thirds majority"
-    case Majority.TwoThirdsNoAbstentions:
-      return "two-thirds majority"
-    case Majority.Simple:
-    default:
-      return "simple majority";
-  }
-}
-
-export type ResolutionID = string;
-
-export interface ResolutionData {
-  name: string;
-  link: string;
-  proposer?: MemberID;
-  seconder?: MemberID;
-  status: ResolutionStatus;
-  caucus?: CaucusID;
-  amendments?: Record<AmendmentID, AmendmentData>;
-  votes?: Votes;
-  amendmentsArePublic?: boolean; // TODO: Migrate
-  requiredMajority?: Majority; // TODO: Migrate
-}
-
-export enum Vote {
-  For = 'For',
-  Abstaining = 'Abstaining',
-  Against = 'Against'
-}
-
-type Votes = Record<string, Vote>;
-
-export const DEFAULT_RESOLUTION: ResolutionData = {
-  name: 'untitled resolution',
-  link: '',
-  status: ResolutionStatus.Introduced,
-  amendments: {} as Record<AmendmentID, AmendmentData>,
-  votes: {} as Votes,
-  amendmentsArePublic: false,
-  requiredMajority: Majority.Simple
-};
 
 export default class Resolution extends React.Component<Props, State> {
   constructor(props: Props) {
