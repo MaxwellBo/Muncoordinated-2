@@ -9,7 +9,7 @@ import Timer, { TimerData, DEFAULT_TIMER } from '../components/timer/Timer';
 import { RouteComponentProps } from 'react-router';
 import { CommitteeData, recoverMembers, recoverSettings, recoverCaucus } from './Committee';
 import CaucusQueuer from '../components/caucus/CaucusQueuer';
-import { textAreaHandler, dropdownHandler, fieldHandler } from '../actions/handlers';
+import { textAreaHandler, dropdownHandler, fieldHandler } from '../models/handlers';
 import { makeDropdownOption } from '../utils';
 import { URLParameters } from '../types';
 import { CaucusNextSpeaking } from '../components/caucus/CaucusNextSpeaking';

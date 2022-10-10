@@ -3,7 +3,7 @@ import * as React from 'react';
 import { MemberData, parseFlagName, Rank } from "./member"
 import { makeDropdownOption } from "../utils";
 import { useState } from "react";
-import { pushTemplateMembers } from "../actions/committee-actions";
+import { pushTemplateMembers } from "../models/committee";
 import { CommitteeID } from "../pages/Committee";
 
 export enum Template {

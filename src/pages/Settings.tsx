@@ -5,7 +5,7 @@ import { RouteComponentProps } from 'react-router';
 import { URLParameters } from '../types';
 import { Header, Segment, Checkbox, Container } from 'semantic-ui-react';
 import { Helmet } from 'react-helmet';
-import { checkboxHandler } from '../actions/handlers';
+import { checkboxHandler } from '../models/handlers';
 
 interface Props extends RouteComponentProps<URLParameters> {
 }

@@ -6,14 +6,14 @@ import { Dropdown, Flag, Table, Button, Checkbox,
   CheckboxProps, DropdownProps, ButtonProps, Container, Message, Icon, Grid } from 'semantic-ui-react';
 import { Helmet } from 'react-helmet';
 import { COUNTRY_OPTIONS, MemberOption } from '../constants';
-import { checkboxHandler, dropdownHandler } from '../actions/handlers';
+import { checkboxHandler, dropdownHandler } from '../models/handlers';
 import { makeDropdownOption } from '../utils';
 import _ from 'lodash';
 import { URLParameters } from '../types';
 import { RouteComponentProps } from 'react-router';
 import { logClickGeneralSpeakersList } from '../modules/analytics';
 import { CommitteeStatsTable } from '../modules/committee-stats';
-import { pushMember } from '../actions/committee-actions';
+import { pushMember } from '../models/committee';
 import { Template, TemplateAdder } from '../modules/template';
 
 interface Props extends RouteComponentProps<URLParameters> {

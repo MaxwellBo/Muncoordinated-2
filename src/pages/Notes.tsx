@@ -5,7 +5,7 @@ import { RouteComponentProps } from 'react-router';
 import { URLParameters } from '../types';
 import { TextArea, Form, Container } from 'semantic-ui-react';
 import { Helmet } from 'react-helmet';
-import { textAreaHandler } from '../actions/handlers';
+import { textAreaHandler } from '../models/handlers';
 import Loading from '../components/aux/Loading';
 
 interface Props extends RouteComponentProps<URLParameters> {

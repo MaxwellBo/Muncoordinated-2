@@ -14,20 +14,20 @@ import {
   stateMemberDropdownHandler,
   stateTextAreaHandler,
   checkboxHandler
-} from '../actions/handlers';
+} from '../models/handlers';
 import { implies, sentenceCase, makeSentenceCaseDropdownOption, } from '../utils';
 import { TimerSetter, Unit, getSeconds } from '../components/timer/TimerSetter';
 import { nameToMemberOption, parseFlagName } from '../modules/member';
 import { DEFAULT_CAUCUS, CaucusData, CaucusID, CaucusStatus, DEFAULT_SPEAKER_TIME_SECONDS } from './Caucus';
-import { putCaucus, closeCaucus, putSpeaking } from '../actions/caucus-actions';
+import { putCaucus, closeCaucus, putSpeaking } from '../models/caucus';
 import { TimerData } from '../components/timer/Timer';
-import { putUnmodTimer, extendUnmodTimer, extendModTimer } from '../actions/committee-actions';
+import { putUnmodTimer, extendUnmodTimer, extendModTimer } from '../models/committee';
 import { URLParameters } from '../types';
 import { ResolutionData, DEFAULT_RESOLUTION, ResolutionID, IDENTITCAL_PROPOSER_SECONDER } from './Resolution';
 import { Stance } from '../components/caucus/SpeakerFeed';
 import { AmendmentData, DEFAULT_AMENDMENT } from '../modules/amendment';
-import { putAmendment, putResolution } from '../actions/resolution-actions';
-import { putStrawpoll } from '../actions/strawpoll-actions';
+import { putAmendment, putResolution } from '../models/resolution';
+import { putStrawpoll } from '../models/strawpoll';
 import { DEFAULT_STRAWPOLL } from './Strawpoll';
 import { SettingsData } from './Settings';
 import { MotionsShareHint } from '../components/aux/share-hints';

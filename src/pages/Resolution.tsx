@@ -15,10 +15,10 @@ import { URLParameters } from '../types';
 import {
   dropdownHandler, fieldHandler, textAreaHandler, memberDropdownHandler,
   checkboxHandler
-} from '../actions/handlers';
+} from '../models/handlers';
 import { makeDropdownOption } from '../utils';
-import { voteOnResolution } from '../actions/resolution-actions';
-import { putCaucus } from '../actions/caucus-actions';
+import { voteOnResolution } from '../models/resolution';
+import { putCaucus } from '../models/caucus';
 import { Stance } from '../components/caucus/SpeakerFeed';
 import { NotFound } from '../components/aux/NotFound';
 import Files from './Files';

@@ -6,7 +6,7 @@ import { MemberOption } from '../../constants';
 import { Segment, Button, Form, DropdownProps, Label } from 'semantic-ui-react';
 import { TimerSetter, Unit } from '../timer/TimerSetter';
 import { SpeakerEvent, Stance } from '..//caucus/SpeakerFeed';
-import { checkboxHandler, validatedNumberFieldHandler, dropdownHandler } from '../../actions/handlers';
+import { checkboxHandler, validatedNumberFieldHandler, dropdownHandler } from '../../models/handlers';
 import { membersToPresentOptions } from '../../utils';
 
 interface Props {

@@ -12,7 +12,7 @@ import { makeDropdownOption } from '../utils';
 import ConnectionStatus from '../components/aux/ConnectionStatus';
 import { logCreateCommittee } from '../modules/analytics';
 import { meetId } from '../utils';
-import { pushTemplateMembers, putCommittee } from '../actions/committee-actions';
+import { pushTemplateMembers, putCommittee } from '../models/committee';
 import { Helmet } from 'react-helmet';
 import { Template, TemplatePreview } from '../modules/template';
 

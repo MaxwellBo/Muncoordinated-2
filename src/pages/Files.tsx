@@ -10,7 +10,7 @@ import { parseFlagName } from '../modules/member';
 import Loading from '../components/aux/Loading';
 import { MemberOption, COUNTRY_OPTIONS } from '../constants';
 import { ResolutionID } from './Resolution';
-import { putAmendment } from '../actions/resolution-actions';
+import { putAmendment } from '../models/resolution';
 import { DEFAULT_AMENDMENT } from '../modules/amendment';
 
 const TEXT_ICON: SemanticICONS = 'align left';
