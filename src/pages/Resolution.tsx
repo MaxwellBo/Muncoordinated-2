@@ -48,7 +48,7 @@ import {NotFound} from '../components/aux/NotFound';
 import Files from './Files';
 import {CommitteeStatsTable} from '../modules/committee-stats';
 import {CommitteeData, recoverMemberOptions} from "../models/committee";
-import {getThreshold, getThresholdName} from "../viewmodel/resolution";
+import {getThreshold, getThresholdName} from "../viewmodels/resolution";
 
 const TAB_ORDER = ['feed', 'text', 'amendments', 'voting'];
 

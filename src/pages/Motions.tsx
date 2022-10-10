@@ -66,7 +66,7 @@ import {
   hasTextArea,
   procedural,
   showMotionType
-} from "../viewmodel/motion";
+} from "../viewmodels/motion";
 import {getSeconds, TimerData, Unit} from "../models/time";
 import {SettingsData} from "../models/settings";
 
