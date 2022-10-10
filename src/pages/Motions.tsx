@@ -13,7 +13,7 @@ import {
 } from '../models/handlers';
 import {implies,} from '../utils';
 import {TimerSetter} from '../components/timer/TimerSetter';
-import {nameToMemberOption, parseFlagName} from '../models/member';
+import {nameToMemberOption, parseFlagName} from '../modules/member';
 import {
   CaucusData,
   CaucusStatus,

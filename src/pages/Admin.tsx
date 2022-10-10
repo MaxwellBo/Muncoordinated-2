@@ -1,10 +1,17 @@
 import * as React from 'react';
 import firebase from 'firebase/app';
-import { MemberData, MemberID, Rank, parseFlagName, nameToMemberOption } from '../models/member';
+import {
+  MemberData,
+  MemberID,
+  Rank,
+  parseFlagName,
+  nameToMemberOption,
+  COUNTRY_OPTIONS,
+  MemberOption
+} from '../modules/member';
 import { Dropdown, Flag, Table, Button, Checkbox,
   CheckboxProps, DropdownProps, ButtonProps, Container, Message, Icon, Grid } from 'semantic-ui-react';
 import { Helmet } from 'react-helmet';
-import { COUNTRY_OPTIONS, MemberOption } from '../constants';
 import { checkboxHandler, dropdownHandler } from '../models/handlers';
 import { makeDropdownOption } from '../utils';
 import _ from 'lodash';
@@ -12,8 +19,8 @@ import { URLParameters } from '../types';
 import { RouteComponentProps } from 'react-router';
 import { logClickGeneralSpeakersList } from '../modules/analytics';
 import { CommitteeStatsTable } from '../modules/committee-stats';
-import {CommitteeData, CommitteeID, pushMember} from '../models/committee';
-import { Template, TemplateAdder } from '../modules/template';
+import {CommitteeData, CommitteeID, pushMember, Template} from '../models/committee';
+import { TemplateAdder } from '../components/template';
 
 interface Props extends RouteComponentProps<URLParameters> {
   committee: CommitteeData;

@@ -4,7 +4,7 @@ import * as _ from 'lodash';
 import { RouteComponentProps } from 'react-router';
 import { Table, Flag, Container } from 'semantic-ui-react';
 import { Helmet } from 'react-helmet';
-import { MemberData, MemberID, parseFlagName } from '../models/member';
+import { MemberData, MemberID, parseFlagName } from '../modules/member';
 import { URLParameters } from '../types';
 import Loading from '../components/aux/Loading';
 import { SpeakerEvent } from '../components/caucus/SpeakerFeed';

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as firebase from 'firebase/app';
 import * as _ from 'lodash';
-import {canVote, MemberData, MemberID, nameToMemberOption, Rank} from '../models/member';
+import {canVote, MemberData, MemberID, nameToMemberOption, Rank} from '../modules/member';
 import {
   Button,
   Card,

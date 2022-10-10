@@ -31,7 +31,7 @@ import Loading from '../components/aux/Loading';
 import Footer from '../components/aux/Footer';
 import Settings from './Settings';
 import Files from './Files';
-import {LoginModal} from '../modules/auth';
+import {LoginModal} from '../components/auth';
 import {CommitteeShareHint} from '../components/aux/share-hints';
 import Notifications from '../components/aux/Notifications';
 import {DEFAULT_RESOLUTION, putResolution} from '../models/resolution';

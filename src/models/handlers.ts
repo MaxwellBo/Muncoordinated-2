@@ -1,5 +1,5 @@
 import {CheckboxProps, DropdownProps, TextAreaProps} from 'semantic-ui-react';
-import {MemberOption} from '../constants';
+import {MemberOption} from "../modules/member";
 
 // Ideally we'd be able to give this a type parameter to constrain the field
 export function fieldHandler<T>

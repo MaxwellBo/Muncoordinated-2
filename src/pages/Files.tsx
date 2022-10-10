@@ -16,9 +16,8 @@ import {
   TextAreaProps
 } from 'semantic-ui-react';
 import {Helmet} from 'react-helmet';
-import {parseFlagName} from '../models/member';
+import {COUNTRY_OPTIONS, MemberOption, parseFlagName} from '../modules/member';
 import Loading from '../components/aux/Loading';
-import {COUNTRY_OPTIONS, MemberOption} from '../constants';
 import {DEFAULT_AMENDMENT, putAmendment, ResolutionID} from '../models/resolution';
 import {CommitteeData, CommitteeID, recoverMemberOptions} from "../models/committee";
 import {File, Link, PostData, PostID, PostType, Text} from "../models/post";

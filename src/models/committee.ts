@@ -1,11 +1,9 @@
 import {DEFAULT_TIMER} from '../components/timer/Timer';
-import {MemberData, MemberID, Rank} from './member';
+import {MemberData, MemberID, MemberOption, membersToOptions, membersToPresentOptions, Rank} from '../modules/member';
 import {logCreateMember} from '../modules/analytics';
-import {Template, TEMPLATE_TO_MEMBERS} from '../modules/template';
 import _ from 'lodash';
 import {CaucusData, CaucusID, DEFAULT_CAUCUS, DEFAULT_CAUCUS_TIME_SECONDS} from "./caucus";
-import {MemberOption} from "../constants";
-import {membersToOptions, membersToPresentOptions} from "../utils";
+import {TEMPLATE_TO_MEMBERS} from "../constants";
 import firebase from "firebase";
 import {PostData, PostID} from "./post";
 import {MotionData, MotionID} from "./motion";
@@ -77,6 +75,19 @@ export function recoverResolution(committee: CommitteeData | undefined, resoluti
 }
 
 export type CommitteeID = string;
+
+export enum Template {
+  AfricanUnion = 'African Union',
+  ASEAN = 'Association of Southeast Asian Nations',
+  BRICS = 'BRICS',
+  EU = 'European Union',
+  G20 = 'G20',
+  NATO = 'North Atlantic Treaty Organization',
+  SecurityCouncil = 'UN Security Council',
+  UNHRC = 'UN Human Rights Council',
+  UNICEF = 'UN Children\'s Fund',
+  WHOHealthBoard = 'WHO Health Board',
+}
 
 export interface CommitteeData {
   name: string;

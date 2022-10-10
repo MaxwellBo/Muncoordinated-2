@@ -2,8 +2,8 @@ import * as React from 'react';
 import firebase from 'firebase/app';
 import { Card, Button, Form, Message, Modal, Icon, List, Segment, Header } from 'semantic-ui-react';
 import _ from 'lodash';
-import Loading from '../components/aux/Loading';
-import { logCreateAccount, logLogin } from './analytics';
+import Loading from './aux/Loading';
+import { logCreateAccount, logLogin } from '../modules/analytics';
 import {CommitteeData, CommitteeID} from "../models/committee";
 
 enum Mode {
