@@ -3,8 +3,7 @@ import * as React from 'react';
 import {useState} from 'react';
 import {parseFlagName} from "../modules/member"
 import {makeDropdownOption} from "../utils";
-import {CommitteeID, pushTemplateMembers, Template} from "../models/committee";
-import {TEMPLATE_TO_MEMBERS} from "../constants";
+import {CommitteeID, pushTemplateMembers, Template, TEMPLATE_TO_MEMBERS} from "../models/committee";
 
 export function TemplatePreview(props: { template?: Template }) {
   if (!props.template) {
