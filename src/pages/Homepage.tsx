@@ -15,8 +15,8 @@ import {
   Visibility,
 } from 'semantic-ui-react';
 import { logClickCreateACommitteeButton, logClickLogInButton, logClickSignupButton } from '../modules/analytics';
-import Loading from '../components/aux/Loading';
-import { ShareCapabilities } from '../components/aux/share-hints';
+import Loading from '../components/Loading';
+import { ShareCapabilities } from '../components/share-hints';
 
 interface HomepageHeadingProps {
   mobile: boolean;

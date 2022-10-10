@@ -12,7 +12,7 @@ import {
 import { Dropdown, Flag, Table, Button, Checkbox,
   CheckboxProps, DropdownProps, ButtonProps, Container, Message, Icon, Grid } from 'semantic-ui-react';
 import { Helmet } from 'react-helmet';
-import { checkboxHandler, dropdownHandler } from '../models/handlers';
+import { checkboxHandler, dropdownHandler } from '../modules/handlers';
 import { makeDropdownOption } from '../utils';
 import _ from 'lodash';
 import { URLParameters } from '../types';

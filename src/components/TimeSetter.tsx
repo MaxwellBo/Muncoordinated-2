@@ -1,6 +1,6 @@
 import {Button, DropdownProps, Form, Select} from 'semantic-ui-react';
 import * as React from 'react';
-import {Unit, UNIT_OPTIONS} from "../../models/time";
+import {Unit, UNIT_OPTIONS} from "../models/time";
 
 interface Props {
   unitValue: Unit;
@@ -14,7 +14,7 @@ interface Props {
   loading?: boolean;
 }
 
-export class TimerSetter extends React.Component<Props, {}> {
+export class TimeSetter extends React.Component<Props, {}> {
   
   isInvalid = () => {
     const { durationValue: n } = this.props;

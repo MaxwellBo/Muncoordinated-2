@@ -28,12 +28,12 @@ import {
   Modal,
   Progress
 } from 'semantic-ui-react';
-import {checkboxHandler, clearableZeroableValidatedNumberFieldHandler, fieldHandler} from '../models/handlers';
+import {checkboxHandler, clearableZeroableValidatedNumberFieldHandler, fieldHandler} from '../modules/handlers';
 import {Helmet} from 'react-helmet';
-import Loading from '../components/aux/Loading';
+import Loading from '../components/Loading';
 import {useAuthState} from 'react-firebase-hooks/auth';
-import {StrawpollShareHint} from '../components/aux/share-hints';
-import {NotFound} from '../components/aux/NotFound';
+import {StrawpollShareHint} from '../components/share-hints';
+import {NotFound} from '../components/NotFound';
 import {useVoterID} from '../hooks';
 
 export interface StrawpollProps extends RouteComponentProps<URLParameters> {

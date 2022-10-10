@@ -4,8 +4,8 @@ import { RouteComponentProps } from 'react-router';
 import { URLParameters } from '../types';
 import { TextArea, Form, Container } from 'semantic-ui-react';
 import { Helmet } from 'react-helmet';
-import { textAreaHandler } from '../models/handlers';
-import Loading from '../components/aux/Loading';
+import { textAreaHandler } from '../modules/handlers';
+import Loading from '../components/Loading';
 import {CommitteeData} from "../models/committee";
 
 interface Props extends RouteComponentProps<URLParameters> {

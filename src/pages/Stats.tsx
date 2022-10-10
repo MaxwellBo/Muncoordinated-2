@@ -6,13 +6,13 @@ import { Table, Flag, Container } from 'semantic-ui-react';
 import { Helmet } from 'react-helmet';
 import { MemberData, MemberID, parseFlagName } from '../modules/member';
 import { URLParameters } from '../types';
-import Loading from '../components/aux/Loading';
-import { SpeakerEvent } from '../components/caucus/SpeakerFeed';
-import { hhmmss } from '../components/timer/Timer';
+import Loading from '../components/Loading';
+import { hhmmss } from '../components/Timer';
 import {CaucusData, CaucusID} from "../models/caucus";
 import {AmendmentData, AmendmentID, ResolutionData, ResolutionID} from "../models/resolution";
 import {CommitteeData} from "../models/committee";
 import {MotionData, MotionID} from "../models/motion";
+import {SpeakerEvent} from "../models/caucus";
 
 interface Props extends RouteComponentProps<URLParameters> {
 }

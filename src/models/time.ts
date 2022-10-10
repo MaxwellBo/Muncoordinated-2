@@ -1,4 +1,5 @@
 import {makeDropdownOption} from "../utils";
+import {DEFAULT_SPEAKER_TIME_SECONDS} from "./caucus";
 
 export enum Unit {
   Minutes = 'min',
@@ -19,3 +20,9 @@ export interface TimerData {
   remaining: number;
   ticking: boolean | number;
 }
+
+export const DEFAULT_TIMER = {
+  elapsed: 0,
+  remaining: DEFAULT_SPEAKER_TIME_SECONDS,
+  ticking: false
+};

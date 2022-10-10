@@ -1,10 +1,9 @@
 import * as React from 'react';
 import firebase from 'firebase/app';
 import {Button, DropdownProps, Form, Icon, Label, Progress, Segment} from 'semantic-ui-react';
-import {TimerSetter} from './TimerSetter';
+import {TimeSetter} from './TimeSetter';
 import _ from 'lodash';
-import {DEFAULT_SPEAKER_TIME_SECONDS} from "../../models/caucus";
-import {getSeconds, TimerData, Unit} from "../../models/time";
+import {DEFAULT_TIMER, getSeconds, TimerData, Unit} from "../models/time";
 
 interface Props {
   name: string;
@@ -24,12 +23,6 @@ interface State {
   durationField: string;
   mute: boolean;
 }
-
-export const DEFAULT_TIMER = {
-  elapsed: 0,
-  remaining: DEFAULT_SPEAKER_TIME_SECONDS,
-  ticking: false
-};
 
 export function hhmmss(seconds: number): string {
   let sign = '';
@@ -274,7 +267,7 @@ export default class Timer extends React.Component<Props, State> {
 
         <Progress percent={percentage} active={false} indicating={true}/>
         <Form>
-          <TimerSetter
+          <TimeSetter
             unitValue={this.state.unitDropdown}
             durationValue={this.state.durationField}
             onDurationChange={setDuration}

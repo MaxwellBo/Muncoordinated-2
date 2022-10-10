@@ -10,9 +10,9 @@ import {
   stateMemberDropdownHandler,
   stateTextAreaHandler,
   stateValidatedNumberFieldHandler
-} from '../models/handlers';
+} from '../modules/handlers';
 import {implies,} from '../utils';
-import {TimerSetter} from '../components/timer/TimerSetter';
+import {TimeSetter} from '../components/TimeSetter';
 import {nameToMemberOption, parseFlagName} from '../modules/member';
 import {
   CaucusData,
@@ -21,7 +21,7 @@ import {
   DEFAULT_CAUCUS,
   DEFAULT_SPEAKER_TIME_SECONDS,
   putCaucus,
-  putSpeaking
+  putSpeaking, Stance
 } from '../models/caucus';
 import {
   CommitteeData,
@@ -37,7 +37,6 @@ import {
 } from '../models/committee';
 import {URLParameters} from '../types';
 import {IDENTITCAL_PROPOSER_SECONDER} from './Resolution';
-import {Stance} from '../components/caucus/SpeakerFeed';
 import {
   AmendmentData,
   DEFAULT_AMENDMENT,
@@ -47,7 +46,7 @@ import {
   ResolutionData
 } from '../models/resolution';
 import {DEFAULT_STRAWPOLL, putStrawpoll} from '../models/strawpoll';
-import {MotionsShareHint} from '../components/aux/share-hints';
+import {MotionsShareHint} from '../components/share-hints';
 import {useVoterID, VoterID} from '../hooks';
 import _ from 'lodash';
 import {makeCommitteeStats} from '../modules/committee-stats';
@@ -524,7 +523,7 @@ export class MotionsComponent extends React.Component<Props & Hooks, State> {
     );
 
     const speakerSetter = (
-      <TimerSetter
+      <TimeSetter
         error={this.hasDivisiblityError()}
         unitValue={speakerUnit}
         durationValue={speakerDuration ? speakerDuration.toString() : undefined}
@@ -535,7 +534,7 @@ export class MotionsComponent extends React.Component<Props & Hooks, State> {
     );
 
     const durationSetter = (
-      <TimerSetter
+      <TimeSetter
         error={this.hasDivisiblityError()}
         unitValue={caucusUnit}
         durationValue={caucusDuration ? caucusDuration.toString() : undefined}

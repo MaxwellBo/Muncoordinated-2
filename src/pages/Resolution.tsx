@@ -33,7 +33,7 @@ import {
   fieldHandler,
   memberDropdownHandler,
   textAreaHandler
-} from '../models/handlers';
+} from '../modules/handlers';
 import {
   AMENDMENT_STATUS_OPTIONS,
   AmendmentData,
@@ -42,9 +42,8 @@ import {
   recoverLinkedCaucus, RESOLUTION_STATUS_OPTIONS, ResolutionData, ResolutionID, ResolutionStatus, Vote,
   voteOnResolution
 } from '../models/resolution';
-import {CaucusData, CaucusID, DEFAULT_CAUCUS, putCaucus} from '../models/caucus';
-import {Stance} from '../components/caucus/SpeakerFeed';
-import {NotFound} from '../components/aux/NotFound';
+import {CaucusData, CaucusID, DEFAULT_CAUCUS, putCaucus, Stance} from '../models/caucus';
+import {NotFound} from '../components/NotFound';
 import Files from './Files';
 import {CommitteeStatsTable} from '../modules/committee-stats';
 import {CommitteeData, recoverMemberOptions} from "../models/committee";

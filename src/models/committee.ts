@@ -1,4 +1,3 @@
-import {DEFAULT_TIMER} from '../components/timer/Timer';
 import {MemberData, MemberID, MemberOption, membersToOptions, membersToPresentOptions, Rank} from '../modules/member';
 import {logCreateMember} from '../modules/analytics';
 import _ from 'lodash';
@@ -7,7 +6,7 @@ import {TEMPLATE_TO_MEMBERS} from "../constants";
 import firebase from "firebase";
 import {PostData, PostID} from "./post";
 import {MotionData, MotionID} from "./motion";
-import {TimerData} from "./time";
+import {DEFAULT_TIMER, TimerData} from "./time";
 import {ResolutionData, ResolutionID} from "./resolution";
 import {DEFAULT_SETTINGS, SettingsData} from "./settings";
 import {StrawpollData, StrawpollID} from "./strawpoll";

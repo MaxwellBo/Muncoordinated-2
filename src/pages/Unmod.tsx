@@ -3,7 +3,7 @@ import * as firebase from 'firebase/app';
 import { Container } from 'semantic-ui-react';
 import { Helmet } from 'react-helmet';
 import { RouteComponentProps } from 'react-router';
-import Timer from '../components/timer/Timer';
+import Timer from '../components/Timer';
 import { URLParameters } from '../types';
 import {TimerData, Unit} from "../models/time";
 

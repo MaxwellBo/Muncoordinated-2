@@ -8,7 +8,7 @@ import {
 import { Login } from '../components/auth';
 import { URLParameters } from '../types';
 import { makeDropdownOption } from '../utils';
-import ConnectionStatus from '../components/aux/ConnectionStatus';
+import ConnectionStatus from '../components/ConnectionStatus';
 import { logCreateCommittee } from '../modules/analytics';
 import { meetId } from '../utils';
 import {CommitteeData, DEFAULT_COMMITTEE, pushTemplateMembers, putCommittee, Template} from '../models/committee';

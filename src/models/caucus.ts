@@ -1,10 +1,8 @@
 import * as firebase from 'firebase/app';
 
-import {DEFAULT_TIMER} from '../components/timer/Timer';
-import {SpeakerEvent} from '../components/caucus/SpeakerFeed';
 import {makeDropdownOption, shortMeetId} from '../utils';
 import {CommitteeID} from "./committee";
-import {TimerData, Unit} from "./time";
+import {DEFAULT_TIMER, TimerData, Unit} from "./time";
 
 export const DEFAULT_CAUCUS_TIME_SECONDS = 10 * 60;
 export const DEFAULT_SPEAKER_TIME_SECONDS = 1 * 60;
@@ -46,6 +44,18 @@ export const CAUCUS_STATUS_OPTIONS = [
   CaucusStatus.Open,
   CaucusStatus.Closed
 ].map(makeDropdownOption);
+
+export enum Stance {
+  For = 'For',
+  Neutral = 'Neutral',
+  Against = 'Against'
+}
+
+export interface SpeakerEvent {
+  who: string;
+  stance: Stance;
+  duration: number;
+}
 
 export const DEFAULT_CAUCUS: CaucusData = {
   name: 'untitled caucus',

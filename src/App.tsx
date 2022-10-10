@@ -16,7 +16,7 @@ import './App.css';
 import Onboard from './pages/Onboard';
 import Homepage from './pages/Homepage';
 import Committee from './pages/Committee';
-import { NotFound } from './components/aux/NotFound';
+import { NotFound } from './components/NotFound';
 
 const firebaseConfig = {
   apiKey: 'AIzaSyA9EuEf7m3YOTBhBNhoe7DcOIZJP2toL6w',
