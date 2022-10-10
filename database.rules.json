@@ -3,7 +3,7 @@
     "committees": {
       ".indexOn": ["creatorUid"],
       ".read": true,
-      "$uid": {
+    	"$uid": {
         ".read": true,
         ".write": "auth != null && (newData.child('creatorUid').val() === auth.uid || data.child('creatorUid').val() === auth.uid)",
         "caucuses": {
@@ -43,12 +43,12 @@
             }
           }
         },
-        "motions": {
+      	"motions": {
           "$mid": {
             ".write": "newData.exists() && !newData.child('deleted').exists() && data.parent().parent().child('settings').child('motionsArePublic').val() === true",
             "votes": {
               "$vid": {
-                ".write": true
+    						".write": true
               }
             }
           }
