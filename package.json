@@ -14,7 +14,6 @@
     "@types/react-dom": "^16.8.2",
     "@types/react-helmet": "^6.1.1",
     "@types/react-router-dom": "^5.1.2",
-    "cypress-real-events": "^1.7.1",
     "file-saver": "^2.0.0-rc.3",
     "firebase": "^7.3.0",
     "lodash": "^4.17.11",
@@ -31,7 +30,8 @@
     "typescript": "3.7.2"
   },
   "devDependencies": {
-    "cypress": "3.6.1",
+    "cypress": "10.9.0",
+    "cypress-real-events": "^1.7.1",
     "netlify-plugin-cypress": "^1.4.1"
   },
   "scripts": {
