@@ -1,7 +1,7 @@
 import * as firebase from 'firebase/app';
 import * as React from 'react';
-import {RouteComponentProps} from 'react-router';
-import {URLParameters} from '../types';
+import { RouteComponentProps } from 'react-router';
+import { URLParameters } from '../types';
 import {
   DEFAULT_STRAWPOLL_OPTION,
   getStrawpollRef,
@@ -12,7 +12,7 @@ import {
   StrawpollStage,
   StrawpollType
 } from '../models/strawpoll';
-import {useObject} from 'react-firebase-hooks/database';
+import { useObject } from 'react-firebase-hooks/database';
 import {
   Button,
   Checkbox,
@@ -28,16 +28,16 @@ import {
   Modal,
   Progress
 } from 'semantic-ui-react';
-import {checkboxHandler, clearableZeroableValidatedNumberFieldHandler, fieldHandler} from '../modules/handlers';
-import {Helmet} from 'react-helmet';
+import { checkboxHandler, clearableZeroableValidatedNumberFieldHandler, fieldHandler } from '../modules/handlers';
+import { Helmet } from 'react-helmet';
 import Loading from '../components/Loading';
-import {useAuthState} from 'react-firebase-hooks/auth';
-import {StrawpollShareHint} from '../components/share-hints';
-import {NotFound} from '../components/NotFound';
-import {useVoterID} from '../hooks';
+import { useAuthState } from 'react-firebase-hooks/auth';
+import { StrawpollShareHint } from '../components/share-hints';
+import { NotFound } from '../components/NotFound';
+import { useVoterID } from '../hooks';
 
 export interface StrawpollProps extends RouteComponentProps<URLParameters> {
-} 
+}
 
 export interface ModalProps {
   open: boolean,
@@ -83,7 +83,7 @@ export function DeleteStrawpollModal(props: ModalProps) {
       <Modal.Header>Delete strawpoll?</Modal.Header>
       <Modal.Content>
         <Modal.Description>
-          Are you sure that you want to delete this strawpoll? 
+          Are you sure that you want to delete this strawpoll?
         </Modal.Description>
       </Modal.Content>
       <Modal.Actions>
@@ -95,180 +95,180 @@ export function DeleteStrawpollModal(props: ModalProps) {
 }
 
 export default function Strawpoll(props: StrawpollProps) {
-    const { committeeID, strawpollID } = props.match.params;
-    const strawpollFref = getStrawpollRef(committeeID, strawpollID)
-    const  [value, loading] = useObject(strawpollFref);
-    const [user] = useAuthState(firebase.auth());
-    const [voterID] = useVoterID()
-    const [modalOpen, setOpen] = React.useState(false)
+  const { committeeID, strawpollID } = props.match.params;
+  const strawpollFref = getStrawpollRef(committeeID, strawpollID)
+  const [value, loading] = useObject(strawpollFref);
+  const [user] = useAuthState(firebase.auth());
+  const [voterID] = useVoterID()
+  const [modalOpen, setOpen] = React.useState(false)
 
-    if (loading) {
-      return <Loading />
-    }
+  if (loading) {
+    return <Loading />
+  }
 
-    const strawpoll: StrawpollData | undefined = value ? value.val() : undefined;
+  const strawpoll: StrawpollData | undefined = value ? value.val() : undefined;
 
-    if (!strawpoll) {
-      return <Container text>
-        <NotFound id={strawpollID} item="strawpoll" />
-      </Container>;
-    }
+  if (!strawpoll) {
+    return <Container text>
+      <NotFound id={strawpollID} item="strawpoll" />
+    </Container>;
+  }
 
-    const type: StrawpollType = strawpoll ? strawpoll.type || StrawpollType.Checkbox : StrawpollType.Checkbox;
-    const stage: StrawpollStage = strawpoll ? strawpoll.stage || StrawpollStage.Preparing : StrawpollStage.Preparing;
-    const medium: StrawpollMedium = strawpoll ? strawpoll.medium || StrawpollMedium.Link : StrawpollMedium.Link;
-    const options: Record<StrawpollOptionID, StrawpollOptionData> = 
-      strawpoll ? strawpoll.options || {}: {};
+  const type: StrawpollType = strawpoll ? strawpoll.type || StrawpollType.Checkbox : StrawpollType.Checkbox;
+  const stage: StrawpollStage = strawpoll ? strawpoll.stage || StrawpollStage.Preparing : StrawpollStage.Preparing;
+  const medium: StrawpollMedium = strawpoll ? strawpoll.medium || StrawpollMedium.Link : StrawpollMedium.Link;
+  const options: Record<StrawpollOptionID, StrawpollOptionData> =
+    strawpoll ? strawpoll.options || {} : {};
 
-    let totalVotes = 0;
+  let totalVotes = 0;
 
+  Object.keys(options).forEach(oid => {
+    totalVotes += getNumberOfVotes(options[oid], medium)
+  })
+
+  const addOption = () => {
+    strawpollFref.child('options').push(DEFAULT_STRAWPOLL_OPTION);
+  }
+
+  const togglePollType = (event: React.SyntheticEvent, data: DropdownProps) => {
+    strawpollFref.child('type').set(data.value);
+    // reset votes
     Object.keys(options).forEach(oid => {
-      totalVotes += getNumberOfVotes(options[oid], medium)
-    })
+      const votes = options[oid].votes;
+      if (votes) {
+        strawpollFref.child('options').child(oid).child('votes').set({})
+      }
+    });
+  }
 
-    const addOption = () => {
-      strawpollFref.child('options').push(DEFAULT_STRAWPOLL_OPTION);
-    }
+  const deleteStrawpoll = () => {
+    strawpollFref.remove();
+  }
 
-    const togglePollType = (event: React.SyntheticEvent, data: DropdownProps) => {
-      strawpollFref.child('type').set(data.value);
-      // reset votes
-      Object.keys(options).forEach(oid => {
-        const votes = options[oid].votes;
-        if (votes) {
-          strawpollFref.child('options').child(oid).child('votes').set({})
-        }
-      });
-    }
-        
-    const deleteStrawpoll = () => {
-      strawpollFref.remove();
-    }
+  const createSharablePoll = () => {
+    strawpollFref.child('stage').set(StrawpollStage.Voting);
+    strawpollFref.child('medium').set(StrawpollMedium.Link);
+  }
 
-    const createSharablePoll = () => {
-      strawpollFref.child('stage').set(StrawpollStage.Voting);
-      strawpollFref.child('medium').set(StrawpollMedium.Link);
-    }
+  const createManualPoll = () => {
+    strawpollFref.child('stage').set(StrawpollStage.Voting);
+    strawpollFref.child('medium').set(StrawpollMedium.Manual);
+  }
 
-    const createManualPoll = () => {
-      strawpollFref.child('stage').set(StrawpollStage.Voting);
-      strawpollFref.child('medium').set(StrawpollMedium.Manual);
-    }
+  const reopenVoting = () => {
+    strawpollFref.child('stage').set(StrawpollStage.Voting);
+  }
 
-    const reopenVoting = () => {
-      strawpollFref.child('stage').set(StrawpollStage.Voting);
-    }
+  const editOptions = () => {
+    strawpollFref.child('stage').set(StrawpollStage.Preparing);
+  }
 
-    const editOptions = () => {
-      strawpollFref.child('stage').set(StrawpollStage.Preparing);
-    }
+  const viewResults = () => {
+    strawpollFref.child('stage').set(StrawpollStage.Results);
+  }
 
-    const viewResults = () => {
-      strawpollFref.child('stage').set(StrawpollStage.Results);
-    }
-
-    const onCheck = (oid: StrawpollOptionID) => (event: React.FormEvent<HTMLInputElement>, data: CheckboxProps) => {
-      if (type === StrawpollType.Checkbox) {
-        if (data.checked) {
+  const onCheck = (oid: StrawpollOptionID) => (event: React.FormEvent<HTMLInputElement>, data: CheckboxProps) => {
+    if (type === StrawpollType.Checkbox) {
+      if (data.checked) {
+        strawpollFref
+          .child('options')
+          .child(oid)
+          .child('votes')
+          .child(voterID)
+          .set(true)
+      } else {
+        strawpollFref
+          .child('options')
+          .child(oid)
+          .child('votes')
+          .child(voterID)
+          .remove()
+      }
+    } else if (type === StrawpollType.Radio) {
+      if (data.checked) {
+        // Set everything to unchecked
+        Object.keys(options).forEach(id =>
           strawpollFref
             .child('options')
-            .child(oid)
-            .child('votes')
-            .child(voterID)
-            .set(true)
-        } else {
-          strawpollFref
-            .child('options')
-            .child(oid)
+            .child(id)
             .child('votes')
             .child(voterID)
             .remove()
-        }
-      } else if (type === StrawpollType.Radio) {
-        if (data.checked) {
-          // Set everything to unchecked
-          Object.keys(options).forEach(id =>
-            strawpollFref
-              .child('options')
-              .child(id)
-              .child('votes')
-              .child(voterID)
-              .remove()
-          );
-          strawpollFref
-            .child('options')
-            .child(oid)
-            .child('votes')
-            .child(voterID)
-            .set(true);
-        }
+        );
+        strawpollFref
+          .child('options')
+          .child(oid)
+          .child('votes')
+          .child(voterID)
+          .set(true);
       }
     }
+  }
 
-    const renderOption = (optionID: StrawpollOptionID, option: StrawpollOptionData) => {
-      const strawpollOptionFref = strawpollFref
-        .child('options')
-        .child(optionID);
+  const renderOption = (optionID: StrawpollOptionID, option: StrawpollOptionData) => {
+    const strawpollOptionFref = strawpollFref
+      .child('options')
+      .child(optionID);
 
-      const isChecked = 
-        option.votes 
-          ? option.votes[voterID] 
-            ? !!option.votes[voterID]
-            : false
+    const isChecked =
+      option.votes
+        ? option.votes[voterID]
+          ? !!option.votes[voterID]
           : false
+        : false
 
-      const votes = getNumberOfVotes(option, medium);
+    const votes = getNumberOfVotes(option, medium);
 
-      /* eslint no-unused-expressions: "warn" */
-      switch (stage) {
-        case StrawpollStage.Preparing:
-          return <List.Item key={optionID}>
-            <Input
-              value={option.text}
-              onChange={fieldHandler<StrawpollOptionData>(strawpollOptionFref, 'text')}
-              fluid
-              placeholder="Enter poll option"
-              action
-            >
-              <input />
-              <Button
-                negative
-                icon="trash"
-                basic
-                onClick={() => strawpollOptionFref.remove()}
-              />
-            </Input>
-          </List.Item>
-        case StrawpollStage.Voting:
-          return medium === StrawpollMedium.Link ? <Form.Field key={optionID}>
-            <Checkbox
-              label={option.text}
-              name='checkboxRadioGroup'
-              radio={type === StrawpollType.Radio || undefined}
-              value={option.text}
-              checked={isChecked}
-              onChange={onCheck(optionID)}
+    /* eslint no-unused-expressions: "warn" */
+    switch (stage) {
+      case StrawpollStage.Preparing:
+        return <List.Item key={optionID}>
+          <Input
+            value={option.text}
+            onChange={fieldHandler<StrawpollOptionData>(strawpollOptionFref, 'text')}
+            fluid
+            placeholder="Enter poll option"
+            action
+          >
+            <input />
+            <Button
+              negative
+              icon="trash"
+              basic
+              onClick={() => strawpollOptionFref.remove()}
             />
-          </Form.Field> : 
-            <List.Item key={optionID}>
-              <Input
-                fluid
-                placeholder="Number of votes received"
-                label={option.text}
-                value={(!!option.tally || (option.tally === 0) ? option.tally : '').toString()}
-                error={option.tally === undefined}
-                onChange={clearableZeroableValidatedNumberFieldHandler<StrawpollOptionData>(strawpollOptionFref, 'tally')}
-              />
-            </List.Item>
-        case StrawpollStage.Results:
-          return <List.Item key={optionID}>
-            <b>{option.text}</b> {votes} votes
-            <Progress progress='value' value={votes} total={totalVotes} />
+          </Input>
+        </List.Item>
+      case StrawpollStage.Voting:
+        return medium === StrawpollMedium.Link ? <Form.Field key={optionID}>
+          <Checkbox
+            label={option.text}
+            name='checkboxRadioGroup'
+            radio={type === StrawpollType.Radio || undefined}
+            value={option.text}
+            checked={isChecked}
+            onChange={onCheck(optionID)}
+          />
+        </Form.Field> :
+          <List.Item key={optionID}>
+            <Input
+              fluid
+              placeholder="Number of votes received"
+              label={option.text}
+              value={(!!option.tally || (option.tally === 0) ? option.tally : '').toString()}
+              error={option.tally === undefined}
+              onChange={clearableZeroableValidatedNumberFieldHandler<StrawpollOptionData>(strawpollOptionFref, 'tally')}
+            />
           </List.Item>
-        default:
-          return undefined
-      }
+      case StrawpollStage.Results:
+        return <List.Item key={optionID}>
+          <b>{option.text}</b> {votes} votes
+          <Progress progress='value' value={votes} total={totalVotes} />
+        </List.Item>
+      default:
+        return undefined
     }
+  }
 
   const renderOptions = () => {
     return <List>
@@ -284,7 +284,7 @@ export default function Strawpoll(props: StrawpollProps) {
           <Icon name="plus" />Add option
         </Button>
       </List.Item>
-    }
+      }
     </List>
   }
 
@@ -322,7 +322,7 @@ export default function Strawpoll(props: StrawpollProps) {
                     <Button
                       color="red"
                       basic
-                      onClick={()=> setOpen(true)}
+                      onClick={() => setOpen(true)}
                     >
                       <Icon name="delete" />Delete strawpoll?
                     </Button>
@@ -340,14 +340,14 @@ export default function Strawpoll(props: StrawpollProps) {
             </List.Item>
           </List>
         )
-        case StrawpollStage.Voting:
-          return medium === StrawpollMedium.Link 
-            && <StrawpollShareHint 
-              committeeID={committeeID} 
-              strawpollID={strawpollID} 
-            /> 
-        default:
-          return undefined
+      case StrawpollStage.Voting:
+        return medium === StrawpollMedium.Link
+          && <StrawpollShareHint
+            committeeID={committeeID}
+            strawpollID={strawpollID}
+          />
+      default:
+        return undefined
 
     }
   }
@@ -364,7 +364,7 @@ export default function Strawpoll(props: StrawpollProps) {
             >
               Create shareable poll
               <Icon name="arrow right" />
-              </Button>
+            </Button>
             <Button.Or />
             <Button
               primary
@@ -373,7 +373,7 @@ export default function Strawpoll(props: StrawpollProps) {
             >
               Create manual poll
               <Icon name="arrow right" />
-              </Button>
+            </Button>
           </Button.Group>
         );
       case StrawpollStage.Voting:
@@ -399,7 +399,7 @@ export default function Strawpoll(props: StrawpollProps) {
           </Button.Group>
         )
       case StrawpollStage.Results:
-       return (
+        return (
           <Button
             fluid
             secondary
@@ -409,28 +409,28 @@ export default function Strawpoll(props: StrawpollProps) {
             <Icon name="arrow left" />
             Reopen voting
           </Button>
-       )
+        )
       default:
         return <div />;
     }
   }
 
   return (
-      <Container text style={{ padding: '1em 0em' }}>
-        <Helmet>
-          <title>{`${strawpoll.question} - Muncoordinated`}</title>
-        </Helmet>
-        <Header as="h2">
-          <Input
-            value={strawpoll ? strawpoll.question : ''}
-            onChange={fieldHandler<StrawpollData>(strawpollFref, 'question')}
-            fluid
-            placeholder="Type your question here"
-          />
-        </Header>
-        {renderMetaButtons()}
-        {renderOptions()}
-        {renderNavButtons()}
-      </Container>
-    );
+    <Container text style={{ padding: '1em 0em' }}>
+      <Helmet>
+        <title>{`${strawpoll.question} - Muncoordinated`}</title>
+      </Helmet>
+      <Header as="h2">
+        <Input
+          value={strawpoll ? strawpoll.question : ''}
+          onChange={fieldHandler<StrawpollData>(strawpollFref, 'question')}
+          fluid
+          placeholder="Type your question here"
+        />
+      </Header>
+      {renderMetaButtons()}
+      {renderOptions()}
+      {renderNavButtons()}
+    </Container>
+  );
 }
