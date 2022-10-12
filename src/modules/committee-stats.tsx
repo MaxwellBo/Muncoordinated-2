@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as Utils from '../utils';
 import { canVote, MemberData, MemberID, nonNGO } from './member';
 import { Table } from 'semantic-ui-react';
-import {CommitteeData} from "../models/committee";
+import {CommitteeData, useCommitteeCompanion} from "../models/committee";
 
 export function makeCommitteeStats(data?: CommitteeData) {
   const defaultMap = {} as Record<MemberID, MemberData>;
@@ -30,12 +30,13 @@ export function makeCommitteeStats(data?: CommitteeData) {
     procedural, operative, hasQuorum, draftResolution, amendment, twoThirdsMajority, simpleMajority };
 }
 
-export function CommitteeStatsTable(props: { data?: CommitteeData, verbose?: boolean }) {
-  const { data, verbose } = props;
+export function CommitteeStatsTable(props: { verbose?: boolean }) {
+  const { verbose } = props;
+  const stats = useCommitteeCompanion().getStats();
 
   // TODO: Fill this table out with all fields.
   const  { delegatesNo, presentNo, canVoteNo, quorum, 
-    procedural, operative, hasQuorum, draftResolution, amendment, twoThirdsMajority } = makeCommitteeStats(data);
+    procedural, operative, hasQuorum, draftResolution, amendment, twoThirdsMajority } = stats;
 
   return (
     <Table definition>

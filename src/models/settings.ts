@@ -1,15 +1,9 @@
 export interface SettingsData {
-  moveQueueUp: boolean;
-  timersInSeparateColumns: boolean;
-  autoNextSpeaker: boolean;
-  motionVotes?: boolean;
-  motionsArePublic?: boolean;
+  motionVotes?: boolean; // TODO: Migrate
+  motionsArePublic?: boolean; // TODO: Migrate
 }
 
 export const DEFAULT_SETTINGS: Required<SettingsData> = {
-  moveQueueUp: false,
-  timersInSeparateColumns: false,
-  autoNextSpeaker: false,
   motionVotes: false,
   motionsArePublic: false
 };

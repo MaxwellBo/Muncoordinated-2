@@ -9,83 +9,12 @@ import {DEFAULT_TIMER, TimerData} from "./time";
 import {ResolutionData, ResolutionID} from "./resolution";
 import {DEFAULT_SETTINGS, SettingsData} from "./settings";
 import {StrawpollData, StrawpollID} from "./strawpoll";
-
-export function recoverMemberOptions(committee?: CommitteeData): MemberOption[] {
-  if (committee) {
-    return membersToOptions(committee.members);
-  } else {
-    return [];
-  }
-}
-
-export function recoverPresentMemberOptions(committee?: CommitteeData): MemberOption[] {
-  if (committee) {
-    return membersToPresentOptions(committee.members);
-  } else {
-    return [];
-  }
-}
-
-export function recoverMembers(committee?: CommitteeData): Record<MemberID, MemberData> | undefined {
-  return committee ? (committee.members || {} as Record<MemberID, MemberData>) : undefined;
-}
-
-export function recoverSettings(committee?: CommitteeData): Required<SettingsData> {
-  let timersInSeparateColumns: boolean =
-    committee?.settings.timersInSeparateColumns
-    ?? DEFAULT_SETTINGS.timersInSeparateColumns;
-
-  const moveQueueUp: boolean =
-    committee?.settings.moveQueueUp
-    ?? DEFAULT_SETTINGS.moveQueueUp;
-
-  const autoNextSpeaker: boolean =
-    committee?.settings.autoNextSpeaker
-    ?? DEFAULT_SETTINGS.autoNextSpeaker;
-
-  const motionVotes: boolean =
-    committee?.settings.motionVotes
-    ?? DEFAULT_SETTINGS.motionVotes;
-
-  const motionsArePublic: boolean =
-    committee?.settings.motionsArePublic
-    ?? DEFAULT_SETTINGS.motionsArePublic;
-
-  return {
-    timersInSeparateColumns,
-    moveQueueUp,
-    autoNextSpeaker,
-    motionVotes,
-    motionsArePublic
-  };
-}
-
-export function recoverCaucus(committee: CommitteeData | undefined, caucusID: CaucusID): CaucusData | undefined {
-  const caucuses = committee ? committee.caucuses : {};
-
-  return (caucuses || {})[caucusID];
-}
-
-export function recoverResolution(committee: CommitteeData | undefined, resolutionID: ResolutionID): ResolutionData | undefined {
-  const resolutions = committee ? committee.resolutions : {};
-
-  return (resolutions || {})[resolutionID];
-}
+import {useObject} from 'react-firebase-hooks/database';
+import { useParams } from 'react-router-dom';
+import { URLParameters } from '../types';
+import { makeCommitteeStats } from '../modules/committee-stats';
 
 export type CommitteeID = string;
-
-export enum Template {
-  AfricanUnion = 'African Union',
-  ASEAN = 'Association of Southeast Asian Nations',
-  BRICS = 'BRICS',
-  EU = 'European Union',
-  G20 = 'G20',
-  NATO = 'North Atlantic Treaty Organization',
-  SecurityCouncil = 'UN Security Council',
-  UNHRC = 'UN Human Rights Council',
-  UNICEF = 'UN Children\'s Fund',
-  WHOHealthBoard = 'WHO Health Board',
-}
 
 export interface CommitteeData {
   name: string;
@@ -126,19 +55,32 @@ export const DEFAULT_COMMITTEE: CommitteeData = {
   notes: '',
   settings: DEFAULT_SETTINGS
 };
-export const putCommittee =
-  (committeeID: CommitteeID, committeeData: CommitteeData): firebase.database.Reference => {
-    const ref = firebase.database()
-      .ref('committees')
-      .child(committeeID)
 
-    ref.set(committeeData);
+export enum Template {
+  AfricanUnion = 'African Union',
+  ASEAN = 'Association of Southeast Asian Nations',
+  BRICS = 'BRICS',
+  EU = 'European Union',
+  G20 = 'G20',
+  NATO = 'North Atlantic Treaty Organization',
+  SecurityCouncil = 'UN Security Council',
+  UNHRC = 'UN Human Rights Council',
+  UNICEF = 'UN Children\'s Fund',
+  WHOHealthBoard = 'WHO Health Board',
+}
 
-    return ref;
-  };
+export function putCommittee(committeeID: CommitteeID, committeeData: CommitteeData): firebase.database.Reference {
+  const ref = firebase.database()
+    .ref('committees')
+    .child(committeeID)
+
+  ref.set(committeeData);
+
+  return ref;
+}
 
 // tslint:disable-next-line
-export const putUnmodTimer = (committeeID: CommitteeID, timerData: TimerData): Promise<any> => {
+export function putUnmodTimer(committeeID: CommitteeID, timerData: TimerData): Promise<any> {
   const ref = firebase.database()
     .ref('committees')
     .child(committeeID)
@@ -146,10 +88,10 @@ export const putUnmodTimer = (committeeID: CommitteeID, timerData: TimerData): P
     .set(timerData);
 
   return ref;
-};
+}
 
 // tslint:disable-next-line
-const extendTimer = (ref: firebase.database.Reference, seconds: number): Promise<any> => {
+export function extendTimer(ref: firebase.database.Reference, seconds: number): Promise<any> {
   return ref.transaction((timerData: TimerData) => {
     if (timerData) {
 
@@ -164,13 +106,13 @@ const extendTimer = (ref: firebase.database.Reference, seconds: number): Promise
         newRemaining = seconds;
       }
 
-      return {...DEFAULT_TIMER, remaining: newRemaining};
+      return { ...DEFAULT_TIMER, remaining: newRemaining };
 
     } else {
       return timerData;
     }
   });
-};
+}
 
 // tslint:disable-next-line
 export const extendModTimer = (committeeID: CommitteeID, caucusID: CaucusID, seconds: number): Promise<any> => {
@@ -185,7 +127,7 @@ export const extendModTimer = (committeeID: CommitteeID, caucusID: CaucusID, sec
 };
 
 // tslint:disable-next-line
-export const extendUnmodTimer = (committeeID: CommitteeID, seconds: number): Promise<any> => {
+export function extendUnmodTimer(committeeID: CommitteeID, seconds: number): Promise<any> {
   const ref = firebase.database()
     .ref('committees')
     .child(committeeID)
@@ -194,7 +136,7 @@ export const extendUnmodTimer = (committeeID: CommitteeID, seconds: number): Pro
   return extendTimer(ref, seconds);
 };
 
-export const pushMember = (committeeID: CommitteeID, member: MemberData) => {
+export function pushMember(committeeID: CommitteeID, member: MemberData) {
   const ref = firebase.database()
     .ref('committees')
     .child(committeeID);
@@ -203,6 +145,96 @@ export const pushMember = (committeeID: CommitteeID, member: MemberData) => {
   ref.child('members').push().set(member);
 
   logCreateMember(member.name)
+}
+
+export function pushTemplateMembers(committeeID: CommitteeID, template: Template) {
+  const ref = firebase.database()
+    .ref('committees')
+    .child(committeeID);
+
+  ref.child('members').once('value', (snapshot) => {
+    const members: Record<MemberID, MemberData> = snapshot.val() || {};
+    const memberNames = Object.keys(members).map(id =>
+      members[id].name
+    );
+
+    [...TEMPLATE_TO_MEMBERS[template]]
+      // Don't try and readd members that already exist
+      .filter(member => !_.includes(memberNames, member.name))
+      .forEach(
+        member =>
+          pushMember(committeeID, {
+            name: member.name,
+            rank: member.rank ?? Rank.Standard,
+            present: true,
+            voting: false
+          })
+      );
+  });
+}
+
+
+export function useCommitteeRef() {
+  const { committeeID } = useParams<URLParameters>()
+
+  return firebase.database()
+    .ref('committees')
+    .child(committeeID);
+}
+
+export function useCommitteeCompanion() {
+  const { committeeID } = useParams<URLParameters>()
+  const ref = useCommitteeRef()
+  const [snapshot, loading] = useObject(ref);
+  const committee: CommitteeData | undefined = snapshot?.val();
+
+  return {
+    committee,
+    loading,
+    committeeID,
+    ref,
+    getMemberOptions(): MemberOption[] {
+      if (committee) {
+        return membersToOptions(committee.members);
+      } else {
+        return [];
+      }
+    },
+    getPresentMemberOptions(): MemberOption[] {
+      if (committee) {
+        return membersToPresentOptions(committee.members);
+      } else {
+        return [];
+      }
+    },
+    getMembers(): Record<MemberID, MemberData> {
+      return (committee?.members || {})
+    },
+    getSettings(): Required<SettingsData> {
+      const motionVotes: boolean =
+        committee?.settings.motionVotes
+        ?? DEFAULT_SETTINGS.motionVotes;
+
+      const motionsArePublic: boolean =
+        committee?.settings.motionsArePublic
+        ?? DEFAULT_SETTINGS.motionsArePublic;
+
+        return {
+          motionVotes,
+          motionsArePublic
+        };
+      },
+    getCaucus(caucusID: CaucusID): CaucusData | undefined  {
+      return committee?.caucuses?.[caucusID] 
+    },
+    getResolution(resolutionID: ResolutionID): ResolutionData | undefined {
+      return committee?.resolutions?.[resolutionID];
+    },
+    getStats() {
+      return makeCommitteeStats(committee);
+    }
+  }
+
 }
 
 export const TEMPLATE_TO_MEMBERS: Record<Template, {
@@ -502,29 +534,4 @@ export const TEMPLATE_TO_MEMBERS: Record<Template, {
     {name: 'Yemen'},
     {name: 'Zimbabwe'}
   ]
-}
-export const pushTemplateMembers = (committeeID: CommitteeID, template: Template) => {
-  const ref = firebase.database()
-    .ref('committees')
-    .child(committeeID);
-
-  ref.child('members').once('value', (snapshot) => {
-    const members: Record<MemberID, MemberData> = snapshot.val() || {};
-    const memberNames = Object.keys(members).map(id =>
-      members[id].name
-    );
-
-    [...TEMPLATE_TO_MEMBERS[template]]
-      // Don't try and readd members that already exist
-      .filter(member => !_.includes(memberNames, member.name))
-      .forEach(
-        member =>
-          pushMember(committeeID, {
-            name: member.name,
-            rank: member.rank ?? Rank.Standard,
-            present: true,
-            voting: false
-          })
-      );
-  });
 }

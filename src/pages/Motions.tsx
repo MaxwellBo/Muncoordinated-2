@@ -30,10 +30,7 @@ import {
   extendModTimer,
   extendUnmodTimer,
   putUnmodTimer,
-  recoverCaucus,
-  recoverPresentMemberOptions,
-  recoverResolution,
-  recoverSettings
+  useCommitteeCompanion,
 } from '../models/committee';
 import {URLParameters} from '../types';
 import {IDENTITCAL_PROPOSER_SECONDER} from './Resolution';
@@ -49,7 +46,6 @@ import {DEFAULT_STRAWPOLL, putStrawpoll} from '../models/strawpoll';
 import {MotionsShareHint} from '../components/share-hints';
 import {useVoterID, VoterID} from '../hooks';
 import _ from 'lodash';
-import {makeCommitteeStats} from '../modules/committee-stats';
 import {DEFAULT_MOTION, MOTION_TYPE_OPTIONS, MotionData, MotionID, MotionType, MotionVote} from "../models/motion";
 import {
   actionName,
@@ -81,6 +77,7 @@ interface Props extends RouteComponentProps<URLParameters> {
 
 interface Hooks {
   voterID: VoterID
+  committeeCompainion: ReturnType<typeof useCommitteeCompanion>
 }
 
 interface State {
@@ -301,10 +298,10 @@ export class MotionsComponent extends React.Component<Props & Hooks, State> {
     const { proposer, proposal, type, caucusUnit, caucusDuration, speakerUnit,
       speakerDuration, seconder, caucusTarget, resolutionTarget } = motionData;
 
-    const caucus = recoverCaucus(committee, caucusTarget || '');
+    const caucus = this.props.committeeCompainion.getCaucus(caucusTarget || '');
     const caucusTargetText = caucus ? caucus.name : caucusTarget;
 
-    const resolution = recoverResolution(committee, resolutionTarget || '');
+    const resolution = this.props.committeeCompainion.getResolution(resolutionTarget || '');
     const resolutionTargetText = resolution ? resolution.name : resolutionTarget;
 
 
@@ -456,7 +453,7 @@ export class MotionsComponent extends React.Component<Props & Hooks, State> {
           >
             Delete
           </Button>
-          {recoverSettings(committee).motionVotes && renderVoteCount()}
+          {this.props.committeeCompainion.getSettings().motionVotes && renderVoteCount()}
           {approvable(type) && <Button
             disabled={motionData.proposer === ''}
             basic
@@ -600,7 +597,7 @@ export class MotionsComponent extends React.Component<Props & Hooks, State> {
       </Form.Group>
     );
 
-    const memberOptions = recoverPresentMemberOptions(this.state.committee);
+    const memberOptions = this.props.committeeCompainion.getPresentMemberOptions();
 
     const proposerTree = (
       <Form.Dropdown
@@ -719,8 +716,8 @@ export class MotionsComponent extends React.Component<Props & Hooks, State> {
     const { renderMotions, renderAdder } = this;
     const { committee, committeeFref } = this.state;
     const { committeeID } = this.props.match.params;
-    const { operative } = makeCommitteeStats(this.state.committee);
-    const { motionVotes, motionsArePublic } = recoverSettings(committee);
+    const { operative } = this.props.committeeCompainion.getStats();
+    const { motionVotes, motionsArePublic } = this.props.committeeCompainion.getSettings();
 
     const renderedMotions = committee
       ? renderMotions(committee.motions || {} as Record<string, MotionData>)
@@ -782,6 +779,10 @@ export class MotionsComponent extends React.Component<Props & Hooks, State> {
 
 export default function Motions(props: Props) {
   const [voterID] = useVoterID();
+  const committeeCompanion = useCommitteeCompanion();
 
-  return <MotionsComponent {...props} voterID={voterID} />
+  return <MotionsComponent {...props} 
+    voterID={voterID} 
+    committeeCompanion={committeeCompanion}
+  />
 }

@@ -31,44 +31,29 @@ import {NotFound} from '../components/NotFound';
 import {
   CAUCUS_STATUS_OPTIONS,
   CaucusData,
-  CaucusID,
   CaucusStatus,
   DEFAULT_CAUCUS,
   Lifecycle,
-  recoverDuration,
-  recoverUnit,
   runLifecycle,
   SpeakerEvent,
-  Stance
+  Stance,
+  useCaucusCompanion
 } from "../models/caucus";
-import {CommitteeData, recoverCaucus, recoverMembers, recoverSettings} from "../models/committee";
 import {TimerData, Unit} from "../models/time";
 import {useAuthState} from "react-firebase-hooks/auth";
 import _ from "lodash";
 import {useObjectVal} from "react-firebase-hooks/database";
-import {MemberData, MemberOption, membersToPresentOptions, parseFlagName} from "../modules/member";
+import {MemberOption, parseFlagName} from "../modules/member";
 import {TimeSetter} from "../components/TimeSetter";
 import * as firebase from "firebase";
 import {DragDropContext, Draggable, DraggableProvided, Droppable, DropResult} from "react-beautiful-dnd";
-
-interface Props extends RouteComponentProps<URLParameters> {
-}
-
-interface State {
-  speakerTimer: TimerData;
-  caucusTimer: TimerData;
-  committee?: CommitteeData;
-  committeeFref: firebase.database.Reference;
-  loading: boolean;
-}
-
+import { useCommitteeCompanion } from '../models/committee';
 
 export function NextSpeaking(props: {
-  caucus?: CaucusData;
   speakerTimer: TimerData;
-  fref: firebase.database.Reference;
-  autoNextSpeaker: boolean;
 }) {
+  const caucusCompanion = useCaucusCompanion();
+  const { caucus, loading, ref: caucusFref } = caucusCompanion;
   const [user] = useAuthState(firebase.auth());
 
   const handleKeyDown = (ev: KeyboardEvent) => {
@@ -79,7 +64,7 @@ export function NextSpeaking(props: {
   };
 
   const interlace = () => {
-    if (!props.caucus) {
+    if (!caucus) {
       return;
     }
 
@@ -87,7 +72,7 @@ export function NextSpeaking(props: {
       return;
     }
 
-    const q = props.caucus.queue || {};
+    const q = caucus.queue || {};
 
     const vs: SpeakerEvent[] = _.values(q);
 
@@ -97,21 +82,21 @@ export function NextSpeaking(props: {
 
     const interlaced = _.flatten(_.zip(fors, againsts, neutrals));
 
-    props.fref.child('queue').set({});
+    caucusFref.child('queue').set({});
 
     interlaced.forEach((se: SpeakerEvent | undefined) => {
       if (se) {
-        props.fref.child('queue').push().set(se);
+        caucusFref.child('queue').push().set(se);
       }
     });
   };
 
   const nextSpeaker = () => {
-    if (!props.caucus) {
+    if (!caucus) {
       return;
     }
 
-    const q = props.caucus.queue || {};
+    const q = caucus.queue || {};
 
     const queueHeadKey = Object.keys(q)[0];
 
@@ -120,22 +105,22 @@ export function NextSpeaking(props: {
     if (queueHeadKey) {
       queueHeadDetails = {
         queueHeadData: q[queueHeadKey],
-        queueHead: props.fref.child('queue').child(queueHeadKey)
+        queueHead: caucusFref.child('queue').child(queueHeadKey)
       };
     }
 
-    const duration = recoverDuration(props.caucus);
+    const duration = caucusCompanion.getDuration()
 
     const speakerSeconds: number = duration
-      ? duration * (recoverUnit(props.caucus) === Unit.Minutes ? 60 : 1)
+      ? duration * (caucusCompanion.getUnit() === Unit.Minutes ? 60 : 1)
       : 60;
 
     const lifecycle: Lifecycle = {
-      history: props.fref.child('history'),
-      speakingData: props.caucus.speaking,
-      speaking: props.fref.child('speaking'),
+      history: caucusFref.child('history'),
+      speakingData: caucus?.speaking,
+      speaking: caucusFref.child('speaking'),
       timerData: props.speakerTimer,
-      timer: props.fref.child('speakerTimer'),
+      timer: caucusFref.child('speakerTimer'),
       yielding: false,
       timerResetSeconds: speakerSeconds
     };
@@ -149,13 +134,12 @@ export function NextSpeaking(props: {
 
   const startTimer = () => {
     toggleTicking({
-      timerFref: props.fref.child('speakerTimer'),
+      timerFref: caucusFref.child('speakerTimer'),
       timer: props.speakerTimer,
       skew: skew.value
     });
   };
 
-  const {caucus} = props;
   const {ticking} = props.speakerTimer;
 
   const queue = caucus ? caucus.queue : {};
@@ -165,7 +149,7 @@ export function NextSpeaking(props: {
   const interlaceable = queueLength > 1;
   const nextable = hasNowSpeaking || hasNextSpeaking;
 
-  const stageButton = (
+  const StageButton = () => (
     <Button
       basic
       icon
@@ -178,7 +162,7 @@ export function NextSpeaking(props: {
     </Button>
   );
 
-  const startButton = (
+  const StartButton = () => (
     <Button
       basic
       icon
@@ -191,7 +175,7 @@ export function NextSpeaking(props: {
     </Button>
   )
 
-  const nextButton = (
+  const NextButton = () => (
     <Button
       basic
       icon
@@ -204,7 +188,7 @@ export function NextSpeaking(props: {
     </Button>
   );
 
-  const stopButton = (
+  const StopButton = () => (
     <Button
       basic
       icon
@@ -217,7 +201,7 @@ export function NextSpeaking(props: {
     </Button>
   );
 
-  const interlaceButton = (
+  const InterlaceButton = () => (
     <Button
       icon
       disabled={!interlaceable}
@@ -230,16 +214,16 @@ export function NextSpeaking(props: {
     </Button>
   );
 
-  let button = nextButton;
+  let button = <NextButton/>;
 
   if (!hasNowSpeaking) {
-    button = stageButton;
+    button = <StageButton />;
   } else if (hasNowSpeaking && !ticking) {
-    button = startButton;
+    button = <StartButton />;
   } else if (hasNowSpeaking && ticking && hasNextSpeaking) {
-    button = nextButton;
+    button = <NextButton />;
   } else if (hasNowSpeaking && ticking && !hasNextSpeaking) {
-    button = stopButton;
+    button = <StopButton />;
   }
 
   React.useEffect(() => {
@@ -253,14 +237,14 @@ export function NextSpeaking(props: {
       <Label attached="top left" size="large">Next speaking</Label>
       {button}
       <Popup
-        trigger={interlaceButton}
+        trigger={<InterlaceButton />}
         content="Orders the list so that speakers are
         'For', then 'Against', then 'Neutral', then 'For', etc."
       />
       <SpeakerFeed
         data={caucus ? caucus.queue : undefined}
-        queueFref={props.fref.child('queue')}
-        speaking={caucus ? caucus.speaking : undefined}
+        queueFref={caucusFref.child('queue')}
+        speaking={caucus?.speaking}
         speakerTimer={props.speakerTimer}
       />
     </Segment>
@@ -452,27 +436,25 @@ function SpeakerFeed(props: {
 };
 
 function Queuer(props: {
-  caucus?: CaucusData;
-  members?: Record<string, MemberData>;
-  caucusFref: firebase.database.Reference;
+  memberOptions: MemberOption[];
 }) {
-  const {members, caucus, caucusFref} = props;
+  const { memberOptions } = props;
+  const caucusCompanion = useCaucusCompanion();
+  const { caucus, loading, ref: caucusFref } = caucusCompanion;
+
   const [queueMember, setQueueMember] = React.useState<MemberOption | undefined>(undefined);
-  const memberOptions = membersToPresentOptions(members);
 
   const setStance = (stance: Stance) => () => {
-    const {caucus} = props;
-
-    const duration = Number(recoverDuration(caucus));
+    const duration = Number(caucusCompanion.getDuration());
 
     if (duration && queueMember) {
       const newEvent: SpeakerEvent = {
         who: queueMember.text,
         stance: stance,
-        duration: recoverUnit(caucus) === Unit.Minutes ? duration * 60 : duration,
+        duration: caucusCompanion.getUnit() === Unit.Minutes ? duration * 60 : duration,
       };
 
-      props.caucusFref.child('queue').push().set(newEvent);
+      caucusCompanion.ref.child('queue').push().set(newEvent);
     }
   }
 
@@ -480,7 +462,7 @@ function Queuer(props: {
     setQueueMember(memberOptions.filter(c => c.value === data.value)[0]);
   }
 
-  const duration = recoverDuration(caucus);
+  const duration = caucusCompanion.getDuration()
   const disableButtons = !queueMember || !duration;
 
   return (
@@ -492,14 +474,14 @@ function Queuer(props: {
           value={queueMember ? queueMember.value : undefined}
           search
           selection
-          loading={!caucus}
+          loading={loading}
           error={!queueMember}
           onChange={setMember}
           options={memberOptions}
         />
         <TimeSetter
-          loading={!caucus}
-          unitValue={recoverUnit(caucus)}
+          loading={loading}
+          unitValue={caucusCompanion.getUnit()}
           placeholder="Speaking time"
           durationValue={duration ? duration.toString() : undefined}
           onDurationChange={validatedNumberFieldHandler(caucusFref, 'speakerDuration')}
@@ -507,9 +489,9 @@ function Queuer(props: {
         />
         <Form.Checkbox
           label="Delegates can queue"
-          indeterminate={!caucus}
+          indeterminate={loading}
           toggle
-          checked={caucus ? (caucus.queueIsPublic || false) : false} // zoo wee mama
+          checked={caucus?.queueIsPublic ?? false}
           onChange={checkboxHandler<CaucusData>(caucusFref, 'queueIsPublic')}
         />
         <Button.Group size="large" fluid>
@@ -536,226 +518,106 @@ function Queuer(props: {
   );
 }
 
-export default class Caucus extends React.Component<Props, State> {
-  constructor(props: Props) {
-    super(props);
 
-    const { match } = props;
+function NowSpeaking(props: {
+  speakerTimer: TimerData;
+}) {
+  const { speakerTimer } = props;
+  const { caucus, loading, ref: caucusFref } = useCaucusCompanion();
 
-    this.state = {
-      committeeFref: firebase.database().ref('committees').child(match.params.committeeID),
-      caucusTimer: DEFAULT_CAUCUS.caucusTimer,
-      speakerTimer: DEFAULT_CAUCUS.speakerTimer,
-      loading: true
-    };
-  }
+  return (
+    <Segment loading={loading}>
+      <Label attached="top left" size="large">Now speaking</Label>
+      <Feed size="large">
+        <SpeakerFeedEntry data={caucus?.speaking} fref={caucusFref.child('speaking')} speakerTimer={speakerTimer}/>
+      </Feed>
+    </Segment>
+  );
+}
 
-  firebaseCallback = (committee: firebase.database.DataSnapshot | null) => {
-    if (committee) {
-      this.setState({ committee: committee.val(), loading: false });
-    }
-  }
+export default function Caucus(props: {} & RouteComponentProps<URLParameters>) {
+  const caucusCompanion = useCaucusCompanion();
+  const committeeCompanion = useCommitteeCompanion();
+  const { caucus, loading, ref: caucusFref, caucusID } = caucusCompanion;
 
-  // XXX: I'm worried that this might be the source of a bug that I'm yet to observe
-  // Say our route changes the committeeID, _but does not unmount the caucus component_
-  // Will these listeners be purged?
-  componentDidMount() {
-    this.state.committeeFref.on('value', this.firebaseCallback);
-  }
+  const [caucusTimer, setCaucusTimer] = React.useState(DEFAULT_CAUCUS.caucusTimer);
+  const [speakerTimer, setSpeakerTimer] = React.useState(DEFAULT_CAUCUS.speakerTimer);
 
-  componentWillUnmount() {
-    this.state.committeeFref.off('value', this.firebaseCallback);
-  }
 
-  recoverCaucusFref = () => {
-    const caucusID: CaucusID = this.props.match.params.caucusID;
-
-    return this.state.committeeFref
-      .child('caucuses')
-      .child(caucusID);
-  }
-
-  renderHeader = (caucus?: CaucusData) => {
-    const caucusFref = this.recoverCaucusFref();
-
-    const statusDropdown = (
-      <Dropdown 
-        value={caucus ? caucus.status : CaucusStatus.Open} 
-        options={CAUCUS_STATUS_OPTIONS} 
-        onChange={dropdownHandler<CaucusData>(caucusFref, 'status')} 
-      /> 
-    );
-
+  if (!caucusCompanion.loading && !caucusCompanion.caucus) {
     return (
-      <>
-        <Input
-          label={statusDropdown}
-          labelPosition="right"
-          value={caucus ? caucus.name : ''}
-          onChange={fieldHandler<CaucusData>(caucusFref, 'name')}
-          loading={!caucus}
-          attatched="top"
-          size="massive"
-          fluid
-          placeholder="Set caucus name"
-        />
-        <Form loading={!caucus}>
-          <TextArea
-            value={caucus ? caucus.topic : ''}
-            autoHeight
-            onChange={textAreaHandler<CaucusData>(caucusFref, 'topic')}
-            attatched="top"
-            rows={1}
-            placeholder="Set caucus details"
-          />
-        </Form>
-      </>
-    );
-  }
-
-  renderNowSpeaking =  (caucus?: CaucusData) => {
-    const { speakerTimer } = this.state;
-    
-    const caucusFref = this.recoverCaucusFref();
-
-    const entryData = caucus ? caucus.speaking : undefined;
-
-    return (
-      <Segment loading={!caucus}>
-        <Label attached="top left" size="large">Now speaking</Label>
-        <Feed size="large">
-          <SpeakerFeedEntry data={entryData} fref={caucusFref.child('speaking')} speakerTimer={speakerTimer}/>
-        </Feed>
-      </Segment>
-    );
-  }
-
-  setSpeakerTimer = (timer: TimerData) => {
-    this.setState({ speakerTimer: timer });
-  }
-
-  setCaucusTimer = (timer: TimerData) => {
-    this.setState({ caucusTimer: timer });
-  }
-
-  renderCaucus = (caucus?: CaucusData) => {
-    const { renderNowSpeaking, renderHeader, recoverCaucusFref } = this;
-    const { speakerTimer, committee } = this.state;
-
-    const { caucusID } = this.props.match.params;
-    const caucusFref = recoverCaucusFref();
-
-    const members = recoverMembers(committee);
-
-    const renderedSpeakerTimer = (
-      <Timer
-        name="Speaker timer"
-        timerFref={caucusFref.child('speakerTimer')}
-        key={caucusID + 'speakerTimer'}
-        onChange={this.setSpeakerTimer}
-        toggleKeyCode={83} // S - if changing this, update Help
-        defaultUnit={recoverUnit(caucus)}
-        defaultDuration={recoverDuration(caucus) || 60}
-      />
-    );
-
-    const renderedCaucusTimer = (
-      <Timer
-        name="Caucus timer"
-        timerFref={caucusFref.child('caucusTimer')}
-        key={caucusID + 'caucusTimer'}
-        onChange={this.setCaucusTimer}
-        toggleKeyCode={67} // C - if changing this, update Help
-        defaultUnit={Unit.Minutes}
-        defaultDuration={10}
-      />
-    );
-
-    const { 
-      autoNextSpeaker, 
-      timersInSeparateColumns,
-      moveQueueUp
-    } = recoverSettings(committee);
-
-    const header = (
-      <Grid.Row>
-        <Grid.Column>
-          {renderHeader(caucus)}
-        </Grid.Column>
-      </Grid.Row>
-    );
-
-    const renderedCaucusQueuer = (
-      <Queuer
-        caucus={caucus} 
-        members={members} 
-        caucusFref={caucusFref} 
-      />
-    );
-
-    const renderedCaucusNextSpeaking = (
-      <NextSpeaking
-        caucus={caucus} 
-        fref={caucusFref} 
-        speakerTimer={speakerTimer} 
-        autoNextSpeaker={autoNextSpeaker}
-      />
-    );
-
-    const body = !timersInSeparateColumns ? (
-      <Grid.Row>
-        <Grid.Column>
-          {renderNowSpeaking(caucus)}
-          {moveQueueUp && renderedCaucusQueuer}
-          {renderedCaucusNextSpeaking}
-          {!moveQueueUp && renderedCaucusQueuer}
-        </Grid.Column>
-        <Grid.Column>
-          {renderedSpeakerTimer}
-          {renderedCaucusTimer}
-        </Grid.Column>
-      </Grid.Row>
-    ) : (
-      <Grid.Row>
-        <Grid.Column>
-          {renderedSpeakerTimer}
-          {renderNowSpeaking(caucus)}
-          {renderedCaucusNextSpeaking}
-        </Grid.Column>
-        <Grid.Column>
-          {renderedCaucusTimer}
-          {renderedCaucusQueuer}
-        </Grid.Column>
-      </Grid.Row>
-    );
-
-    return (
-      <Container style={{ 'padding-bottom': '2em' }}>
-        <Helmet>
-          <title>{`${caucus?.name} - Muncoordinated`}</title>
-        </Helmet>
-        <Grid columns="equal" stackable>
-          {header}
-          {body}
-        </Grid >
+      <Container text style={{ 'padding-bottom': '2em' }}>
+        <NotFound item="caucus" id={caucusCompanion.caucusID} />
       </Container>
     );
   }
 
-  render() {
-    const { committee, loading } = this.state;
-    const caucusID: CaucusID = this.props.match.params.caucusID;
-
-    const caucus = recoverCaucus(committee, caucusID);
-
-    if (!loading && !caucus) {
-      return (
-        <Container text style={{ 'padding-bottom': '2em' }}>
-          <NotFound item="caucus" id={caucusID} />
-        </Container>
-      );
-    } else {
-      return this.renderCaucus(caucus);
-    }
-  }
+  return (
+    <Container style={{ 'padding-bottom': '2em' }}>
+      <Helmet>
+        <title>{`${caucus?.name} - Muncoordinated`}</title>
+      </Helmet>
+      <Grid columns="equal" stackable>
+        <Grid.Row>
+          <Grid.Column>
+            <Input
+              label={<Dropdown
+                value={caucus?.status ?? CaucusStatus.Open}
+                options={CAUCUS_STATUS_OPTIONS}
+                onChange={dropdownHandler<CaucusData>(caucusFref, 'status')}
+              />}
+              labelPosition="right"
+              value={caucus?.name ?? ''}
+              onChange={fieldHandler<CaucusData>(caucusFref, 'name')}
+              loading={loading}
+              attatched="top"
+              size="massive"
+              fluid
+              placeholder="Set caucus name"
+            />
+            <Form loading={!caucus}>
+              <TextArea
+                value={caucus?.topic ?? ''}
+                autoHeight
+                onChange={textAreaHandler<CaucusData>(caucusFref, 'topic')}
+                attatched="top"
+                rows={1}
+                placeholder="Set caucus details"
+              />
+            </Form>
+          </Grid.Column>
+        </Grid.Row>
+        <Grid.Row>
+          <Grid.Column>
+            <NowSpeaking speakerTimer={speakerTimer}/>
+            <Queuer
+              memberOptions={committeeCompanion.getMemberOptions()}
+            />
+            <NextSpeaking
+              speakerTimer={speakerTimer}
+            />
+          </Grid.Column>
+          <Grid.Column>
+            <Timer
+              name="Speaker timer"
+              timerFref={caucusFref.child('speakerTimer')}
+              key={caucusID + 'speakerTimer'}
+              onChange={setSpeakerTimer}
+              toggleKeyCode={83} // S - if changing this, update Help
+              defaultUnit={caucusCompanion.getUnit()}
+              defaultDuration={caucusCompanion.getDuration() || 60}
+            />
+            <Timer
+              name="Caucus timer"
+              timerFref={caucusFref.child('caucusTimer')}
+              key={caucusID + 'caucusTimer'}
+              onChange={setCaucusTimer}
+              toggleKeyCode={67} // C - if changing this, update Help
+              defaultUnit={Unit.Minutes}
+              defaultDuration={10}
+            />
+          </Grid.Column>
+        </Grid.Row>
+      </Grid >
+    </Container>)
 }

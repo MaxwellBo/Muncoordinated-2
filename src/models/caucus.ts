@@ -1,4 +1,7 @@
 import * as firebase from 'firebase/app';
+import { useObject } from 'react-firebase-hooks/database';
+import { useParams } from 'react-router-dom';
+import { URLParameters } from '../types';
 
 import {makeDropdownOption, shortMeetId} from '../utils';
 import {CommitteeID} from "./committee";
@@ -7,16 +10,34 @@ import {DEFAULT_TIMER, TimerData, Unit} from "./time";
 export const DEFAULT_CAUCUS_TIME_SECONDS = 10 * 60;
 export const DEFAULT_SPEAKER_TIME_SECONDS = 1 * 60;
 
-export function recoverUnit(caucus?: CaucusData): Unit {
-  return caucus ? (caucus.speakerUnit || Unit.Seconds) : Unit.Seconds;
+export function useCaucusRef() {
+  const { committeeID, caucusID } = useParams<URLParameters>()
+
+  return firebase.database()
+    .ref('committees')
+    .child(committeeID)
+    .child('caucuses')
+    .child(caucusID);
 }
 
-export function recoverDuration(caucus?: CaucusData): number | undefined {
-  return caucus
-      ? caucus.speakerDuration
-          ? caucus.speakerDuration
-          : undefined
-      : undefined;
+export function useCaucusCompanion() {
+  const { caucusID } = useParams<URLParameters>()
+  const ref = useCaucusRef();
+  const [snapshot, loading] = useObject(ref);
+  const caucus: CaucusData | undefined = snapshot?.val();
+
+  return {
+    caucusID,
+    caucus,
+    loading,
+    ref,
+    getUnit(): Unit {
+      return caucus?.speakerUnit ?? Unit.Seconds;
+    },
+    getDuration(): number | undefined {
+      return caucus?.speakerDuration
+    }
+  }
 }
 
 export type CaucusID = string;
@@ -69,8 +90,8 @@ export const DEFAULT_CAUCUS: CaucusData = {
   queue: {} as Record<string, SpeakerEvent>,
   history: {} as Record<string, SpeakerEvent>,
 };
-export const putCaucus =
-  (committeeID: CommitteeID, caucusData: CaucusData): firebase.database.Reference => {
+
+export function putCaucus(committeeID: CommitteeID, caucusData: CaucusData): firebase.database.Reference {
   const ref = firebase.database()
     .ref('committees')
     .child(committeeID)
@@ -82,8 +103,7 @@ export const putCaucus =
   return ref;
 };
 
-export const putSpeaking =
-  (committeeID: CommitteeID, caucusID: CaucusID, speaker: SpeakerEvent): Promise<any> => {
+export function putSpeaking(committeeID: CommitteeID, caucusID: CaucusID, speaker: SpeakerEvent): Promise<any> {
 
   console.debug(speaker);
 
@@ -97,8 +117,7 @@ export const putSpeaking =
 }
 
 // tslint:disable-next-line
-export const closeCaucus = 
-  (committeeID: CommitteeID, caucusID: CaucusID): Promise<any> => {
+export function closeCaucus(committeeID: CommitteeID, caucusID: CaucusID): Promise<any> {
   return firebase.database()
     .ref('committees')
     .child(committeeID)
@@ -120,7 +139,7 @@ export interface Lifecycle {
   timerResetSeconds: number;
 }
 
-export const runLifecycle = (lifecycle: Lifecycle) => {
+export function runLifecycle(lifecycle: Lifecycle) {
   const { history, speakingData, speaking, timerData, timer, 
     timerResetSeconds, yielding, queueHeadData, queueHead } = lifecycle;
 

@@ -61,7 +61,6 @@ export default class Settings extends React.Component<Props, State> {
   }
 
   render() {
-    const { renderSetting } = this;
     const { committee } = this.state;
 
     return (
@@ -71,11 +70,11 @@ export default class Settings extends React.Component<Props, State> {
         </Helmet>
         <Header as="h3" attached="top">Settings</Header>
         <Segment attached="bottom" loading={!committee}>
-          {renderSetting('moveQueueUp', '\'Queue\' should appear above \'Next speaking\'')}
-          {renderSetting(
+          {/* {renderSetting('moveQueueUp', '\'Queue\' should appear above \'Next speaking\'')} */}
+          {/* {renderSetting(
             'timersInSeparateColumns',
             'Alternate arrangement with \'Speaker timer\' and \'Caucus timer\' in separate columns'
-          )}
+          )} */}
           {/* {renderSetting(
             'autoNextSpeaker',
             'The next speaker will automatically be moved to the \'Now speaking\' position after the time has elapsed for the current speaker'
