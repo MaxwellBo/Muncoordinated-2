@@ -21,7 +21,8 @@ export enum MotionType {
   ResumeDebate = 'Resume Debate',
   CloseDebate = 'Close Debate',
   ReorderDraftResolutions = 'Reorder Draft Resolutions',
-  ProposeStrawpoll = 'Propose Strawpoll'
+  ProposeStrawpoll = 'Propose Strawpoll',
+  AddWorkingPaper = "Introduce Working Paper"
 }
 
 export enum MotionVote {
@@ -61,6 +62,7 @@ export const MOTION_TYPE_OPTIONS = [
   MotionType.ResumeDebate,
   MotionType.CloseDebate,
   MotionType.ReorderDraftResolutions,
+  MotionType.AddWorkingPaper,
 ].map(makeSentenceCaseDropdownOption);
 
 export const DEFAULT_MOTION: MotionData = {

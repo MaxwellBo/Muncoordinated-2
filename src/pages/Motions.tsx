@@ -206,7 +206,8 @@ export class MotionsComponent extends React.Component<Props & Hooks, State> {
       this.props.history
         .push(`/committees/${committeeID}/caucuses/${caucusRef.key}`);
 
-    } else if (motionData.type === MotionType.OpenUnmoderatedCaucus && caucusDuration) {
+    }
+    else if ((motionData.type === MotionType.OpenUnmoderatedCaucus || motionData.type === MotionType.AddWorkingPaper) && caucusDuration) {
       this.props.history
         .push(`/committees/${committeeID}/unmod`);
 

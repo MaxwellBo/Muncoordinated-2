@@ -1,3 +1,4 @@
+import { Console } from "console";
 import {MotionType} from "../models/motion";
 import {sentenceCase} from "../utils";
 
@@ -30,6 +31,7 @@ export const disruptiveness = (motionType: MotionType): number => {
     case MotionType.CloseModeratedCaucus:
       return 2;
     case MotionType.OpenUnmoderatedCaucus:
+    case MotionType.AddWorkingPaper:
       return 4;
     case MotionType.OpenModeratedCaucus:
       return 5;
@@ -67,6 +69,7 @@ export const actionName = (motionType: MotionType): string => {
       return 'Open';
     case MotionType.IntroduceDraftResolution:
     case MotionType.IntroduceAmendment:
+    case MotionType.AddWorkingPaper:
       return 'Introduce';
     case MotionType.SuspendDraftResolutionSpeakersList:
     case MotionType.SuspendDebate:
@@ -94,6 +97,7 @@ export const approvable = (motionType: MotionType): boolean => {
     case MotionType.IntroduceAmendment:
     case MotionType.ProposeStrawpoll:
     case MotionType.VoteOnResolution:
+    case MotionType.AddWorkingPaper:
       return true;
     default:
       return false;
@@ -121,6 +125,7 @@ export const hasDetail = (motionType: MotionType): boolean => {
     case MotionType.IntroduceDraftResolution:
     case MotionType.IntroduceAmendment:
     case MotionType.ProposeStrawpoll:
+    case MotionType.AddWorkingPaper:
       return true;
     default:
       return false;
@@ -129,6 +134,7 @@ export const hasDetail = (motionType: MotionType): boolean => {
 export const hasTextArea = (motionType: MotionType): boolean => {
   switch (motionType) {
     case MotionType.IntroduceAmendment:
+    case MotionType.AddWorkingPaper:
       return true;
     default:
       return false;
@@ -144,6 +150,8 @@ export const detailLabel = (motionType: MotionType): string => {
       return 'Text';
     case MotionType.ProposeStrawpoll:
       return 'Question';
+    case MotionType.AddWorkingPaper:
+      return "Task"
     default:
       return '';
   }
@@ -154,6 +162,7 @@ export const hasDuration = (motionType: MotionType): boolean => {
     case MotionType.ExtendModeratedCaucus:
     case MotionType.OpenModeratedCaucus:
     case MotionType.OpenUnmoderatedCaucus:
+    case MotionType.AddWorkingPaper:
       return true;
     default:
       return false;
