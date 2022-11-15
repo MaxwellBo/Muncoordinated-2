@@ -6,3 +6,7 @@
 .ui.dropdown.centered {
   text-align: center;
 }
+
+.thirdwidth {
+  width: 33%;
+}
