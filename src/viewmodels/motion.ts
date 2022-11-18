@@ -1,4 +1,3 @@
-import { Console } from "console";
 import {MotionType} from "../models/motion";
 import {sentenceCase} from "../utils";
 
