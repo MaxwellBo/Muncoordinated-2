@@ -342,7 +342,7 @@ export class MotionsComponent extends React.Component<Props & Hooks, State> {
               </Button>
             }
           />
-          {procedural(motionData.type)? null :
+          {procedural(motionData.type) &&
             <Popup
               content="Abstain"
               trigger={
