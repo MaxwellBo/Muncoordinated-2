@@ -324,7 +324,7 @@ export class MotionsComponent extends React.Component<Props & Hooks, State> {
       const counts = _.countBy(Object.values(votes))
 
       return (
-        <Button.Group>
+        <Button.Group className="thirdwidth">
           <Popup
             content="Against"
             trigger={
@@ -342,23 +342,24 @@ export class MotionsComponent extends React.Component<Props & Hooks, State> {
               </Button>
             }
           />
-          <Popup
-            content="Abstain"
-            trigger={
-              <Button
-                color='yellow'
-                disabled={procedural(motionData.type)}
-                active={votes[voterID] === MotionVote.Abstain}
-                onClick={() => vote(MotionVote.Abstain)}
-              >
-                <Icon name={
-                  votes[voterID] === MotionVote.Abstain
-                    ? "circle"
-                    : "circle outline"}
-                />
-                {counts[MotionVote.Abstain] ?? 0}
-              </Button>
-            } />
+          {procedural(motionData.type) &&
+            <Popup
+              content="Abstain"
+              trigger={
+                <Button
+                  color='yellow'
+                  active={votes[voterID] === MotionVote.Abstain}
+                  onClick={() => vote(MotionVote.Abstain)}
+                >
+                  <Icon name={
+                    votes[voterID] === MotionVote.Abstain
+                      ? "circle"
+                      : "circle outline"}
+                  />
+                  {counts[MotionVote.Abstain] ?? 0}
+                </Button>
+              } />
+            }
           <Popup
             content="In favour"
             trigger={
@@ -450,6 +451,7 @@ export class MotionsComponent extends React.Component<Props & Hooks, State> {
         </Card.Content>
         <Button.Group fluid attached="bottom">
           <Button
+            className="thirdwidth"
             basic
             negative
             onClick={() => motionFref.child('deleted').set(true)}
@@ -457,7 +459,8 @@ export class MotionsComponent extends React.Component<Props & Hooks, State> {
             Delete
           </Button>
           {recoverSettings(committee).motionVotes && renderVoteCount()}
-          {approvable(type) && <Button
+          {approvable(type) && <Button 
+            className="thirdwidth"
             disabled={motionData.proposer === ''}
             basic
             positive
