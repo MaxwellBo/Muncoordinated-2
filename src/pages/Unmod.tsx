@@ -37,7 +37,7 @@ export default class Unmod extends React.Component<Props, State> {
           <title>{`Unmoderated Caucus - Muncoordinated`}</title>
         </Helmet>
         <Timer 
-          name="Unmoderated caucus" 
+          name= "Palavra pela Ordem" 
           timerFref={committeeFref} 
           onChange={(x: TimerData) => x} 
           defaultDuration={10}

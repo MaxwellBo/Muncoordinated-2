@@ -500,13 +500,13 @@ function Queuer(props: {
         <TimeSetter
           loading={!caucus}
           unitValue={recoverUnit(caucus)}
-          placeholder="Speaking time"
+          placeholder="Tempo da Fala"
           durationValue={duration ? duration.toString() : undefined}
           onDurationChange={validatedNumberFieldHandler(caucusFref, 'speakerDuration')}
           onUnitChange={dropdownHandler(caucusFref, 'speakerUnit')}
         />
         <Form.Checkbox
-          label="Delegates can queue"
+          label="Fila para Conselheiros"
           indeterminate={!caucus}
           toggle
           checked={caucus ? (caucus.queueIsPublic || false) : false} // zoo wee mama
@@ -514,20 +514,20 @@ function Queuer(props: {
         />
         <Button.Group size="large" fluid>
           <Button
-            content="For"
+            content="Favoravel"
             disabled={disableButtons}
             onClick={setStance(Stance.For)}
           />
           <Button.Or/>
           <Button
             disabled={disableButtons}
-            content="Neutral"
+            content="Neutro"
             onClick={setStance(Stance.Neutral)}
           />
           <Button.Or/>
           <Button
             disabled={disableButtons}
-            content="Against"
+            content="Contrario"
             onClick={setStance(Stance.Against)}
           />
         </Button.Group>
@@ -649,7 +649,7 @@ export default class Caucus extends React.Component<Props, State> {
 
     const renderedSpeakerTimer = (
       <Timer
-        name="Speaker timer"
+        name="Tempo do Orador"
         timerFref={caucusFref.child('speakerTimer')}
         key={caucusID + 'speakerTimer'}
         onChange={this.setSpeakerTimer}
@@ -661,7 +661,7 @@ export default class Caucus extends React.Component<Props, State> {
 
     const renderedCaucusTimer = (
       <Timer
-        name="Caucus timer"
+        name="Tempo da Discussao"
         timerFref={caucusFref.child('caucusTimer')}
         key={caucusID + 'caucusTimer'}
         onChange={this.setCaucusTimer}
@@ -732,7 +732,7 @@ export default class Caucus extends React.Component<Props, State> {
     return (
       <Container style={{ 'padding-bottom': '2em' }}>
         <Helmet>
-          <title>{`${caucus?.name} - Muncoordinated`}</title>
+          <title>{`${caucus?.name} - SISCONFED`}</title>
         </Helmet>
         <Grid columns="equal" stackable>
           {header}

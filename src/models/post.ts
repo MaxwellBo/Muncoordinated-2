@@ -2,8 +2,8 @@ import {ResolutionID} from "./resolution";
 
 export enum PostType {
   Link = 'link',
-  File = 'file',
-  Text = 'text'
+  File = 'arquivo',
+  Text = 'texto'
 }
 
 export type PostID = string;

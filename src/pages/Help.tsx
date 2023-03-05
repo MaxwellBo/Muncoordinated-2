@@ -48,7 +48,7 @@ export default class Help extends React.PureComponent<{}, {}> {
     return (
       <Container text style={{ padding: '1em 0em' }}>
         <Helmet>
-          <title>{`Help - Muncoordinated`}</title>
+          <title>{`Help - SISCONFED`}</title>
         </Helmet>
         <Header as="h3" attached="top">Keyboard shortcuts</Header>
         <Segment attached="bottom">

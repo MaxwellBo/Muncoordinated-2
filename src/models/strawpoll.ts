@@ -3,13 +3,13 @@ import {shortMeetId} from '../utils';
 import {CommitteeID} from "./committee";
 
 export enum StrawpollStage {
-  Preparing = 'preparing',
-  Voting = 'voting',
-  Results = 'results',
+  Preparing = 'preparando',
+  Voting = 'votação aberta',
+  Results = 'resultados',
 }
 
 export enum StrawpollType {
-  Checkbox = 'checkbox',
+  Checkbox = 'caixinha',
   Radio = 'radio'
 }
 
@@ -22,7 +22,7 @@ export type StrawpollID = string;
 export type StrawpollOptionID = string;
 export type StrawpollVoteID = string;
 export const DEFAULT_STRAWPOLL: StrawpollData = {
-  question: 'undefined question',
+  question: 'eleição indefinida',
   stage: StrawpollStage.Preparing,
   type: StrawpollType.Checkbox,
   medium: StrawpollMedium.Link,

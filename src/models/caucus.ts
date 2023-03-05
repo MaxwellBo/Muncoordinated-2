@@ -22,8 +22,8 @@ export function recoverDuration(caucus?: CaucusData): number | undefined {
 export type CaucusID = string;
 
 export enum CaucusStatus {
-  Open = 'Open',
-  Closed = 'Closed'
+  Open = 'Em Discussão',
+  Closed = 'Tribuna Fechada'
 }
 
 export interface CaucusData {
@@ -46,9 +46,9 @@ export const CAUCUS_STATUS_OPTIONS = [
 ].map(makeDropdownOption);
 
 export enum Stance {
-  For = 'For',
-  Neutral = 'Neutral',
-  Against = 'Against'
+  For = 'Favorável',
+  Neutral = 'Neutro',
+  Against = 'Contrário'
 }
 
 export interface SpeakerEvent {
@@ -58,7 +58,7 @@ export interface SpeakerEvent {
 }
 
 export const DEFAULT_CAUCUS: CaucusData = {
-  name: 'untitled caucus',
+  name: 'Tribuna Livre',
   topic: '',
   status: CaucusStatus.Open,
   speakerTimer: {...DEFAULT_TIMER, remaining: DEFAULT_SPEAKER_TIME_SECONDS},

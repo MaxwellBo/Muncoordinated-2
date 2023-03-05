@@ -36,7 +36,7 @@ export class TimeSetter extends React.Component<Props, {}> {
     return (
       <Form.Input
         value={props.durationValue || ''}
-        placeholder={props.placeholder || 'Duration'}
+        placeholder={props.placeholder || 'Duração'}
         onChange={props.onDurationChange}
         action
         loading={props.loading}

@@ -6,9 +6,9 @@ import {CommitteeID} from "./committee";
 import {DropdownItemProps} from "semantic-ui-react";
 
 export enum ResolutionStatus {
-  Introduced = 'Introduced',
-  Passed = 'Passed',
-  Failed = 'Failed'
+  Introduced = 'Proposta',
+  Passed = 'Aprovada',
+  Failed = 'Rejeitada'
 }
 
 export const RESOLUTION_STATUS_OPTIONS = [
@@ -18,18 +18,18 @@ export const RESOLUTION_STATUS_OPTIONS = [
 ].map(makeDropdownOption)
 
 export enum Majority {
-  Simple = "Simple majority",
-  TwoThirds = "Two-thirds majority",
-  TwoThirdsNoAbstentions = "Two-thirds majority, ignoring abstentions"
+  Simple = "Maioria simples",
+  TwoThirds = "Maioria absoluta",
+  TwoThirdsNoAbstentions = "Maioria qualificada"
 }
 
 export const MAJORITY_OPTIONS: DropdownItemProps[] = [
-  {key: Majority.Simple, value: Majority.Simple, text: "Simple (50%) majority required"},
-  {key: Majority.TwoThirds, value: Majority.TwoThirds, text: "Two-thirds majority required"},
+  {key: Majority.Simple, value: Majority.Simple, text: "Aprovado por maioria simples (50%+1 dos presentes)"},
+  {key: Majority.TwoThirds, value: Majority.TwoThirds, text: "Aprovado por maioria absoluta (2/3 dos presentes"},
   {
     key: Majority.TwoThirdsNoAbstentions,
     value: Majority.TwoThirdsNoAbstentions,
-    text: "Two-thirds majority required, ignoring abstentions"
+    text: "Aprovado por maioria qualificada (2/3 dos membros, incluido o presidente)"
   },
 ]
 export type ResolutionID = string;
@@ -48,14 +48,14 @@ export interface ResolutionData {
 }
 
 export enum Vote {
-  For = 'For',
-  Abstaining = 'Abstaining',
-  Against = 'Against'
+  For = 'SIM',
+  Abstaining = 'ABSTENÇÃO',
+  Against = 'NÃO'
 }
 
 type Votes = Record<string, Vote>;
 export const DEFAULT_RESOLUTION: ResolutionData = {
-  name: 'untitled resolution',
+  name: 'Projeto de resolução sem título',
   link: '',
   status: ResolutionStatus.Introduced,
   amendments: {} as Record<AmendmentID, AmendmentData>,
@@ -88,9 +88,9 @@ export const voteOnResolution = (
 };
 
 export enum AmendmentStatus {
-  Proposed = 'Proposed',
-  Incorporated = 'Incorporated',
-  Rejected = 'Rejected'
+  Proposed = 'Proposta',
+  Incorporated = 'Incorporada',
+  Rejected = 'Rejeitada'
 }
 
 export const AMENDMENT_STATUS_OPTIONS = [

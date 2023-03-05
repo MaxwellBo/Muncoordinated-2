@@ -80,10 +80,10 @@ export function DeleteStrawpollModal(props: ModalProps) {
       onOpen={() => props.onChangeOpenState(true)}
       trigger={props.trigger}
     >
-      <Modal.Header>Delete strawpoll?</Modal.Header>
+      <Modal.Header>Anular Eleição??</Modal.Header>
       <Modal.Content>
         <Modal.Description>
-          Are you sure that you want to delete this strawpoll?
+          Tem certeza que deseja anular esta eleição?
         </Modal.Description>
       </Modal.Content>
       <Modal.Actions>
@@ -253,7 +253,7 @@ export default function Strawpoll(props: StrawpollProps) {
           <List.Item key={optionID}>
             <Input
               fluid
-              placeholder="Number of votes received"
+              placeholder="Número de votos recebidos"
               label={option.text}
               value={(!!option.tally || (option.tally === 0) ? option.tally : '').toString()}
               error={option.tally === undefined}
@@ -262,7 +262,7 @@ export default function Strawpoll(props: StrawpollProps) {
           </List.Item>
       case StrawpollStage.Results:
         return <List.Item key={optionID}>
-          <b>{option.text}</b> {votes} votes
+          <b>{option.text}</b> {votes} votos
           <Progress progress='value' value={votes} total={totalVotes} />
         </List.Item>
       default:
@@ -281,7 +281,7 @@ export default function Strawpoll(props: StrawpollProps) {
           fluid
           onClick={addOption}
         >
-          <Icon name="plus" />Add option
+          <Icon name="plus" />Adicionar opção
         </Button>
       </List.Item>
       }
@@ -303,12 +303,12 @@ export default function Strawpoll(props: StrawpollProps) {
                   options={[{
                     key: StrawpollType.Checkbox,
                     value: StrawpollType.Checkbox,
-                    text: "Choose many",
+                    text: "Multipla Escolha",
                     icon: "check square"
                   }, {
                     key: StrawpollType.Radio,
                     value: StrawpollType.Radio,
-                    text: "Choose one",
+                    text: "Escolha Única",
                     icon: "radio"
                   }]}
                   onChange={togglePollType}
@@ -324,7 +324,7 @@ export default function Strawpoll(props: StrawpollProps) {
                       basic
                       onClick={() => setOpen(true)}
                     >
-                      <Icon name="delete" />Delete strawpoll?
+                      <Icon name="delete" />Anular a Eleição?
                     </Button>
                   }
                 />
@@ -332,7 +332,7 @@ export default function Strawpoll(props: StrawpollProps) {
             </List.Item>
             <List.Item >
               <Checkbox
-                label="Delegates can add options"
+                label="Conselheiros podem adicionar opções"
                 toggle
                 checked={strawpoll ? (strawpoll.optionsArePublic || false) : false}
                 onClick={checkboxHandler<StrawpollData>(strawpollFref, 'optionsArePublic')}
@@ -362,7 +362,7 @@ export default function Strawpoll(props: StrawpollProps) {
               basic
               onClick={createSharablePoll}
             >
-              Create shareable poll
+			Abrir Votação
               <Icon name="arrow right" />
             </Button>
             <Button.Or />
@@ -371,7 +371,7 @@ export default function Strawpoll(props: StrawpollProps) {
               basic
               onClick={createManualPoll}
             >
-              Create manual poll
+              Manual
               <Icon name="arrow right" />
             </Button>
           </Button.Group>
@@ -385,7 +385,7 @@ export default function Strawpoll(props: StrawpollProps) {
               onClick={editOptions}
             >
               <Icon name="arrow left" />
-              Edit options
+              Editar Opções
             </Button>
             <Button
               primary
@@ -393,7 +393,7 @@ export default function Strawpoll(props: StrawpollProps) {
               disabled={!user}
               onClick={viewResults}
             >
-              View results
+              Ver os Resultados
               <Icon name="arrow right" />
             </Button>
           </Button.Group>
@@ -407,7 +407,7 @@ export default function Strawpoll(props: StrawpollProps) {
             onClick={reopenVoting}
           >
             <Icon name="arrow left" />
-            Reopen voting
+            Reabrir a Votação
           </Button>
         )
       default:

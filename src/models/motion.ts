@@ -7,28 +7,28 @@ import {ResolutionID} from "./resolution";
 export type MotionID = string;
 
 export enum MotionType {
-  OpenUnmoderatedCaucus = 'Open Unmoderated Caucus',
-  OpenModeratedCaucus = 'Open Moderated Caucus',
-  ExtendUnmoderatedCaucus = 'Extend Unmoderated Caucus',
-  ExtendModeratedCaucus = 'Extend Moderated Caucus',
-  CloseModeratedCaucus = 'Close Moderated Caucus',
-  IntroduceDraftResolution = 'Introduce Draft Resolution',
-  IntroduceAmendment = 'Introduce Amendment',
-  SuspendDraftResolutionSpeakersList = 'Suspend Draft Resolution Speakers List',
-  VoteOnResolution = 'Vote On Resolution',
-  OpenDebate = 'Open Debate',
-  SuspendDebate = 'Suspend Debate',
-  ResumeDebate = 'Resume Debate',
-  CloseDebate = 'Close Debate',
-  ReorderDraftResolutions = 'Reorder Draft Resolutions',
-  ProposeStrawpoll = 'Propose Strawpoll',
-  AddWorkingPaper = "Introduce Working Paper"
+  OpenUnmoderatedCaucus = 'Questão de Ordem',
+  OpenModeratedCaucus = 'Requerimento de Abertura de Discussão',
+  ExtendUnmoderatedCaucus = 'Requerimento de Tempo de Líder',
+  ExtendModeratedCaucus = 'Requerimento de Rediscussão',
+  CloseModeratedCaucus = 'Requerimento de Encerramento de discussão',
+  IntroduceDraftResolution = 'Requerimento de Alteração na Pauta',
+  IntroduceAmendment = 'Emenda',
+  SuspendDraftResolutionSpeakersList = 'Requerimento de Retirada de Pauta',
+  VoteOnResolution = 'Requerimento de Votação Nominal',
+  OpenDebate = 'Requerimento de Verificação de Quorum',
+  SuspendDebate = 'Requerimento de Adiamento de Sessão',
+  ResumeDebate = 'Requerimento de Leitura de Proposição',
+  CloseDebate = 'Requerimento de Análise nas Comissões',
+  ReorderDraftResolutions = 'Requerimento de Cassação de Cadeira',
+  ProposeStrawpoll = 'Requerimento de Voto de Inconfidência / Requerimento de Eleição antecipada',
+  AddWorkingPaper = 'Requerimento de Análise de Parecer'
 }
 
 export enum MotionVote {
-  For = 'For',
-  Abstain = 'Abstaining',
-  Against = 'Against'
+  For = 'SIM',
+  Abstain = 'ABSTENÇÃO',
+  Against = 'NÃO'
 }
 
 export interface MotionData {
@@ -67,10 +67,10 @@ export const MOTION_TYPE_OPTIONS = [
 
 export const DEFAULT_MOTION: MotionData = {
   proposal: '',
-  speakerDuration: 60,
+  speakerDuration: 30,
   speakerUnit: Unit.Seconds,
-  caucusDuration: 10,
-  caucusUnit: Unit.Minutes,
+  caucusDuration: 60,
+  caucusUnit: Unit.Seconds,
   type: MotionType.OpenUnmoderatedCaucus, // this will force it to the top of the list
   votes: {}
   // deleted field must not exist for delegates to be able to propose

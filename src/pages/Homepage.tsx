@@ -32,7 +32,7 @@ const HomepageHeading = ({ mobile }: HomepageHeadingProps) => (
   <Container text>
     <Header
       as="h1"
-      content="Muncoordinated"
+      content="SISCONFED"
       inverted
       style={{
         fontSize: mobile ? '2em' : '4em',
@@ -43,7 +43,7 @@ const HomepageHeading = ({ mobile }: HomepageHeadingProps) => (
     />
     <Header
       as="h2"
-      content="The collaborative browser-based Model UN committee management app"
+      content="Sistema Eletrônico do Conselho Federal do Instituto Atlas"
       inverted
       style={{
         fontSize: mobile ? '1.5em' : '1.7em',

@@ -134,7 +134,7 @@ class Entry extends React.Component<EntryProps, EntryState> {
         <Feed.Label icon={FILE_ICON} />
         <Feed.Content>
           <Feed.Summary>
-            <Feed.User><Flag name={parseFlagName(post.uploader)}/> {post.uploader}</Feed.User> uploaded a file
+            <Feed.User><Flag name={parseFlagName(post.uploader)}/> {post.uploader}</Feed.User> publicou um ato normativo
             <Feed.Date>{this.renderDate('Uploaded')}</Feed.Date>
           </Feed.Summary>
           {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
@@ -154,7 +154,7 @@ class Entry extends React.Component<EntryProps, EntryState> {
         <Feed.Label icon={LINK_ICON} />
         <Feed.Content>
           <Feed.Summary>
-            <Feed.User><Flag name={parseFlagName(post.uploader)}/> {post.uploader}</Feed.User> posted a link
+            <Feed.User><Flag name={parseFlagName(post.uploader)}/> {post.uploader}</Feed.User> postou um link
             <Feed.Date>{this.renderDate('Posted')}</Feed.Date>
           </Feed.Summary>
           <Feed.Extra><a href={post.url}>{post.name || post.url}</a></Feed.Extra>
@@ -436,7 +436,7 @@ export default class Files extends React.Component<Props, State> {
           selection
           onChange={this.setFilter}
           options={memberOptions}
-          label="View posts only by"
+          label="Ver publicações somente de"
         />
       </Form>
     )
@@ -477,7 +477,7 @@ export default class Files extends React.Component<Props, State> {
           value={body}
           onChange={this.setName}
           autoHeight
-          label="Name"
+          label="Nome"
           rows={1}
         />
         <Form.Input 
@@ -499,7 +499,7 @@ export default class Files extends React.Component<Props, State> {
             error={!uploader}
             onChange={this.setMember}
             options={memberOptions}
-            label="Poster"
+            label="Publicante"
           />
           <Button 
             type="submit" 
@@ -523,7 +523,7 @@ export default class Files extends React.Component<Props, State> {
           value={body}
           onChange={this.setBody}
           autoHeight={true}
-          label="Body"
+          label="Corpo"
           rows={3}
         />
         <Form.Group widths="equal">
@@ -537,7 +537,7 @@ export default class Files extends React.Component<Props, State> {
             error={!uploader}
             onChange={this.setMember}
             options={memberOptions}
-            label="Poster"
+            label="Publicante"
           />
           <Button 
             type="submit" 

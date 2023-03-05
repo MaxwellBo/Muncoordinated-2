@@ -8,8 +8,8 @@ import {CommitteeData, CommitteeID} from "../models/committee";
 
 enum Mode {
   Login = 'Login',
-  CreateAccount = 'CreateAccount',
-  ForgotPassword = 'ForgotPassword'
+  CreateAccount = 'CriarConta',
+  ForgotPassword = 'EsqueciMinhaSenha'
 }
 
 interface State {
@@ -103,8 +103,8 @@ export class Login extends React.Component<Props, State> {
     firebase.auth().createUserWithEmailAndPassword(email, password).then(credential => {
 
       const success = { 
-        name: 'Account created',
-        message: 'Your account was successfully created' 
+        name: 'Conta Criada',
+        message: 'Sua conta foi criada com sucesso!' 
       };
 
       this.setState({ 
@@ -125,8 +125,8 @@ export class Login extends React.Component<Props, State> {
 
     firebase.auth().sendPasswordResetEmail(email).then(() => {
       const success = {
-        name: 'Password reset',
-        message: `Check your inbox at ${email} for further instructions`
+        name: 'Redefinir Senha',
+        message: `Verifique o email: ${email} para mais instruções`
       };
 
       this.setState({ resetting: false, success });
@@ -191,7 +191,7 @@ export class Login extends React.Component<Props, State> {
       <List.Item key={'add'}>
         <List.Content>
           <List.Header as="a" href={'/onboard'}>
-            <Icon name="plus" />Create new committee
+            <Icon name="plus" />Criar nova comissão/grupo de trabalho
           </List.Header>
         </List.Content>
       </List.Item>
@@ -265,7 +265,7 @@ export class Login extends React.Component<Props, State> {
             {u.email}
           </Card.Header>
           <Card.Meta>
-            Logged in
+            Acesso autorizado
           </Card.Meta>
         </Card.Content>
         <Card.Content key="committees" style={{ 
@@ -304,7 +304,7 @@ export class Login extends React.Component<Props, State> {
         positive
         onClick={this.toCreateAccountMode}
       >
-        Create account <Icon name="arrow right" />
+        Criar conta <Icon name="arrow right" />
       </Button>
     );
 
@@ -317,7 +317,7 @@ export class Login extends React.Component<Props, State> {
         disabled={!email || !password}
         type="submit"
       >
-        Create account
+        Criar conta
       </Button>
     )
 
@@ -327,7 +327,7 @@ export class Login extends React.Component<Props, State> {
         onClick={this.toForgotPasswordMode} 
         style={{'cursor': 'pointer'}}
       >
-        Forgot password?
+        Esqueceu sua senha?
       </a>
     );
 
@@ -341,7 +341,7 @@ export class Login extends React.Component<Props, State> {
           }}
         >
           <Icon name="arrow left" />
-          Back to login
+          De volta ao Login
         </a>
       </div>
     );
@@ -368,15 +368,15 @@ export class Login extends React.Component<Props, State> {
           <Header as="h3" attached="top">
             Login
             <Header.Subheader>
-              to create a new committee, or access an older committee.
+              Para acessar o sistema eletrônico do CONFED.
             </Header.Subheader>
           </Header>}
         {mode === Mode.CreateAccount && 
           <Header as="h3" attached="top">
-            Create account
+            Criar conta
             <Header.Subheader>
-                Multiple directors may use the same account simultaneously. 
-                Choose a password you're willing to share.
+                Vários conselheiros poderão usar a mesma conta. 
+                Crie uma senha que todos irão lembrar.
             </Header.Subheader>
           </Header>}
         {mode === Mode.ForgotPassword && 
@@ -399,9 +399,9 @@ export class Login extends React.Component<Props, State> {
             </Form.Input>
             {mode === Mode.Login && <Form.Input
               key="current-password"
-              label="Password"
+              label="Senha"
               type="password"
-              placeholder="correct horse battery staple"
+              placeholder="Conselho Federal"
               value={password}
               onChange={this.setPassword}
             >
@@ -409,11 +409,11 @@ export class Login extends React.Component<Props, State> {
             </Form.Input>}
             {mode === Mode.CreateAccount && <Form.Input
               key="new-password"
-              label="Password"
+              label="Nova Senha"
               type="password"
               error={!password}
               required
-              placeholder="correct horse battery staple"
+              placeholder="Conselho Federal"
               value={password}
               onChange={this.setPassword}
             >
@@ -494,7 +494,7 @@ export class LoginModal extends React.Component<{},
         basic={true} // strip out the outer window
       >
         <Modal.Content>
-          <Login allowNewCommittee={true}/>
+          <Login allowNewCommittee={false}/>
         </Modal.Content>
       </Modal>
     );

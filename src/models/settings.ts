@@ -3,7 +3,7 @@ export interface SettingsData {
   timersInSeparateColumns: boolean;
   autoNextSpeaker: boolean;
   motionVotes?: boolean;
-  motionsArePublic?: boolean;
+  MotionsArePublic?: boolean;
 }
 
 export const DEFAULT_SETTINGS: Required<SettingsData> = {
@@ -11,5 +11,5 @@ export const DEFAULT_SETTINGS: Required<SettingsData> = {
   timersInSeparateColumns: false,
   autoNextSpeaker: false,
   motionVotes: false,
-  motionsArePublic: false
+  MotionsArePublic: false
 };

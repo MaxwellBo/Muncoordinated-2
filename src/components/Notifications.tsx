@@ -18,20 +18,20 @@ interface Notification {
 }
 
 const PERMISSION_DENIED_NOTIFICATION: Notification =  {
-  header: 'Permission denied',
-  message: 'Please login as the owner of this committee in order to perform that action',
+  header: 'Permissião Negada',
+  message: 'Por favor comunique o Presidente',
   disposition: 'negative'
 };
 
 const CONNECTION_LOST_NOTIFICATION: Notification =  {
-  header: 'Connection lost',
-  message: 'The connection to the server was lost. You may have been logged out',
+  header: 'Connexão perdida',
+  message: 'Você perdeu a conexão com o servidor',
   disposition: 'negative'
 };
 
 const CONNECTION_REGAINED_NOTIFICATION: Notification =  {
-  header: 'Connection regained',
-  message: 'The connection to the server was regained',
+  header: 'Connexão reestabelecida',
+  message: 'A conexão com o servidor foi reestabelecida',
   disposition: 'positive'
 };
 

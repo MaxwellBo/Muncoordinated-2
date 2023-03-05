@@ -2,7 +2,7 @@ import * as React from 'react';
 import firebase from 'firebase/app';
 import {RouteComponentProps} from 'react-router';
 import {Route} from 'react-router-dom';
-import Caucus from './Caucus';
+import Caucus from './Discussão';
 import Resolution from './Resolution';
 import Admin from './Admin';
 import {
@@ -245,33 +245,30 @@ function ResponsiveNav(props: ResponsiveContainerProps) {
         >
           {committee ? committee.name : <Loading small />}
         </Menu.Item>
-        {makeMenuItem('Setup', 'users')}
-        {makeMenuItem('Motions', 'sort numeric descending')}
-        {makeMenuItem('Unmod', 'discussions')}
-        <Dropdown key="caucuses" item text="Caucuses" loading={!committee}>
+        {makeMenuItem('Quorum', 'users')}
+        {makeMenuItem('Requerimentos', 'sort numeric descending')} 
+        {makeMenuItem('Falas Soltas', 'discussions')}
+        <Dropdown key="caucuses" item text="Tribuna" loading={!committee}>
           <Dropdown.Menu>
-            {makeSubmenuButton('New caucus', 'add', pushCaucus)}
+            {makeSubmenuButton('Nova Discussão', 'add', pushCaucus)}
             {caucusItems}
           </Dropdown.Menu>
         </Dropdown>
-        <Dropdown key="resolutions" item text="Resolutions" loading={!committee}>
+        <Dropdown key="resolutions" item text="Resoluções" loading={!committee}>
           <Dropdown.Menu>
-            {makeSubmenuButton('New resolution', 'add', pushResolution)}
+            {makeSubmenuButton('Nova Proposição', 'add', pushResolution)}
             {resolutionItems}
           </Dropdown.Menu>
         </Dropdown>
-        <Dropdown key="strawpolls" item text="Strawpolls" loading={!committee}>
+        <Dropdown key="strawpolls" item text="Eleições" loading={!committee}>
           <Dropdown.Menu>
-            {makeSubmenuButton('New strawpoll', 'add', pushStrawpoll)}
+            {makeSubmenuButton('Nova Eleição', 'add', pushStrawpoll)}
             {strawpollItems}
           </Dropdown.Menu>
         </Dropdown>
-        {makeMenuItem('Notes', 'sticky note outline')}
-        {makeMenuItem('Posts', 'file outline')}
+        {makeMenuItem('Documentos', 'file outline')}
         {makeMenuItem('Stats', 'chart bar')}
-        <Menu.Menu key="icon-submenu" position="right">
-          {makeMenuIcon('Settings', 'settings')}
-          {makeMenuIcon('Help', 'help')}
+        <Menu.Menu key="icon-submenu" position="right"> 
         </Menu.Menu>
         <Menu.Item key="login">
           <LoginModal />
@@ -279,6 +276,10 @@ function ResponsiveNav(props: ResponsiveContainerProps) {
       </React.Fragment>
     );
   }
+  
+  // {makeMenuItem('Notes', 'sticky note outline')}
+  // {makeMenuIcon('Help', 'help')} 
+  // {makeMenuIcon('Settings', 'settings')} 
 
   return (
     <React.Fragment>
@@ -338,7 +339,7 @@ export default class Committee extends React.Component<Props, State> {
     return (
       <Container text style={{ padding: '1em 0em' }}>
         <Helmet>
-          <title>{`${committee?.name} - Muncoordinated`}</title>
+          <title>{`${committee?.name} - SISCONFED`}</title>
         </Helmet>
         <Header as="h1">
           <Input
@@ -346,7 +347,7 @@ export default class Committee extends React.Component<Props, State> {
             onChange={fieldHandler<CommitteeData>(committeeFref, 'name')}
             fluid
             error={committee ? !committee.name : false}
-            placeholder="Committee name"
+            placeholder="Nome Abreviado da Comissão"
           />
         </Header>
         <List>
@@ -357,17 +358,17 @@ export default class Committee extends React.Component<Props, State> {
               onChange={fieldHandler<CommitteeData>(committeeFref, 'topic')}
               fluid
               loading={!committee}
-              placeholder="Committee topic"
+              placeholder="Nome Inteiro da Comissão"
             />
           </List.Item>
           <List.Item>
             <Input
-              label="Conference"
+              label="CONFED"
               value={committee ? (committee.conference || '') : ''}
               onChange={fieldHandler<CommitteeData>(committeeFref, 'conference')}
               fluid
               loading={!committee}
-              placeholder="Conference name"
+              placeholder="CONFED"
             />
           </List.Item>
         </List>
@@ -393,12 +394,12 @@ export default class Committee extends React.Component<Props, State> {
             <ConnectionStatus />
           </Container>
           <Route exact={true} path="/committees/:committeeID" render={renderWelcome} />
-          <Route exact={true} path="/committees/:committeeID/setup" render={renderAdmin} />
+          <Route exact={true} path="/committees/:committeeID/quorum" render={renderAdmin} />
           <Route exact={true} path="/committees/:committeeID/stats" component={Stats} />
-          <Route exact={true} path="/committees/:committeeID/unmod" component={Unmod} />
-          <Route exact={true} path="/committees/:committeeID/motions" component={Motions} />
+          <Route exact={true} path="/committees/:committeeID/falas soltas" component={Unmod} />
+          <Route exact={true} path="/committees/:committeeID/requerimentos" component={Motions} />
           <Route exact={true} path="/committees/:committeeID/notes" component={Notes} />
-          <Route exact={true} path="/committees/:committeeID/posts" component={Files} />
+          <Route exact={true} path="/committees/:committeeID/documentos" component={Files} />
           <Route exact={true} path="/committees/:committeeID/settings" component={Settings} />
           <Route exact={true} path="/committees/:committeeID/help" component={Help} />
           <Route path="/committees/:committeeID/caucuses/:caucusID" component={Caucus} />
