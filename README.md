@@ -11,9 +11,8 @@ Muncoordinated is a Model UN committee management service, (re)written with Type
 
 ## Background
 
-This version of Muncoordinated began development at the end of 2017, ahead of SydMUN 2017. It began as a reimplementation of a previous version of Muncoordinated, built in Elm. The current version of Muncoordinated was my (@MaxwellBo) first real foray into frontend development, React, TypeScript, and UI design. This means that some of the old code in here is, frankly, shockingly bad. Furthermore, a lot of features were either rushed out before conferences, or during debate. Neither documentation or tests were written.
+This version of Muncoordinated began development at the end of 2017, ahead of SydMUN 2017. It began as a reimplementation of a previous version of Muncoordinated, built in Elm. 
 
-Ultimately, this is a personal project that ballooned in scope and LOC - contributing to some parts of the app may be difficult. Absolutely feel free to contact me if you'd like to contribute; I'll gladly guide you through the ugly hacks and shaky foundations on a Zoom call. 
 
 ## Development
 
@@ -62,9 +61,13 @@ The build is minified and the filenames include the hashes.<br>
 
 [@MaxwellBo](https://github.com/MaxwellBo).
 
+## Self-hosting
+
+It is strongly discouraged to maintain and deploy your own customized fork of Muncoordinated. Instead, consider giving back to the Model UN community by ensuring your custom features are merged into the version hosted at muncoordated.io. 
+
 ## Contributing
 
-Feel free to dive in! [Open an issue](https://github.com/MaxwellBo/Muncoordinated-2/issues/new) or submit PRs.
+Take a look at the [open issues](https://github.com/MaxwellBo/Muncoordinated-2/issues) and submit some PRs that help address them. 
 
 You might also want access to some of the SaaS services that we've used to build Muncoordinated:
 
