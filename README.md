@@ -63,7 +63,7 @@ The build is minified and the filenames include the hashes.<br>
 
 ## Self-hosting
 
-It is strongly discouraged to maintain and deploy your own customized fork of Muncoordinated. Instead, consider giving back to the Model UN community by ensuring your custom features are merged into the version hosted at muncoordated.io. 
+It is strongly discouraged to maintain and deploy your own customized fork of Muncoordinated. Instead, consider giving back to the Model UN community by ensuring your custom features are merged into the version hosted at [muncoordinated.io]. 
 
 ## Contributing
 
