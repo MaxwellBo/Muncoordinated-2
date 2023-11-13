@@ -1,10 +1,10 @@
-import * as React from 'react';
-import firebase from 'firebase/app';
-import {RouteComponentProps} from 'react-router';
-import {Route} from 'react-router-dom';
-import Caucus from './Caucus';
-import Resolution from './Resolution';
-import Admin from './Admin';
+import * as React from "react";
+import firebase from "firebase/app";
+import { RouteComponentProps } from "react-router";
+import { Route } from "react-router-dom";
+import Caucus from "./Caucus";
+import Resolution from "./Resolution";
+import Admin from "./Admin";
 import {
   Button,
   Container,
@@ -17,38 +17,38 @@ import {
   Responsive,
   Segment,
   SemanticICONS,
-  Sidebar
-} from 'semantic-ui-react';
-import {Helmet} from 'react-helmet';
-import Stats from './Stats';
-import Motions from './Motions';
-import Unmod from './Unmod';
-import Notes from './Notes';
-import Help from './Help';
-import {CaucusStatus, DEFAULT_CAUCUS, putCaucus} from '../models/caucus';
-import {URLParameters} from '../types';
-import Loading from '../components/Loading';
-import Footer from '../components/Footer';
-import Settings from './Settings';
-import Files from './Files';
-import {LoginModal} from '../components/auth';
-import {CommitteeShareHint} from '../components/share-hints';
-import Notifications from '../components/Notifications';
-import {DEFAULT_RESOLUTION, putResolution} from '../models/resolution';
-import ConnectionStatus from '../components/ConnectionStatus';
-import {fieldHandler} from '../modules/handlers';
-import {DEFAULT_STRAWPOLL, putStrawpoll} from '../models/strawpoll';
-import Strawpoll from './Strawpoll';
-import {logClickSetupCommittee} from '../modules/analytics';
-import {CommitteeData, CommitteeID, DEFAULT_COMMITTEE} from "../models/committee";
+  Sidebar,
+} from "semantic-ui-react";
+import { Helmet } from "react-helmet";
+import Stats from "./Stats";
+import Motions from "./Motions";
+import Unmod from "./Unmod";
+import Notes from "./Notes";
+import Help from "./Help";
+import { CaucusStatus, DEFAULT_CAUCUS, putCaucus } from "../models/caucus";
+import { URLParameters } from "../types";
+import Loading from "../components/Loading";
+import Footer from "../components/Footer";
+import Settings from "./Settings";
+import Files from "./Files";
+import { LoginModal } from "../components/auth";
+import { CommitteeShareHint } from "../components/share-hints";
+import Notifications from "../components/Notifications";
+import { DEFAULT_RESOLUTION, putResolution } from "../models/resolution";
+import ConnectionStatus from "../components/ConnectionStatus";
+import { fieldHandler } from "../modules/handlers";
+import { DEFAULT_STRAWPOLL, putStrawpoll } from "../models/strawpoll";
+import Strawpoll from "./Strawpoll";
+import { logClickSetupCommittee } from "../modules/analytics";
+import { CommitteeData, CommitteeID, DEFAULT_COMMITTEE } from "../models/committee";
+import { Presentation } from "./Presentation";
 
 interface DesktopContainerProps {
   menu?: React.ReactNode;
   body?: React.ReactNode;
 }
 
-interface DesktopContainerState {
-}
+interface DesktopContainerState {}
 
 interface MobileContainerProps {
   menu?: React.ReactNode;
@@ -59,14 +59,14 @@ interface MobileContainerState {
   sidebarOpened: boolean;
 }
 
-interface Props extends RouteComponentProps<URLParameters> {
-}
+interface Props extends RouteComponentProps<URLParameters> {}
 
 interface State {
   committee?: CommitteeData;
   committeeFref: firebase.database.Reference;
-}
 
+  showPresentationView?: boolean;
+}
 
 class DesktopContainer extends React.Component<DesktopContainerProps, DesktopContainerState> {
   render() {
@@ -74,7 +74,7 @@ class DesktopContainer extends React.Component<DesktopContainerProps, DesktopCon
 
     // Semantic-UI-React/src/addons/Responsive/Responsive.js
     return (
-      <Responsive {...{ minWidth: Responsive.onlyMobile.maxWidth as number + 1 }}>
+      <Responsive {...{ minWidth: (Responsive.onlyMobile.maxWidth as number) + 1 }}>
         <Menu fluid size="small">
           {menu}
         </Menu>
@@ -89,7 +89,7 @@ class MobileContainer extends React.Component<MobileContainerProps, MobileContai
     super(props);
 
     this.state = {
-      sidebarOpened: false
+      sidebarOpened: false,
     };
   }
 
@@ -99,11 +99,11 @@ class MobileContainer extends React.Component<MobileContainerProps, MobileContai
     if (sidebarOpened) {
       this.setState({ sidebarOpened: false });
     }
-  }
+  };
 
   handleToggle = () => {
     this.setState({ sidebarOpened: !this.state.sidebarOpened });
-  }
+  };
 
   render() {
     const { body, menu } = this.props;
@@ -116,7 +116,7 @@ class MobileContainer extends React.Component<MobileContainerProps, MobileContai
             {menu}
           </Sidebar>
 
-          <Sidebar.Pusher dimmed={sidebarOpened} onClick={this.handlePusherClick} style={{ minHeight: '100vh' }}>
+          <Sidebar.Pusher dimmed={sidebarOpened} onClick={this.handlePusherClick} style={{ minHeight: "100vh" }}>
             <Menu size="large">
               <Menu.Item onClick={this.handleToggle}>
                 <Icon name="sidebar" />
@@ -133,6 +133,7 @@ class MobileContainer extends React.Component<MobileContainerProps, MobileContai
 interface ResponsiveContainerProps extends RouteComponentProps<URLParameters> {
   children?: React.ReactNode;
   committee?: CommitteeData;
+  createPresentationViewFn?: () => any;
 }
 
 function ResponsiveNav(props: ResponsiveContainerProps) {
@@ -151,20 +152,11 @@ function ResponsiveNav(props: ResponsiveContainerProps) {
         // icon={icon}
       />
     );
-  }
+  };
 
   const makeSubmenuButton = (name: string, icon: SemanticICONS, f: () => void) => {
-    return (
-      <Dropdown.Item
-        key={name}
-        name={name.toLowerCase()}
-        active={false}
-        onClick={f}
-        icon={icon}
-        text={name}
-      />
-    );
-  }
+    return <Dropdown.Item key={name} name={name.toLowerCase()} active={false} onClick={f} icon={icon} text={name} />;
+  };
 
   const makeMenuIcon = (name: string, icon: SemanticICONS) => {
     const destination = `/committees/${committeeID}/${name.toLowerCase()}`;
@@ -178,9 +170,27 @@ function ResponsiveNav(props: ResponsiveContainerProps) {
         icon={icon}
       />
     );
-  }
+  };
+  const makePresentationButton = () => {
+    if (!props.createPresentationViewFn) return <></>;
 
-  const makeSubmenuItem = (id: string, name: string, description: string | undefined, type: 'caucuses' | 'resolutions' | 'strawpolls') => {
+    return (
+      <Menu.Item
+        key={"Presentation View"}
+        active={false}
+        position="right"
+        onClick={props.createPresentationViewFn}
+        icon={"external alternate"}
+      />
+    );
+  };
+
+  const makeSubmenuItem = (
+    id: string,
+    name: string,
+    description: string | undefined,
+    type: "caucuses" | "resolutions" | "strawpolls"
+  ) => {
     const destination = `/committees/${committeeID}/${type}/${id}`;
 
     return (
@@ -192,28 +202,25 @@ function ResponsiveNav(props: ResponsiveContainerProps) {
         text={name}
       />
     );
-  }
+  };
 
   const pushCaucus = () => {
     const ref = putCaucus(committeeID, DEFAULT_CAUCUS);
 
-    props.history
-      .push(`/committees/${committeeID}/caucuses/${ref.key}`);
-  }
+    props.history.push(`/committees/${committeeID}/caucuses/${ref.key}`);
+  };
 
   const pushResolution = () => {
     const ref = putResolution(committeeID, DEFAULT_RESOLUTION);
 
-    props.history
-      .push(`/committees/${committeeID}/resolutions/${ref.key}`);
-  }
+    props.history.push(`/committees/${committeeID}/resolutions/${ref.key}`);
+  };
 
   const pushStrawpoll = () => {
     const ref = putStrawpoll(committeeID, DEFAULT_STRAWPOLL);
 
-    props.history
-      .push(`/committees/${committeeID}/strawpolls/${ref.key}`);
-  }
+    props.history.push(`/committees/${committeeID}/strawpolls/${ref.key}`);
+  };
 
   const renderMenuItems = () => {
     const { committee } = props;
@@ -223,16 +230,15 @@ function ResponsiveNav(props: ResponsiveContainerProps) {
     const strawpolls = committee ? committee.strawpolls : undefined;
 
     const caucusItems = Object.keys(caucuses || {})
-      .filter(key => caucuses![key].status !== CaucusStatus.Closed)
-      .map(key => makeSubmenuItem(key, caucuses![key].name, caucuses![key].topic, 'caucuses')
+      .filter((key) => caucuses![key].status !== CaucusStatus.Closed)
+      .map((key) => makeSubmenuItem(key, caucuses![key].name, caucuses![key].topic, "caucuses"));
+
+    const resolutionItems = Object.keys(resolutions || {}).map((key) =>
+      makeSubmenuItem(key, resolutions![key].name, undefined, "resolutions")
     );
 
-    const resolutionItems = Object.keys(resolutions || {}).map(key =>
-      makeSubmenuItem(key, resolutions![key].name, undefined, 'resolutions')
-    );
-
-    const strawpollItems = Object.keys(strawpolls || {}).map(key =>
-      makeSubmenuItem(key, strawpolls![key].question, undefined, 'strawpolls')
+    const strawpollItems = Object.keys(strawpolls || {}).map((key) =>
+      makeSubmenuItem(key, strawpolls![key].question, undefined, "strawpolls")
     );
 
     return (
@@ -241,44 +247,44 @@ function ResponsiveNav(props: ResponsiveContainerProps) {
           header
           key="header"
           onClick={() => props.history.push(`/committees/${committeeID}`)}
-          active={props.location.pathname === `/committees/${committeeID}`}
-        >
+          active={props.location.pathname === `/committees/${committeeID}`}>
           {committee ? committee.name : <Loading small />}
         </Menu.Item>
-        {makeMenuItem('Setup', 'users')}
-        {makeMenuItem('Motions', 'sort numeric descending')}
-        {makeMenuItem('Unmod', 'discussions')}
+        {makeMenuItem("Setup", "users")}
+        {makeMenuItem("Motions", "sort numeric descending")}
+        {makeMenuItem("Unmod", "discussions")}
         <Dropdown key="caucuses" item text="Caucuses" loading={!committee}>
           <Dropdown.Menu>
-            {makeSubmenuButton('New caucus', 'add', pushCaucus)}
+            {makeSubmenuButton("New caucus", "add", pushCaucus)}
             {caucusItems}
           </Dropdown.Menu>
         </Dropdown>
         <Dropdown key="resolutions" item text="Resolutions" loading={!committee}>
           <Dropdown.Menu>
-            {makeSubmenuButton('New resolution', 'add', pushResolution)}
+            {makeSubmenuButton("New resolution", "add", pushResolution)}
             {resolutionItems}
           </Dropdown.Menu>
         </Dropdown>
         <Dropdown key="strawpolls" item text="Strawpolls" loading={!committee}>
           <Dropdown.Menu>
-            {makeSubmenuButton('New strawpoll', 'add', pushStrawpoll)}
+            {makeSubmenuButton("New strawpoll", "add", pushStrawpoll)}
             {strawpollItems}
           </Dropdown.Menu>
         </Dropdown>
-        {makeMenuItem('Notes', 'sticky note outline')}
-        {makeMenuItem('Posts', 'file outline')}
-        {makeMenuItem('Stats', 'chart bar')}
+        {makeMenuItem("Notes", "sticky note outline")}
+        {makeMenuItem("Posts", "file outline")}
+        {makeMenuItem("Stats", "chart bar")}
         <Menu.Menu key="icon-submenu" position="right">
-          {makeMenuIcon('Settings', 'settings')}
-          {makeMenuIcon('Help', 'help')}
+          {makePresentationButton()}
+          {makeMenuIcon("Settings", "settings")}
+          {makeMenuIcon("Help", "help")}
         </Menu.Menu>
         <Menu.Item key="login">
           <LoginModal />
         </Menu.Item>
       </React.Fragment>
     );
-  }
+  };
 
   return (
     <React.Fragment>
@@ -295,7 +301,8 @@ export default class Committee extends React.Component<Props, State> {
     const committeeID: CommitteeID = this.props.match.params.committeeID;
 
     this.state = {
-      committeeFref: firebase.database().ref('committees').child(committeeID),
+      committeeFref: firebase.database().ref("committees").child(committeeID),
+      showPresentationView: false,
     };
   }
 
@@ -303,47 +310,54 @@ export default class Committee extends React.Component<Props, State> {
     if (committee) {
       this.setState({ committee: committee.val() });
     }
+  };
+
+  createPresentationView() {
+    this.setState({
+      showPresentationView: true,
+    });
+  }
+
+  handlePresentationViewDestroyed() {
+    this.setState({
+      showPresentationView: false,
+    });
   }
 
   componentDidMount() {
-    this.state.committeeFref.on('value', this.firebaseCallback);
+    this.state.committeeFref.on("value", this.firebaseCallback);
   }
 
   componentWillUnmount() {
-    this.state.committeeFref.off('value', this.firebaseCallback);
+    this.state.committeeFref.off("value", this.firebaseCallback);
   }
 
   gotoSetup = () => {
     const { committeeID } = this.props.match.params;
 
-    this.props.history
-      .push(`/committees/${committeeID}/setup`);
+    this.props.history.push(`/committees/${committeeID}/setup`);
 
     logClickSetupCommittee();
-  }
+  };
 
   renderAdmin = () => {
     return (
-      <Admin
-        {...this.props}
-        committee={this.state.committee || DEFAULT_COMMITTEE}
-        fref={this.state.committeeFref}
-      />
+      <Admin {...this.props} committee={this.state.committee || DEFAULT_COMMITTEE} fref={this.state.committeeFref} />
     );
-  }
+  };
 
   renderWelcome = () => {
     const { committee, committeeFref } = this.state;
 
     return (
-      <Container text style={{ padding: '1em 0em' }}>
+      <Container text style={{ padding: "1em 0em" }}>
         <Helmet>
           <title>{`${committee?.name} - Muncoordinated`}</title>
         </Helmet>
         <Header as="h1">
           <Input
-            value={committee ? committee.name : ''}
-            onChange={fieldHandler<CommitteeData>(committeeFref, 'name')}
+            value={committee ? committee.name : ""}
+            onChange={fieldHandler<CommitteeData>(committeeFref, "name")}
             fluid
             error={committee ? !committee.name : false}
             placeholder="Committee name"
@@ -353,8 +367,8 @@ export default class Committee extends React.Component<Props, State> {
           <List.Item>
             <Input
               label="Topic"
-              value={committee ? committee.topic : ''}
-              onChange={fieldHandler<CommitteeData>(committeeFref, 'topic')}
+              value={committee ? committee.topic : ""}
+              onChange={fieldHandler<CommitteeData>(committeeFref, "topic")}
               fluid
               loading={!committee}
               placeholder="Committee topic"
@@ -363,8 +377,8 @@ export default class Committee extends React.Component<Props, State> {
           <List.Item>
             <Input
               label="Conference"
-              value={committee ? (committee.conference || '') : ''}
-              onChange={fieldHandler<CommitteeData>(committeeFref, 'conference')}
+              value={committee ? committee.conference || "" : ""}
+              onChange={fieldHandler<CommitteeData>(committeeFref, "conference")}
               fluid
               loading={!committee}
               placeholder="Conference name"
@@ -380,7 +394,7 @@ export default class Committee extends React.Component<Props, State> {
         </Segment>
       </Container>
     );
-  }
+  };
 
   render() {
     const { renderAdmin, renderWelcome } = this;
@@ -388,7 +402,10 @@ export default class Committee extends React.Component<Props, State> {
     return (
       <React.Fragment>
         <Notifications {...this.props} />
-        <ResponsiveNav {...this.props} committee={this.state.committee} >
+        <ResponsiveNav
+          {...this.props}
+          committee={this.state.committee}
+          createPresentationViewFn={() => this.createPresentationView()}>
           <Container text>
             <ConnectionStatus />
           </Container>
@@ -405,6 +422,11 @@ export default class Committee extends React.Component<Props, State> {
           <Route path="/committees/:committeeID/resolutions/:resolutionID/:tab?" component={Resolution} />
           <Route path="/committees/:committeeID/strawpolls/:strawpollID" component={Strawpoll} />
           <Footer />
+          {this.state.showPresentationView ? (
+            <Presentation onCloseCallback={() => this.handlePresentationViewDestroyed()}></Presentation>
+          ) : (
+            <></>
+          )}
         </ResponsiveNav>
       </React.Fragment>
     );
