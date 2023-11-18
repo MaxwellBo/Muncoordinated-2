@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import * as firebase from "firebase/app";
 import { Container } from "semantic-ui-react";
 import { Helmet } from "react-helmet";
@@ -22,7 +22,11 @@ export default class Unmod extends React.Component<Props, State> {
     const { match } = props;
 
     this.state = {
-      committeeFref: firebase.database().ref("committees").child(match.params.committeeID).child("timer"),
+      committeeFref: firebase
+        .database()
+        .ref("committees")
+        .child(match.params.committeeID)
+        .child("timer"),
     };
   }
 
