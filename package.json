@@ -14,6 +14,7 @@
     "@types/react-dom": "^16.8.2",
     "@types/react-helmet": "^6.1.1",
     "@types/react-router-dom": "^5.1.2",
+    "country-list": "^2.3.0",
     "file-saver": "^2.0.0-rc.3",
     "firebase": "^7.3.0",
     "lodash": "^4.17.11",
@@ -28,9 +29,11 @@
     "react-scripts": "3.4.3",
     "semantic-ui-css": "^2.4.0",
     "semantic-ui-react": "^0.88.1",
+    "svg-country-flags": "^1.2.10",
     "typescript": "3.7.2"
   },
   "devDependencies": {
+    "@types/country-list": "^2.1.4",
     "cypress": "10.9.0",
     "cypress-real-events": "^1.7.1",
     "netlify-plugin-cypress": "^1.4.1"

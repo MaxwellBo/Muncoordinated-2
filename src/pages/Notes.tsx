@@ -1,15 +1,14 @@
-import * as React from 'react';
-import firebase from 'firebase/app';
-import { RouteComponentProps } from 'react-router';
-import { URLParameters } from '../types';
-import { TextArea, Form, Container } from 'semantic-ui-react';
-import { Helmet } from 'react-helmet';
-import { textAreaHandler } from '../modules/handlers';
-import Loading from '../components/Loading';
-import {CommitteeData} from "../models/committee";
+import * as React from "react";
+import firebase from "firebase/app";
+import { RouteComponentProps } from "react-router";
+import { URLParameters } from "../types";
+import { TextArea, Form, Container } from "semantic-ui-react";
+import { Helmet } from "react-helmet";
+import { textAreaHandler } from "../modules/handlers";
+import Loading from "../components/Loading";
+import { CommitteeData } from "../models/committee";
 
-interface Props extends RouteComponentProps<URLParameters> {
-}
+interface Props extends RouteComponentProps<URLParameters> {}
 
 interface State {
   committee?: CommitteeData;
@@ -23,8 +22,10 @@ export default class Notes extends React.Component<Props, State> {
     const { match } = props;
 
     this.state = {
-      committeeFref: firebase.database().ref('committees')
-        .child(match.params.committeeID)
+      committeeFref: firebase
+        .database()
+        .ref("committees")
+        .child(match.params.committeeID),
     };
   }
 
@@ -32,14 +33,21 @@ export default class Notes extends React.Component<Props, State> {
     if (committee) {
       this.setState({ committee: committee.val() });
     }
-  }
+  };
 
   componentDidMount() {
-    this.state.committeeFref.on('value', this.firebaseCallback);
+    this.state.committeeFref.on("value", this.firebaseCallback);
+    window.dispatchEvent(
+      new CustomEvent("presentation", {
+        detail: {
+          type: "idle",
+        },
+      })
+    );
   }
 
   componentWillUnmount() {
-    this.state.committeeFref.off('value', this.firebaseCallback);
+    this.state.committeeFref.off("value", this.firebaseCallback);
   }
 
   render() {
@@ -48,14 +56,14 @@ export default class Notes extends React.Component<Props, State> {
     // const trigger = <Button icon="question" size="mini" basic floated="right" />;
 
     return committee ? (
-      <Container text style={{ padding: '1em 0em' }}>
+      <Container text style={{ padding: "1em 0em" }}>
         <Helmet>
           <title>{`Notes - Muncoordinated`}</title>
         </Helmet>
         <Form>
           <TextArea
-            value={committee ? committee.notes : ''}
-            onChange={textAreaHandler<CommitteeData>(committeeFref, 'notes')}
+            value={committee ? committee.notes : ""}
+            onChange={textAreaHandler<CommitteeData>(committeeFref, "notes")}
             autoHeight
             placeholder="Notes"
           />
@@ -65,7 +73,9 @@ export default class Notes extends React.Component<Props, State> {
             basic
           /> */}
         </Form>
-      </Container> 
-    ) : <Loading />;
+      </Container>
+    ) : (
+      <Loading />
+    );
   }
 }

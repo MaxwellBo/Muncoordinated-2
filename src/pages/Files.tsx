@@ -1,8 +1,8 @@
-import * as React from 'react';
-import firebase from 'firebase/app';
-import FileSaver from 'file-saver';
-import {RouteComponentProps} from 'react-router';
-import {URLParameters} from '../types';
+import * as React from "react";
+import firebase from "firebase/app";
+import FileSaver from "file-saver";
+import { RouteComponentProps } from "react-router";
+import { URLParameters } from "../types";
 import {
   Button,
   Container,
@@ -13,19 +13,27 @@ import {
   Progress,
   SemanticICONS,
   Tab,
-  TextAreaProps
-} from 'semantic-ui-react';
-import {Helmet} from 'react-helmet';
-import {MemberOption, parseFlagName} from '../modules/member';
-import Loading from '../components/Loading';
-import {DEFAULT_AMENDMENT, putAmendment, ResolutionID} from '../models/resolution';
-import {CommitteeData, CommitteeID, recoverMemberOptions} from "../models/committee";
-import {File, Link, PostData, PostID, PostType, Text} from "../models/post";
-import {COUNTRY_OPTIONS} from "../constants";
+  TextAreaProps,
+} from "semantic-ui-react";
+import { Helmet } from "react-helmet";
+import { MemberOption, parseFlagName } from "../modules/member";
+import Loading from "../components/Loading";
+import {
+  DEFAULT_AMENDMENT,
+  putAmendment,
+  ResolutionID,
+} from "../models/resolution";
+import {
+  CommitteeData,
+  CommitteeID,
+  recoverMemberOptions,
+} from "../models/committee";
+import { File, Link, PostData, PostID, PostType, Text } from "../models/post";
+import { COUNTRY_OPTIONS } from "../constants";
 
-const TEXT_ICON: SemanticICONS = 'align left';
-const FILE_ICON: SemanticICONS = 'file outline';
-const LINK_ICON: SemanticICONS = 'linkify';
+const TEXT_ICON: SemanticICONS = "align left";
+const FILE_ICON: SemanticICONS = "file outline";
+const LINK_ICON: SemanticICONS = "linkify";
 
 interface EntryProps {
   committeeID: CommitteeID;
@@ -42,8 +50,7 @@ class Entry extends React.Component<EntryProps, EntryState> {
   constructor(props: EntryProps) {
     super(props);
 
-    this.state = {
-    };
+    this.state = {};
   }
 
   recoverStorageRef = (): firebase.storage.Reference | null => {
@@ -51,39 +58,46 @@ class Entry extends React.Component<EntryProps, EntryState> {
 
     if (post.type === PostType.File) {
       const storageRef = firebase.storage().ref();
-      return storageRef.child('committees').child(committeeID).child(post.filename);
+      return storageRef
+        .child("committees")
+        .child(committeeID)
+        .child(post.filename);
     } else {
       return null;
     }
-  }
+  };
 
   componentDidMount() {
     const { post } = this.props;
     const { timestamp } = this.props.post;
 
     if (!timestamp && post.type === PostType.File) {
-      this.recoverStorageRef()!.getMetadata().then((metadata: any) => {
-        this.setState({ metadata: metadata });
-      });
+      this.recoverStorageRef()!
+        .getMetadata()
+        .then((metadata: any) => {
+          this.setState({ metadata: metadata });
+        });
     }
   }
 
   download = (filename: string) => () => {
-    // We should never allow a download to be triggered for post types that 
+    // We should never allow a download to be triggered for post types that
     // don't permit downloads
-    this.recoverStorageRef()!.getDownloadURL().then((url: any) => {
-      var xhr = new XMLHttpRequest();
-      xhr.responseType = 'blob';
-      xhr.onload = (event) => {
-        const blob = xhr.response;
-        FileSaver.saveAs(blob, filename);
-      };
-      xhr.open('GET', url);
-      xhr.send();
-    });
-  }
+    this.recoverStorageRef()!
+      .getDownloadURL()
+      .then((url: any) => {
+        var xhr = new XMLHttpRequest();
+        xhr.responseType = "blob";
+        xhr.onload = (event) => {
+          const blob = xhr.response;
+          FileSaver.saveAs(blob, filename);
+        };
+        xhr.open("GET", url);
+        xhr.send();
+      });
+  };
 
-  renderDate = (action: 'Posted' | 'Uploaded') => {
+  renderDate = (action: "Posted" | "Uploaded") => {
     const { post } = this.props;
 
     let sinceText: string = action;
@@ -96,16 +110,20 @@ class Entry extends React.Component<EntryProps, EntryState> {
       if (secondsSince < 60) {
         sinceText = `${action} ${Math.round(secondsSince)} seconds ago`;
       } else if (secondsSince < 60 * 60) {
-        sinceText = `${action} ${Math.round(secondsSince / 60 )} minutes ago`;
+        sinceText = `${action} ${Math.round(secondsSince / 60)} minutes ago`;
       } else if (secondsSince < 60 * 60 * 24) {
-        sinceText = `${action} ${Math.round(secondsSince / (60 * 60))} hours ago`;
+        sinceText = `${action} ${Math.round(
+          secondsSince / (60 * 60)
+        )} hours ago`;
       } else {
-        sinceText = `${action} ${Math.round(secondsSince / (60 * 60 * 24))} days ago`;
+        sinceText = `${action} ${Math.round(
+          secondsSince / (60 * 60 * 24)
+        )} days ago`;
       }
     }
 
     return sinceText;
-  }
+  };
 
   renderText = (post: Text) => {
     return (
@@ -113,20 +131,26 @@ class Entry extends React.Component<EntryProps, EntryState> {
         <Feed.Label icon={TEXT_ICON} />
         <Feed.Content>
           <Feed.Summary>
-            <Feed.User><Flag name={parseFlagName(post.uploader)}/> {post.uploader}</Feed.User>
-            <Feed.Date>{this.renderDate('Posted')}</Feed.Date>
+            <Feed.User>
+              <Flag name={parseFlagName(post.uploader)} /> {post.uploader}
+            </Feed.User>
+            <Feed.Date>{this.renderDate("Posted")}</Feed.Date>
           </Feed.Summary>
-          <Feed.Extra style={{'whiteSpace': 'pre-wrap'}} text>{post.body}</Feed.Extra>
+          <Feed.Extra style={{ whiteSpace: "pre-wrap" }} text>
+            {post.body}
+          </Feed.Extra>
           <Feed.Meta>
             {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
             <a onClick={this.props.onDelete}>Delete</a>
             {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-            {post.forResolution && <a onClick={this.props.onPromoteToAmendment}>Create amendment</a>}
+            {post.forResolution && (
+              <a onClick={this.props.onPromoteToAmendment}>Create amendment</a>
+            )}
           </Feed.Meta>
         </Feed.Content>
       </Feed.Event>
     );
-  }
+  };
 
   renderFile = (post: File) => {
     return (
@@ -134,11 +158,16 @@ class Entry extends React.Component<EntryProps, EntryState> {
         <Feed.Label icon={FILE_ICON} />
         <Feed.Content>
           <Feed.Summary>
-            <Feed.User><Flag name={parseFlagName(post.uploader)}/> {post.uploader}</Feed.User> uploaded a file
-            <Feed.Date>{this.renderDate('Uploaded')}</Feed.Date>
+            <Feed.User>
+              <Flag name={parseFlagName(post.uploader)} /> {post.uploader}
+            </Feed.User>{" "}
+            uploaded a file
+            <Feed.Date>{this.renderDate("Uploaded")}</Feed.Date>
           </Feed.Summary>
           {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-          <Feed.Extra><a onClick={this.download(post.filename)}>{post.filename}</a></Feed.Extra>
+          <Feed.Extra>
+            <a onClick={this.download(post.filename)}>{post.filename}</a>
+          </Feed.Extra>
           <Feed.Meta>
             {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
             <a onClick={this.props.onDelete}>Delete</a>
@@ -146,7 +175,7 @@ class Entry extends React.Component<EntryProps, EntryState> {
         </Feed.Content>
       </Feed.Event>
     );
-  }
+  };
 
   renderLink = (post: Link) => {
     return (
@@ -154,12 +183,21 @@ class Entry extends React.Component<EntryProps, EntryState> {
         <Feed.Label icon={LINK_ICON} />
         <Feed.Content>
           <Feed.Summary>
-            <Feed.User><Flag name={parseFlagName(post.uploader)}/> {post.uploader}</Feed.User> posted a link
-            <Feed.Date>{this.renderDate('Posted')}</Feed.Date>
+            <Feed.User>
+              <Flag name={parseFlagName(post.uploader)} /> {post.uploader}
+            </Feed.User>{" "}
+            posted a link
+            <Feed.Date>{this.renderDate("Posted")}</Feed.Date>
           </Feed.Summary>
-          <Feed.Extra><a href={post.url}>{post.name || post.url}</a></Feed.Extra>
+          <Feed.Extra>
+            <a href={post.url}>{post.name || post.url}</a>
+          </Feed.Extra>
           {/* Show the URL too if the link has name */}
-          {post.name && <Feed.Meta><a href={post.url}>{post.url}</a></Feed.Meta>}
+          {post.name && (
+            <Feed.Meta>
+              <a href={post.url}>{post.url}</a>
+            </Feed.Meta>
+          )}
           <br />
           <Feed.Meta>
             {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
@@ -168,7 +206,7 @@ class Entry extends React.Component<EntryProps, EntryState> {
         </Feed.Content>
       </Feed.Event>
     );
-  }
+  };
 
   render() {
     const { post } = this.props;
@@ -196,11 +234,11 @@ interface State {
   body: string;
   errorCode?: string;
   uploader?: MemberOption;
-  filtered: MemberOption['key'][];
+  filtered: MemberOption["key"][];
 }
 
 interface Props extends RouteComponentProps<URLParameters> {
-  forResolution?: ResolutionID
+  forResolution?: ResolutionID;
 }
 
 export default class Files extends React.Component<Props, State> {
@@ -210,11 +248,13 @@ export default class Files extends React.Component<Props, State> {
     const { match } = props;
 
     this.state = {
-      link: '',
-      body: '',
-      committeeFref: firebase.database().ref('committees')
+      link: "",
+      body: "",
+      committeeFref: firebase
+        .database()
+        .ref("committees")
         .child(match.params.committeeID),
-      filtered: []
+      filtered: [],
     };
   }
 
@@ -222,26 +262,34 @@ export default class Files extends React.Component<Props, State> {
     if (committee) {
       this.setState({ committee: committee.val() });
     }
-  }
+  };
 
   componentDidMount() {
-    this.state.committeeFref.on('value', this.firebaseCallback);
+    this.state.committeeFref.on("value", this.firebaseCallback);
+
+    window.dispatchEvent(
+      new CustomEvent("presentation", {
+        detail: {
+          type: "idle",
+        },
+      })
+    );
   }
 
   componentWillUnmount() {
-    this.state.committeeFref.off('value', this.firebaseCallback);
+    this.state.committeeFref.off("value", this.firebaseCallback);
   }
 
   handleError = (error: any) => {
     // A full list of error codes is available at
     // https://firebase.google.com/docs/storage/web/handle-errors
     this.setState({ errorCode: error.code });
-  }
+  };
 
   handleSnapshot = (snapshot: any) => {
     const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-    this.setState({progress: progress, state: snapshot.state});
-  }
+    this.setState({ progress: progress, state: snapshot.state });
+  };
 
   handleComplete = (uploadTask: firebase.storage.UploadTask) => () => {
     const { uploader } = this.state;
@@ -251,34 +299,34 @@ export default class Files extends React.Component<Props, State> {
       type: PostType.File,
       timestamp: new Date().getTime(),
       filename: uploadTask.snapshot.ref.name,
-      uploader: uploader ? uploader.text : 'Unknown',
+      uploader: uploader ? uploader.text : "Unknown",
     };
 
     if (forResolution) {
       file = {
         ...file,
-        forResolution
+        forResolution,
       };
     }
 
-    this.state.committeeFref.child('files').push().set(file);
+    this.state.committeeFref.child("files").push().set(file);
 
     this.setState({ state: uploadTask.snapshot.state });
 
-    this.clear()
-  }
+    this.clear();
+  };
 
   onFileChange = (event: any) => {
     this.setState({ file: event.target.files[0] });
-  }
+  };
 
   clear = () => {
     this.setState({
-      link: '',
-      body: '',
-      file: undefined
+      link: "",
+      body: "",
+      file: undefined,
     });
-  }
+  };
 
   postFile = () => {
     const { handleSnapshot, handleError, handleComplete } = this;
@@ -289,23 +337,23 @@ export default class Files extends React.Component<Props, State> {
     const storageRef = firebase.storage().ref();
 
     const metadata = {
-      contentType: file.type
+      contentType: file.type,
     };
 
     var uploadTask = storageRef
-      .child('committees')
+      .child("committees")
       .child(committeeID)
       .child(file.name)
       .put(file, metadata);
 
     uploadTask.on(
-      firebase.storage.TaskEvent.STATE_CHANGED, 
-      handleSnapshot, 
-      handleError, 
+      firebase.storage.TaskEvent.STATE_CHANGED,
+      handleSnapshot,
+      handleError,
       handleComplete(uploadTask)
     );
-  }
-  
+  };
+
   postLink = () => {
     const { uploader, link, body } = this.state;
     const { forResolution } = this.props;
@@ -315,20 +363,20 @@ export default class Files extends React.Component<Props, State> {
       timestamp: new Date().getTime(),
       name: body,
       url: link,
-      uploader: uploader ? uploader.text : 'Unknown',
+      uploader: uploader ? uploader.text : "Unknown",
     };
 
     if (forResolution) {
       linkData = {
         ...linkData,
-        forResolution
+        forResolution,
       };
     }
 
-    this.state.committeeFref.child('files').push().set(linkData);
+    this.state.committeeFref.child("files").push().set(linkData);
 
-    this.clear()
-  }
+    this.clear();
+  };
 
   postText = () => {
     const { uploader, body } = this.state;
@@ -338,42 +386,48 @@ export default class Files extends React.Component<Props, State> {
       type: PostType.Text,
       timestamp: new Date().getTime(),
       body: body,
-      uploader: uploader ? uploader.text : 'Unknown',
+      uploader: uploader ? uploader.text : "Unknown",
     };
 
     if (forResolution) {
       linkData = {
         ...linkData,
-        forResolution
+        forResolution,
       };
     }
 
-    this.state.committeeFref.child('files').push().set(linkData);
-    
-    this.clear()
-  }
+    this.state.committeeFref.child("files").push().set(linkData);
 
-  setMember = (event: React.SyntheticEvent<HTMLElement>, data: DropdownProps): void => {
+    this.clear();
+  };
+
+  setMember = (
+    event: React.SyntheticEvent<HTMLElement>,
+    data: DropdownProps
+  ): void => {
     const memberOptions = recoverMemberOptions(this.state.committee);
 
-    this.setState({ uploader: memberOptions.filter(c => c.value === data.value)[0] });
-  }
+    this.setState({
+      uploader: memberOptions.filter((c) => c.value === data.value)[0],
+    });
+  };
 
   renderUploader = () => {
-    const { progress, state, errorCode, committee, file, uploader } = this.state;
+    const { progress, state, errorCode, committee, file, uploader } =
+      this.state;
 
     const memberOptions = recoverMemberOptions(committee);
 
     return (
       <React.Fragment>
-        <Progress 
-          percent={Math.round(progress || 0 )} 
-          progress 
+        <Progress
+          percent={Math.round(progress || 0)}
+          progress
           warning={state === firebase.storage.TaskState.PAUSED}
           success={state === firebase.storage.TaskState.SUCCESS}
-          error={!!errorCode} 
-          active={true} 
-          label={errorCode} 
+          error={!!errorCode}
+          active={true}
+          label={errorCode}
         />
         <Form onSubmit={this.postFile}>
           <input type="file" onChange={this.onFileChange} />
@@ -402,24 +456,30 @@ export default class Files extends React.Component<Props, State> {
         </Form>
       </React.Fragment>
     );
-  }
+  };
 
-  setBody = (event: React.FormEvent<HTMLTextAreaElement>, data: TextAreaProps) => {
+  setBody = (
+    event: React.FormEvent<HTMLTextAreaElement>,
+    data: TextAreaProps
+  ) => {
     this.setState({ body: data.value!.toString() });
-  }
+  };
 
   setName = (e: React.FormEvent<HTMLInputElement>) => {
     this.setState({ body: e.currentTarget.value });
-  }
+  };
 
   setLink = (e: React.FormEvent<HTMLInputElement>) => {
     this.setState({ link: e.currentTarget.value });
-  }
+  };
 
-  setFilter = (event: React.SyntheticEvent<HTMLElement>, data: DropdownProps) => {
+  setFilter = (
+    event: React.SyntheticEvent<HTMLElement>,
+    data: DropdownProps
+  ) => {
     // @ts-ignore
     this.setState({ filtered: data.value });
-  }
+  };
 
   renderFilter = () => {
     const { committee } = this.state;
@@ -430,7 +490,7 @@ export default class Files extends React.Component<Props, State> {
       <Form>
         <Form.Dropdown
           icon="search"
-          value={this.state.filtered.map(x => x)}
+          value={this.state.filtered.map((x) => x)}
           search
           multiple
           selection
@@ -439,12 +499,12 @@ export default class Files extends React.Component<Props, State> {
           label="View posts only by"
         />
       </Form>
-    )
-  }
+    );
+  };
 
   deletePost = (postID: PostID) => () => {
-    this.state.committeeFref.child('files').child(postID).remove();
-  }
+    this.state.committeeFref.child("files").child(postID).remove();
+  };
 
   promoteToAmendment = (post: PostData) => () => {
     const { committeeID } = this.props.match.params;
@@ -461,10 +521,12 @@ export default class Files extends React.Component<Props, State> {
       ...DEFAULT_AMENDMENT,
       proposer: post.uploader,
       text: post.body,
-    })
+    });
 
-    this.props.history.push(`/committees/${committeeID}/resolutions/${post.forResolution}/amendments`);
-  }
+    this.props.history.push(
+      `/committees/${committeeID}/resolutions/${post.forResolution}/amendments`
+    );
+  };
 
   renderLinker = () => {
     const { committee, uploader, body, link } = this.state;
@@ -480,7 +542,7 @@ export default class Files extends React.Component<Props, State> {
           label="Name"
           rows={1}
         />
-        <Form.Input 
+        <Form.Input
           label="Link"
           required
           error={!link}
@@ -501,16 +563,13 @@ export default class Files extends React.Component<Props, State> {
             options={memberOptions}
             label="Poster"
           />
-          <Button 
-            type="submit" 
-            disabled={!link || !uploader}
-          >
-              Post
+          <Button type="submit" disabled={!link || !uploader}>
+            Post
           </Button>
         </Form.Group>
       </Form>
     );
-  }
+  };
 
   renderPoster = () => {
     const { committee, uploader, body } = this.state;
@@ -539,17 +598,14 @@ export default class Files extends React.Component<Props, State> {
             options={memberOptions}
             label="Poster"
           />
-          <Button 
-            type="submit" 
-            disabled={!body || !uploader}
-          >
-              Post
+          <Button type="submit" disabled={!body || !uploader}>
+            Post
           </Button>
         </Form.Group>
       </Form>
     );
-  }
-  
+  };
+
   isFiltered = (post: PostData) => {
     const { filtered } = this.state;
 
@@ -561,13 +617,12 @@ export default class Files extends React.Component<Props, State> {
     if (filtered.includes(post.uploader)) {
       return true;
     }
-    
+
     // For default country members
-    return COUNTRY_OPTIONS
-      .filter(x => filtered.includes(x.key))
-      .map(x => x.text)
-      .includes(post.uploader)
-  }
+    return COUNTRY_OPTIONS.filter((x) => filtered.includes(x.key))
+      .map((x) => x.text)
+      .includes(post.uploader);
+  };
 
   isResolutionAssociated = (post: PostData) => {
     if (!this.props.forResolution && post.forResolution) {
@@ -579,63 +634,65 @@ export default class Files extends React.Component<Props, State> {
     }
 
     return true;
-  }
+  };
 
   render() {
     const { committee } = this.state;
     const { committeeID } = this.props.match.params;
     // TODO: rename
-    const files = committee ? (committee.files || {}) : {};
+    const files = committee ? committee.files || {} : {};
 
     const panes = [
-      { 
-        menuItem: { key: 'Text', icon: TEXT_ICON, content: 'Text' }, 
-        render: () => <Tab.Pane>{this.renderPoster()}</Tab.Pane> 
+      {
+        menuItem: { key: "Text", icon: TEXT_ICON, content: "Text" },
+        render: () => <Tab.Pane>{this.renderPoster()}</Tab.Pane>,
       },
-      { 
-        menuItem: { key: 'Link', icon: LINK_ICON, content: 'Link' }, 
-        render: () => <Tab.Pane>{this.renderLinker()}</Tab.Pane>
+      {
+        menuItem: { key: "Link", icon: LINK_ICON, content: "Link" },
+        render: () => <Tab.Pane>{this.renderLinker()}</Tab.Pane>,
       },
-      { 
-        menuItem: { key: 'File', icon: FILE_ICON, content: 'File' }, 
-        render: () => <Tab.Pane>{this.renderUploader()}</Tab.Pane> 
+      {
+        menuItem: { key: "File", icon: FILE_ICON, content: "File" },
+        render: () => <Tab.Pane>{this.renderUploader()}</Tab.Pane>,
       },
     ];
 
     const inner = (
       <>
-        <Tab 
-          menu={{ attached: true, tabular: false }}
-          panes={panes} 
-        />
+        <Tab menu={{ attached: true, tabular: false }} panes={panes} />
         <div>&nbsp;</div> {/* Whitespace */}
         {this.renderFilter()}
         <Feed size="large">
-          {committee ? Object.keys(files).reverse()
-            .filter(key => this.isFiltered(files[key]))
-            .filter(key => this.isResolutionAssociated(files[key]))
-            .map(key =>
-              <Entry 
-                key={key} 
-                onDelete={this.deletePost(key)}
-                onPromoteToAmendment={this.promoteToAmendment(files[key])}
-                committeeID={committeeID}
-                post={files[key]}
-              />
-          ) : <Loading />}
+          {committee ? (
+            Object.keys(files)
+              .reverse()
+              .filter((key) => this.isFiltered(files[key]))
+              .filter((key) => this.isResolutionAssociated(files[key]))
+              .map((key) => (
+                <Entry
+                  key={key}
+                  onDelete={this.deletePost(key)}
+                  onPromoteToAmendment={this.promoteToAmendment(files[key])}
+                  committeeID={committeeID}
+                  post={files[key]}
+                />
+              ))
+          ) : (
+            <Loading />
+          )}
         </Feed>
       </>
-    )
+    );
 
-    return this.props.forResolution
-      ? inner:
-      (
-        <Container text style={{ padding: '1em 0em' }}>
-          <Helmet>
-            <title>{`Posts - Muncoordinated`}</title>
-          </Helmet>
-          {inner}
-        </Container>
-      );
+    return this.props.forResolution ? (
+      inner
+    ) : (
+      <Container text style={{ padding: "1em 0em" }}>
+        <Helmet>
+          <title>{`Posts - Muncoordinated`}</title>
+        </Helmet>
+        {inner}
+      </Container>
+    );
   }
 }

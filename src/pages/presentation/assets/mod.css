@@ -1,0 +1,100 @@
+.Modflex {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: space-evenly;
+  height: 100%;
+  width: 100%;
+  background-color: #023e8a;
+}
+.Caucustext {
+  text-align: center;
+  font-style: bold;
+  font-family: "Poppins", sans-serif;
+  font-size: 2rem;
+  text-transform: uppercase;
+  color: white;
+  padding-top: 8vh;
+}
+.Caucusdata {
+  width: 10rem;
+}
+.Speakertext {
+  font-style: bold;
+  text-align: center;
+  font-family: "Poppins", sans-serif;
+  font-size: 2rem;
+  text-transform: uppercase;
+  color: white;
+}
+.Speakerdata {
+  font-style: bold;
+  align-content: center;
+  top: 50%;
+  left: 50%;
+  transform: translate(50%, 50%);
+  border: 3px solid #caf0f8;
+  border-radius: 1.5rem;
+}
+
+.Speakerdata h3 {
+  font-style: bold;
+  font-family: "Jetbrains Mono", sans-serif;
+  font-size: 3rem;
+  text-transform: uppercase;
+  text-align: center;
+  color: white;
+}
+.Topictext {
+  font-style: bold;
+  text-align: center;
+  font-family: "Poppins", sans-serif;
+  font-size: 2rem;
+  text-transform: uppercase;
+  color: white;
+}
+.modmunlogo {
+  height: 25vh;
+  width: auto;
+}
+.caucuspres {
+  flex-basis: 24vw;
+}
+.speakerpres {
+  flex-grow: 2;
+}
+.logopres {
+  flex-basis: 24vw;
+  align-items: center;
+}
+/* ---------------------------------- */
+.currentSpeakerName {
+  align-items: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+.currentSpeakerName header {
+  text-align: center;
+  font-style: normal;
+  font-weight: 400;
+  font-family: "Poppins", sans-serif;
+  color: white;
+}
+.noCurrentSpeaker {
+  align-items: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+.noCurrentSpeaker header {
+  font-style: normal;
+  font-weight: 400;
+  font-family: "Poppins", sans-serif;
+  opacity: 30%;
+  color: white;
+  text-align: center;
+}
+.nextSpeakerStyle p {
+  color: white;
+  font-family: "Poppins", sans-serif;
+  font-size: 1rem;
+}
