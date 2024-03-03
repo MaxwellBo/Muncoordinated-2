@@ -11,8 +11,9 @@ Muncoordinated is a Model UN committee management service, (re)written with Type
 
 ## Background
 
-This version of Muncoordinated began development at the end of 2017, ahead of SydMUN 2017. It began as a reimplementation of a previous version of Muncoordinated, built in Elm. 
+This version of Muncoordinated is edited and modified for the annual MUN conference by MUN club of National University of Mongolia. It features presentation mode that displays Default, unmoderated caucus, moderated caucus, and Resolution in a separate window, allowing you to display it on the bigger screen.
 
+for now, the display elements are hard-coded. It is ideal to create separate menu for it, but due to my inexperience, i was not able to.
 
 ## Development
 
