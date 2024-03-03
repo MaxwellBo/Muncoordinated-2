@@ -1,53 +1,38 @@
 .muntitle {
-    font-family: "Poppins", sans-serif;
-    text-transform: uppercase;
-    font-style: bold;
-    font-size: 4rem;
-    color: white;
-    text-align: center;
+  font-family: "Poppins", sans-serif;
+  text-transform: uppercase;
+  font-style: bold;
+  font-size: 4rem;
+  color: white;
+  text-align: center;
 }
 .muntime {
-    font-family: "Jetbrains Mono", sans-serif;
-    font-style: bold;
-    font-size: 5rem;
-    color: white;
-    border: 5px solid #CAF0F8;
-    border-radius: 1.5rem;
-    background-color: #023e8a;
+  font-family: "Jetbrains Mono", sans-serif;
+  font-style: bold;
+  font-size: 5rem;
+  color: white;
+  border: 5px solid #caf0f8;
+  border-radius: 1.5rem;
+  background-color: #023e8a;
 }
 .muntimediv {
-    margin-left: auto;
-    margin-right: auto;
-    /* width: 40%; */
-    width: 18.75rem;
-    text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+  /* width: 40%; */
+  width: 18.75rem;
+  text-align: center;
 }
 .redundantpos {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%,-50%);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 
-    width: 100%;
-    height: 100%;
-}
-.timerstyle {
-    font-family: "Jetbrains Mono", sans-serif;
-    text-transform: uppercase;
-    font-size: 5rem;
-    color: white;
-    border: 3px solid #CAF0F8;
-    border-radius: 0.5rem;
-    background-color: #023e8a;
-}
-.timerstyle h3{
-    font-family: "Jetbrains Mono", sans-serif;
-    text-transform: uppercase;
-    font-size: 3rem;
-    text-align: center;
+  width: 100%;
+  height: 100%;
 }

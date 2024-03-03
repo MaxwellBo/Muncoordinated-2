@@ -40,7 +40,11 @@ import { fieldHandler } from "../modules/handlers";
 import { DEFAULT_STRAWPOLL, putStrawpoll } from "../models/strawpoll";
 import Strawpoll from "./Strawpoll";
 import { logClickSetupCommittee } from "../modules/analytics";
-import { CommitteeData, CommitteeID, DEFAULT_COMMITTEE } from "../models/committee";
+import {
+  CommitteeData,
+  CommitteeID,
+  DEFAULT_COMMITTEE,
+} from "../models/committee";
 import { Presentation } from "./Presentation";
 
 interface DesktopContainerProps {
@@ -68,13 +72,18 @@ interface State {
   showPresentationView?: boolean;
 }
 
-class DesktopContainer extends React.Component<DesktopContainerProps, DesktopContainerState> {
+class DesktopContainer extends React.Component<
+  DesktopContainerProps,
+  DesktopContainerState
+> {
   render() {
     const { body, menu } = this.props;
 
     // Semantic-UI-React/src/addons/Responsive/Responsive.js
     return (
-      <Responsive {...{ minWidth: (Responsive.onlyMobile.maxWidth as number) + 1 }}>
+      <Responsive
+        {...{ minWidth: (Responsive.onlyMobile.maxWidth as number) + 1 }}
+      >
         <Menu fluid size="small">
           {menu}
         </Menu>
@@ -84,7 +93,10 @@ class DesktopContainer extends React.Component<DesktopContainerProps, DesktopCon
   }
 }
 
-class MobileContainer extends React.Component<MobileContainerProps, MobileContainerState> {
+class MobileContainer extends React.Component<
+  MobileContainerProps,
+  MobileContainerState
+> {
   constructor(props: MobileContainerProps) {
     super(props);
 
@@ -112,11 +124,20 @@ class MobileContainer extends React.Component<MobileContainerProps, MobileContai
     return (
       <Responsive {...Responsive.onlyMobile}>
         <Sidebar.Pushable>
-          <Sidebar as={Menu} animation="uncover" stackable visible={sidebarOpened}>
+          <Sidebar
+            as={Menu}
+            animation="uncover"
+            stackable
+            visible={sidebarOpened}
+          >
             {menu}
           </Sidebar>
 
-          <Sidebar.Pusher dimmed={sidebarOpened} onClick={this.handlePusherClick} style={{ minHeight: "100vh" }}>
+          <Sidebar.Pusher
+            dimmed={sidebarOpened}
+            onClick={this.handlePusherClick}
+            style={{ minHeight: "100vh" }}
+          >
             <Menu size="large">
               <Menu.Item onClick={this.handleToggle}>
                 <Icon name="sidebar" />
@@ -154,8 +175,21 @@ function ResponsiveNav(props: ResponsiveContainerProps) {
     );
   };
 
-  const makeSubmenuButton = (name: string, icon: SemanticICONS, f: () => void) => {
-    return <Dropdown.Item key={name} name={name.toLowerCase()} active={false} onClick={f} icon={icon} text={name} />;
+  const makeSubmenuButton = (
+    name: string,
+    icon: SemanticICONS,
+    f: () => void
+  ) => {
+    return (
+      <Dropdown.Item
+        key={name}
+        name={name.toLowerCase()}
+        active={false}
+        onClick={f}
+        icon={icon}
+        text={name}
+      />
+    );
   };
 
   const makeMenuIcon = (name: string, icon: SemanticICONS) => {
@@ -231,7 +265,14 @@ function ResponsiveNav(props: ResponsiveContainerProps) {
 
     const caucusItems = Object.keys(caucuses || {})
       .filter((key) => caucuses![key].status !== CaucusStatus.Closed)
-      .map((key) => makeSubmenuItem(key, caucuses![key].name, caucuses![key].topic, "caucuses"));
+      .map((key) =>
+        makeSubmenuItem(
+          key,
+          caucuses![key].name,
+          caucuses![key].topic,
+          "caucuses"
+        )
+      );
 
     const resolutionItems = Object.keys(resolutions || {}).map((key) =>
       makeSubmenuItem(key, resolutions![key].name, undefined, "resolutions")
@@ -247,7 +288,8 @@ function ResponsiveNav(props: ResponsiveContainerProps) {
           header
           key="header"
           onClick={() => props.history.push(`/committees/${committeeID}`)}
-          active={props.location.pathname === `/committees/${committeeID}`}>
+          active={props.location.pathname === `/committees/${committeeID}`}
+        >
           {committee ? committee.name : <Loading small />}
         </Menu.Item>
         {makeMenuItem("Setup", "users")}
@@ -259,7 +301,12 @@ function ResponsiveNav(props: ResponsiveContainerProps) {
             {caucusItems}
           </Dropdown.Menu>
         </Dropdown>
-        <Dropdown key="resolutions" item text="Resolutions" loading={!committee}>
+        <Dropdown
+          key="resolutions"
+          item
+          text="Resolutions"
+          loading={!committee}
+        >
           <Dropdown.Menu>
             {makeSubmenuButton("New resolution", "add", pushResolution)}
             {resolutionItems}
@@ -326,6 +373,12 @@ export default class Committee extends React.Component<Props, State> {
 
   componentDidMount() {
     this.state.committeeFref.on("value", this.firebaseCallback);
+
+    if (!window) return;
+
+    window.addEventListener("beforeunload", (e) => {
+      this.setState({ showPresentationView: false });
+    });
   }
 
   componentWillUnmount() {
@@ -342,7 +395,11 @@ export default class Committee extends React.Component<Props, State> {
 
   renderAdmin = () => {
     return (
-      <Admin {...this.props} committee={this.state.committee || DEFAULT_COMMITTEE} fref={this.state.committeeFref} />
+      <Admin
+        {...this.props}
+        committee={this.state.committee || DEFAULT_COMMITTEE}
+        fref={this.state.committeeFref}
+      />
     );
   };
 
@@ -378,7 +435,10 @@ export default class Committee extends React.Component<Props, State> {
             <Input
               label="Conference"
               value={committee ? committee.conference || "" : ""}
-              onChange={fieldHandler<CommitteeData>(committeeFref, "conference")}
+              onChange={fieldHandler<CommitteeData>(
+                committeeFref,
+                "conference"
+              )}
               fluid
               loading={!committee}
               placeholder="Conference name"
@@ -405,25 +465,73 @@ export default class Committee extends React.Component<Props, State> {
         <ResponsiveNav
           {...this.props}
           committee={this.state.committee}
-          createPresentationViewFn={() => this.createPresentationView()}>
+          createPresentationViewFn={() => this.createPresentationView()}
+        >
           <Container text>
             <ConnectionStatus />
           </Container>
-          <Route exact={true} path="/committees/:committeeID" render={renderWelcome} />
-          <Route exact={true} path="/committees/:committeeID/setup" render={renderAdmin} />
-          <Route exact={true} path="/committees/:committeeID/stats" component={Stats} />
-          <Route exact={true} path="/committees/:committeeID/unmod" component={Unmod} />
-          <Route exact={true} path="/committees/:committeeID/motions" component={Motions} />
-          <Route exact={true} path="/committees/:committeeID/notes" component={Notes} />
-          <Route exact={true} path="/committees/:committeeID/posts" component={Files} />
-          <Route exact={true} path="/committees/:committeeID/settings" component={Settings} />
-          <Route exact={true} path="/committees/:committeeID/help" component={Help} />
-          <Route path="/committees/:committeeID/caucuses/:caucusID" component={Caucus} />
-          <Route path="/committees/:committeeID/resolutions/:resolutionID/:tab?" component={Resolution} />
-          <Route path="/committees/:committeeID/strawpolls/:strawpollID" component={Strawpoll} />
+          <Route
+            exact={true}
+            path="/committees/:committeeID"
+            render={renderWelcome}
+          />
+          <Route
+            exact={true}
+            path="/committees/:committeeID/setup"
+            render={renderAdmin}
+          />
+          <Route
+            exact={true}
+            path="/committees/:committeeID/stats"
+            component={Stats}
+          />
+          <Route
+            exact={true}
+            path="/committees/:committeeID/unmod"
+            component={Unmod}
+          />
+          <Route
+            exact={true}
+            path="/committees/:committeeID/motions"
+            component={Motions}
+          />
+          <Route
+            exact={true}
+            path="/committees/:committeeID/notes"
+            component={Notes}
+          />
+          <Route
+            exact={true}
+            path="/committees/:committeeID/posts"
+            component={Files}
+          />
+          <Route
+            exact={true}
+            path="/committees/:committeeID/settings"
+            component={Settings}
+          />
+          <Route
+            exact={true}
+            path="/committees/:committeeID/help"
+            component={Help}
+          />
+          <Route
+            path="/committees/:committeeID/caucuses/:caucusID"
+            component={Caucus}
+          />
+          <Route
+            path="/committees/:committeeID/resolutions/:resolutionID/:tab?"
+            component={Resolution}
+          />
+          <Route
+            path="/committees/:committeeID/strawpolls/:strawpollID"
+            component={Strawpoll}
+          />
           <Footer />
           {this.state.showPresentationView ? (
-            <Presentation onCloseCallback={() => this.handlePresentationViewDestroyed()}></Presentation>
+            <Presentation
+              onCloseCallback={() => this.handlePresentationViewDestroyed()}
+            ></Presentation>
           ) : (
             <></>
           )}

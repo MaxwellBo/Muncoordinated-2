@@ -1,0 +1,76 @@
+.proposeMaster {
+  height: 100vh;
+  width: 100vw;
+  display: grid;
+  grid-template-areas:
+    "topic topic topic topic"
+    "propose propose second second"
+    "propose propose second second";
+}
+.proposedtopic {
+  grid-area: topic;
+  height: 30vh;
+}
+.topicStyle {
+  position: absolute;
+  left: 50%;
+  top: 25%;
+  transform: translate(-50%, -50%);
+  min-height: 5rem;
+  margin: auto;
+  border-radius: 0.5rem;
+  border-width: 3px;
+  border-color: #caf0f8;
+  width: 70vw;
+}
+.topicStyle header {
+  text-align: center;
+  font-weight: bold;
+  font-size: 3rem;
+  line-height: normal;
+}
+.proposerClass {
+  grid-area: propose;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+.proposerClass img {
+  height: 12rem;
+  margin: 1rem;
+}
+.proposerClass header {
+  font-family: "Poppins", sans-serif;
+  font-weight: 500;
+  font-size: 4rem;
+  color: white;
+  text-align: center;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+.seconderClass {
+  grid-area: second;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+.seconderClass img {
+  height: 12rem;
+  margin: 1rem;
+}
+.seconderClass header {
+  font-family: "Poppins", sans-serif;
+  font-weight: 500;
+  font-size: 4rem;
+  color: white;
+  text-align: center;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+.identifier {
+  margin: 0;
+  font-weight: 100;
+  opacity: 0.5;
+  color: white;
+  font-size: 2.5rem;
+}

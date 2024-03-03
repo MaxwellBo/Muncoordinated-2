@@ -7,6 +7,8 @@ import { TimerData } from "../models/time";
 import Moderated from "./presentation/Moderated";
 import { CaucusData } from "../models/caucus";
 import _ from "lodash";
+import ResolutionPres from "./presentation/ResolutionPres";
+import { ResolutionData } from "../models/resolution";
 
 export interface PresentationProps {
   onCloseCallback?: () => any;
@@ -16,6 +18,7 @@ export type PresentationState = {
   data: {
     mod?: CaucusData;
     unmod?: TimerData;
+    res?: ResolutionData;
   };
   window?: Window | null;
 };
@@ -61,6 +64,16 @@ export class Presentation extends React.Component<
             unmod: _.cloneDeep(e.detail.data),
           },
         });
+        break;
+      case "res":
+        if (e.detail.data) {
+          this.setState({
+            data: {
+              ...this.state.data,
+              res: _.cloneDeep(e.detail.data),
+            },
+          });
+        }
         break;
       case "idle":
       default:
@@ -115,6 +128,8 @@ export class Presentation extends React.Component<
         return <Unmod {...this.state.data.unmod!}></Unmod>;
       case "mod":
         return <Moderated {...this.state.data.mod!}></Moderated>;
+      case "res":
+        return <ResolutionPres {...this.state.data.res!}></ResolutionPres>;
       default:
         return <Idle />;
     }

@@ -12,6 +12,6 @@ const FlagFetch: React.FC<FlagFetchProps> = ({ name }) => {
 
   const src = "/flags/" + formattedName + ".svg";
 
-  return <img src={src} alt="Flag for a country" />;
+  return <img src={src} className="countryFlag" alt={code} />;
 };
 export default FlagFetch;

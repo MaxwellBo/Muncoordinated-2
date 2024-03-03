@@ -1,0 +1,80 @@
+.bg {
+  background: #023e8a;
+  width: 100vw;
+  height: 100vh;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  overflow: hidden;
+}
+.bggradient {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    to left top,
+    transparent,
+    rgba(2, 61, 138, 1) 40%,
+    rgba(2, 61, 138, 1) 10%
+  );
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+#munlogo {
+  margin: 0%;
+  padding: 0%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  position: absolute;
+  height: 30vh;
+  width: auto;
+}
+.bgimages {
+  height: 100%;
+  /* width: 100%; */
+
+  overflow: visible;
+
+  --image-animation-duration: 120s;
+
+  position: relative;
+}
+
+.bgimages img {
+  position: absolute;
+  left: 0;
+  top: 0;
+  overflow: visible;
+  height: 100%;
+  width: auto;
+  object-fit: cover;
+  opacity: 0.5;
+
+  animation: marquee var(--image-animation-duration) infinite linear forwards;
+}
+.bgimages img.second {
+  opacity: 0.5;
+  /* animation-delay: calc(var(--image-animation-duration) * 0.5); */
+  animation: marquee2 var(--image-animation-duration) infinite linear forwards;
+
+  transform: translateX(100%);
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(0%);
+  }
+}
+@keyframes marquee2 {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}

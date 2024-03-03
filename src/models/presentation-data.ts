@@ -1,4 +1,5 @@
 import { CaucusData } from "./caucus";
+import { ResolutionData } from "./resolution";
 import { TimerData } from "./time";
 
 export type IdlePresentationData = {
@@ -14,5 +15,13 @@ export type ModCaucusPresentationData = {
   type: "mod";
   data?: CaucusData | undefined;
 };
+export type ResolutionPresentationData = {
+  type: "res";
+  data?: ResolutionData | undefined;
+};
 
-export type PresentationData = IdlePresentationData | UnmodPresentationData | ModCaucusPresentationData;
+export type PresentationData =
+  | IdlePresentationData
+  | UnmodPresentationData
+  | ModCaucusPresentationData
+  | ResolutionPresentationData;

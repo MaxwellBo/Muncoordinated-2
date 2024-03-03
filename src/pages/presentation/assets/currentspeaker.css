@@ -1,0 +1,39 @@
+.currentSpeakerName {
+  align-items: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+.currentSpeakerName header {
+  text-align: center;
+  font-style: normal;
+  font-weight: 700;
+  font-family: "Poppins", sans-serif;
+  color: white;
+  font-size: 2rem;
+  margin-top: 0.5rem;
+  text-transform: uppercase;
+}
+.noCurrentSpeaker {
+  align-items: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+.noCurrentSpeaker header {
+  font-style: normal;
+  font-weight: 400;
+  font-family: "Poppins", sans-serif;
+  opacity: 30%;
+  color: white;
+  text-align: center;
+}
+.countryFlagDiv {
+  margin-top: 2rem;
+  height: 15rem;
+  display: flex;
+  align-items: center;
+}
+.countryFlag {
+  height: 15rem;
+  border-radius: 1rem;
+  margin: auto;
+}

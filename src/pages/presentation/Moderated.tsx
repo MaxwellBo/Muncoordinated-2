@@ -8,24 +8,32 @@ import munlogo from "./assets/logo.svg";
 import "./assets/mod.css";
 import { CaucusData, SpeakerEvent } from "../../models/caucus";
 import _ from "lodash";
+import BackgroundAnimDark from "./BackgroundAnimDark";
 
 export type ModeratedProps = CaucusData;
 
 export default function Moderated(props: ModeratedProps) {
   return (
-    <div className="Modflex">
-      <div className="caucuspres">
-        <CaucusTimer {...props.caucusTimer} />
-        <NextSpeaker {..._.cloneDeep(props.queue)} />
+    <>
+      <div className="Modflex">
+        <div className="caucuspres">
+          <CaucusTimer {...props.caucusTimer} />
+          <NextSpeaker {..._.cloneDeep(props.queue)} />
+        </div>
+        <div className="speakerpres">
+          <CurrentSpeaker {...props.speaking} />
+          <div className="speakertimerpres">
+            <SpeakerTimer {...props.speakerTimer} />
+          </div>
+        </div>
+        <div className="topicpres">
+          <CaucusName name={props.name} />
+        </div>
+        <div className="logopres">
+          <img className="modmunlogo" src={munlogo} alt="MMUN 2023 logo" />
+        </div>
       </div>
-      <div className="speakerpres">
-        <CurrentSpeaker {...props.speaking} />
-        <SpeakerTimer {...props.speakerTimer} />
-        <CaucusName name={props.name} />
-      </div>
-      <div className="logopres">
-        <img className="modmunlogo" src={munlogo} alt="MMUN 2023 logo" />
-      </div>
-    </div>
+      <BackgroundAnimDark />
+    </>
   );
 }

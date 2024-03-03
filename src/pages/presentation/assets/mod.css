@@ -1,11 +1,12 @@
 .Modflex {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
-  justify-content: space-evenly;
+  display: grid;
   height: 100%;
   width: 100%;
-  background-color: #023e8a;
+  grid-template-areas:
+    "next current logo"
+    "next current logo"
+    "topic topic topic";
+  grid-template-columns: 1fr 3fr 1fr;
 }
 .Caucustext {
   text-align: center;
@@ -17,15 +18,18 @@
   padding-top: 8vh;
 }
 .Caucusdata {
-  width: 10rem;
+  width: 18rem;
 }
 .Speakertext {
-  font-style: bold;
+  font-style: normal;
   text-align: center;
   font-family: "Poppins", sans-serif;
   font-size: 2rem;
   text-transform: uppercase;
   color: white;
+  margin: 0;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
 }
 .Speakerdata {
   font-style: bold;
@@ -46,58 +50,73 @@
   color: white;
 }
 .Topictext {
-  font-style: bold;
+  font-style: normal;
   text-align: center;
   font-family: "Poppins", sans-serif;
   font-size: 2rem;
   text-transform: uppercase;
   color: white;
+  margin-top: 0.5rem;
 }
 .modmunlogo {
-  height: 25vh;
+  height: 20vh;
   width: auto;
+  margin-top: 10vh;
 }
 .caucuspres {
-  flex-basis: 24vw;
+  grid-area: next;
 }
 .speakerpres {
-  flex-grow: 2;
+  grid-area: current;
 }
 .logopres {
-  flex-basis: 24vw;
   align-items: center;
+  grid-area: logo;
+}
+.topicpres {
+  grid-area: topic;
+  bottom: 0;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-bottom: 5vh;
+}
+.speakertimerpres {
+  bottom: 30vh;
+  left: 50%;
+  transform: translateX(-50%);
+  position: absolute;
+}
+.timerstyle {
+  font-family: "Jetbrains Mono", sans-serif;
+  text-transform: uppercase;
+  font-size: 5rem;
+  color: white;
+  border: 3px solid #caf0f8;
+  border-radius: 0.5rem;
+  background-color: #023e8a;
+}
+.timerstyle h3 {
+  font-family: "Jetbrains Mono", sans-serif;
+  text-transform: uppercase;
+  font-size: 5rem;
+  text-align: center;
+}
+.Topicstyle {
+  text-wrap: wrap;
+  font-family: "Poppins", sans-serif;
+  width: 60vw;
+  color: white;
+  border: 3px solid #caf0f8;
+  border-radius: 0.5rem;
+  background-color: #023e8a;
+  text-align: center;
+  margin: auto;
+}
+.Topicstyle h3 {
+  font-size: 2.5rem;
+}
+.countryData {
+  margin-top: 10vh;
 }
 /* ---------------------------------- */
-.currentSpeakerName {
-  align-items: center;
-  margin-left: auto;
-  margin-right: auto;
-}
-.currentSpeakerName header {
-  text-align: center;
-  font-style: normal;
-  font-weight: 400;
-  font-family: "Poppins", sans-serif;
-  color: white;
-}
-.noCurrentSpeaker {
-  align-items: center;
-  margin-left: auto;
-  margin-right: auto;
-}
-.noCurrentSpeaker header {
-  font-style: normal;
-  font-weight: 400;
-  font-family: "Poppins", sans-serif;
-  opacity: 30%;
-  color: white;
-  text-align: center;
-}
-.nextSpeakerStyle p {
-  color: white;
-  font-family: "Poppins", sans-serif;
-  font-size: 1rem;
-}
-.CountryFlag {
-  height: 20vh;
-}

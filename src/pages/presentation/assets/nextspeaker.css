@@ -1,0 +1,24 @@
+.nextSpeakerFlag img {
+  height: 9rem;
+  margin-top: 1rem;
+  border-radius: 2rem;
+}
+.nextSpeakerFlag {
+  align-items: center;
+  display: flex;
+}
+.nextSpeakerName header {
+  color: #023e8a;
+  font: "Poppins", sans-serif;
+  font-size: 1.2rem;
+  text-align: center;
+  font-weight: 700;
+}
+.nextSpeakerName {
+  margin-top: 0.5rem;
+  width: 6rem;
+  background-color: white;
+  border-radius: 1rem;
+  margin-left: auto;
+  margin-right: auto;
+}

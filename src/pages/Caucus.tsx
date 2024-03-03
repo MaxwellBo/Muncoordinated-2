@@ -683,7 +683,7 @@ export default class Caucus extends React.Component<Props, State> {
         timerFref={caucusFref.child("caucusTimer")}
         key={caucusID + "caucusTimer"}
         onChange={this.setCaucusTimer}
-        toggleKeyCode={67} // C - if changing this, update Help
+        toggleKeyCode={83} // C - if changing this, update Help
         defaultUnit={Unit.Minutes}
         defaultDuration={10}
       />
