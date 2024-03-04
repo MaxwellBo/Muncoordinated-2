@@ -93,7 +93,7 @@ export class Presentation extends React.Component<
         let baseEl = window.document.createElement("base");
         baseEl.href = new URL(parentWindow?.location.href ?? "http://localhost:3000").origin;
 
-        window.document.head;
+        window.document.head.append(baseEl);
       }
     } catch (error) {
       // Silent fail
