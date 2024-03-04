@@ -87,6 +87,21 @@ export class Presentation extends React.Component<
   onOpen(window: Window) {
     const parentWindow = window.opener as Window | undefined | null;
 
+    try {
+      const base = window.document.head.querySelector("base");
+      if (!base) {
+        let baseEl = window.document.createElement("base");
+        baseEl.href = new URL(parentWindow?.location.href ?? "http://localhost:3000").origin;
+
+        window.document.head.append(baseEl);
+      }
+    } catch (error) {
+      // Silent fail
+      // Usually, this will make only Firefox happy.
+
+      // Somehow chrome resolves the base url from the parent, idk why
+    }
+
     this.setState({
       window: parentWindow,
     });
