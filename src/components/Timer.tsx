@@ -1,9 +1,9 @@
-import * as React from 'react';
-import firebase from 'firebase/app';
-import {Button, DropdownProps, Form, Icon, Label, Progress, Segment} from 'semantic-ui-react';
-import {TimeSetter} from './TimeSetter';
+import React from 'react';
+import firebase from 'firebase/compat/app';
+import { Button, DropdownProps, Form, Icon, Label, Progress, Segment } from 'semantic-ui-react';
+import { TimeSetter } from './TimeSetter';
 import _ from 'lodash';
-import {DEFAULT_TIMER, getSeconds, TimerData, Unit} from "../models/time";
+import { DEFAULT_TIMER, getSeconds, TimerData, Unit } from '../models/time';
 
 interface Props {
   name: string;
@@ -16,7 +16,7 @@ interface Props {
 
 interface State {
   timer?: TimerData;
-  timerId?: NodeJS.Timer;
+  timerId?: NodeJS.Timeout;
   skew?: number;
   offsetRef: firebase.database.Reference;
   unitDropdown: Unit;
@@ -49,25 +49,25 @@ export function hhmmss(seconds: number): string {
 
 export function getTimeWithSkewCorrection(skew: number | undefined) {
   // eslint-disable-next-line new-parens
-  const millis =  skew ? skew + (new Date).getTime() : (new Date).getTime();
+  const millis = skew ? skew + new Date().getTime() : new Date().getTime();
 
   return Math.floor(millis / 1000);
 }
 
 export function toggleTicking({
-  timer, 
+  timer,
   timerFref,
-  skew
+  skew,
 }: {
-  timer?: TimerData,
-  timerFref: firebase.database.Reference
-  skew?: number,
+  timer?: TimerData;
+  timerFref: firebase.database.Reference;
+  skew?: number;
 }) {
   if (timer) {
     const newTimer = {
       elapsed: timer.elapsed,
       remaining: timer.remaining,
-      ticking: timer.ticking ? false : getTimeWithSkewCorrection(skew)
+      ticking: timer.ticking ? false : getTimeWithSkewCorrection(skew),
     };
 
     timerFref.set(newTimer);
@@ -84,7 +84,7 @@ export default class Timer extends React.Component<Props, State> {
       offsetRef: firebase.database().ref('/.info/serverTimeOffset'),
       unitDropdown: defaultUnit || Unit.Minutes,
       durationField: defaultDuration ? defaultDuration.toString() : '1',
-      mute: true
+      mute: true,
     };
   }
 
@@ -108,31 +108,31 @@ export default class Timer extends React.Component<Props, State> {
         this.playSound();
       }
     }
-  }
+  };
 
   toggleMute = () => {
-    this.setState(prevState => ({ mute: !prevState.mute }));
-  }
+    this.setState((prevState) => ({ mute: !prevState.mute }));
+  };
 
   localToggleTicking = () => {
     const { timer, skew } = this.state;
     const { timerFref } = this.props;
 
     toggleTicking({ timer, timerFref, skew });
-  }
+  };
 
   handleKeyDown = (ev: KeyboardEvent) => {
     if (this.props.toggleKeyCode === ev.keyCode && ev.altKey) {
-      this.localToggleTicking()
+      this.localToggleTicking();
     }
-  }
+  };
 
   skewCallback = (skew: firebase.database.DataSnapshot | null) => {
     if (skew) {
       console.info('Detected clock skew is', skew.val(), 'millis');
       this.setState({ skew: skew.val() });
     }
-  }
+  };
 
   timerCallback = (timer: firebase.database.DataSnapshot | null) => {
     if (timer && timer.val()) {
@@ -140,20 +140,20 @@ export default class Timer extends React.Component<Props, State> {
 
       const { skew } = this.state;
 
-      const now = getTimeWithSkewCorrection(skew)
+      const now = getTimeWithSkewCorrection(skew);
 
       if (timerData.ticking) {
         const remaining = timerData.remaining - (now - timerData.ticking);
         const elapsed = timerData.elapsed + (now - timerData.ticking);
         // HACK: Handle late mounts by checking the difference between when the clock started clicking
         // and when the timer mounted / recieved new info
-        timerData = { ...timerData, remaining , elapsed };
+        timerData = { ...timerData, remaining, elapsed };
       }
 
       this.setState({ timer: timerData });
       this.props.onChange(timerData);
     }
-  }
+  };
 
   componentDidMount() {
     const { handleKeyDown, timerCallback, tick, props, state, skewCallback } = this;
@@ -186,20 +186,20 @@ export default class Timer extends React.Component<Props, State> {
     if (num) {
       this.setState({ durationField: (num + 1).toString() });
     }
-  }
-  
+  };
+
   playSound = () => {
     // @ts-ignore
     var context = new (window.audioContext || window.AudioContext || window.webkitAudioContext)();
 
-    var osc = context.createOscillator(); 
+    var osc = context.createOscillator();
     osc.type = 'sine'; // sine, square, sawtooth, triangle
     osc.frequency.value = 440; // Hz
 
-    osc.connect(context.destination); 
-    osc.start(); 
-    osc.stop(context.currentTime + 0.35); 
-  }
+    osc.connect(context.destination);
+    osc.start();
+    osc.stop(context.currentTime + 0.35);
+  };
 
   set = () => {
     const duration = Number(this.state.durationField);
@@ -208,12 +208,12 @@ export default class Timer extends React.Component<Props, State> {
       const newTimer = {
         elapsed: 0,
         remaining: getSeconds(duration, this.state.unitDropdown),
-        ticking: false
+        ticking: false,
       };
 
       this.props.timerFref.set(newTimer);
     }
-  }
+  };
 
   decrement = () => {
     const num = Number(this.state.durationField);
@@ -221,14 +221,14 @@ export default class Timer extends React.Component<Props, State> {
     if (num) {
       this.setState({ durationField: (num - 1).toString() });
     }
-  }
+  };
 
   setUnit = (event: React.SyntheticEvent<HTMLElement>, data: DropdownProps) => {
-    this.setState({ unitDropdown: data.value as Unit || Unit.Seconds });
-  }
+    this.setState({ unitDropdown: (data.value as Unit) || Unit.Seconds });
+  };
 
   setDuration = (e: React.FormEvent<HTMLInputElement>) =>
-    this.setState({ durationField: e.currentTarget.value })
+    this.setState({ durationField: e.currentTarget.value });
 
   render() {
     const { setUnit, setDuration } = this;
@@ -243,8 +243,10 @@ export default class Timer extends React.Component<Props, State> {
     const percentage = (remaining / (remaining + elapsed)) * 100;
 
     return (
-      <Segment textAlign="center" >
-        <Label attached="top left" size="large">{this.props.name}</Label>
+      <Segment textAlign="center">
+        <Label attached="top left" size="large">
+          {this.props.name}
+        </Label>
         <Button
           loading={!timer}
           active={timer ? !!timer.ticking : false}
@@ -265,7 +267,7 @@ export default class Timer extends React.Component<Props, State> {
           <Icon name={mute ? 'alarm mute' : 'alarm'} />
         </Button>
 
-        <Progress percent={percentage} active={false} indicating={true}/>
+        <Progress percent={percentage} active={false} indicating={true} />
         <Form>
           <TimeSetter
             unitValue={this.state.unitDropdown}

@@ -17,9 +17,7 @@
     "lib": [
       "es2016", // you need this so things like "Set" work
       "dom" // you need this so things like "currentTarget" work
-    ],
+    ]
   },
-  "include": [
-    "src"
-  ]
+  "include": ["src"]
 }

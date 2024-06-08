@@ -1,9 +1,8 @@
-import * as React from 'react';
-import firebase from 'firebase/app';
+import React from 'react';
+import firebase from 'firebase/compat/app';
 import { Message, Icon } from 'semantic-ui-react';
 
-interface Props {
-}
+interface Props {}
 
 export interface State {
   connected: boolean;
@@ -18,14 +17,13 @@ export default class ConnectionStatus extends React.Component<Props, State> {
     this.state = {
       hasConnectedBefore: false,
       connected: false,
-      fref: firebase.database().ref('.info/connected')
+      fref: firebase.database().ref('.info/connected'),
     };
   }
 
   firebaseCallback = (status: firebase.database.DataSnapshot | null) => {
     if (status) {
-      this.setState((prevState: State) => { 
-
+      this.setState((prevState: State) => {
         const connected = status.val();
 
         if (!connected) {
@@ -34,11 +32,11 @@ export default class ConnectionStatus extends React.Component<Props, State> {
 
         return {
           connected: connected,
-          hasConnectedBefore: connected || prevState.hasConnectedBefore
+          hasConnectedBefore: connected || prevState.hasConnectedBefore,
         };
       });
     }
-  }
+  };
 
   componentDidMount() {
     this.state.fref.on('value', this.firebaseCallback);
@@ -51,15 +49,17 @@ export default class ConnectionStatus extends React.Component<Props, State> {
   render() {
     const { connected, hasConnectedBefore } = this.state;
 
-    return (!connected && hasConnectedBefore) ? (
+    return !connected && hasConnectedBefore ? (
       <Message icon negative>
         <Icon name="circle notched" loading />
         <Message.Content>
           <Message.Header>Connection Lost</Message.Header>
-          Changes are no longer being committed to the server. Either wait for a reconnection
-          or refresh the page. If you refresh the page, you will need to log in again.
+          Changes are no longer being committed to the server. Either wait for a reconnection or
+          refresh the page. If you refresh the page, you will need to log in again.
         </Message.Content>
       </Message>
-    ) : <div />;
+    ) : (
+      <div />
+    );
   }
 }

@@ -3,36 +3,36 @@
   "version": "1.0.0",
   "private": true,
   "dependencies": {
-    "@sentry/react": "^5.24.2",
-    "@sentry/tracing": "^5.24.2",
-    "@types/file-saver": "^2.0.1",
-    "@types/jest": "24.0.22",
-    "@types/lodash": "^4.14.116",
-    "@types/node": "12.12.7",
-    "@types/react": "^16.8.4",
-    "@types/react-beautiful-dnd": "^11.0.3",
-    "@types/react-dom": "^16.8.2",
-    "@types/react-helmet": "^6.1.1",
+    "@artsy/fresnel": "^7.1.4",
+    "@sentry/react": "^8.7.0",
+    "@sentry/tracing": "^7.114.0",
+    "@types/file-saver": "^2.0.7",
+    "@types/jest": "29.5.12",
+    "@types/lodash": "^4.17.4",
+    "@types/node": "20.13.0",
+    "@types/react": "^18.3.1",
+    "@types/react-beautiful-dnd": "^13.1.8",
+    "@types/react-dom": "^18.3.0",
     "@types/react-router-dom": "^5.1.2",
-    "file-saver": "^2.0.0-rc.3",
-    "firebase": "^7.3.0",
+    "file-saver": "^2.0.5",
+    "firebase": "^10.12.2",
     "lodash": "^4.17.11",
-    "react": "16.11.0",
-    "react-beautiful-dnd": "^12.0.0",
-    "react-dom": "16.11.0",
-    "react-firebase-hooks": "^2.1.0",
-    "react-ga": "^2.5.3",
-    "react-helmet": "^6.1.0",
+    "react": "18.3.1",
+    "react-beautiful-dnd": "^13.1.1",
+    "react-dom": "18.3.0",
+    "react-firebase-hooks": "^5.1.1",
+    "react-ga": "^3.3.1",
+    "react-helmet-async": "^2.0.5",
     "react-router-dom": "^5.1.2",
-    "react-scripts": "3.4.3",
+    "react-scripts": "5.0.1",
     "semantic-ui-css": "^2.4.0",
-    "semantic-ui-react": "^0.88.1",
-    "typescript": "3.7.2"
+    "semantic-ui-react": "^2.1.5",
+    "typescript": "^5.4.5"
   },
   "devDependencies": {
-    "cypress": "10.9.0",
-    "cypress-real-events": "^1.7.1",
-    "netlify-plugin-cypress": "^1.4.1"
+    "cypress": "13.10.0",
+    "cypress-real-events": "^1.12.0",
+    "netlify-plugin-cypress": "^2.2.1"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -48,5 +48,6 @@
     "not dead",
     "not ie <= 11",
     "not op_mini all"
-  ]
+  ],
+  "packageManager": "yarn@1.22.22+sha1.ac34549e6aa8e7ead463a7407e1c7390f61a6610"
 }

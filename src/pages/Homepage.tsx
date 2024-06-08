@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import {
   Button,
   Container,
@@ -8,13 +8,17 @@ import {
   Image,
   List,
   Menu,
-  Responsive,
   Segment,
   Statistic,
   Sidebar,
   Visibility,
 } from 'semantic-ui-react';
-import { logClickCreateACommitteeButton, logClickLogInButton, logClickSignupButton } from '../modules/analytics';
+import { createMedia } from '@artsy/fresnel';
+import {
+  logClickCreateACommitteeButton,
+  logClickLogInButton,
+  logClickSignupButton,
+} from '../modules/analytics';
 import Loading from '../components/Loading';
 import { ShareCapabilities } from '../components/share-hints';
 
@@ -60,6 +64,19 @@ const HomepageHeading = ({ mobile }: HomepageHeadingProps) => (
   </Container>
 );
 
+const AppMedia = createMedia({
+  breakpoints: {
+    mobile: 320,
+    tablet: 768,
+    computer: 992,
+    largeScreen: 1200,
+    widescreen: 1920,
+  },
+});
+
+const mediaStyles = AppMedia.createMediaStyle();
+const { Media, MediaContextProvider } = AppMedia;
+
 interface DesktopContainerProps {
   children?: React.ReactNode;
 }
@@ -78,17 +95,17 @@ class DesktopContainer extends React.Component<DesktopContainerProps, DesktopCon
     super(props);
 
     this.state = {
-      fixed: false
+      fixed: false,
     };
   }
 
   hideFixedMenu = () => {
     this.setState({ fixed: false });
-  }
+  };
 
   showFixedMenu = () => {
     this.setState({ fixed: true });
-  }
+  };
 
   render() {
     const { children } = this.props;
@@ -96,35 +113,62 @@ class DesktopContainer extends React.Component<DesktopContainerProps, DesktopCon
 
     // Semantic-UI-React/src/addons/Responsive/Responsive.js
     return (
-      // @ts-ignore
-      <Responsive {...{ minWidth: Responsive.onlyMobile.maxWidth + 1 }}>
-        <Visibility once={false} onBottomPassed={this.showFixedMenu} onBottomPassedReverse={this.hideFixedMenu}>
-          <Segment inverted textAlign="center" style={{ minHeight: 700, padding: '1em 0em' }} vertical>
-            <Menu
-              fixed={fixed ? 'top' : undefined}
-              inverted={!fixed}
-              pointing={!fixed}
-              secondary={!fixed}
-              size="large"
+      <>
+        <style>{mediaStyles}</style>
+        <MediaContextProvider>
+          {/* @ts-ignore */}
+          <Segment as={Media} at="tablet">
+            <Visibility
+              once={false}
+              onBottomPassed={this.showFixedMenu}
+              onBottomPassedReverse={this.hideFixedMenu}
             >
-              <Container>
-                <Menu.Item as="a" active>Home</Menu.Item>
-                <Menu.Item position="right">
-                  <Button as="a" href="/onboard" inverted={!fixed} onClick={logClickLogInButton}>
-                    Log in
-                  </Button>
-                  <Button as="a" href="/onboard" inverted={!fixed} primary={fixed} style={{ marginLeft: '0.5em' }} onClick={logClickSignupButton}>
-                    Sign up
-                  </Button>
-                </Menu.Item>
-              </Container>
-            </Menu>
-            <HomepageHeading mobile={false} />
+              <Segment
+                inverted
+                textAlign="center"
+                style={{ minHeight: 700, padding: '1em 0em' }}
+                vertical
+              >
+                <Menu
+                  fixed={fixed ? 'top' : undefined}
+                  inverted={!fixed}
+                  pointing={!fixed}
+                  secondary={!fixed}
+                  size="large"
+                >
+                  <Container>
+                    <Menu.Item as="a" active>
+                      Home
+                    </Menu.Item>
+                    <Menu.Item position="right">
+                      <Button
+                        as="a"
+                        href="/onboard"
+                        inverted={!fixed}
+                        onClick={logClickLogInButton}
+                      >
+                        Log in
+                      </Button>
+                      <Button
+                        as="a"
+                        href="/onboard"
+                        inverted={!fixed}
+                        primary={fixed}
+                        style={{ marginLeft: '0.5em' }}
+                        onClick={logClickSignupButton}
+                      >
+                        Sign up
+                      </Button>
+                    </Menu.Item>
+                  </Container>
+                </Menu>
+                <HomepageHeading mobile={false} />
+              </Segment>
+            </Visibility>
           </Segment>
-        </Visibility>
-
+        </MediaContextProvider>
         {children}
-      </Responsive>
+      </>
     );
   }
 }
@@ -142,7 +186,7 @@ class MobileContainer extends React.Component<MobileContainerProps, MobileContai
     super(props);
 
     this.state = {
-      sidebarOpened: false
+      sidebarOpened: false,
     };
   }
 
@@ -152,45 +196,70 @@ class MobileContainer extends React.Component<MobileContainerProps, MobileContai
     if (sidebarOpened) {
       this.setState({ sidebarOpened: false });
     }
-  }
+  };
 
   handleToggle = () => {
     this.setState({ sidebarOpened: !this.state.sidebarOpened });
-  }
+  };
 
   render() {
     const { children } = this.props;
     const { sidebarOpened } = this.state;
 
     return (
-      <Responsive {...Responsive.onlyMobile}>
-        <Sidebar.Pushable>
-          <Sidebar as={Menu} animation="push" inverted vertical visible={sidebarOpened}>
-            <Menu.Item as="a" active>Home</Menu.Item>
-            <Menu.Item as="a" href="/onboard">Log in</Menu.Item>
-            <Menu.Item as="a" href="/onboard">Sign up</Menu.Item>
-          </Sidebar>
+      <>
+        <style>{mediaStyles}</style>
+        <MediaContextProvider>
+          {/* @ts-ignore */}
+          <Segment as={Media} at="mobilie">
+            <Sidebar.Pushable>
+              <Sidebar as={Menu} animation="push" inverted vertical visible={sidebarOpened}>
+                <Menu.Item as="a" active>
+                  Home
+                </Menu.Item>
+                <Menu.Item as="a" href="/onboard">
+                  Log in
+                </Menu.Item>
+                <Menu.Item as="a" href="/onboard">
+                  Sign up
+                </Menu.Item>
+              </Sidebar>
 
-          <Sidebar.Pusher dimmed={sidebarOpened} onClick={this.handlePusherClick} style={{ minHeight: '100vh' }}>
-            <Segment inverted textAlign="center" style={{ minHeight: 350, padding: '1em 0em' }} vertical>
-              <Container>
-                <Menu inverted pointing secondary size="large">
-                  <Menu.Item onClick={this.handleToggle}>
-                    <Icon name="sidebar" />
-                  </Menu.Item>
-                  <Menu.Item position="right">
-                    <Button as="a" inverted href="/onboard" >Log in</Button>
-                    <Button as="a" inverted href="/onboard" style={{ marginLeft: '0.5em' }}>Sign Up</Button>
-                  </Menu.Item>
-                </Menu>
-              </Container>
-              <HomepageHeading mobile={true} />
-            </Segment>
+              <Sidebar.Pusher
+                dimmed={sidebarOpened}
+                onClick={this.handlePusherClick}
+                style={{ minHeight: '100vh' }}
+              >
+                <Segment
+                  inverted
+                  textAlign="center"
+                  style={{ minHeight: 350, padding: '1em 0em' }}
+                  vertical
+                >
+                  <Container>
+                    <Menu inverted pointing secondary size="large">
+                      <Menu.Item onClick={this.handleToggle}>
+                        <Icon name="sidebar" />
+                      </Menu.Item>
+                      <Menu.Item position="right">
+                        <Button as="a" inverted href="/onboard">
+                          Log in
+                        </Button>
+                        <Button as="a" inverted href="/onboard" style={{ marginLeft: '0.5em' }}>
+                          Sign Up
+                        </Button>
+                      </Menu.Item>
+                    </Menu>
+                  </Container>
+                  <HomepageHeading mobile={true} />
+                </Segment>
 
-            {children}
-          </Sidebar.Pusher>
-        </Sidebar.Pushable>
-      </Responsive>
+                {children}
+              </Sidebar.Pusher>
+            </Sidebar.Pushable>
+          </Segment>
+        </MediaContextProvider>
+      </>
     );
   }
 }
@@ -206,10 +275,13 @@ const ResponsiveContainer = ({ children }: ResponsiveContainerProps) => (
   </React.Fragment>
 );
 
-export default class Homepage extends React.Component<{}, { 
-  committeeNo?: number,
-  delegateNo?: number
-}> {
+export default class Homepage extends React.Component<
+  {},
+  {
+    committeeNo?: number;
+    delegateNo?: number;
+  }
+> {
   constructor(props: {}) {
     super(props);
     this.state = {};
@@ -237,38 +309,44 @@ export default class Homepage extends React.Component<{}, {
           <Grid container stackable verticalAlign="middle">
             <Grid.Row>
               <Grid.Column width={8}>
-                <Header as="h3" style={{ fontSize: '2em' }}>Collaborative</Header>
+                <Header as="h3" style={{ fontSize: '2em' }}>
+                  Collaborative
+                </Header>
                 <p style={{ fontSize: '1.33em' }}>
                   Using a shareable link delegates can: <br />
                   <ShareCapabilities />
                 </p>
                 <p style={{ fontSize: '1.33em' }}>
-                  Everyone will see all updates in real-time, without needing to refresh the page. It's like Google Docs, but for MUN.
+                  Everyone will see all updates in real-time, without needing to refresh the page.
+                  It's like Google Docs, but for MUN.
                 </p>
                 <p style={{ fontSize: '1.33em' }}>
-                 For virtual MUNs, we recommend pairing Muncoordinated with <a href="https://discord.com/">Discord</a>, which allows you to speak, pass notes, &amp; share files and links.
+                  For virtual MUNs, we recommend pairing Muncoordinated with{' '}
+                  <a href="https://discord.com/">Discord</a>, which allows you to speak, pass notes,
+                  &amp; share files and links.
                 </p>
                 <p style={{ fontSize: '1.33em' }}>
-                  If you've got a big committee, multiple directors can manage it at the same time, using the same account.
+                  If you've got a big committee, multiple directors can manage it at the same time,
+                  using the same account.
                 </p>
-                <Header as="h3" style={{ fontSize: '2em' }}>Backed up to the cloud</Header>
+                <Header as="h3" style={{ fontSize: '2em' }}>
+                  Backed up to the cloud
+                </Header>
                 <p style={{ fontSize: '1.33em' }}>
-                  You won't have to worry about data loss ever again. All committee activity is automatically saved to the server, 
-                  so you can start sessions with all data available from the day before.
+                  You won't have to worry about data loss ever again. All committee activity is
+                  automatically saved to the server, so you can start sessions with all data
+                  available from the day before.
                 </p>
               </Grid.Column>
               <Grid.Column floated="right" width={8}>
-                <Image
-                  bordered
-                  rounded
-                  size="massive"
-                  src="/promo.png"
-                />
+                <Image bordered rounded size="massive" src="/promo.png" />
               </Grid.Column>
             </Grid.Row>
             <Grid.Row>
               <Grid.Column width={8}>
-                <Header as="h3" style={{ fontSize: '2em' }}>A comprehensive feature set</Header>
+                <Header as="h3" style={{ fontSize: '2em' }}>
+                  A comprehensive feature set
+                </Header>
                 <div style={{ fontSize: '1.33em' }}>
                   Muncoordinated supports: <br />
                   <List as="ul">
@@ -282,22 +360,20 @@ export default class Homepage extends React.Component<{}, {
                     <List.Item as="li">Delegate performance statistics</List.Item>
                   </List>
                 </div>
-                <Header as="h3" style={{ fontSize: '2em' }}>Free and open-source</Header>
+                <Header as="h3" style={{ fontSize: '2em' }}>
+                  Free and open-source
+                </Header>
                 <p style={{ fontSize: '1.33em' }}>
-                  All of Muncoordinated's features are available for free, not locked behind paywalls.
+                  All of Muncoordinated's features are available for free, not locked behind
+                  paywalls.
                 </p>
                 <p style={{ fontSize: '1.33em' }}>
-                  It's also <a href="https://github.com/MaxwellBo/Muncoordinated-2">open-source</a>, so you're free to customize it to your needs and liking.
+                  It's also <a href="https://github.com/MaxwellBo/Muncoordinated-2">open-source</a>,
+                  so you're free to customize it to your needs and liking.
                 </p>
               </Grid.Column>
               <Grid.Column floated="right" width={8}>
-                <Image
-                  centered
-                  bordered
-                  rounded
-                  size="medium"
-                  src="/mobile6.png"
-                />
+                <Image centered bordered rounded size="medium" src="/mobile6.png" />
               </Grid.Column>
             </Grid.Row>
           </Grid>
@@ -309,7 +385,9 @@ export default class Homepage extends React.Component<{}, {
                 <Grid.Column width={3}>
                   <Header inverted as="h4" content="About" />
                   <List link inverted>
-                    <List.Item as="a" href={REPO_LINK}>Source</List.Item>
+                    <List.Item as="a" href={REPO_LINK}>
+                      Source
+                    </List.Item>
                     <List.Item
                       as="a"
                       href="https://github.com/MaxwellBo/Muncoordinated-2/blob/master/LICENSE"
@@ -321,15 +399,33 @@ export default class Homepage extends React.Component<{}, {
                 <Grid.Column width={3}>
                   <Header inverted as="h4" content="Services" />
                   <List link inverted>
-                    <List.Item as="a" href="https://github.com/MaxwellBo/Muncoordinated-2/discussions">Forum</List.Item>
-                    <List.Item as="a" href="https://github.com/MaxwellBo/Muncoordinated-2/issues">Support</List.Item>
-                    <List.Item as="a" href="https://www.helpmymun.com/">MUN Resources</List.Item>
+                    <List.Item
+                      as="a"
+                      href="https://github.com/MaxwellBo/Muncoordinated-2/discussions"
+                    >
+                      Forum
+                    </List.Item>
+                    <List.Item as="a" href="https://github.com/MaxwellBo/Muncoordinated-2/issues">
+                      Support
+                    </List.Item>
+                    <List.Item as="a" href="https://www.helpmymun.com/">
+                      MUN Resources
+                    </List.Item>
                   </List>
                 </Grid.Column>
                 <Grid.Column width={7}>
-                  <Header as="h4" inverted>Info</Header>
-                  <p>Made with <span role="img" aria-label="love">💖</span> by <a href="https://github.com/MaxwellBo">Max Bo</a>, 
-                  with assistance from the <a href="https://www.facebook.com/UQUNSA/">UQ United Nations Student Association</a>
+                  <Header as="h4" inverted>
+                    Info
+                  </Header>
+                  <p>
+                    Made with{' '}
+                    <span role="img" aria-label="love">
+                      💖
+                    </span>{' '}
+                    by <a href="https://github.com/MaxwellBo">Max Bo</a>, with assistance from the{' '}
+                    <a href="https://www.facebook.com/UQUNSA/">
+                      UQ United Nations Student Association
+                    </a>
                   </p>
                   <p>Copyright © 2022</p>
                 </Grid.Column>

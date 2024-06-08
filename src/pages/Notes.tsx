@@ -1,15 +1,15 @@
-import * as React from 'react';
-import firebase from 'firebase/app';
+import React from 'react';
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/database';
 import { RouteComponentProps } from 'react-router';
 import { URLParameters } from '../types';
 import { TextArea, Form, Container } from 'semantic-ui-react';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 import { textAreaHandler } from '../modules/handlers';
 import Loading from '../components/Loading';
-import {CommitteeData} from "../models/committee";
+import { CommitteeData } from '../models/committee';
 
-interface Props extends RouteComponentProps<URLParameters> {
-}
+interface Props extends RouteComponentProps<URLParameters> {}
 
 interface State {
   committee?: CommitteeData;
@@ -23,8 +23,7 @@ export default class Notes extends React.Component<Props, State> {
     const { match } = props;
 
     this.state = {
-      committeeFref: firebase.database().ref('committees')
-        .child(match.params.committeeID)
+      committeeFref: firebase.database().ref('committees').child(match.params.committeeID),
     };
   }
 
@@ -32,7 +31,7 @@ export default class Notes extends React.Component<Props, State> {
     if (committee) {
       this.setState({ committee: committee.val() });
     }
-  }
+  };
 
   componentDidMount() {
     this.state.committeeFref.on('value', this.firebaseCallback);
@@ -65,7 +64,9 @@ export default class Notes extends React.Component<Props, State> {
             basic
           /> */}
         </Form>
-      </Container> 
-    ) : <Loading />;
+      </Container>
+    ) : (
+      <Loading />
+    );
   }
 }

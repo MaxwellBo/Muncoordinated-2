@@ -1,29 +1,23 @@
-import * as firebase from 'firebase/app';
+import firebase from 'firebase/compat/app';
 
-import {makeDropdownOption, shortMeetId} from '../utils';
-import {CommitteeID} from "./committee";
-import {DEFAULT_TIMER, TimerData, Unit} from "./time";
-
-export const DEFAULT_CAUCUS_TIME_SECONDS = 10 * 60;
-export const DEFAULT_SPEAKER_TIME_SECONDS = 1 * 60;
+import { makeDropdownOption, shortMeetId } from '../utils';
+import { CommitteeID } from './committee';
+import { DEFAULT_TIMER, TimerData, Unit } from './time';
+import { DEFAULT_SPEAKER_TIME_SECONDS, DEFAULT_CAUCUS_TIME_SECONDS } from './constants';
 
 export function recoverUnit(caucus?: CaucusData): Unit {
-  return caucus ? (caucus.speakerUnit || Unit.Seconds) : Unit.Seconds;
+  return caucus ? caucus.speakerUnit || Unit.Seconds : Unit.Seconds;
 }
 
 export function recoverDuration(caucus?: CaucusData): number | undefined {
-  return caucus
-      ? caucus.speakerDuration
-          ? caucus.speakerDuration
-          : undefined
-      : undefined;
+  return caucus ? (caucus.speakerDuration ? caucus.speakerDuration : undefined) : undefined;
 }
 
 export type CaucusID = string;
 
 export enum CaucusStatus {
   Open = 'Open',
-  Closed = 'Closed'
+  Closed = 'Closed',
 }
 
 export interface CaucusData {
@@ -40,15 +34,14 @@ export interface CaucusData {
   history?: Record<string, SpeakerEvent>;
 }
 
-export const CAUCUS_STATUS_OPTIONS = [
-  CaucusStatus.Open,
-  CaucusStatus.Closed
-].map(makeDropdownOption);
+export const CAUCUS_STATUS_OPTIONS = [CaucusStatus.Open, CaucusStatus.Closed].map(
+  makeDropdownOption
+);
 
 export enum Stance {
   For = 'For',
   Neutral = 'Neutral',
-  Against = 'Against'
+  Against = 'Against',
 }
 
 export interface SpeakerEvent {
@@ -61,17 +54,20 @@ export const DEFAULT_CAUCUS: CaucusData = {
   name: 'untitled caucus',
   topic: '',
   status: CaucusStatus.Open,
-  speakerTimer: {...DEFAULT_TIMER, remaining: DEFAULT_SPEAKER_TIME_SECONDS},
+  speakerTimer: { ...DEFAULT_TIMER, remaining: DEFAULT_SPEAKER_TIME_SECONDS },
   speakerDuration: DEFAULT_SPEAKER_TIME_SECONDS,
   speakerUnit: Unit.Seconds,
-  caucusTimer: {...DEFAULT_TIMER, remaining: DEFAULT_CAUCUS_TIME_SECONDS},
+  caucusTimer: { ...DEFAULT_TIMER, remaining: DEFAULT_CAUCUS_TIME_SECONDS },
   queueIsPublic: false,
   queue: {} as Record<string, SpeakerEvent>,
   history: {} as Record<string, SpeakerEvent>,
 };
-export const putCaucus =
-  (committeeID: CommitteeID, caucusData: CaucusData): firebase.database.Reference => {
-  const ref = firebase.database()
+export const putCaucus = (
+  committeeID: CommitteeID,
+  caucusData: CaucusData
+): firebase.database.Reference => {
+  const ref = firebase
+    .database()
     .ref('committees')
     .child(committeeID)
     .child('caucuses')
@@ -82,24 +78,27 @@ export const putCaucus =
   return ref;
 };
 
-export const putSpeaking =
-  (committeeID: CommitteeID, caucusID: CaucusID, speaker: SpeakerEvent): Promise<any> => {
-
+export const putSpeaking = (
+  committeeID: CommitteeID,
+  caucusID: CaucusID,
+  speaker: SpeakerEvent
+): Promise<any> => {
   console.debug(speaker);
 
-  return firebase.database()
+  return firebase
+    .database()
     .ref('committees')
     .child(committeeID)
     .child('caucuses')
     .child(caucusID)
     .child('speaking')
     .set(speaker);
-}
+};
 
 // tslint:disable-next-line
-export const closeCaucus = 
-  (committeeID: CommitteeID, caucusID: CaucusID): Promise<any> => {
-  return firebase.database()
+export const closeCaucus = (committeeID: CommitteeID, caucusID: CaucusID): Promise<any> => {
+  return firebase
+    .database()
     .ref('committees')
     .child(committeeID)
     .child('caucuses')
@@ -121,8 +120,17 @@ export interface Lifecycle {
 }
 
 export const runLifecycle = (lifecycle: Lifecycle) => {
-  const { history, speakingData, speaking, timerData, timer, 
-    timerResetSeconds, yielding, queueHeadData, queueHead } = lifecycle;
+  const {
+    history,
+    speakingData,
+    speaking,
+    timerData,
+    timer,
+    timerResetSeconds,
+    yielding,
+    queueHeadData,
+    queueHead,
+  } = lifecycle;
 
   let additionalYieldTime = 0;
 
@@ -138,20 +146,20 @@ export const runLifecycle = (lifecycle: Lifecycle) => {
     timer.update({
       elapsed: 0,
       remaining: timerResetSeconds,
-      ticking: false // and stop it
+      ticking: false, // and stop it
     });
   } // do nothing if no-one is currently speaking
 
   if (queueHead && queueHeadData) {
     speaking.set({
       ...queueHeadData,
-      duration: queueHeadData.duration + additionalYieldTime
+      duration: queueHeadData.duration + additionalYieldTime,
     });
 
     timer.update({
       elapsed: 0,
-      remaining: queueHeadData.duration + additionalYieldTime, // load the appropriate time 
-      ticking: false // and stop it
+      remaining: queueHeadData.duration + additionalYieldTime, // load the appropriate time
+      ticking: false, // and stop it
     });
 
     queueHead.set(null);

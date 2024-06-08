@@ -1,6 +1,6 @@
-import * as firebase from 'firebase/app';
-import {shortMeetId} from '../utils';
-import {CommitteeID} from "./committee";
+import firebase from 'firebase/compat/app';
+import { shortMeetId } from '../utils';
+import { CommitteeID } from './committee';
 
 export enum StrawpollStage {
   Preparing = 'preparing',
@@ -10,12 +10,12 @@ export enum StrawpollStage {
 
 export enum StrawpollType {
   Checkbox = 'checkbox',
-  Radio = 'radio'
+  Radio = 'radio',
 }
 
 export enum StrawpollMedium {
   Manual = 'manual',
-  Link = 'link'
+  Link = 'link',
 }
 
 export type StrawpollID = string;
@@ -27,62 +27,61 @@ export const DEFAULT_STRAWPOLL: StrawpollData = {
   type: StrawpollType.Checkbox,
   medium: StrawpollMedium.Link,
   options: {},
-  optionsArePublic: false
-}
+  optionsArePublic: false,
+};
 
 export interface StrawpollData {
-  question: string
-  type: StrawpollType
-  stage: StrawpollStage
-  medium?: StrawpollMedium
-  options?: Record<StrawpollOptionID, StrawpollOptionData>,
-  optionsArePublic?: boolean
+  question: string;
+  type: StrawpollType;
+  stage: StrawpollStage;
+  medium?: StrawpollMedium;
+  options?: Record<StrawpollOptionID, StrawpollOptionData>;
+  optionsArePublic?: boolean;
 }
 
 export interface StrawpollOptionData {
-  text: string
-  votes?: Record<StrawpollVoteID, StrawpollVoteData>
-  tally?: number
+  text: string;
+  votes?: Record<StrawpollVoteID, StrawpollVoteData>;
+  tally?: number;
 }
 
 export const DEFAULT_STRAWPOLL_OPTION: StrawpollOptionData = {
   text: '',
-  votes: {}
-}
+  votes: {},
+};
 
 export interface StrawpollVoteData {
-  voterID: string
+  voterID: string;
 }
 
-export const putStrawpoll =
-  (committeeID: CommitteeID, strawpollData: StrawpollData): firebase.database.Reference => {
+export const putStrawpoll = (
+  committeeID: CommitteeID,
+  strawpollData: StrawpollData
+): firebase.database.Reference => {
+  const ref = firebase
+    .database()
+    .ref('committees')
+    .child(committeeID)
+    .child('strawpolls')
+    .child(shortMeetId());
 
-    const ref = firebase.database()
-      .ref('committees')
-      .child(committeeID)
-      .child('strawpolls')
-      .child(shortMeetId());
+  ref.set(strawpollData);
 
-    ref.set(strawpollData);
+  return ref;
+};
 
-    return ref;
-  };
+export const getStrawpollsRef = (committeeID: CommitteeID): firebase.database.Reference => {
+  return firebase.database().ref('committees').child(committeeID).child('strawpolls');
+};
 
-export const getStrawpollsRef =
-  (committeeID: CommitteeID): firebase.database.Reference => {
-
-    return firebase.database()
-      .ref('committees')
-      .child(committeeID)
-      .child('strawpolls')
-  };
-
-export const getStrawpollRef =
-  (committeeID: CommitteeID, strawpollID: StrawpollID): firebase.database.Reference => {
-
-    return firebase.database()
-      .ref('committees')
-      .child(committeeID)
-      .child('strawpolls')
-      .child(strawpollID);
-  };
+export const getStrawpollRef = (
+  committeeID: CommitteeID,
+  strawpollID: StrawpollID
+): firebase.database.Reference => {
+  return firebase
+    .database()
+    .ref('committees')
+    .child(committeeID)
+    .child('strawpolls')
+    .child(strawpollID);
+};

@@ -1,16 +1,28 @@
-import * as React from 'react';
-import firebase from 'firebase/app';
+import React from 'react';
+import firebase from 'firebase/compat/app';
 import {
   MemberData,
   MemberID,
   Rank,
   parseFlagName,
   nameToMemberOption,
-  MemberOption
+  MemberOption,
 } from '../modules/member';
-import { Dropdown, Flag, Table, Button, Checkbox,
-  CheckboxProps, DropdownProps, ButtonProps, Container, Message, Icon, Grid } from 'semantic-ui-react';
-import { Helmet } from 'react-helmet';
+import {
+  Dropdown,
+  Flag,
+  Table,
+  Button,
+  Checkbox,
+  CheckboxProps,
+  DropdownProps,
+  ButtonProps,
+  Container,
+  Message,
+  Icon,
+  Grid,
+} from 'semantic-ui-react';
+import { Helmet } from 'react-helmet-async';
 import { checkboxHandler, dropdownHandler } from '../modules/handlers';
 import { makeDropdownOption } from '../utils';
 import _ from 'lodash';
@@ -18,9 +30,9 @@ import { URLParameters } from '../types';
 import { RouteComponentProps } from 'react-router';
 import { logClickGeneralSpeakersList } from '../modules/analytics';
 import { CommitteeStatsTable } from '../modules/committee-stats';
-import {CommitteeData, CommitteeID, pushMember, Template} from '../models/committee';
+import { CommitteeData, CommitteeID, pushMember, Template } from '../models/committee';
 import { TemplateAdder } from '../components/template';
-import {COUNTRY_OPTIONS} from "../constants";
+import { COUNTRY_OPTIONS } from '../constants';
 
 interface Props extends RouteComponentProps<URLParameters> {
   committee: CommitteeData;
@@ -36,12 +48,7 @@ interface State {
   present: MemberData['present'];
 }
 
-const RANK_OPTIONS = [
-  Rank.Standard,
-  Rank.Veto,
-  Rank.NGO,
-  Rank.Observer
-].map(makeDropdownOption);
+const RANK_OPTIONS = [Rank.Standard, Rank.Veto, Rank.NGO, Rank.Observer].map(makeDropdownOption);
 
 export default class Admin extends React.Component<Props, State> {
   constructor(props: Props) {
@@ -52,7 +59,7 @@ export default class Admin extends React.Component<Props, State> {
       options: [],
       rank: Rank.Standard,
       voting: false,
-      present: true
+      present: true,
     };
   }
 
@@ -74,17 +81,17 @@ export default class Admin extends React.Component<Props, State> {
           />
         </Table.Cell>
         <Table.Cell collapsing>
-          <Checkbox 
-            toggle 
-            checked={member.present} 
-            onChange={checkboxHandler<MemberData>(fref, 'present')} 
+          <Checkbox
+            toggle
+            checked={member.present}
+            onChange={checkboxHandler<MemberData>(fref, 'present')}
           />
         </Table.Cell>
         <Table.Cell collapsing>
-          <Checkbox 
-            toggle 
-            checked={member.voting} 
-            onChange={checkboxHandler<MemberData>(fref, 'voting')} 
+          <Checkbox
+            toggle
+            checked={member.voting}
+            onChange={checkboxHandler<MemberData>(fref, 'voting')}
           />
         </Table.Cell>
         <Table.Cell collapsing>
@@ -98,16 +105,14 @@ export default class Admin extends React.Component<Props, State> {
         </Table.Cell>
       </Table.Row>
     );
-  }
+  };
 
-  canPushMember = (member: MemberOption) => { 
+  canPushMember = (member: MemberOption) => {
     const members = this.props.committee.members || {};
-    const memberNames = Object.keys(members).map(id => 
-      members[id].name
-    );
+    const memberNames = Object.keys(members).map((id) => members[id].name);
 
     return !_.includes(memberNames, member.text);
-  }
+  };
 
   pushSelectedMember = (event: React.MouseEvent<HTMLButtonElement>, data: ButtonProps) => {
     event.preventDefault();
@@ -117,58 +122,61 @@ export default class Admin extends React.Component<Props, State> {
       name: this.state.member.text,
       rank: this.state.rank,
       present: this.state.present,
-      voting: this.state.voting
+      voting: this.state.voting,
     };
 
     pushMember(committeeID, member);
-  }
+  };
 
   setMember = (event: React.SyntheticEvent<HTMLElement>, data: DropdownProps) => {
     const { options: newOptions } = this.state;
-    const newMember = [...newOptions, ...COUNTRY_OPTIONS].filter(c => c.value === data.value)[0];
+    const newMember = [...newOptions, ...COUNTRY_OPTIONS].filter((c) => c.value === data.value)[0];
 
     if (newMember) {
       this.setState({ member: newMember });
     }
-  }
+  };
 
   setPresent = (event: React.FormEvent<HTMLInputElement>, data: CheckboxProps) => {
     this.setState({ present: data.checked ?? false });
-  }
+  };
 
   setVoting = (event: React.FormEvent<HTMLInputElement>, data: CheckboxProps) => {
     this.setState({ voting: data.checked ?? false });
-  }
+  };
 
   setRank = (event: React.SyntheticEvent<HTMLElement>, data: DropdownProps) => {
-    this.setState({ rank: data.value as Rank ?? Rank.Standard });
-  }
+    this.setState({ rank: (data.value as Rank) ?? Rank.Standard });
+  };
 
-  handleAdd = (event: React.KeyboardEvent<HTMLElement>, data: DropdownProps) => {
+  handleAdd = (event: React.SyntheticEvent<HTMLElement>, data: DropdownProps) => {
     // FSM looks sorta like the UN flag
     const newMember = nameToMemberOption((data.value as number | string).toString());
 
     if (_.includes(COUNTRY_OPTIONS, newMember)) {
       this.setState({ member: newMember });
     } else {
-      const newOptions = [ newMember, ...this.state.options ];
+      const newOptions = [newMember, ...this.state.options];
       this.setState({ member: newMember, options: newOptions });
     }
-  }
+  };
 
   gotoGSL = () => {
     const { committeeID } = this.props.match.params;
 
-    this.props.history
-      .push(`/committees/${committeeID}/caucuses/gsl`);
+    this.props.history.push(`/committees/${committeeID}/caucuses/gsl`);
 
     logClickGeneralSpeakersList();
-  }
-
+  };
 
   renderAdder() {
     const { handleAdd, setMember, setRank, setPresent, setVoting } = this;
-    const { present: newMemberPresent, voting: newMemberVoting, options: newOptions, member } = this.state;
+    const {
+      present: newMemberPresent,
+      voting: newMemberVoting,
+      options: newOptions,
+      member,
+    } = this.state;
 
     return (
       <Table.Row>
@@ -199,20 +207,20 @@ export default class Admin extends React.Component<Props, State> {
             value={this.state.rank}
           />
         </Table.HeaderCell>
-        <Table.HeaderCell collapsing >
-          <Checkbox 
+        <Table.HeaderCell collapsing>
+          <Checkbox
             className="adder__checkbox--toggle-present"
-            toggle 
-            checked={newMemberPresent} 
-            onChange={setPresent} 
+            toggle
+            checked={newMemberPresent}
+            onChange={setPresent}
           />
         </Table.HeaderCell>
-        <Table.HeaderCell collapsing >
-          <Checkbox 
+        <Table.HeaderCell collapsing>
+          <Checkbox
             className="adder__checkbox--toggle-voting"
-            toggle 
-            checked={newMemberVoting} 
-            onChange={setVoting} 
+            toggle
+            checked={newMemberVoting}
+            onChange={setVoting}
           />
         </Table.HeaderCell>
         <Table.HeaderCell>
@@ -229,9 +237,9 @@ export default class Admin extends React.Component<Props, State> {
     );
   }
 
-  renderCommitteeMembers = (props: { data: CommitteeData, fref: firebase.database.Reference }) => {
+  renderCommitteeMembers = (props: { data: CommitteeData; fref: firebase.database.Reference }) => {
     const members = this.props.committee.members || {};
-    const memberItems = Object.keys(members).map(id =>
+    const memberItems = Object.keys(members).map((id) =>
       this.renderMemberItem(id, members[id], props.fref.child('members').child(id))
     );
 
@@ -248,31 +256,21 @@ export default class Admin extends React.Component<Props, State> {
             </Table.Row>
           </Table.Header>
 
-          <Table.Header fullWidth>
-            {this.renderAdder()}
-          </Table.Header>
+          <Table.Header fullWidth>{this.renderAdder()}</Table.Header>
 
-          <Table.Body>
-            {memberItems.reverse()}
-          </Table.Body>
+          <Table.Body>{memberItems.reverse()}</Table.Body>
         </Table>
-        {memberItems.length === 0
-          ? <Message error>
-            Add at least one committee member to proceed
-          </Message>
-          : <Button
-            as='a'
-            onClick={this.gotoGSL}
-            primary
-            fluid
-          >
+        {memberItems.length === 0 ? (
+          <Message error>Add at least one committee member to proceed</Message>
+        ) : (
+          <Button as="a" onClick={this.gotoGSL} primary fluid>
             General Speakers' List
-              <Icon name="arrow right" />
+            <Icon name="arrow right" />
           </Button>
-        }
+        )}
       </>
     );
-  }
+  };
 
   render() {
     const { committee, fref } = this.props;
@@ -292,7 +290,7 @@ export default class Admin extends React.Component<Props, State> {
               <CommitteeStatsTable verbose={true} data={committee} />
             </Grid.Column>
           </Grid.Row>
-        </Grid >
+        </Grid>
       </Container>
     );
   }

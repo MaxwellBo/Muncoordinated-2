@@ -1,19 +1,16 @@
-import {makeDropdownOption} from "../utils";
-import {DEFAULT_SPEAKER_TIME_SECONDS} from "./caucus";
+import { makeDropdownOption } from '../utils';
+import { DEFAULT_SPEAKER_TIME_SECONDS } from './constants';
 
 export enum Unit {
   Minutes = 'min',
-  Seconds = 'sec'
+  Seconds = 'sec',
 }
 
 export function getSeconds(duration: number, unit: Unit): number {
   return duration * (unit === Unit.Minutes ? 60 : 1);
 }
 
-export const UNIT_OPTIONS = [
-  Unit.Seconds,
-  Unit.Minutes
-].map(makeDropdownOption);
+export const UNIT_OPTIONS = [Unit.Seconds, Unit.Minutes].map(makeDropdownOption);
 
 export interface TimerData {
   elapsed: number;
@@ -24,5 +21,5 @@ export interface TimerData {
 export const DEFAULT_TIMER = {
   elapsed: 0,
   remaining: DEFAULT_SPEAKER_TIME_SECONDS,
-  ticking: false
+  ticking: false,
 };

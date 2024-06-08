@@ -1,15 +1,14 @@
-import * as React from 'react';
-import * as firebase from 'firebase/app';
-import {RouteComponentProps} from 'react-router';
-import {URLParameters} from '../types';
-import {Checkbox, Container, Header, Segment} from 'semantic-ui-react';
-import {Helmet} from 'react-helmet';
-import {checkboxHandler} from '../modules/handlers';
-import {CommitteeData} from "../models/committee";
-import {DEFAULT_SETTINGS, SettingsData} from "../models/settings";
+import React from 'react';
+import firebase from 'firebase/compat/app';
+import { RouteComponentProps } from 'react-router';
+import { URLParameters } from '../types';
+import { Checkbox, Container, Header, Segment } from 'semantic-ui-react';
+import { Helmet } from 'react-helmet-async';
+import { checkboxHandler } from '../modules/handlers';
+import { CommitteeData } from '../models/committee';
+import { DEFAULT_SETTINGS, SettingsData } from '../models/settings';
 
-interface Props extends RouteComponentProps<URLParameters> {
-}
+interface Props extends RouteComponentProps<URLParameters> {}
 
 interface State {
   committee?: CommitteeData;
@@ -23,8 +22,7 @@ export default class Settings extends React.Component<Props, State> {
     const { match } = props;
 
     this.state = {
-      committeeFref: firebase.database().ref('committees')
-        .child(match.params.committeeID)
+      committeeFref: firebase.database().ref('committees').child(match.params.committeeID),
     };
   }
 
@@ -32,7 +30,7 @@ export default class Settings extends React.Component<Props, State> {
     if (committee) {
       this.setState({ committee: committee.val() });
     }
-  }
+  };
 
   componentDidMount() {
     this.state.committeeFref.on('value', this.firebaseCallback);
@@ -50,15 +48,15 @@ export default class Settings extends React.Component<Props, State> {
     const value = committee ? committee.settings[setting] : DEFAULT_SETTINGS[setting];
 
     return (
-      <Checkbox 
-        slider 
+      <Checkbox
+        slider
         indeterminate={value === undefined}
         checked={value || false}
         onChange={checkboxHandler<SettingsData>(settingsFref, setting)}
         label={label}
       />
     );
-  }
+  };
 
   render() {
     const { renderSetting } = this;
@@ -69,12 +67,14 @@ export default class Settings extends React.Component<Props, State> {
         <Helmet>
           <title>{`Settings - Muncoordinated`}</title>
         </Helmet>
-        <Header as="h3" attached="top">Settings</Header>
+        <Header as="h3" attached="top">
+          Settings
+        </Header>
         <Segment attached="bottom" loading={!committee}>
-          {renderSetting('moveQueueUp', '\'Queue\' should appear above \'Next speaking\'')}
+          {renderSetting('moveQueueUp', "'Queue' should appear above 'Next speaking'")}
           {renderSetting(
             'timersInSeparateColumns',
-            'Alternate arrangement with \'Speaker timer\' and \'Caucus timer\' in separate columns'
+            "Alternate arrangement with 'Speaker timer' and 'Caucus timer' in separate columns"
           )}
           {/* {renderSetting(
             'autoNextSpeaker',

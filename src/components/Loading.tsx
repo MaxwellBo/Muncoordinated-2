@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import { Loader, Dimmer, Icon } from 'semantic-ui-react';
 
 interface Props {

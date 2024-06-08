@@ -1,14 +1,13 @@
-import * as React from 'react';
-import * as firebase from 'firebase/app';
+import React from 'react';
+import firebase from 'firebase/compat/app';
 import { Container } from 'semantic-ui-react';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 import { RouteComponentProps } from 'react-router';
 import Timer from '../components/Timer';
 import { URLParameters } from '../types';
-import {TimerData, Unit} from "../models/time";
+import { TimerData, Unit } from '../models/time';
 
-interface Props extends RouteComponentProps<URLParameters> {
-}
+interface Props extends RouteComponentProps<URLParameters> {}
 
 interface State {
   timer?: TimerData;
@@ -22,9 +21,11 @@ export default class Unmod extends React.Component<Props, State> {
     const { match } = props;
 
     this.state = {
-      committeeFref: firebase.database().ref('committees')
+      committeeFref: firebase
+        .database()
+        .ref('committees')
         .child(match.params.committeeID)
-        .child('timer')
+        .child('timer'),
     };
   }
 
@@ -36,10 +37,10 @@ export default class Unmod extends React.Component<Props, State> {
         <Helmet>
           <title>{`Unmoderated Caucus - Muncoordinated`}</title>
         </Helmet>
-        <Timer 
-          name="Unmoderated caucus" 
-          timerFref={committeeFref} 
-          onChange={(x: TimerData) => x} 
+        <Timer
+          name="Unmoderated caucus"
+          timerFref={committeeFref}
+          onChange={(x: TimerData) => x}
           defaultDuration={10}
           defaultUnit={Unit.Minutes}
         />

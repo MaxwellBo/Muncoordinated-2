@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import {
   Button,
   Container,
@@ -14,20 +14,20 @@ import {
   Label,
   Popup,
   Segment,
-  TextArea
+  TextArea,
 } from 'semantic-ui-react';
-import {Helmet} from 'react-helmet';
-import Timer, {toggleTicking} from '../components/Timer';
-import {RouteComponentProps} from 'react-router';
+import { Helmet } from 'react-helmet-async';
+import Timer, { toggleTicking } from '../components/Timer';
+import { RouteComponentProps } from 'react-router';
 import {
   checkboxHandler,
   dropdownHandler,
   fieldHandler,
   textAreaHandler,
-  validatedNumberFieldHandler
+  validatedNumberFieldHandler,
 } from '../modules/handlers';
-import {URLParameters} from '../types';
-import {NotFound} from '../components/NotFound';
+import { URLParameters } from '../types';
+import { NotFound } from '../components/NotFound';
 import {
   CAUCUS_STATUS_OPTIONS,
   CaucusData,
@@ -39,20 +39,30 @@ import {
   recoverUnit,
   runLifecycle,
   SpeakerEvent,
-  Stance
-} from "../models/caucus";
-import {CommitteeData, recoverCaucus, recoverMembers, recoverSettings} from "../models/committee";
-import {TimerData, Unit} from "../models/time";
-import {useAuthState} from "react-firebase-hooks/auth";
-import _ from "lodash";
-import {useObjectVal} from "react-firebase-hooks/database";
-import {MemberData, MemberOption, membersToPresentOptions, parseFlagName} from "../modules/member";
-import {TimeSetter} from "../components/TimeSetter";
-import * as firebase from "firebase";
-import {DragDropContext, Draggable, DraggableProvided, Droppable, DropResult} from "react-beautiful-dnd";
+  Stance,
+} from '../models/caucus';
+import { CommitteeData, recoverCaucus, recoverMembers, recoverSettings } from '../models/committee';
+import { TimerData, Unit } from '../models/time';
+import { useAuthState } from 'react-firebase-hooks/auth';
+import _ from 'lodash';
+import { useObjectVal } from 'react-firebase-hooks/database';
+import {
+  MemberData,
+  MemberOption,
+  membersToPresentOptions,
+  parseFlagName,
+} from '../modules/member';
+import { TimeSetter } from '../components/TimeSetter';
+import firebase from 'firebase/compat/app';
+import {
+  DragDropContext,
+  Draggable,
+  DraggableProvided,
+  Droppable,
+  DropResult,
+} from 'react-beautiful-dnd';
 
-interface Props extends RouteComponentProps<URLParameters> {
-}
+interface Props extends RouteComponentProps<URLParameters> {}
 
 interface State {
   speakerTimer: TimerData;
@@ -61,7 +71,6 @@ interface State {
   committeeFref: firebase.database.Reference;
   loading: boolean;
 }
-
 
 export function NextSpeaking(props: {
   caucus?: CaucusData;
@@ -120,7 +129,7 @@ export function NextSpeaking(props: {
     if (queueHeadKey) {
       queueHeadDetails = {
         queueHeadData: q[queueHeadKey],
-        queueHead: props.fref.child('queue').child(queueHeadKey)
+        queueHead: props.fref.child('queue').child(queueHeadKey),
       };
     }
 
@@ -137,26 +146,26 @@ export function NextSpeaking(props: {
       timerData: props.speakerTimer,
       timer: props.fref.child('speakerTimer'),
       yielding: false,
-      timerResetSeconds: speakerSeconds
+      timerResetSeconds: speakerSeconds,
     };
 
-    runLifecycle({...lifecycle, ...queueHeadDetails});
+    runLifecycle({ ...lifecycle, ...queueHeadDetails });
   };
 
   // TODO: Improve this dirty fix
-  let skew: any
+  let skew: any;
   skew = useObjectVal<number>(firebase.database().ref('/.info/serverTimeOffset'));
 
   const startTimer = () => {
     toggleTicking({
       timerFref: props.fref.child('speakerTimer'),
       timer: props.speakerTimer,
-      skew: skew.value
+      skew: skew.value,
     });
   };
 
-  const {caucus} = props;
-  const {ticking} = props.speakerTimer;
+  const { caucus } = props;
+  const { ticking } = props.speakerTimer;
 
   const queue = caucus ? caucus.queue : {};
   const hasNowSpeaking = caucus ? !!caucus.speaking : false;
@@ -166,66 +175,36 @@ export function NextSpeaking(props: {
   const nextable = hasNowSpeaking || hasNextSpeaking;
 
   const stageButton = (
-    <Button
-      basic
-      icon
-      primary
-      disabled={!nextable}
-      onClick={nextSpeaker}
-    >
-      <Icon name="arrow up"/>
+    <Button basic icon primary disabled={!nextable} onClick={nextSpeaker}>
+      <Icon name="arrow up" />
       Stage
     </Button>
   );
 
   const startButton = (
-    <Button
-      basic
-      icon
-      positive
-      disabled={!nextable}
-      onClick={startTimer}
-    >
-      <Icon name="hourglass start"/>
+    <Button basic icon positive disabled={!nextable} onClick={startTimer}>
+      <Icon name="hourglass start" />
       Start
     </Button>
-  )
+  );
 
   const nextButton = (
-    <Button
-      basic
-      icon
-      primary
-      disabled={!nextable}
-      onClick={nextSpeaker}
-    >
-      <Icon name="arrow up"/>
+    <Button basic icon primary disabled={!nextable} onClick={nextSpeaker}>
+      <Icon name="arrow up" />
       Next
     </Button>
   );
 
   const stopButton = (
-    <Button
-      basic
-      icon
-      negative
-      disabled={!nextable}
-      onClick={nextSpeaker}
-    >
-      <Icon name="hourglass end"/>
+    <Button basic icon negative disabled={!nextable} onClick={nextSpeaker}>
+      <Icon name="hourglass end" />
       Stop
     </Button>
   );
 
   const interlaceButton = (
-    <Button
-      icon
-      disabled={!interlaceable}
-      basic
-      color="purple"
-      onClick={interlace}
-    >
-      <Icon name="random"/>
+    <Button icon disabled={!interlaceable} basic color="purple" onClick={interlace}>
+      <Icon name="random" />
       Order
     </Button>
   );
@@ -250,7 +229,9 @@ export function NextSpeaking(props: {
 
   return (
     <Segment textAlign="center" loading={!caucus}>
-      <Label attached="top left" size="large">Next speaking</Label>
+      <Label attached="top left" size="large">
+        Next speaking
+      </Label>
       {button}
       <Popup
         trigger={interlaceButton}
@@ -270,28 +251,27 @@ export function NextSpeaking(props: {
 function StanceIcon(props: { stance: Stance }) {
   switch (props.stance) {
     case Stance.For:
-      return <Icon name="thumbs up outline"/>;
+      return <Icon name="thumbs up outline" />;
     case Stance.Against:
-      return <Icon name="thumbs down outline"/>;
+      return <Icon name="thumbs down outline" />;
     default:
-      return <Icon name="hand point right outline"/>;
+      return <Icon name="hand point right outline" />;
   }
 }
 
 class SpeakerFeedEntry extends React.PureComponent<{
-  data?: SpeakerEvent,
-  speaking?: SpeakerEvent,
-  fref: firebase.database.Reference,
-  speakerTimer: TimerData,
-  draggableProvided?: DraggableProvided
+  data?: SpeakerEvent;
+  speaking?: SpeakerEvent;
+  fref: firebase.database.Reference;
+  speakerTimer: TimerData;
+  draggableProvided?: DraggableProvided;
 }> {
-
   yieldHandler = () => {
-    const {fref, data, speakerTimer, speaking} = this.props;
+    const { fref, data, speakerTimer, speaking } = this.props;
 
     const queueHeadDetails = {
       queueHeadData: data,
-      queueHead: fref
+      queueHead: fref,
     };
 
     // HACK
@@ -299,7 +279,8 @@ class SpeakerFeedEntry extends React.PureComponent<{
     // The only reason I'm doing this is because I honestly couldn't give a shit about propogating
     // the caucusRef all the way down. Furthermore, the only time this should ever be called is when the
     // SpeakerEvent is in the "queue" zone, meaning we'll pop up into the "caucus" field.
-    const caucusRef = (fref.parent as firebase.database.Reference).parent as firebase.database.Reference;
+    const caucusRef = (fref.parent as firebase.database.Reference)
+      .parent as firebase.database.Reference;
 
     const lifecycle: Lifecycle = {
       history: caucusRef.child('history'),
@@ -308,87 +289,90 @@ class SpeakerFeedEntry extends React.PureComponent<{
       timerData: speakerTimer,
       timer: caucusRef.child('speakerTimer'),
       yielding: true,
-      timerResetSeconds: 0 // this shouldn't ever be used when yielding
+      timerResetSeconds: 0, // this shouldn't ever be used when yielding
     };
 
-    runLifecycle({...lifecycle, ...queueHeadDetails});
+    runLifecycle({ ...lifecycle, ...queueHeadDetails });
   };
 
   renderContent() {
-    const {data, speaking, fref} = this.props;
+    const { data, speaking, fref } = this.props;
 
     return (
       <Feed.Content>
         <Feed.Summary>
           <Feed.User>
-            {data && <Flag name={parseFlagName(data.who)}/>}
+            {data && <Flag name={parseFlagName(data.who)} />}
             {data ? data.who : ''}
           </Feed.User>
           <Feed.Date>{data ? data.duration.toString() + ' seconds' : ''}</Feed.Date>
         </Feed.Summary>
         <Feed.Meta>
           <Feed.Like>
-            {data && <StanceIcon stance={data.stance}/>}
+            {data && <StanceIcon stance={data.stance} />}
             {data ? data.stance : ''}
           </Feed.Like>
-          {data && <Label size="mini" as="a" onClick={() => fref.remove()}>
+          {data && (
+            <Label size="mini" as="a" onClick={() => fref.remove()}>
               Remove
-          </Label>}
-          {data && speaking && (<Label size="mini" as="a" onClick={this.yieldHandler}>
-            Yield
-          </Label>)}
+            </Label>
+          )}
+          {data && speaking && (
+            <Label size="mini" as="a" onClick={this.yieldHandler}>
+              Yield
+            </Label>
+          )}
         </Feed.Meta>
       </Feed.Content>
-    )
+    );
   }
 
   render() {
-    const {draggableProvided} = this.props;
+    const { draggableProvided } = this.props;
 
     return draggableProvided ? (
       <div
         className="event" // XXX: quite possibly the most bullshit hack known to man
         ref={draggableProvided.innerRef}
-        {...draggableProvided.draggableProps}>
+        {...draggableProvided.draggableProps}
+      >
         {this.renderContent()}
-        <div {...draggableProvided.dragHandleProps}
-             style={{paddingLeft: '120px'}
-             }> ⠿
+        <div {...draggableProvided.dragHandleProps} style={{ paddingLeft: '120px' }}>
+          {' '}
+          ⠿
         </div>
       </div>
-    ) : <FeedEvent>
-      {this.renderContent()}
-    </FeedEvent>
+    ) : (
+      <FeedEvent>{this.renderContent()}</FeedEvent>
+    );
   }
 }
 
 function SpeakerFeed(props: {
-  data?: Record<string, SpeakerEvent>,
-  queueFref: firebase.database.Reference,
-  speaking?: SpeakerEvent,
-  speakerTimer: TimerData
+  data?: Record<string, SpeakerEvent>;
+  queueFref: firebase.database.Reference;
+  speaking?: SpeakerEvent;
+  speakerTimer: TimerData;
 }) {
-  const {data, queueFref, speaking, speakerTimer} = props;
+  const { data, queueFref, speaking, speakerTimer } = props;
   const [user] = useAuthState(firebase.auth());
 
   const events = data || {};
 
-  const eventItems = Object.keys(events).map((key, index) =>
-    (
-      <Draggable key={key} draggableId={key} index={index}>
-        {(provided, snapshot) =>
-          <SpeakerFeedEntry
-            draggableProvided={provided}
-            key={key}
-            data={events[key]}
-            fref={queueFref.child(key)}
-            speaking={speaking}
-            speakerTimer={speakerTimer}
-          />
-        }
-      </Draggable>
-    )
-  );
+  const eventItems = Object.keys(events).map((key, index) => (
+    <Draggable key={key} draggableId={key} index={index}>
+      {(provided, snapshot) => (
+        <SpeakerFeedEntry
+          draggableProvided={provided}
+          key={key}
+          data={events[key]}
+          fref={queueFref.child(key)}
+          speaking={speaking}
+          speakerTimer={speakerTimer}
+        />
+      )}
+    </Draggable>
+  ));
 
   const reorder = <T,>(list: T[], startIndex: number, endIndex: number) => {
     const result = Array.from(list);
@@ -396,7 +380,7 @@ function SpeakerFeed(props: {
     result.splice(endIndex, 0, removed);
 
     return result;
-  }
+  };
 
   const onDragEnd = (result: DropResult) => {
     // dropped outside the list
@@ -419,49 +403,42 @@ function SpeakerFeed(props: {
 
     queueFref.set({});
 
-    reorderedKeys.forEach(key => {
-      const se = (data || {})[key]
+    reorderedKeys.forEach((key) => {
+      const se = (data || {})[key];
 
       if (se) {
         queueFref.push().set(se);
       }
     });
-  }
+  };
 
   return (
-    <DragDropContext
-      onDragEnd={onDragEnd}
-    >
+    <DragDropContext onDragEnd={onDragEnd}>
       <Droppable droppableId="droppable">
-        {(provided, snapshot) =>
-          <div
-            ref={provided.innerRef}
-            {...provided.droppableProps}
-          >
-            <Feed
-              size="large"
-            >
+        {(provided, snapshot) => (
+          <div ref={provided.innerRef} {...provided.droppableProps}>
+            <Feed size="large">
               {eventItems}
               {provided.placeholder}
             </Feed>
           </div>
-        }
+        )}
       </Droppable>
     </DragDropContext>
   );
-};
+}
 
 function Queuer(props: {
   caucus?: CaucusData;
   members?: Record<string, MemberData>;
   caucusFref: firebase.database.Reference;
 }) {
-  const {members, caucus, caucusFref} = props;
+  const { members, caucus, caucusFref } = props;
   const [queueMember, setQueueMember] = React.useState<MemberOption | undefined>(undefined);
   const memberOptions = membersToPresentOptions(members);
 
   const setStance = (stance: Stance) => () => {
-    const {caucus} = props;
+    const { caucus } = props;
 
     const duration = Number(recoverDuration(caucus));
 
@@ -474,18 +451,20 @@ function Queuer(props: {
 
       props.caucusFref.child('queue').push().set(newEvent);
     }
-  }
+  };
 
   const setMember = (event: React.SyntheticEvent<HTMLElement>, data: DropdownProps): void => {
-    setQueueMember(memberOptions.filter(c => c.value === data.value)[0]);
-  }
+    setQueueMember(memberOptions.filter((c) => c.value === data.value)[0]);
+  };
 
   const duration = recoverDuration(caucus);
   const disableButtons = !queueMember || !duration;
 
   return (
     <Segment textAlign="center">
-      <Label attached="top left" size="large">Queue</Label>
+      <Label attached="top left" size="large">
+        Queue
+      </Label>
       <Form>
         <Form.Dropdown
           icon="search"
@@ -509,27 +488,15 @@ function Queuer(props: {
           label="Delegates can queue"
           indeterminate={!caucus}
           toggle
-          checked={caucus ? (caucus.queueIsPublic || false) : false} // zoo wee mama
+          checked={caucus ? caucus.queueIsPublic || false : false} // zoo wee mama
           onChange={checkboxHandler<CaucusData>(caucusFref, 'queueIsPublic')}
         />
         <Button.Group size="large" fluid>
-          <Button
-            content="For"
-            disabled={disableButtons}
-            onClick={setStance(Stance.For)}
-          />
-          <Button.Or/>
-          <Button
-            disabled={disableButtons}
-            content="Neutral"
-            onClick={setStance(Stance.Neutral)}
-          />
-          <Button.Or/>
-          <Button
-            disabled={disableButtons}
-            content="Against"
-            onClick={setStance(Stance.Against)}
-          />
+          <Button content="For" disabled={disableButtons} onClick={setStance(Stance.For)} />
+          <Button.Or />
+          <Button disabled={disableButtons} content="Neutral" onClick={setStance(Stance.Neutral)} />
+          <Button.Or />
+          <Button disabled={disableButtons} content="Against" onClick={setStance(Stance.Against)} />
         </Button.Group>
       </Form>
     </Segment>
@@ -546,7 +513,7 @@ export default class Caucus extends React.Component<Props, State> {
       committeeFref: firebase.database().ref('committees').child(match.params.committeeID),
       caucusTimer: DEFAULT_CAUCUS.caucusTimer,
       speakerTimer: DEFAULT_CAUCUS.speakerTimer,
-      loading: true
+      loading: true,
     };
   }
 
@@ -554,7 +521,7 @@ export default class Caucus extends React.Component<Props, State> {
     if (committee) {
       this.setState({ committee: committee.val(), loading: false });
     }
-  }
+  };
 
   // XXX: I'm worried that this might be the source of a bug that I'm yet to observe
   // Say our route changes the committeeID, _but does not unmount the caucus component_
@@ -570,20 +537,18 @@ export default class Caucus extends React.Component<Props, State> {
   recoverCaucusFref = () => {
     const caucusID: CaucusID = this.props.match.params.caucusID;
 
-    return this.state.committeeFref
-      .child('caucuses')
-      .child(caucusID);
-  }
+    return this.state.committeeFref.child('caucuses').child(caucusID);
+  };
 
   renderHeader = (caucus?: CaucusData) => {
     const caucusFref = this.recoverCaucusFref();
 
     const statusDropdown = (
-      <Dropdown 
-        value={caucus ? caucus.status : CaucusStatus.Open} 
-        options={CAUCUS_STATUS_OPTIONS} 
-        onChange={dropdownHandler<CaucusData>(caucusFref, 'status')} 
-      /> 
+      <Dropdown
+        value={caucus ? caucus.status : CaucusStatus.Open}
+        options={CAUCUS_STATUS_OPTIONS}
+        onChange={dropdownHandler<CaucusData>(caucusFref, 'status')}
+      />
     );
 
     return (
@@ -611,32 +576,38 @@ export default class Caucus extends React.Component<Props, State> {
         </Form>
       </>
     );
-  }
+  };
 
-  renderNowSpeaking =  (caucus?: CaucusData) => {
+  renderNowSpeaking = (caucus?: CaucusData) => {
     const { speakerTimer } = this.state;
-    
+
     const caucusFref = this.recoverCaucusFref();
 
     const entryData = caucus ? caucus.speaking : undefined;
 
     return (
       <Segment loading={!caucus}>
-        <Label attached="top left" size="large">Now speaking</Label>
+        <Label attached="top left" size="large">
+          Now speaking
+        </Label>
         <Feed size="large">
-          <SpeakerFeedEntry data={entryData} fref={caucusFref.child('speaking')} speakerTimer={speakerTimer}/>
+          <SpeakerFeedEntry
+            data={entryData}
+            fref={caucusFref.child('speaking')}
+            speakerTimer={speakerTimer}
+          />
         </Feed>
       </Segment>
     );
-  }
+  };
 
   setSpeakerTimer = (timer: TimerData) => {
     this.setState({ speakerTimer: timer });
-  }
+  };
 
   setCaucusTimer = (timer: TimerData) => {
     this.setState({ caucusTimer: timer });
-  }
+  };
 
   renderCaucus = (caucus?: CaucusData) => {
     const { renderNowSpeaking, renderHeader, recoverCaucusFref } = this;
@@ -671,33 +642,23 @@ export default class Caucus extends React.Component<Props, State> {
       />
     );
 
-    const { 
-      autoNextSpeaker, 
-      timersInSeparateColumns,
-      moveQueueUp
-    } = recoverSettings(committee);
+    const { autoNextSpeaker, timersInSeparateColumns, moveQueueUp } = recoverSettings(committee);
 
     const header = (
       <Grid.Row>
-        <Grid.Column>
-          {renderHeader(caucus)}
-        </Grid.Column>
+        <Grid.Column>{renderHeader(caucus)}</Grid.Column>
       </Grid.Row>
     );
 
     const renderedCaucusQueuer = (
-      <Queuer
-        caucus={caucus} 
-        members={members} 
-        caucusFref={caucusFref} 
-      />
+      <Queuer caucus={caucus} members={members} caucusFref={caucusFref} />
     );
 
     const renderedCaucusNextSpeaking = (
       <NextSpeaking
-        caucus={caucus} 
-        fref={caucusFref} 
-        speakerTimer={speakerTimer} 
+        caucus={caucus}
+        fref={caucusFref}
+        speakerTimer={speakerTimer}
         autoNextSpeaker={autoNextSpeaker}
       />
     );
@@ -737,10 +698,10 @@ export default class Caucus extends React.Component<Props, State> {
         <Grid columns="equal" stackable>
           {header}
           {body}
-        </Grid >
+        </Grid>
       </Container>
     );
-  }
+  };
 
   render() {
     const { committee, loading } = this.state;
