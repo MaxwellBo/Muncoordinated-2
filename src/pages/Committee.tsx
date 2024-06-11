@@ -1,5 +1,5 @@
 import * as React from 'react';
-import firebase from 'firebase/app';
+import firebase from 'firebase/compat/app';
 import {RouteComponentProps} from 'react-router';
 import {Route} from 'react-router-dom';
 import Caucus from './Caucus';

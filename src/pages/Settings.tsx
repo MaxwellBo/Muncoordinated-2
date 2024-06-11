@@ -1,5 +1,5 @@
 import * as React from 'react';
-import * as firebase from 'firebase/app';
+import * as firebase from 'firebase/compat/app';
 import {RouteComponentProps} from 'react-router';
 import {URLParameters} from '../types';
 import {Checkbox, Container, Header, Segment} from 'semantic-ui-react';

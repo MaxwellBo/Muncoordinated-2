@@ -1,14 +1,14 @@
 import * as React from 'react';
 
 // This import loads the firebase namespace along with all its type information.
-import * as firebase from 'firebase/app';
+import * as firebase from 'firebase/compat/app';
 
 // These imports load individual services into the firebase namespace.
-import 'firebase/auth';
-import 'firebase/database';
-import 'firebase/firestore';
-import 'firebase/storage';
-import 'firebase/analytics';
+import 'firebase/compat/auth';
+import 'firebase/compat/database';
+import 'firebase/compat/firestore';
+import 'firebase/compat/storage';
+import 'firebase/compat/analytics';
 
 import { Route, Switch } from 'react-router-dom';
 import './App.css';

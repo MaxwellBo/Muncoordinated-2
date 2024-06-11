@@ -1,4 +1,4 @@
-import * as firebase from 'firebase/app';
+import * as firebase from 'firebase/compat/app';
 import * as React from 'react';
 import { RouteComponentProps } from 'react-router';
 import { URLParameters } from '../types';

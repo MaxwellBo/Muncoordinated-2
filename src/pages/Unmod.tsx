@@ -1,5 +1,5 @@
 import * as React from 'react';
-import * as firebase from 'firebase/app';
+import * as firebase from 'firebase/compat/app';
 import { Container } from 'semantic-ui-react';
 import { Helmet } from 'react-helmet';
 import { RouteComponentProps } from 'react-router';

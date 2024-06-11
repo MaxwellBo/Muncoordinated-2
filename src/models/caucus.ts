@@ -1,4 +1,4 @@
-import * as firebase from 'firebase/app';
+import * as firebase from 'firebase/compat/app';
 
 import {makeDropdownOption, shortMeetId} from '../utils';
 import {CommitteeID} from "./committee";

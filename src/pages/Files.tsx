@@ -1,5 +1,5 @@
 import * as React from 'react';
-import firebase from 'firebase/app';
+import firebase from 'firebase/compat/app';
 import FileSaver from 'file-saver';
 import {RouteComponentProps} from 'react-router';
 import {URLParameters} from '../types';
