@@ -548,7 +548,8 @@ export class MotionsComponent extends React.Component<Props & Hooks, State> {
       />
     );
 
-    const { caucuses, resolutions } = this.state.committee || { caucuses: {}, resolutions: {} };
+    const resolutions: Record<string, ResolutionData> = this.state.committee?.resolutions || {};
+    const caucuses: Record<string, CaucusData> = this.state.committee?.caucuses || {};
 
     // BADCODE: Filter predicate shared with menu in Committee, also update when changing
     // Prioritize recency
