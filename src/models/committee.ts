@@ -2,7 +2,7 @@ import {MemberData, MemberID, MemberOption, membersToOptions, membersToPresentOp
 import {logCreateMember} from '../modules/analytics';
 import _ from 'lodash';
 import {CaucusData, CaucusID, DEFAULT_CAUCUS, DEFAULT_CAUCUS_TIME_SECONDS} from "./caucus";
-import firebase from "firebase";
+import firebase from "firebase/compat";
 import {PostData, PostID} from "./post";
 import {MotionData, MotionID} from "./motion";
 import {DEFAULT_TIMER, TimerData} from "./time";
