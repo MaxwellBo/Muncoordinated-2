@@ -14,7 +14,6 @@ import {
   Input,
   List,
   Menu,
-  Responsive,
   Segment,
   SemanticICONS,
   Sidebar
@@ -40,6 +39,7 @@ import {DEFAULT_STRAWPOLL, putStrawpoll} from '../models/strawpoll';
 import Strawpoll from './Strawpoll';
 import {logClickSetupCommittee} from '../modules/analytics';
 import {CommitteeData, CommitteeID, DEFAULT_COMMITTEE} from "../models/committee";
+import { createMedia } from '@artsy/fresnel';
 
 interface DesktopContainerProps {
   menu?: React.ReactNode;
@@ -66,19 +66,38 @@ interface State {
   committeeFref: firebase.database.Reference;
 }
 
+const CommitteeMedia = createMedia({
+  breakpoints: {
+    mobile: 320,
+    tablet: 768,
+    computer: 992,
+    largeScreen: 1200,
+    widescreen: 1920,
+  },
+});
+
+const mediaStyles = CommitteeMedia.createMediaStyle();
+const { Media, MediaContextProvider } = CommitteeMedia;
+
 
 class DesktopContainer extends React.Component<DesktopContainerProps, DesktopContainerState> {
   render() {
     const { body, menu } = this.props;
-
     // Semantic-UI-React/src/addons/Responsive/Responsive.js
     return (
-      <Responsive {...{ minWidth: Responsive.onlyMobile.maxWidth as number + 1 }}>
-        <Menu fluid size="small">
-          {menu}
-        </Menu>
-        {body}
-      </Responsive>
+      <>
+      <style>{mediaStyles}</style>
+      <MediaContextProvider>
+        <Segment.Group>
+          <Segment as={Media} greaterThanOrEqual="computer">
+            <Menu fluid size="small">
+              {menu}
+            </Menu>
+            {body}
+          </Segment>
+        </Segment.Group>
+      </MediaContextProvider>
+      </>
     );
   }
 }
@@ -109,7 +128,11 @@ class MobileContainer extends React.Component<MobileContainerProps, MobileContai
     const { sidebarOpened } = this.state;
 
     return (
-      <Responsive {...Responsive.onlyMobile}>
+    <>
+    <style>{mediaStyles}</style>
+    <MediaContextProvider>
+        <Segment.Group>
+          <Segment as={Media} at="mobile">
         <Sidebar.Pushable>
           <Sidebar as={Menu} animation="uncover" stackable visible={sidebarOpened}>
             {menu}
@@ -124,7 +147,10 @@ class MobileContainer extends React.Component<MobileContainerProps, MobileContai
             {body}
           </Sidebar.Pusher>
         </Sidebar.Pushable>
-      </Responsive>
+          </Segment>
+        </Segment.Group>
+      </MediaContextProvider>
+    </>
     );
   }
 }

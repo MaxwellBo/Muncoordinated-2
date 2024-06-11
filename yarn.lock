@@ -24,6 +24,11 @@
     jsonpointer "^5.0.0"
     leven "^3.1.0"
 
+"@artsy/fresnel@^7.1.4":
+  version "7.1.4"
+  resolved "https://registry.yarnpkg.com/@artsy/fresnel/-/fresnel-7.1.4.tgz#63221d41ea7285379510347d886dc3aa8b2d0cfd"
+  integrity sha512-qbUdxzlcI9Q9Ez+HfYDq7hlLoeFKC8EKcCckW+EltWu9SWL3px4QZIkr7NwYEz13q/nLvAlHMnbJ3TpSEEZ1zg==
+
 "@babel/code-frame@^7.0.0":
   version "7.5.5"
   resolved "https://registry.npmjs.org/@babel/code-frame/-/code-frame-7.5.5.tgz"

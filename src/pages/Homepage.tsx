@@ -8,13 +8,13 @@ import {
   Image,
   List,
   Menu,
-  Responsive,
   Segment,
   Statistic,
   Sidebar,
   Visibility,
 } from 'semantic-ui-react';
 import { logClickCreateACommitteeButton, logClickLogInButton, logClickSignupButton } from '../modules/analytics';
+import { createMedia} from '@artsy/fresnel'
 import Loading from '../components/Loading';
 import { ShareCapabilities } from '../components/share-hints';
 
@@ -58,7 +58,21 @@ const HomepageHeading = ({ mobile }: HomepageHeadingProps) => (
     </Button>
     <br />
   </Container>
-);
+)
+
+const AppMedia = createMedia({
+  breakpoints: {
+    mobile: 320,
+    tablet: 768,
+    computer: 992,
+    largeScreen: 1200,
+    widescreen: 1920,
+  },
+});
+
+const mediaStyles = AppMedia.createMediaStyle();
+const { Media, MediaContextProvider } = AppMedia;
+
 
 interface DesktopContainerProps {
   children?: React.ReactNode;
@@ -96,8 +110,11 @@ class DesktopContainer extends React.Component<DesktopContainerProps, DesktopCon
 
     // Semantic-UI-React/src/addons/Responsive/Responsive.js
     return (
-      // @ts-ignore
-      <Responsive {...{ minWidth: Responsive.onlyMobile.maxWidth + 1 }}>
+      <>
+      <style>{mediaStyles}</style>
+      <MediaContextProvider>
+        <Segment as={Media} at="tablet">
+      {/* @ts-ignore */}
         <Visibility once={false} onBottomPassed={this.showFixedMenu} onBottomPassedReverse={this.hideFixedMenu}>
           <Segment inverted textAlign="center" style={{ minHeight: 700, padding: '1em 0em' }} vertical>
             <Menu
@@ -122,9 +139,10 @@ class DesktopContainer extends React.Component<DesktopContainerProps, DesktopCon
             <HomepageHeading mobile={false} />
           </Segment>
         </Visibility>
-
+          </Segment>
+        </MediaContextProvider>
         {children}
-      </Responsive>
+        </>
     );
   }
 }
@@ -163,7 +181,10 @@ class MobileContainer extends React.Component<MobileContainerProps, MobileContai
     const { sidebarOpened } = this.state;
 
     return (
-      <Responsive {...Responsive.onlyMobile}>
+      <>
+        <style>{mediaStyles}</style>
+        <MediaContextProvider>
+          <Segment as={Media} at="mobilie">
         <Sidebar.Pushable>
           <Sidebar as={Menu} animation="push" inverted vertical visible={sidebarOpened}>
             <Menu.Item as="a" active>Home</Menu.Item>
@@ -190,7 +211,9 @@ class MobileContainer extends React.Component<MobileContainerProps, MobileContai
             {children}
           </Sidebar.Pusher>
         </Sidebar.Pushable>
-      </Responsive>
+        </Segment>
+        </MediaContextProvider>
+        </> 
     );
   }
 }
