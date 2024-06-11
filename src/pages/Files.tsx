@@ -15,7 +15,6 @@ import {
   Tab,
   TextAreaProps
 } from 'semantic-ui-react';
-import {Helmet} from 'react-helmet';
 import {MemberOption, parseFlagName} from '../modules/member';
 import Loading from '../components/Loading';
 import {DEFAULT_AMENDMENT, putAmendment, ResolutionID} from '../models/resolution';
@@ -631,9 +630,7 @@ export default class Files extends React.Component<Props, State> {
       ? inner:
       (
         <Container text style={{ padding: '1em 0em' }}>
-          <Helmet>
             <title>{`Posts - Muncoordinated`}</title>
-          </Helmet>
           {inner}
         </Container>
       );

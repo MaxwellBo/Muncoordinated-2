@@ -1,7 +1,6 @@
 import * as React from 'react';
 import firebase from 'firebase/compat/app';
 import { Container } from 'semantic-ui-react';
-import { Helmet } from 'react-helmet';
 import { RouteComponentProps } from 'react-router';
 import Timer from '../components/Timer';
 import { URLParameters } from '../types';
@@ -33,9 +32,7 @@ export default class Unmod extends React.Component<Props, State> {
 
     return (
       <Container text style={{ padding: '1em 0em' }}>
-        <Helmet>
           <title>{`Unmoderated Caucus - Muncoordinated`}</title>
-        </Helmet>
         <Timer 
           name="Unmoderated caucus" 
           timerFref={committeeFref} 

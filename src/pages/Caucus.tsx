@@ -16,7 +16,6 @@ import {
   Segment,
   TextArea
 } from 'semantic-ui-react';
-import {Helmet} from 'react-helmet';
 import Timer, {toggleTicking} from '../components/Timer';
 import {RouteComponentProps} from 'react-router';
 import {
@@ -731,9 +730,7 @@ export default class Caucus extends React.Component<Props, State> {
 
     return (
       <Container style={{ 'padding-bottom': '2em' }}>
-        <Helmet>
           <title>{`${caucus?.name} - Muncoordinated`}</title>
-        </Helmet>
         <Grid columns="equal" stackable>
           {header}
           {body}

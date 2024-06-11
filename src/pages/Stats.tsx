@@ -3,7 +3,6 @@ import firebase from 'firebase/compat/app';
 import * as _ from 'lodash';
 import { RouteComponentProps } from 'react-router';
 import { Table, Flag, Container } from 'semantic-ui-react';
-import { Helmet } from 'react-helmet';
 import { MemberData, MemberID, parseFlagName } from '../modules/member';
 import { URLParameters } from '../types';
 import Loading from '../components/Loading';
@@ -143,9 +142,7 @@ export default class Stats extends React.Component<Props, State> {
 
     return (
       <Container text style={{ padding: '1em 0em 1.5em' }}>
-        <Helmet>
           <title>{`Stats - Muncoordinated`}</title>
-        </Helmet>
         <Table compact celled definition>
           <Table.Header>
             <Table.Row>

@@ -10,7 +10,6 @@ import {
 } from '../modules/member';
 import { Dropdown, Flag, Table, Button, Checkbox,
   CheckboxProps, DropdownProps, ButtonProps, Container, Message, Icon, Grid } from 'semantic-ui-react';
-import { Helmet } from 'react-helmet';
 import { checkboxHandler, dropdownHandler } from '../modules/handlers';
 import { makeDropdownOption } from '../utils';
 import _ from 'lodash';
@@ -279,9 +278,7 @@ export default class Admin extends React.Component<Props, State> {
 
     return (
       <Container style={{ padding: '1em 0em 1.5em' }}>
-        <Helmet>
           <title>Setup - Muncoordinated</title>
-        </Helmet>
         <Grid columns="2" stackable>
           <Grid.Row>
             <Grid.Column width={9}>

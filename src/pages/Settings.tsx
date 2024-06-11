@@ -3,7 +3,6 @@ import firebase from 'firebase/compat/app';
 import {RouteComponentProps} from 'react-router';
 import {URLParameters} from '../types';
 import {Checkbox, Container, Header, Segment} from 'semantic-ui-react';
-import {Helmet} from 'react-helmet';
 import {checkboxHandler} from '../modules/handlers';
 import {CommitteeData} from "../models/committee";
 import {DEFAULT_SETTINGS, SettingsData} from "../models/settings";
@@ -66,9 +65,7 @@ export default class Settings extends React.Component<Props, State> {
 
     return (
       <Container text style={{ padding: '1em 0em' }}>
-        <Helmet>
           <title>{`Settings - Muncoordinated`}</title>
-        </Helmet>
         <Header as="h3" attached="top">Settings</Header>
         <Segment attached="bottom" loading={!committee}>
           {renderSetting('moveQueueUp', '\'Queue\' should appear above \'Next speaking\'')}

@@ -417,9 +417,7 @@ export default function Strawpoll(props: StrawpollProps) {
 
   return (
     <Container text style={{ padding: '1em 0em' }}>
-      <Helmet>
         <title>{`${strawpoll.question} - Muncoordinated`}</title>
-      </Helmet>
       <Header as="h2">
         <Input
           value={strawpoll ? strawpoll.question : ''}

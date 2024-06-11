@@ -3,7 +3,6 @@ import firebase from 'firebase/compat/app';
 import { RouteComponentProps } from 'react-router';
 import { URLParameters } from '../types';
 import { TextArea, Form, Container } from 'semantic-ui-react';
-import { Helmet } from 'react-helmet';
 import { textAreaHandler } from '../modules/handlers';
 import Loading from '../components/Loading';
 import {CommitteeData} from "../models/committee";
@@ -49,9 +48,7 @@ export default class Notes extends React.Component<Props, State> {
 
     return committee ? (
       <Container text style={{ padding: '1em 0em' }}>
-        <Helmet>
           <title>{`Notes - Muncoordinated`}</title>
-        </Helmet>
         <Form>
           <TextArea
             value={committee ? committee.notes : ''}

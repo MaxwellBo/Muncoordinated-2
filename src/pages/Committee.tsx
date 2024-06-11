@@ -19,7 +19,6 @@ import {
   SemanticICONS,
   Sidebar
 } from 'semantic-ui-react';
-import {Helmet} from 'react-helmet';
 import Stats from './Stats';
 import Motions from './Motions';
 import Unmod from './Unmod';
@@ -337,9 +336,7 @@ export default class Committee extends React.Component<Props, State> {
 
     return (
       <Container text style={{ padding: '1em 0em' }}>
-        <Helmet>
           <title>{`${committee?.name} - Muncoordinated`}</title>
-        </Helmet>
         <Header as="h1">
           <Input
             value={committee ? committee.name : ''}

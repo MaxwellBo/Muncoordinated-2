@@ -24,7 +24,6 @@ import {
   TabProps,
   TextArea
 } from 'semantic-ui-react';
-import {Helmet} from 'react-helmet';
 import {RouteComponentProps} from 'react-router';
 import {URLParameters} from '../types';
 import {
@@ -764,9 +763,7 @@ export default class Resolution extends React.Component<Props, State> {
 
     return (
       <Container style={{ 'padding-bottom': '2em' }}>
-        <Helmet>
           <title>{`${resolution?.name} - Muncoordinated`}</title>
-        </Helmet>
         <Grid columns="equal" stackable>
           <Grid.Row>
             <Grid.Column>
