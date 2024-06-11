@@ -1,5 +1,5 @@
 import * as React from 'react';
-import * as firebase from 'firebase/compat/app';
+import firebase from 'firebase/compat/app';
 import * as _ from 'lodash';
 import {canVote, MemberData, MemberID, nameToMemberOption, Rank} from '../modules/member';
 import {

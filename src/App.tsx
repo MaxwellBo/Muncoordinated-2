@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 // This import loads the firebase namespace along with all its type information.
-import * as firebase from 'firebase/compat/app';
+import firebase from 'firebase/compat/app';
 
 // These imports load individual services into the firebase namespace.
 import 'firebase/compat/auth';

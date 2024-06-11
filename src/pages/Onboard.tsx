@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { RouteComponentProps } from 'react-router';
-import * as firebase from 'firebase/compat/app';
+import firebase from 'firebase/compat/app';
 import {
   Form, Grid, Header, InputOnChangeData, DropdownProps,
   Message, Popup, Container, Segment, Icon,

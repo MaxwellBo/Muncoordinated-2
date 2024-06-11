@@ -1,4 +1,4 @@
-import * as firebase from 'firebase/compat/app';
+import firebase from 'firebase/compat/app';
 import {shortMeetId} from '../utils';
 import {CommitteeID} from "./committee";
 
