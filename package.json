@@ -22,7 +22,6 @@
     "react-dom": "18.3.1",
     "react-firebase-hooks": "^5.1.1",
     "react-ga": "^3.3.1",
-    "react-helmet": "^6.1.0",
     "react-router-dom": "^5.1.2",
     "react-scripts": "5.0.1",
     "semantic-ui-css": "^2.5.0",
