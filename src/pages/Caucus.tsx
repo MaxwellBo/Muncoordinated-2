@@ -47,7 +47,7 @@ import _ from "lodash";
 import {useObjectVal} from "react-firebase-hooks/database";
 import {MemberData, MemberOption, membersToPresentOptions, parseFlagName} from "../modules/member";
 import {TimeSetter} from "../components/TimeSetter";
-import firebase from "firebase/compat";
+import firebase from "firebase/compat/app";
 import {DragDropContext, Draggable, DraggableProvided, Droppable, DropResult} from "react-beautiful-dnd";
 
 interface Props extends RouteComponentProps<URLParameters> {
