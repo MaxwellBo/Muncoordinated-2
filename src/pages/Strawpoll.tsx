@@ -97,7 +97,8 @@ export default function Strawpoll(props: StrawpollProps) {
   const { committeeID, strawpollID } = props.match.params;
   const strawpollFref = getStrawpollRef(committeeID, strawpollID)
   const [value, loading] = useObject(strawpollFref);
-  const [user] = useAuthState(firebase.auth());
+  // TODO: Bandaid - I don't think the hook types nicely with the compat patch
+  const [user] = useAuthState(firebase.auth() as any);
   const [voterID] = useVoterID()
   const [modalOpen, setOpen] = React.useState(false)
 
