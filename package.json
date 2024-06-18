@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "dependencies": {
+    "@artsy/fresnel": "^7.1.4",
     "@sentry/react": "^8.8.0",
     "@sentry/tracing": "^7.114.0",
     "@types/file-saver": "^2.0.7",
