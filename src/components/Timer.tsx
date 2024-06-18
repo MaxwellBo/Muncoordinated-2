@@ -16,7 +16,7 @@ interface Props {
 
 interface State {
   timer?: TimerData;
-  timerId?: NodeJS.Timer;
+  timerId?: NodeJS.Timeout;
   skew?: number;
   offsetRef: firebase.database.Reference;
   unitDropdown: Unit;
