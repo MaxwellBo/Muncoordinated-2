@@ -1,3 +1,4 @@
+import firebase from 'firebase/compat/app';
 import {CheckboxProps, DropdownProps, TextAreaProps} from 'semantic-ui-react';
 import {MemberOption} from "./member";
 
