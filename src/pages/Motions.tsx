@@ -18,10 +18,10 @@ import {
   CaucusStatus,
   closeCaucus,
   DEFAULT_CAUCUS,
-  DEFAULT_SPEAKER_TIME_SECONDS,
   putCaucus,
   putSpeaking, Stance
 } from '../models/caucus';
+import { DEFAULT_SPEAKER_TIME_SECONDS } from '../models/constants';
 import {
   CommitteeData,
   CommitteeID,
