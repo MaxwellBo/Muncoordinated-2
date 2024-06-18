@@ -145,7 +145,8 @@ export function NextSpeaking(props: {
 
   // TODO: Improve this dirty fix
   let skew: any
-  skew = useObjectVal<number>(firebase.database().ref('/.info/serverTimeOffset'));
+  // TODO: Bandaid - Another firebase type mismatch, it's expecting type Query but not entirely sure why
+  skew = useObjectVal<number>(firebase.database().ref('/.info/serverTimeOffset') as any);
 
   const startTimer = () => {
     toggleTicking({

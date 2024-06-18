@@ -34,6 +34,7 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 import { StrawpollShareHint } from '../components/share-hints';
 import { NotFound } from '../components/NotFound';
 import { useVoterID } from '../hooks';
+import { Query } from 'firebase/database';
 
 export interface StrawpollProps extends RouteComponentProps<URLParameters> {
 }
@@ -96,7 +97,8 @@ export function DeleteStrawpollModal(props: ModalProps) {
 export default function Strawpoll(props: StrawpollProps) {
   const { committeeID, strawpollID } = props.match.params;
   const strawpollFref = getStrawpollRef(committeeID, strawpollID)
-  const [value, loading] = useObject(strawpollFref);
+  // TODO: Bandaid - Another firebase type mismatch, it's expecting type Query but not entirely sure why
+  const [value, loading] = useObject(strawpollFref as any);
   // TODO: Bandaid - I don't think the hook types nicely with the compat patch
   const [user] = useAuthState(firebase.auth() as any);
   const [voterID] = useVoterID()
