@@ -68,7 +68,8 @@ export function NextSpeaking(props: {
   fref: firebase.database.Reference;
   autoNextSpeaker: boolean;
 }) {
-  const [user] = useAuthState(firebase.auth());
+  // TODO: Bandaid - I don't think the hook types nicely with the compat patch
+  const [user] = useAuthState(firebase.auth() as any);
 
   const handleKeyDown = (ev: KeyboardEvent) => {
     // if changing this, update Help
@@ -368,7 +369,8 @@ function SpeakerFeed(props: {
   speakerTimer: TimerData
 }) {
   const {data, queueFref, speaking, speakerTimer} = props;
-  const [user] = useAuthState(firebase.auth());
+  // TODO: Bandaid - I don't think the hook types nicely with the compat patch
+  const [user] = useAuthState(firebase.auth() as any);
 
   const events = data || {};
 
