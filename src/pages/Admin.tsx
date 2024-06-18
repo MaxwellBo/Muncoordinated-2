@@ -143,7 +143,7 @@ export default class Admin extends React.Component<Props, State> {
     this.setState({ rank: data.value as Rank ?? Rank.Standard });
   }
 
-  handleAdd = (event: React.KeyboardEvent<HTMLElement>, data: DropdownProps) => {
+  handleAdd = (event: React.SyntheticEvent<HTMLElement>, data: DropdownProps) => {
     // FSM looks sorta like the UN flag
     const newMember = nameToMemberOption((data.value as number | string).toString());
 
