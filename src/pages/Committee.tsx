@@ -40,6 +40,7 @@ import Strawpoll from './Strawpoll';
 import {logClickSetupCommittee} from '../modules/analytics';
 import {CommitteeData, CommitteeID, DEFAULT_COMMITTEE} from "../models/committee";
 import { createMedia } from '@artsy/fresnel';
+import { Helmet } from 'react-helmet';
 
 interface DesktopContainerProps {
   menu?: React.ReactNode;
@@ -89,7 +90,7 @@ class DesktopContainer extends React.Component<DesktopContainerProps, DesktopCon
       <style>{mediaStyles}</style>
       <MediaContextProvider>
         <Segment.Group>
-          <Segment as={Media} greaterThanOrEqual="computer">
+          <Segment as={Media} greaterThanOrEqual="tablet">
             <Menu fluid size="small">
               {menu}
             </Menu>
@@ -132,7 +133,7 @@ class MobileContainer extends React.Component<MobileContainerProps, MobileContai
     <style>{mediaStyles}</style>
     <MediaContextProvider>
         <Segment.Group>
-          <Segment as={Media} at="mobile">
+          <Segment as={Media} at="tablet">
         <Sidebar.Pushable>
           <Sidebar as={Menu} animation="uncover" stackable visible={sidebarOpened}>
             {menu}
@@ -362,7 +363,9 @@ export default class Committee extends React.Component<Props, State> {
 
     return (
       <Container text style={{ padding: '1em 0em' }}>
+        <Helmet>
           <title>{`${committee?.name} - Muncoordinated`}</title>
+        </Helmet>
         <Header as="h1">
           <Input
             value={committee ? committee.name : ''}
