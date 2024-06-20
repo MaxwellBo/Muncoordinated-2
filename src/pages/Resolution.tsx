@@ -47,6 +47,7 @@ import Files from './Files';
 import {CommitteeStatsTable} from '../modules/committee-stats';
 import {CommitteeData, recoverMemberOptions} from "../models/committee";
 import {getThreshold, getThresholdName} from "../viewmodels/resolution";
+import { Helmet } from 'react-helmet';
 
 const TAB_ORDER = ['feed', 'text', 'amendments', 'voting'];
 
@@ -763,7 +764,9 @@ export default class Resolution extends React.Component<Props, State> {
 
     return (
       <Container style={{ 'padding-bottom': '2em' }}>
+        <Helmet>
           <title>{`${resolution?.name} - Muncoordinated`}</title>
+        </Helmet>
         <Grid columns="equal" stackable>
           <Grid.Row>
             <Grid.Column>

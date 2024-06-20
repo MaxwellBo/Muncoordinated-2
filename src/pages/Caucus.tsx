@@ -49,6 +49,7 @@ import {MemberData, MemberOption, membersToPresentOptions, parseFlagName} from "
 import {TimeSetter} from "../components/TimeSetter";
 import firebase from "firebase/compat/app";
 import {DragDropContext, Draggable, DraggableProvided, Droppable, DropResult} from "react-beautiful-dnd";
+import { Helmet } from 'react-helmet';
 
 interface Props extends RouteComponentProps<URLParameters> {
 }
@@ -733,7 +734,9 @@ export default class Caucus extends React.Component<Props, State> {
 
     return (
       <Container style={{ 'padding-bottom': '2em' }}>
-          <title>{`${caucus?.name} - Muncoordinated`}</title>
+        <Helmet>
+            <title>{`${caucus?.name} - Muncoordinated`}</title>
+        </Helmet>
         <Grid columns="equal" stackable>
           {header}
           {body}

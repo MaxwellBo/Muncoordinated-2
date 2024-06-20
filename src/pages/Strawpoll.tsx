@@ -35,6 +35,7 @@ import { StrawpollShareHint } from '../components/share-hints';
 import { NotFound } from '../components/NotFound';
 import { useVoterID } from '../hooks';
 import { Query } from 'firebase/database';
+import { Helmet } from 'react-helmet';
 
 export interface StrawpollProps extends RouteComponentProps<URLParameters> {
 }
@@ -419,7 +420,9 @@ export default function Strawpoll(props: StrawpollProps) {
 
   return (
     <Container text style={{ padding: '1em 0em' }}>
-        <title>{`${strawpoll.question} - Muncoordinated`}</title>
+      <Helmet>
+          <title>{`${strawpoll.question} - Muncoordinated`}</title>
+      </Helmet>
       <Header as="h2">
         <Input
           value={strawpoll ? strawpoll.question : ''}
