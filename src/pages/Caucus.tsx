@@ -50,6 +50,7 @@ import {TimeSetter} from "../components/TimeSetter";
 import firebase from "firebase/compat/app";
 import {DragDropContext, Draggable, DraggableProvided, Droppable, DropResult} from "react-beautiful-dnd";
 import { Helmet } from 'react-helmet';
+import { getDatabase, ref } from 'firebase/database';
 
 interface Props extends RouteComponentProps<URLParameters> {
 }
@@ -144,16 +145,15 @@ export function NextSpeaking(props: {
     runLifecycle({...lifecycle, ...queueHeadDetails});
   };
 
-  // TODO: Improve this dirty fix
-  let skew: any
-  // TODO: Bandaid - Another firebase type mismatch, it's expecting type Query but not entirely sure why
-  skew = useObjectVal<number>(firebase.database().ref('/.info/serverTimeOffset') as any);
+  const db = getDatabase();
+  const [skew] = useObjectVal<number>(ref(db, '.info/serverTimeOffset'));
+  console.log("Got skew", skew, "millis");
 
   const startTimer = () => {
     toggleTicking({
       timerFref: props.fref.child('speakerTimer'),
       timer: props.speakerTimer,
-      skew: skew.value
+      skew
     });
   };
 
