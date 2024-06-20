@@ -89,7 +89,7 @@ class DesktopContainer extends React.Component<DesktopContainerProps, DesktopCon
       <>
       <style>{mediaStyles}</style>
       <MediaContextProvider>
-          <Segment as={Media} basic greaterThanOrEqual="tablet">
+          <Segment as={Media} basic greaterThanOrEqual="tablet" style={{padding: 0}}>
             <Menu fluid size="small">
               {menu}
             </Menu>
@@ -394,7 +394,7 @@ export default class Committee extends React.Component<Props, State> {
           </List.Item>
         </List>
         <CommitteeShareHint committeeID={this.props.match.params.committeeID} />
-        <Segment textAlign="center" basic>
+        <Segment textAlign="center" basic style={{padding: 0}}>
           <Button as="a" primary size="large" onClick={this.gotoSetup}>
             Setup committee
             <Icon name="arrow right" />
