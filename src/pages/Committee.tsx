@@ -89,14 +89,12 @@ class DesktopContainer extends React.Component<DesktopContainerProps, DesktopCon
       <>
       <style>{mediaStyles}</style>
       <MediaContextProvider>
-        <Segment.Group>
-          <Segment as={Media} greaterThanOrEqual="tablet">
+          <Segment as={Media} basic greaterThanOrEqual="tablet">
             <Menu fluid size="small">
               {menu}
             </Menu>
             {body}
           </Segment>
-        </Segment.Group>
       </MediaContextProvider>
       </>
     );
@@ -132,8 +130,7 @@ class MobileContainer extends React.Component<MobileContainerProps, MobileContai
     <>
     <style>{mediaStyles}</style>
     <MediaContextProvider>
-        <Segment.Group>
-          <Segment as={Media} at="tablet">
+      <Segment as={Media} basic at="mobile">
         <Sidebar.Pushable>
           <Sidebar as={Menu} animation="uncover" stackable visible={sidebarOpened}>
             {menu}
@@ -148,9 +145,8 @@ class MobileContainer extends React.Component<MobileContainerProps, MobileContai
             {body}
           </Sidebar.Pusher>
         </Sidebar.Pushable>
-          </Segment>
-        </Segment.Group>
-      </MediaContextProvider>
+      </Segment>
+    </MediaContextProvider>
     </>
     );
   }
