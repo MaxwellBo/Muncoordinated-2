@@ -12,7 +12,7 @@ import {
   StrawpollStage,
   StrawpollType
 } from '../models/strawpoll';
-import { useObject } from 'react-firebase-hooks/database';
+import { useObjectVal } from 'react-firebase-hooks/database';
 import {
   Button,
   Checkbox,
@@ -28,13 +28,13 @@ import {
   Modal,
   Progress
 } from 'semantic-ui-react';
-import { checkboxHandler, clearableZeroableValidatedNumberFieldHandler, fieldHandler } from '../modules/handlers';
+import { modularCheckboxHandler, modularClearableZeroableValidatedNumberFieldHandler, modularFieldHandler } from '../modules/handlers';
 import Loading from '../components/Loading';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { StrawpollShareHint } from '../components/share-hints';
 import { NotFound } from '../components/NotFound';
 import { useVoterID } from '../hooks';
-import { Query } from 'firebase/database';
+import { push, remove, set, child } from 'firebase/database';
 import { Helmet } from 'react-helmet';
 
 export interface StrawpollProps extends RouteComponentProps<URLParameters> {
@@ -98,8 +98,7 @@ export function DeleteStrawpollModal(props: ModalProps) {
 export default function Strawpoll(props: StrawpollProps) {
   const { committeeID, strawpollID } = props.match.params;
   const strawpollFref = getStrawpollRef(committeeID, strawpollID)
-  // TODO: Bandaid - Another firebase type mismatch, it's expecting type Query but not entirely sure why
-  const [value, loading] = useObject(strawpollFref as any);
+  const [value, loading] = useObjectVal<StrawpollData>(strawpollFref);
   // TODO: Bandaid - I don't think the hook types nicely with the compat patch
   const [user] = useAuthState(firebase.auth() as any);
   const [voterID] = useVoterID()
@@ -109,7 +108,7 @@ export default function Strawpoll(props: StrawpollProps) {
     return <Loading />
   }
 
-  const strawpoll: StrawpollData | undefined = value ? value.val() : undefined;
+  const strawpoll: StrawpollData | undefined = value;
 
   if (!strawpoll) {
     return <Container text>
@@ -130,88 +129,66 @@ export default function Strawpoll(props: StrawpollProps) {
   })
 
   const addOption = () => {
-    strawpollFref.child('options').push(DEFAULT_STRAWPOLL_OPTION);
+    set(push(strawpollFref, 'options'), DEFAULT_STRAWPOLL_OPTION).catch(console.error);
   }
 
   const togglePollType = (event: React.SyntheticEvent, data: DropdownProps) => {
-    strawpollFref.child('type').set(data.value);
+    set(child(strawpollFref, 'type'), data.value).catch(console.error);
     // reset votes
     Object.keys(options).forEach(oid => {
       const votes = options[oid].votes;
       if (votes) {
-        strawpollFref.child('options').child(oid).child('votes').set({})
+        set(child(child(child(strawpollFref, 'options'), oid), 'votes'),{}).catch(console.error);
       }
     });
   }
 
   const deleteStrawpoll = () => {
-    strawpollFref.remove();
+    remove(strawpollFref).catch(console.error);
   }
 
   const createSharablePoll = () => {
-    strawpollFref.child('stage').set(StrawpollStage.Voting);
-    strawpollFref.child('medium').set(StrawpollMedium.Link);
+    set(child(strawpollFref, 'stage'), StrawpollStage.Voting).catch(console.error);
+    set(child(strawpollFref, 'medium'), StrawpollMedium.Link).catch(console.error);
   }
 
   const createManualPoll = () => {
-    strawpollFref.child('stage').set(StrawpollStage.Voting);
-    strawpollFref.child('medium').set(StrawpollMedium.Manual);
+    set(child(strawpollFref, 'stage'), StrawpollStage.Voting).catch(console.error);
+    set(child(strawpollFref, 'medium'), StrawpollMedium.Manual).catch(console.error);
   }
 
   const reopenVoting = () => {
-    strawpollFref.child('stage').set(StrawpollStage.Voting);
+    set(child(strawpollFref, 'stage'), StrawpollStage.Voting).catch(console.error);
   }
 
   const editOptions = () => {
-    strawpollFref.child('stage').set(StrawpollStage.Preparing);
+    set(child(strawpollFref, 'stage'), StrawpollStage.Preparing).catch(console.error);
   }
 
   const viewResults = () => {
-    strawpollFref.child('stage').set(StrawpollStage.Results);
+    set(child(strawpollFref, 'stage'), StrawpollStage.Results).catch(console.error);
   }
 
   const onCheck = (oid: StrawpollOptionID) => (event: React.FormEvent<HTMLInputElement>, data: CheckboxProps) => {
     if (type === StrawpollType.Checkbox) {
       if (data.checked) {
-        strawpollFref
-          .child('options')
-          .child(oid)
-          .child('votes')
-          .child(voterID)
-          .set(true)
+        set(child(strawpollFref, `options/${oid}/votes/${voterID}`), true).catch(console.error);
       } else {
-        strawpollFref
-          .child('options')
-          .child(oid)
-          .child('votes')
-          .child(voterID)
-          .remove()
+        remove(child(strawpollFref, `options/${oid}/votes`))
       }
     } else if (type === StrawpollType.Radio) {
       if (data.checked) {
         // Set everything to unchecked
         Object.keys(options).forEach(id =>
-          strawpollFref
-            .child('options')
-            .child(id)
-            .child('votes')
-            .child(voterID)
-            .remove()
+          remove(child(strawpollFref, `options/${id}/votes/${voterID}`)).catch(console.error)
         );
-        strawpollFref
-          .child('options')
-          .child(oid)
-          .child('votes')
-          .child(voterID)
-          .set(true);
+        set(child(strawpollFref, `options/${oid}/votes/${voterID}`), true).catch(console.error);
       }
     }
   }
 
   const renderOption = (optionID: StrawpollOptionID, option: StrawpollOptionData) => {
-    const strawpollOptionFref = strawpollFref
-      .child('options')
-      .child(optionID);
+    const strawpollOptionFref = child(child(strawpollFref, 'options'), optionID)
 
     const isChecked =
       option.votes
@@ -228,7 +205,7 @@ export default function Strawpoll(props: StrawpollProps) {
         return <List.Item key={optionID}>
           <Input
             value={option.text}
-            onChange={fieldHandler<StrawpollOptionData>(strawpollOptionFref, 'text')}
+            onChange={modularFieldHandler<StrawpollOptionData>(strawpollOptionFref, 'text')}
             fluid
             placeholder="Enter poll option"
             action
@@ -238,7 +215,7 @@ export default function Strawpoll(props: StrawpollProps) {
               negative
               icon="trash"
               basic
-              onClick={() => strawpollOptionFref.remove()}
+              onClick={() => remove(strawpollOptionFref)}
             />
           </Input>
         </List.Item>
@@ -260,7 +237,7 @@ export default function Strawpoll(props: StrawpollProps) {
               label={option.text}
               value={(!!option.tally || (option.tally === 0) ? option.tally : '').toString()}
               error={option.tally === undefined}
-              onChange={clearableZeroableValidatedNumberFieldHandler<StrawpollOptionData>(strawpollOptionFref, 'tally')}
+              onChange={modularClearableZeroableValidatedNumberFieldHandler<StrawpollOptionData>(strawpollOptionFref, 'tally')}
             />
           </List.Item>
       case StrawpollStage.Results:
@@ -338,7 +315,7 @@ export default function Strawpoll(props: StrawpollProps) {
                 label="Delegates can add options"
                 toggle
                 checked={strawpoll ? (strawpoll.optionsArePublic || false) : false}
-                onClick={checkboxHandler<StrawpollData>(strawpollFref, 'optionsArePublic')}
+                onClick={modularCheckboxHandler<StrawpollData>(strawpollFref, 'optionsArePublic')}
               />
             </List.Item>
           </List>
@@ -426,7 +403,7 @@ export default function Strawpoll(props: StrawpollProps) {
       <Header as="h2">
         <Input
           value={strawpoll ? strawpoll.question : ''}
-          onChange={fieldHandler<StrawpollData>(strawpollFref, 'question')}
+          onChange={modularFieldHandler<StrawpollData>(strawpollFref, 'question')}
           fluid
           placeholder="Type your question here"
         />

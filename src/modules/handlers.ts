@@ -1,12 +1,22 @@
 import firebase from 'firebase/compat/app';
 import {CheckboxProps, DropdownProps, TextAreaProps} from 'semantic-ui-react';
 import {MemberOption} from "./member";
+import { DatabaseReference, child, set } from 'firebase/database';
 
 // Ideally we'd be able to give this a type parameter to constrain the field
+// This is on its way out as we move away from namespaced firebase API
 export function fieldHandler<T>
 (fref: firebase.database.Reference, field: keyof T) {
   return (e: React.FormEvent<HTMLInputElement>) =>
     fref.child(field.toString()).set(e.currentTarget.value);
+}
+
+// This is the same as fieldHandler but for the modular database API
+// Eventually everything should be migrated to the modular API and thus use this
+export function modularFieldHandler<T>
+(fref: DatabaseReference, field: keyof T) {
+  return (e: React.FormEvent<HTMLInputElement>) =>
+  set(child(fref, field.toString()), e.currentTarget.value);
 }
 
 function lens<P, S>(comp: React.Component<P, S>, field: keyof S, target: string, value: any) {
@@ -40,6 +50,7 @@ export function validatedNumberFieldHandler<T>
   };
 }
 
+// Eventually will be fully replaced by modular version
 export function clearableZeroableValidatedNumberFieldHandler<T>
 (fref: firebase.database.Reference, field: keyof T) {
   return (e: React.FormEvent<HTMLInputElement>) => {
@@ -58,6 +69,28 @@ export function clearableZeroableValidatedNumberFieldHandler<T>
     }
 
     fref.child(field.toString()).set(result);
+  };
+}
+
+// Uses new modular firebase API
+export function modularClearableZeroableValidatedNumberFieldHandler<T>
+(fref: DatabaseReference, field: keyof T) {
+  return (e: React.FormEvent<HTMLInputElement>) => {
+
+    const v = e.currentTarget.value;
+    const n: number = Number(e.currentTarget.value);
+
+    let result = {};
+
+    if (v === '') {
+      result = {}
+    } else if (n) {
+      result = n
+    } else if (n === 0) {
+      result = 0
+    }
+
+    set(child(fref, field.toString()), result);
   };
 }
 
@@ -94,6 +127,14 @@ export function stateDropdownHandler<P, S>
     lens(comp, field, target, data.value);
 }
 
+// Uses new modular firebase API
+export function modularCheckboxHandler<T>
+(fref: DatabaseReference, field: keyof T) {
+  return (event: React.FormEvent<HTMLInputElement>, data: CheckboxProps) =>
+  set(child(fref, field.toString()), data.checked);
+}
+
+// Eventually everything should be migrated to the modular API and this will go
 export function checkboxHandler<T>
 (fref: firebase.database.Reference, field: keyof T) {
   return (event: React.FormEvent<HTMLInputElement>, data: CheckboxProps) =>

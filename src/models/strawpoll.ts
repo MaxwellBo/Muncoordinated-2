@@ -1,6 +1,7 @@
 import firebase from 'firebase/compat/app';
 import {shortMeetId} from '../utils';
 import {CommitteeID} from "./committee";
+import { child, getDatabase, ref } from 'firebase/database';
 
 export enum StrawpollStage {
   Preparing = 'preparing',
@@ -77,12 +78,7 @@ export const getStrawpollsRef =
       .child('strawpolls')
   };
 
-export const getStrawpollRef =
-  (committeeID: CommitteeID, strawpollID: StrawpollID): firebase.database.Reference => {
-
-    return firebase.database()
-      .ref('committees')
-      .child(committeeID)
-      .child('strawpolls')
-      .child(strawpollID);
-  };
+export const getStrawpollRef = (committeeID: CommitteeID, strawpollID: StrawpollID) => {
+  const db = getDatabase();
+  return child(child(ref(db, 'committees'), committeeID), `strawpolls/${strawpollID}`)
+};
