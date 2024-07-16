@@ -129,50 +129,50 @@ export default function Strawpoll(props: StrawpollProps) {
   })
 
   const addOption = () => {
-    set(push(strawpollFref, 'options'), DEFAULT_STRAWPOLL_OPTION).catch(console.error);
+    push(child(strawpollFref, 'options'), DEFAULT_STRAWPOLL_OPTION);
   }
 
   const togglePollType = (event: React.SyntheticEvent, data: DropdownProps) => {
-    set(child(strawpollFref, 'type'), data.value).catch(console.error);
+    set(child(strawpollFref, 'type'), data.value);
     // reset votes
     Object.keys(options).forEach(oid => {
       const votes = options[oid].votes;
       if (votes) {
-        set(child(child(child(strawpollFref, 'options'), oid), 'votes'),{}).catch(console.error);
+        set(child(child(child(strawpollFref, 'options'), oid), 'votes'),{});
       }
     });
   }
 
   const deleteStrawpoll = () => {
-    remove(strawpollFref).catch(console.error);
+    remove(strawpollFref);
   }
 
   const createSharablePoll = () => {
-    set(child(strawpollFref, 'stage'), StrawpollStage.Voting).catch(console.error);
-    set(child(strawpollFref, 'medium'), StrawpollMedium.Link).catch(console.error);
+    set(child(strawpollFref, 'stage'), StrawpollStage.Voting);
+    set(child(strawpollFref, 'medium'), StrawpollMedium.Link);
   }
 
   const createManualPoll = () => {
-    set(child(strawpollFref, 'stage'), StrawpollStage.Voting).catch(console.error);
-    set(child(strawpollFref, 'medium'), StrawpollMedium.Manual).catch(console.error);
+    set(child(strawpollFref, 'stage'), StrawpollStage.Voting);
+    set(child(strawpollFref, 'medium'), StrawpollMedium.Manual);
   }
 
   const reopenVoting = () => {
-    set(child(strawpollFref, 'stage'), StrawpollStage.Voting).catch(console.error);
+    set(child(strawpollFref, 'stage'), StrawpollStage.Voting);
   }
 
   const editOptions = () => {
-    set(child(strawpollFref, 'stage'), StrawpollStage.Preparing).catch(console.error);
+    set(child(strawpollFref, 'stage'), StrawpollStage.Preparing);
   }
 
   const viewResults = () => {
-    set(child(strawpollFref, 'stage'), StrawpollStage.Results).catch(console.error);
+    set(child(strawpollFref, 'stage'), StrawpollStage.Results);
   }
 
   const onCheck = (oid: StrawpollOptionID) => (event: React.FormEvent<HTMLInputElement>, data: CheckboxProps) => {
     if (type === StrawpollType.Checkbox) {
       if (data.checked) {
-        set(child(strawpollFref, `options/${oid}/votes/${voterID}`), true).catch(console.error);
+        set(child(strawpollFref, `options/${oid}/votes/${voterID}`), true);
       } else {
         remove(child(strawpollFref, `options/${oid}/votes`))
       }
@@ -182,7 +182,7 @@ export default function Strawpoll(props: StrawpollProps) {
         Object.keys(options).forEach(id =>
           remove(child(strawpollFref, `options/${id}/votes/${voterID}`)).catch(console.error)
         );
-        set(child(strawpollFref, `options/${oid}/votes/${voterID}`), true).catch(console.error);
+        set(child(strawpollFref, `options/${oid}/votes/${voterID}`), true);
       }
     }
   }
