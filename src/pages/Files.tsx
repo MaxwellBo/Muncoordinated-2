@@ -21,6 +21,7 @@ import {DEFAULT_AMENDMENT, putAmendment, ResolutionID} from '../models/resolutio
 import {CommitteeData, CommitteeID, recoverMemberOptions} from "../models/committee";
 import {File, Link, PostData, PostID, PostType, Text} from "../models/post";
 import {COUNTRY_OPTIONS} from "../constants";
+import { Helmet } from 'react-helmet';
 
 const TEXT_ICON: SemanticICONS = 'align left';
 const FILE_ICON: SemanticICONS = 'file outline';
@@ -630,7 +631,9 @@ export default class Files extends React.Component<Props, State> {
       ? inner:
       (
         <Container text style={{ padding: '1em 0em' }}>
+          <Helmet>
             <title>{`Posts - Muncoordinated`}</title>
+          </Helmet>
           {inner}
         </Container>
       );

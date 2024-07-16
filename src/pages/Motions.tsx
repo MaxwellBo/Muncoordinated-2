@@ -67,6 +67,7 @@ import {
 } from "../viewmodels/motion";
 import {getSeconds, TimerData, Unit} from "../models/time";
 import {SettingsData} from "../models/settings";
+import { Helmet } from 'react-helmet';
 
 const DIVISIBILITY_ERROR = (
   <Message
@@ -732,7 +733,9 @@ export class MotionsComponent extends React.Component<Props & Hooks, State> {
 
     return (
       <Container text style={{ padding: '1em 0em' }}>
+        <Helmet>
           <title>{`Motions - Muncoordinated`}</title>
+        </Helmet>
         {renderAdder(committee)}
         <Divider hidden />
         <Checkbox

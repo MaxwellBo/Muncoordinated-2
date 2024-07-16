@@ -20,6 +20,7 @@ import { CommitteeStatsTable } from '../modules/committee-stats';
 import {CommitteeData, CommitteeID, pushMember, Template} from '../models/committee';
 import { TemplateAdder } from '../components/template';
 import {COUNTRY_OPTIONS} from "../constants";
+import { Helmet } from 'react-helmet';
 
 interface Props extends RouteComponentProps<URLParameters> {
   committee: CommitteeData;
@@ -278,7 +279,9 @@ export default class Admin extends React.Component<Props, State> {
 
     return (
       <Container style={{ padding: '1em 0em 1.5em' }}>
-          <title>Setup - Muncoordinated</title>
+        <Helmet>
+          <title>{`Setup - Muncoordinated`}</title>
+        </Helmet>
         <Grid columns="2" stackable>
           <Grid.Row>
             <Grid.Column width={9}>

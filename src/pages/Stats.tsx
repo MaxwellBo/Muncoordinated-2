@@ -12,6 +12,7 @@ import {AmendmentData, AmendmentID, ResolutionData, ResolutionID} from "../model
 import {CommitteeData} from "../models/committee";
 import {MotionData, MotionID} from "../models/motion";
 import {SpeakerEvent} from "../models/caucus";
+import { Helmet } from 'react-helmet';
 
 interface Props extends RouteComponentProps<URLParameters> {
 }
@@ -142,7 +143,9 @@ export default class Stats extends React.Component<Props, State> {
 
     return (
       <Container text style={{ padding: '1em 0em 1.5em' }}>
+        <Helmet>
           <title>{`Stats - Muncoordinated`}</title>
+        </Helmet>
         <Table compact celled definition>
           <Table.Header>
             <Table.Row>

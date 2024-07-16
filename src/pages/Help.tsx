@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Button, Segment, Header, List, Container } from 'semantic-ui-react';
 import { CLIENT_VERSION, VersionLink } from '../components/Footer';
+import { Helmet } from 'react-helmet';
 
 export const KEYBOARD_SHORTCUT_LIST = (
   <List>
@@ -46,7 +47,9 @@ export default class Help extends React.PureComponent<{}, {}> {
 
     return (
       <Container text style={{ padding: '1em 0em' }}>
+        <Helmet>
           <title>{`Help - Muncoordinated`}</title>
+        </Helmet>
         <Header as="h3" attached="top">Keyboard shortcuts</Header>
         <Segment attached="bottom">
         {KEYBOARD_SHORTCUT_LIST}

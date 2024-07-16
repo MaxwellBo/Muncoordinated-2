@@ -13,6 +13,7 @@ import { logCreateCommittee } from '../modules/analytics';
 import { meetId } from '../utils';
 import {CommitteeData, DEFAULT_COMMITTEE, pushTemplateMembers, putCommittee, Template} from '../models/committee';
 import { TemplatePreview } from '../components/template';
+import { Helmet } from 'react-helmet';
 
 interface Props extends RouteComponentProps<URLParameters> {
 }
@@ -189,9 +190,11 @@ export default class Onboard extends React.Component<Props, State> {
   render() {
     return (
       <Container style={{ padding: '1em 0em' }}>
+        <Helmet>
           <title>{`Create Committee - Muncoordinated`}</title>
           <meta name="description" content="Login, create an account, or create
                                       a committee with Muncoordinated now!" />
+        </Helmet>
         <ConnectionStatus />
         <Grid
           columns="equal"
