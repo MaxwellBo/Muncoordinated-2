@@ -1,12 +1,12 @@
 import * as React from 'react';
-import firebase from 'firebase/app';
+import firebase from 'firebase/compat/app';
 import { RouteComponentProps } from 'react-router';
 import { URLParameters } from '../types';
 import { TextArea, Form, Container } from 'semantic-ui-react';
-import { Helmet } from 'react-helmet';
 import { textAreaHandler } from '../modules/handlers';
 import Loading from '../components/Loading';
 import {CommitteeData} from "../models/committee";
+import { Helmet } from 'react-helmet';
 
 interface Props extends RouteComponentProps<URLParameters> {
 }

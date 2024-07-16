@@ -1,5 +1,5 @@
 import * as React from 'react';
-import firebase from 'firebase/app';
+import firebase from 'firebase/compat/app';
 import {RouteComponentProps} from 'react-router';
 import {Route} from 'react-router-dom';
 import Caucus from './Caucus';
@@ -14,12 +14,10 @@ import {
   Input,
   List,
   Menu,
-  Responsive,
   Segment,
   SemanticICONS,
   Sidebar
 } from 'semantic-ui-react';
-import {Helmet} from 'react-helmet';
 import Stats from './Stats';
 import Motions from './Motions';
 import Unmod from './Unmod';
@@ -41,6 +39,8 @@ import {DEFAULT_STRAWPOLL, putStrawpoll} from '../models/strawpoll';
 import Strawpoll from './Strawpoll';
 import {logClickSetupCommittee} from '../modules/analytics';
 import {CommitteeData, CommitteeID, DEFAULT_COMMITTEE} from "../models/committee";
+import { createMedia } from '@artsy/fresnel';
+import { Helmet } from 'react-helmet';
 
 interface DesktopContainerProps {
   menu?: React.ReactNode;
@@ -67,19 +67,36 @@ interface State {
   committeeFref: firebase.database.Reference;
 }
 
+const CommitteeMedia = createMedia({
+  breakpoints: {
+    mobile: 320,
+    tablet: 768,
+    computer: 992,
+    largeScreen: 1200,
+    widescreen: 1920,
+  },
+});
+
+const mediaStyles = CommitteeMedia.createMediaStyle();
+const { Media, MediaContextProvider } = CommitteeMedia;
+
 
 class DesktopContainer extends React.Component<DesktopContainerProps, DesktopContainerState> {
   render() {
     const { body, menu } = this.props;
-
     // Semantic-UI-React/src/addons/Responsive/Responsive.js
     return (
-      <Responsive {...{ minWidth: Responsive.onlyMobile.maxWidth as number + 1 }}>
-        <Menu fluid size="small">
-          {menu}
-        </Menu>
-        {body}
-      </Responsive>
+      <>
+      <style>{mediaStyles}</style>
+      <MediaContextProvider>
+          <Segment as={Media} basic greaterThanOrEqual="tablet" style={{padding: 0}}>
+            <Menu fluid size="small">
+              {menu}
+            </Menu>
+            {body}
+          </Segment>
+      </MediaContextProvider>
+      </>
     );
   }
 }
@@ -110,7 +127,10 @@ class MobileContainer extends React.Component<MobileContainerProps, MobileContai
     const { sidebarOpened } = this.state;
 
     return (
-      <Responsive {...Responsive.onlyMobile}>
+    <>
+    <style>{mediaStyles}</style>
+    <MediaContextProvider>
+      <Segment as={Media} basic at="mobile">
         <Sidebar.Pushable>
           <Sidebar as={Menu} animation="uncover" stackable visible={sidebarOpened}>
             {menu}
@@ -125,7 +145,9 @@ class MobileContainer extends React.Component<MobileContainerProps, MobileContai
             {body}
           </Sidebar.Pusher>
         </Sidebar.Pushable>
-      </Responsive>
+      </Segment>
+    </MediaContextProvider>
+    </>
     );
   }
 }
@@ -372,7 +394,7 @@ export default class Committee extends React.Component<Props, State> {
           </List.Item>
         </List>
         <CommitteeShareHint committeeID={this.props.match.params.committeeID} />
-        <Segment textAlign="center" basic>
+        <Segment textAlign="center" basic style={{padding: 0}}>
           <Button as="a" primary size="large" onClick={this.gotoSetup}>
             Setup committee
             <Icon name="arrow right" />

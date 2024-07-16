@@ -6,7 +6,6 @@ import * as serviceWorker from './serviceWorker';
 import createHistory from 'history/createBrowserHistory';
 import * as ReactGA from 'react-ga';
 import * as Sentry from "@sentry/react";
-import { Integrations } from "@sentry/tracing";
 import 'semantic-ui-css/semantic.min.css';
 
 ReactGA.initialize('UA-122177622-1');
@@ -14,9 +13,7 @@ ReactGA.pageview(window.location.pathname + window.location.search);
 
 Sentry.init({
   dsn: "https://e1ea501c7fed49d9af75b57440753eed@o456960.ingest.sentry.io/5450534",
-  integrations: [
-    new Integrations.BrowserTracing(),
-  ],
+  integrations: [Sentry.browserTracingIntegration()],
 
   // We recommend adjusting this value in production, or using tracesSampler
   // for finer control

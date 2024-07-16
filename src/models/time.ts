@@ -1,5 +1,5 @@
 import {makeDropdownOption} from "../utils";
-import {DEFAULT_SPEAKER_TIME_SECONDS} from "./caucus";
+import {DEFAULT_SPEAKER_TIME_SECONDS} from "./constants";
 
 export enum Unit {
   Minutes = 'min',

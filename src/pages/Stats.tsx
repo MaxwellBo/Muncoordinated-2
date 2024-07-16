@@ -1,9 +1,8 @@
 import * as React from 'react';
-import * as firebase from 'firebase/app';
+import firebase from 'firebase/compat/app';
 import * as _ from 'lodash';
 import { RouteComponentProps } from 'react-router';
 import { Table, Flag, Container } from 'semantic-ui-react';
-import { Helmet } from 'react-helmet';
 import { MemberData, MemberID, parseFlagName } from '../modules/member';
 import { URLParameters } from '../types';
 import Loading from '../components/Loading';
@@ -13,6 +12,7 @@ import {AmendmentData, AmendmentID, ResolutionData, ResolutionID} from "../model
 import {CommitteeData} from "../models/committee";
 import {MotionData, MotionID} from "../models/motion";
 import {SpeakerEvent} from "../models/caucus";
+import { Helmet } from 'react-helmet';
 
 interface Props extends RouteComponentProps<URLParameters> {
 }

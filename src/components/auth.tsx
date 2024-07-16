@@ -1,5 +1,5 @@
 import * as React from 'react';
-import firebase from 'firebase/app';
+import firebase from 'firebase/compat/app';
 import { Card, Button, Form, Message, Modal, Icon, List, Segment, Header } from 'semantic-ui-react';
 import _ from 'lodash';
 import Loading from './Loading';

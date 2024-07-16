@@ -1,8 +1,7 @@
 import * as React from 'react';
-import firebase from 'firebase/app';
+import firebase from 'firebase/compat/app';
 import {RouteComponentProps} from 'react-router';
 import {Button, Card, Checkbox, Container, Divider, Flag, Form, Icon, Label, Message, Popup} from 'semantic-ui-react';
-import {Helmet} from 'react-helmet';
 import {
   checkboxHandler,
   stateDropdownHandler,
@@ -19,10 +18,10 @@ import {
   CaucusStatus,
   closeCaucus,
   DEFAULT_CAUCUS,
-  DEFAULT_SPEAKER_TIME_SECONDS,
   putCaucus,
   putSpeaking, Stance
 } from '../models/caucus';
+import { DEFAULT_SPEAKER_TIME_SECONDS } from '../models/constants';
 import {
   CommitteeData,
   CommitteeID,
@@ -68,6 +67,7 @@ import {
 } from "../viewmodels/motion";
 import {getSeconds, TimerData, Unit} from "../models/time";
 import {SettingsData} from "../models/settings";
+import { Helmet } from 'react-helmet';
 
 const DIVISIBILITY_ERROR = (
   <Message
@@ -548,7 +548,8 @@ export class MotionsComponent extends React.Component<Props & Hooks, State> {
       />
     );
 
-    const { caucuses, resolutions } = this.state.committee || { caucuses: {}, resolutions: {} };
+    const resolutions: Record<string, ResolutionData> = this.state.committee?.resolutions || {};
+    const caucuses: Record<string, CaucusData> = this.state.committee?.caucuses || {};
 
     // BADCODE: Filter predicate shared with menu in Committee, also update when changing
     // Prioritize recency

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import firebase from 'firebase/app';
+import firebase from 'firebase/compat/app';
 import FileSaver from 'file-saver';
 import {RouteComponentProps} from 'react-router';
 import {URLParameters} from '../types';
@@ -15,13 +15,13 @@ import {
   Tab,
   TextAreaProps
 } from 'semantic-ui-react';
-import {Helmet} from 'react-helmet';
 import {MemberOption, parseFlagName} from '../modules/member';
 import Loading from '../components/Loading';
 import {DEFAULT_AMENDMENT, putAmendment, ResolutionID} from '../models/resolution';
 import {CommitteeData, CommitteeID, recoverMemberOptions} from "../models/committee";
 import {File, Link, PostData, PostID, PostType, Text} from "../models/post";
 import {COUNTRY_OPTIONS} from "../constants";
+import { Helmet } from 'react-helmet';
 
 const TEXT_ICON: SemanticICONS = 'align left';
 const FILE_ICON: SemanticICONS = 'file outline';
