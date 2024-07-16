@@ -15,7 +15,7 @@ import {
   Tab,
   TextAreaProps
 } from 'semantic-ui-react';
-import {MemberOption, parseFlagName} from '../modules/member';
+import {MemberOption, nameToFlagCode} from '../modules/member';
 import Loading from '../components/Loading';
 import {DEFAULT_AMENDMENT, putAmendment, ResolutionID} from '../models/resolution';
 import {CommitteeData, CommitteeID, recoverMemberOptions} from "../models/committee";
@@ -113,7 +113,7 @@ class Entry extends React.Component<EntryProps, EntryState> {
         <Feed.Label icon={TEXT_ICON} />
         <Feed.Content>
           <Feed.Summary>
-            <Feed.User><Flag name={parseFlagName(post.uploader)}/> {post.uploader}</Feed.User>
+            <Feed.User><Flag name={nameToFlagCode(post.uploader)}/> {post.uploader}</Feed.User>
             <Feed.Date>{this.renderDate('Posted')}</Feed.Date>
           </Feed.Summary>
           <Feed.Extra style={{'whiteSpace': 'pre-wrap'}} text>{post.body}</Feed.Extra>
@@ -134,7 +134,7 @@ class Entry extends React.Component<EntryProps, EntryState> {
         <Feed.Label icon={FILE_ICON} />
         <Feed.Content>
           <Feed.Summary>
-            <Feed.User><Flag name={parseFlagName(post.uploader)}/> {post.uploader}</Feed.User> uploaded a file
+            <Feed.User><Flag name={nameToFlagCode(post.uploader)}/> {post.uploader}</Feed.User> uploaded a file
             <Feed.Date>{this.renderDate('Uploaded')}</Feed.Date>
           </Feed.Summary>
           {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
@@ -154,7 +154,7 @@ class Entry extends React.Component<EntryProps, EntryState> {
         <Feed.Label icon={LINK_ICON} />
         <Feed.Content>
           <Feed.Summary>
-            <Feed.User><Flag name={parseFlagName(post.uploader)}/> {post.uploader}</Feed.User> posted a link
+            <Feed.User><Flag name={nameToFlagCode(post.uploader)}/> {post.uploader}</Feed.User> posted a link
             <Feed.Date>{this.renderDate('Posted')}</Feed.Date>
           </Feed.Summary>
           <Feed.Extra><a href={post.url}>{post.name || post.url}</a></Feed.Extra>

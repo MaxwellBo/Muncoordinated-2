@@ -240,7 +240,7 @@ export const COUNTRY_OPTIONS = [
   {key: 'hr', value: 'hr', flag: 'hr', text: 'Croatia'},
   {key: 'cu', value: 'cu', flag: 'cu', text: 'Cuba'},
   {key: 'cy', value: 'cy', flag: 'cy', text: 'Cyprus'},
-  {key: 'cz', value: 'cz', flag: 'cz', text: 'Czech Republic'},
+  {key: 'cz', value: 'cz', flag: 'cz', text: 'Czechia'}, // renamed 2016
   {key: 'dk', value: 'dk', flag: 'dk', text: 'Denmark'},
   {key: 'dj', value: 'dj', flag: 'dj', text: 'Djibouti'},
   {key: 'dm', value: 'dm', flag: 'dm', text: 'Dominica'},
@@ -309,7 +309,7 @@ export const COUNTRY_OPTIONS = [
   {key: 'lt', value: 'lt', flag: 'lt', text: 'Lithuania'},
   {key: 'lu', value: 'lu', flag: 'lu', text: 'Luxembourg'},
   {key: 'mo', value: 'mo', flag: 'mo', text: 'Macau'},
-  {key: 'mk', value: 'mk', flag: 'mk', text: 'Macedonia'},
+  {key: 'mk', value: 'mk', flag: 'mk', text: 'North Macedonia'}, // renamed in 2019
   {key: 'mg', value: 'mg', flag: 'mg', text: 'Madagascar'},
   {key: 'mw', value: 'mw', flag: 'mw', text: 'Malawi'},
   {key: 'my', value: 'my', flag: 'my', text: 'Malaysia'},
@@ -391,7 +391,7 @@ export const COUNTRY_OPTIONS = [
   {key: 'sd', value: 'sd', flag: 'sd', text: 'Sudan'},
   {key: 'sr', value: 'sr', flag: 'sr', text: 'Suriname'},
   {key: 'sj', value: 'sj', flag: 'sj', text: 'Svalbard'},
-  {key: 'sz', value: 'sz', flag: 'sz', text: 'Swaziland'},
+  {key: 'sz', value: 'sz', flag: 'sz', text: 'Eswatini'}, // renamed in 2018 (was Swaziland)
   {key: 'se', value: 'se', flag: 'se', text: 'Sweden'},
   {key: 'ch', value: 'ch', flag: 'ch', text: 'Switzerland'},
   {key: 'sy', value: 'sy', flag: 'sy', text: 'Syria'},

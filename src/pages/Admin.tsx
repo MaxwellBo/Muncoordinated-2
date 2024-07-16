@@ -4,7 +4,7 @@ import {
   MemberData,
   MemberID,
   Rank,
-  parseFlagName,
+  nameToFlagCode,
   nameToMemberOption,
   MemberOption
 } from '../modules/member';
@@ -60,7 +60,7 @@ export default class Admin extends React.Component<Props, State> {
     return (
       <Table.Row key={id}>
         <Table.Cell>
-          <Flag name={parseFlagName(member.name)} />
+          <Flag name={nameToFlagCode(member.name)} />
           {member.name}
         </Table.Cell>
         <Table.Cell>
