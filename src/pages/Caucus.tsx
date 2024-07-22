@@ -45,7 +45,7 @@ import {TimerData, Unit} from "../models/time";
 import {useAuthState} from "react-firebase-hooks/auth";
 import _ from "lodash";
 import {useObjectVal} from "react-firebase-hooks/database";
-import {MemberData, MemberOption, membersToPresentOptions, parseFlagName} from "../modules/member";
+import {MemberData, MemberOption, membersToPresentOptions, nameToFlagCode} from "../modules/member";
 import {TimeSetter} from "../components/TimeSetter";
 import firebase from "firebase/compat/app";
 import {DragDropContext, Draggable, DraggableProvided, Droppable, DropResult} from "react-beautiful-dnd";
@@ -323,7 +323,7 @@ class SpeakerFeedEntry extends React.PureComponent<{
       <Feed.Content>
         <Feed.Summary>
           <Feed.User>
-            {data && <Flag name={parseFlagName(data.who)}/>}
+            {data && <Flag name={nameToFlagCode(data.who)}/>}
             {data ? data.who : ''}
           </Feed.User>
           <Feed.Date>{data ? data.duration.toString() + ' seconds' : ''}</Feed.Date>

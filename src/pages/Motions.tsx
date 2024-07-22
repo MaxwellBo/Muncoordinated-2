@@ -12,7 +12,7 @@ import {
 } from '../modules/handlers';
 import {implies,} from '../utils';
 import {TimeSetter} from '../components/TimeSetter';
-import {nameToMemberOption, parseFlagName} from '../modules/member';
+import {nameToMemberOption, nameToFlagCode} from '../modules/member';
 import {
   CaucusData,
   CaucusStatus,
@@ -396,7 +396,7 @@ export class MotionsComponent extends React.Component<Props & Hooks, State> {
         <Label horizontal>
           Proposer
         </Label>
-        <Flag name={parseFlagName(proposer || '')} /> {proposer}
+        <Flag name={nameToFlagCode(proposer || '')} /> {proposer}
       </div>
     );
 
@@ -405,7 +405,7 @@ export class MotionsComponent extends React.Component<Props & Hooks, State> {
         <Label horizontal>
           Seconder
         </Label>
-        <Flag name={parseFlagName(seconder || '')} /> {seconder}
+        <Flag name={nameToFlagCode(seconder || '')} /> {seconder}
       </div>
     );
 

@@ -28,12 +28,28 @@ export interface MemberOption {
   text: string;
 }
 
-export function parseFlagName(name: string): FlagNames {
+export function nameToFlagCode(name: string): FlagNames {
+  // renamed 2016
+  if (name === 'Czechia') {
+    return 'cz';
+  }
+
+  // renamed 2018
+  if (name === 'Eswatini') {
+    return 'sz';
+  }
+
+  // renamed 2019
+  if (name === 'North Macedonia') {
+    return 'mk';
+  }
+
   if (FLAG_NAME_SET.has(name)) {
     return name.toLowerCase() as FlagNames;
-  } else {
-    return 'fm';
-  }
+  } 
+
+  // Federated States of Micronesia looks kinda like the UN flag?
+  return 'fm';
 }
 
 export function membersToOptions(members: Record<MemberID, MemberData> | undefined): MemberOption[] {

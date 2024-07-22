@@ -3,7 +3,7 @@ import firebase from 'firebase/compat/app';
 import * as _ from 'lodash';
 import { RouteComponentProps } from 'react-router';
 import { Table, Flag, Container } from 'semantic-ui-react';
-import { MemberData, MemberID, parseFlagName } from '../modules/member';
+import { MemberData, MemberID, nameToFlagCode } from '../modules/member';
 import { URLParameters } from '../types';
 import Loading from '../components/Loading';
 import { hhmmss } from '../components/Timer';
@@ -122,7 +122,7 @@ export default class Stats extends React.Component<Props, State> {
       return (
         <Table.Row key={mid} >
           <Table.Cell>
-            <Flag name={parseFlagName(member.name)} />
+            <Flag name={nameToFlagCode(member.name)} />
             {member.name}
           </Table.Cell>
           <Table.Cell textAlign="right">
