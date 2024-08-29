@@ -40,7 +40,7 @@ See the section about [running tests](https://facebook.github.io/create-react-ap
 ## Integration tests
 
 ```sh
-yarn run cypress
+yarn cypress run
 ```
 
 Launches the integration test runner.<br>
