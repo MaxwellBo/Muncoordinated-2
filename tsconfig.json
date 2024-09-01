@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
-    "target": "es5",
-    "allowJs": true,
+    "target": "ESNext",
+    "allowJs": false,
     "skipLibCheck": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
@@ -13,11 +13,14 @@
     "isolatedModules": true,
     "sourceMap": true,
     "noEmit": true,
-    "jsx": "preserve",
+    "noFallthroughCasesInSwitch": true,
+    "jsx": "react-jsx",
     "lib": [
-      "es2016", // you need this so things like "Set" work
+      "esnext", 
+      "dom.iterable",
       "dom" // you need this so things like "currentTarget" work
     ],
+    "types": ["vite/client", "vite-plugin-svgr/client"],
   },
   "include": [
     "src"
