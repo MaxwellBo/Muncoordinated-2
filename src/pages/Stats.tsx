@@ -1,18 +1,18 @@
-import * as React from "react";
-import * as firebase from "firebase/app";
-import * as _ from "lodash";
-import { RouteComponentProps } from "react-router";
-import { Table, Flag, Container } from "semantic-ui-react";
-import { Helmet } from "react-helmet";
-import { MemberData, MemberID, parseFlagName } from "../modules/member";
-import { URLParameters } from "../types";
-import Loading from "../components/Loading";
-import { hhmmss } from "../components/Timer";
-import { CaucusData, CaucusID } from "../models/caucus";
-import { AmendmentData, AmendmentID, ResolutionData, ResolutionID } from "../models/resolution";
-import { CommitteeData } from "../models/committee";
-import { MotionData, MotionID } from "../models/motion";
-import { SpeakerEvent } from "../models/caucus";
+import * as React from 'react';
+import firebase from 'firebase/compat/app';
+import * as _ from 'lodash';
+import { RouteComponentProps } from 'react-router';
+import { Table, Flag, Container } from 'semantic-ui-react';
+import { MemberData, MemberID, nameToFlagCode } from '../modules/member';
+import { URLParameters } from '../types';
+import Loading from '../components/Loading';
+import { hhmmss } from '../components/Timer';
+import {CaucusData, CaucusID} from "../models/caucus";
+import {AmendmentData, AmendmentID, ResolutionData, ResolutionID} from "../models/resolution";
+import {CommitteeData} from "../models/committee";
+import {MotionData, MotionID} from "../models/motion";
+import {SpeakerEvent} from "../models/caucus";
+import { Helmet } from 'react-helmet';
 
 interface Props extends RouteComponentProps<URLParameters> {}
 
@@ -126,19 +126,27 @@ export default class Stats extends React.Component<Props, State> {
         const member = members[mid];
         const stats = memberStats(committee, mid, member);
 
-        return (
-          <Table.Row key={mid}>
-            <Table.Cell>
-              <Flag name={parseFlagName(member.name)} />
-              {member.name}
-            </Table.Cell>
-            <Table.Cell textAlign="right">{stats.times}</Table.Cell>
-            <Table.Cell textAlign="right">{hhmmss(stats.duration)}</Table.Cell>
-            <Table.Cell textAlign="right">{stats.motionProposals}</Table.Cell>
-            <Table.Cell textAlign="right">{stats.amendmentProposals}</Table.Cell>
-          </Table.Row>
-        );
-      });
+      return (
+        <Table.Row key={mid} >
+          <Table.Cell>
+            <Flag name={nameToFlagCode(member.name)} />
+            {member.name}
+          </Table.Cell>
+          <Table.Cell textAlign="right">
+            {stats.times}
+          </Table.Cell>
+          <Table.Cell textAlign="right">
+            {hhmmss(stats.duration)}
+          </Table.Cell>
+          <Table.Cell textAlign="right">
+            {stats.motionProposals}
+          </Table.Cell>
+          <Table.Cell textAlign="right">
+            {stats.amendmentProposals}
+          </Table.Cell>
+        </Table.Row>
+      );
+    });
 
     return (
       <Container text style={{ padding: "1em 0em 1.5em" }}>

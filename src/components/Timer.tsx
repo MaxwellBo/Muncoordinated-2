@@ -1,5 +1,5 @@
 import * as React from 'react';
-import firebase from 'firebase/app';
+import firebase from 'firebase/compat/app';
 import {Button, DropdownProps, Form, Icon, Label, Progress, Segment} from 'semantic-ui-react';
 import {TimeSetter} from './TimeSetter';
 import _ from 'lodash';
@@ -16,7 +16,7 @@ interface Props {
 
 interface State {
   timer?: TimerData;
-  timerId?: NodeJS.Timer;
+  timerId?: NodeJS.Timeout;
   skew?: number;
   offsetRef: firebase.database.Reference;
   unitDropdown: Unit;

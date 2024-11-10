@@ -1,10 +1,10 @@
-import * as React from "react";
-import firebase from "firebase/app";
-import { RouteComponentProps } from "react-router";
-import { Route } from "react-router-dom";
-import Caucus from "./Caucus";
-import Resolution from "./Resolution";
-import Admin from "./Admin";
+import * as React from 'react';
+import firebase from 'firebase/compat/app';
+import {RouteComponentProps} from 'react-router';
+import {Route} from 'react-router-dom';
+import Caucus from './Caucus';
+import Resolution from './Resolution';
+import Admin from './Admin';
 import {
   Button,
   Container,
@@ -14,38 +14,33 @@ import {
   Input,
   List,
   Menu,
-  Responsive,
   Segment,
   SemanticICONS,
-  Sidebar,
-} from "semantic-ui-react";
-import { Helmet } from "react-helmet";
-import Stats from "./Stats";
-import Motions from "./Motions";
-import Unmod from "./Unmod";
-import Notes from "./Notes";
-import Help from "./Help";
-import { CaucusStatus, DEFAULT_CAUCUS, putCaucus } from "../models/caucus";
-import { URLParameters } from "../types";
-import Loading from "../components/Loading";
-import Footer from "../components/Footer";
-import Settings from "./Settings";
-import Files from "./Files";
-import { LoginModal } from "../components/auth";
-import { CommitteeShareHint } from "../components/share-hints";
-import Notifications from "../components/Notifications";
-import { DEFAULT_RESOLUTION, putResolution } from "../models/resolution";
-import ConnectionStatus from "../components/ConnectionStatus";
-import { fieldHandler } from "../modules/handlers";
-import { DEFAULT_STRAWPOLL, putStrawpoll } from "../models/strawpoll";
-import Strawpoll from "./Strawpoll";
-import { logClickSetupCommittee } from "../modules/analytics";
-import {
-  CommitteeData,
-  CommitteeID,
-  DEFAULT_COMMITTEE,
-} from "../models/committee";
-import { Presentation } from "./Presentation";
+  Sidebar
+} from 'semantic-ui-react';
+import {Helmet} from 'react-helmet';
+import Stats from './Stats';
+import Motions from './Motions';
+import Unmod from './Unmod';
+import Notes from './Notes';
+import Help from './Help';
+import {CaucusStatus, DEFAULT_CAUCUS, putCaucus} from '../models/caucus';
+import {URLParameters} from '../types';
+import Loading from '../components/Loading';
+import Footer from '../components/Footer';
+import Settings from './Settings';
+import Files from './Files';
+import {LoginModal} from '../components/auth';
+import {CommitteeShareHint} from '../components/share-hints';
+import Notifications from '../components/Notifications';
+import {DEFAULT_RESOLUTION, putResolution} from '../models/resolution';
+import ConnectionStatus from '../components/ConnectionStatus';
+import {fieldHandler} from '../modules/handlers';
+import {DEFAULT_STRAWPOLL, putStrawpoll} from '../models/strawpoll';
+import Strawpoll from './Strawpoll';
+import {logClickSetupCommittee} from '../modules/analytics';
+import {CommitteeData, CommitteeID, DEFAULT_COMMITTEE} from "../models/committee";
+import { createMedia } from '@artsy/fresnel';
 
 interface DesktopContainerProps {
   menu?: React.ReactNode;
@@ -68,9 +63,23 @@ interface Props extends RouteComponentProps<URLParameters> {}
 interface State {
   committee?: CommitteeData;
   committeeFref: firebase.database.Reference;
-
   showPresentationView?: boolean;
 }
+
+const CommitteeMedia = createMedia({
+  breakpoints: {
+    mobile: 320,
+    tablet: 768,
+    computer: 992,
+    largeScreen: 1200,
+    widescreen: 1920,
+  },
+});
+
+const mediaStyles = CommitteeMedia.createMediaStyle();
+const { Media, MediaContextProvider } = CommitteeMedia;
+
+
 
 class DesktopContainer extends React.Component<
   DesktopContainerProps,
@@ -78,17 +87,19 @@ class DesktopContainer extends React.Component<
 > {
   render() {
     const { body, menu } = this.props;
-
     // Semantic-UI-React/src/addons/Responsive/Responsive.js
     return (
-      <Responsive
-        {...{ minWidth: (Responsive.onlyMobile.maxWidth as number) + 1 }}
-      >
-        <Menu fluid size="small">
-          {menu}
-        </Menu>
-        {body}
-      </Responsive>
+      <>
+      <style>{mediaStyles}</style>
+      <MediaContextProvider>
+          <Segment as={Media} basic greaterThanOrEqual="tablet" style={{padding: 0}}>
+            <Menu fluid size="small">
+              {menu}
+            </Menu>
+            {body}
+          </Segment>
+      </MediaContextProvider>
+      </>
     );
   }
 }
@@ -122,7 +133,10 @@ class MobileContainer extends React.Component<
     const { sidebarOpened } = this.state;
 
     return (
-      <Responsive {...Responsive.onlyMobile}>
+    <>
+    <style>{mediaStyles}</style>
+    <MediaContextProvider>
+      <Segment as={Media} basic at="mobile">
         <Sidebar.Pushable>
           <Sidebar
             as={Menu}
@@ -146,7 +160,9 @@ class MobileContainer extends React.Component<
             {body}
           </Sidebar.Pusher>
         </Sidebar.Pushable>
-      </Responsive>
+      </Segment>
+    </MediaContextProvider>
+    </>
     );
   }
 }
@@ -446,7 +462,7 @@ export default class Committee extends React.Component<Props, State> {
           </List.Item>
         </List>
         <CommitteeShareHint committeeID={this.props.match.params.committeeID} />
-        <Segment textAlign="center" basic>
+        <Segment textAlign="center" basic style={{padding: 0}}>
           <Button as="a" primary size="large" onClick={this.gotoSetup}>
             Setup committee
             <Icon name="arrow right" />

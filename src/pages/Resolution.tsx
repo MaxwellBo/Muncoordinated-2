@@ -1,5 +1,5 @@
 import * as React from "react";
-import * as firebase from "firebase/app";
+import firebase from "firebase/compat/app";
 import * as _ from "lodash";
 import {
   canVote,
@@ -28,11 +28,10 @@ import {
   Statistic,
   Tab,
   TabProps,
-  TextArea,
-} from "semantic-ui-react";
-import { Helmet } from "react-helmet";
-import { RouteComponentProps } from "react-router";
-import { URLParameters } from "../types";
+  TextArea
+} from 'semantic-ui-react';
+import {RouteComponentProps} from 'react-router';
+import {URLParameters} from '../types';
 import {
   checkboxHandler,
   dropdownHandler,
@@ -68,6 +67,7 @@ import Files from "./Files";
 import { CommitteeStatsTable } from "../modules/committee-stats";
 import { CommitteeData, recoverMemberOptions } from "../models/committee";
 import { getThreshold, getThresholdName } from "../viewmodels/resolution";
+import { Helmet } from 'react-helmet';
 import { ResolutionPresentationData } from "../models/presentation-data";
 
 const TAB_ORDER = ["feed", "text", "amendments", "voting"];

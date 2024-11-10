@@ -1,16 +1,15 @@
 import * as React from 'react';
-import firebase from 'firebase/app';
+import firebase from 'firebase/compat/app';
 import {
   MemberData,
   MemberID,
   Rank,
-  parseFlagName,
+  nameToFlagCode,
   nameToMemberOption,
   MemberOption
 } from '../modules/member';
 import { Dropdown, Flag, Table, Button, Checkbox,
   CheckboxProps, DropdownProps, ButtonProps, Container, Message, Icon, Grid } from 'semantic-ui-react';
-import { Helmet } from 'react-helmet';
 import { checkboxHandler, dropdownHandler } from '../modules/handlers';
 import { makeDropdownOption } from '../utils';
 import _ from 'lodash';
@@ -21,6 +20,7 @@ import { CommitteeStatsTable } from '../modules/committee-stats';
 import {CommitteeData, CommitteeID, pushMember, Template} from '../models/committee';
 import { TemplateAdder } from '../components/template';
 import {COUNTRY_OPTIONS} from "../constants";
+import { Helmet } from 'react-helmet';
 
 interface Props extends RouteComponentProps<URLParameters> {
   committee: CommitteeData;
@@ -60,7 +60,7 @@ export default class Admin extends React.Component<Props, State> {
     return (
       <Table.Row key={id}>
         <Table.Cell>
-          <Flag name={parseFlagName(member.name)} />
+          <Flag name={nameToFlagCode(member.name)} />
           {member.name}
         </Table.Cell>
         <Table.Cell>
@@ -144,7 +144,7 @@ export default class Admin extends React.Component<Props, State> {
     this.setState({ rank: data.value as Rank ?? Rank.Standard });
   }
 
-  handleAdd = (event: React.KeyboardEvent<HTMLElement>, data: DropdownProps) => {
+  handleAdd = (event: React.SyntheticEvent<HTMLElement>, data: DropdownProps) => {
     // FSM looks sorta like the UN flag
     const newMember = nameToMemberOption((data.value as number | string).toString());
 
@@ -280,7 +280,7 @@ export default class Admin extends React.Component<Props, State> {
     return (
       <Container style={{ padding: '1em 0em 1.5em' }}>
         <Helmet>
-          <title>Setup - Muncoordinated</title>
+          <title>{`Setup - Muncoordinated`}</title>
         </Helmet>
         <Grid columns="2" stackable>
           <Grid.Row>

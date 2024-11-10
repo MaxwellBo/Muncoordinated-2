@@ -1,11 +1,9 @@
-import * as firebase from 'firebase/app';
+import firebase from 'firebase/compat/app';
 
 import {makeDropdownOption, shortMeetId} from '../utils';
 import {CommitteeID} from "./committee";
 import {DEFAULT_TIMER, TimerData, Unit} from "./time";
-
-export const DEFAULT_CAUCUS_TIME_SECONDS = 10 * 60;
-export const DEFAULT_SPEAKER_TIME_SECONDS = 1 * 60;
+import {DEFAULT_SPEAKER_TIME_SECONDS, DEFAULT_CAUCUS_TIME_SECONDS} from "./constants";
 
 export function recoverUnit(caucus?: CaucusData): Unit {
   return caucus ? (caucus.speakerUnit || Unit.Seconds) : Unit.Seconds;

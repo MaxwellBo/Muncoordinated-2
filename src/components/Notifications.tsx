@@ -1,5 +1,5 @@
 import * as React from 'react';
-import * as firebase from 'firebase/app';
+import firebase from 'firebase/compat/app';
 import * as _ from 'lodash';
 import { TransitionablePortal, Button, Card } from 'semantic-ui-react';
 import { State as ConnectionStatusState } from './ConnectionStatus';

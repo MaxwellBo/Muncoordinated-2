@@ -1,12 +1,13 @@
-import React from "react";
-import * as firebase from "firebase/app";
-import { Container } from "semantic-ui-react";
-import { Helmet } from "react-helmet";
-import { RouteComponentProps } from "react-router";
-import Timer from "../components/Timer";
-import { URLParameters } from "../types";
-import { TimerData, Unit } from "../models/time";
-import { UnmodPresentationData } from "../models/presentation-data";
+import * as React from 'react';
+import firebase from 'firebase/compat/app';
+import { Container } from 'semantic-ui-react';
+import { RouteComponentProps } from 'react-router';
+import Timer from '../components/Timer';
+import { URLParameters } from '../types';
+import {TimerData, Unit} from '../models/time';
+import { Helmet } from 'react-helmet';
+import { UnmodPresentationData } from '../models/presentation-data';
+
 
 interface Props extends RouteComponentProps<URLParameters> {}
 

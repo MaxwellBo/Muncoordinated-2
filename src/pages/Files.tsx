@@ -1,8 +1,8 @@
-import * as React from "react";
-import firebase from "firebase/app";
-import FileSaver from "file-saver";
-import { RouteComponentProps } from "react-router";
-import { URLParameters } from "../types";
+import * as React from 'react';
+import firebase from 'firebase/compat/app';
+import FileSaver from 'file-saver';
+import {RouteComponentProps} from 'react-router';
+import {URLParameters} from '../types';
 import {
   Button,
   Container,
@@ -13,23 +13,15 @@ import {
   Progress,
   SemanticICONS,
   Tab,
-  TextAreaProps,
-} from "semantic-ui-react";
-import { Helmet } from "react-helmet";
-import { MemberOption, parseFlagName } from "../modules/member";
-import Loading from "../components/Loading";
-import {
-  DEFAULT_AMENDMENT,
-  putAmendment,
-  ResolutionID,
-} from "../models/resolution";
-import {
-  CommitteeData,
-  CommitteeID,
-  recoverMemberOptions,
-} from "../models/committee";
-import { File, Link, PostData, PostID, PostType, Text } from "../models/post";
-import { COUNTRY_OPTIONS } from "../constants";
+  TextAreaProps
+} from 'semantic-ui-react';
+import {MemberOption, nameToFlagCode} from '../modules/member';
+import Loading from '../components/Loading';
+import {DEFAULT_AMENDMENT, putAmendment, ResolutionID} from '../models/resolution';
+import {CommitteeData, CommitteeID, recoverMemberOptions} from "../models/committee";
+import {File, Link, PostData, PostID, PostType, Text} from "../models/post";
+import {COUNTRY_OPTIONS} from "../constants";
+import { Helmet } from 'react-helmet';
 
 const TEXT_ICON: SemanticICONS = "align left";
 const FILE_ICON: SemanticICONS = "file outline";
@@ -131,10 +123,8 @@ class Entry extends React.Component<EntryProps, EntryState> {
         <Feed.Label icon={TEXT_ICON} />
         <Feed.Content>
           <Feed.Summary>
-            <Feed.User>
-              <Flag name={parseFlagName(post.uploader)} /> {post.uploader}
-            </Feed.User>
-            <Feed.Date>{this.renderDate("Posted")}</Feed.Date>
+            <Feed.User><Flag name={nameToFlagCode(post.uploader)}/> {post.uploader}</Feed.User>
+            <Feed.Date>{this.renderDate('Posted')}</Feed.Date>
           </Feed.Summary>
           <Feed.Extra style={{ whiteSpace: "pre-wrap" }} text>
             {post.body}
@@ -158,11 +148,8 @@ class Entry extends React.Component<EntryProps, EntryState> {
         <Feed.Label icon={FILE_ICON} />
         <Feed.Content>
           <Feed.Summary>
-            <Feed.User>
-              <Flag name={parseFlagName(post.uploader)} /> {post.uploader}
-            </Feed.User>{" "}
-            uploaded a file
-            <Feed.Date>{this.renderDate("Uploaded")}</Feed.Date>
+            <Feed.User><Flag name={nameToFlagCode(post.uploader)}/> {post.uploader}</Feed.User> uploaded a file
+            <Feed.Date>{this.renderDate('Uploaded')}</Feed.Date>
           </Feed.Summary>
           {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
           <Feed.Extra>
@@ -183,11 +170,8 @@ class Entry extends React.Component<EntryProps, EntryState> {
         <Feed.Label icon={LINK_ICON} />
         <Feed.Content>
           <Feed.Summary>
-            <Feed.User>
-              <Flag name={parseFlagName(post.uploader)} /> {post.uploader}
-            </Feed.User>{" "}
-            posted a link
-            <Feed.Date>{this.renderDate("Posted")}</Feed.Date>
+            <Feed.User><Flag name={nameToFlagCode(post.uploader)}/> {post.uploader}</Feed.User> posted a link
+            <Feed.Date>{this.renderDate('Posted')}</Feed.Date>
           </Feed.Summary>
           <Feed.Extra>
             <a href={post.url}>{post.name || post.url}</a>

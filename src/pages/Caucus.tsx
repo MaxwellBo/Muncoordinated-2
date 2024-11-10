@@ -55,10 +55,10 @@ import {
   MemberData,
   MemberOption,
   membersToPresentOptions,
-  parseFlagName,
+  nameToFlagCode,
 } from "../modules/member";
 import { TimeSetter } from "../components/TimeSetter";
-import * as firebase from "firebase";
+import firebase from "firebase/compat/app";
 import {
   DragDropContext,
   Draggable,
@@ -67,6 +67,8 @@ import {
   DropResult,
 } from "react-beautiful-dnd";
 import { ModCaucusPresentationData } from "../models/presentation-data";
+import { Helmet } from 'react-helmet';
+import { getDatabase, ref } from 'firebase/database';
 
 interface Props extends RouteComponentProps<URLParameters> {}
 
@@ -84,7 +86,8 @@ export function NextSpeaking(props: {
   fref: firebase.database.Reference;
   autoNextSpeaker: boolean;
 }) {
-  const [user] = useAuthState(firebase.auth());
+  // TODO: Bandaid - I don't think the hook types nicely with the compat patch
+  const [user] = useAuthState(firebase.auth() as any);
 
   const handleKeyDown = (ev: KeyboardEvent) => {
     // if changing this, update Help
@@ -158,17 +161,15 @@ export function NextSpeaking(props: {
     runLifecycle({ ...lifecycle, ...queueHeadDetails });
   };
 
-  // TODO: Improve this dirty fix
-  let skew: any;
-  skew = useObjectVal<number>(
-    firebase.database().ref("/.info/serverTimeOffset")
-  );
+  const db = getDatabase();
+  const [skew] = useObjectVal<number>(ref(db, '.info/serverTimeOffset'));
+  console.log("Got skew", skew, "millis");
 
   const startTimer = () => {
     toggleTicking({
       timerFref: props.fref.child("speakerTimer"),
       timer: props.speakerTimer,
-      skew: skew.value,
+      skew
     });
   };
 
@@ -316,8 +317,8 @@ class SpeakerFeedEntry extends React.PureComponent<{
       <Feed.Content>
         <Feed.Summary>
           <Feed.User>
-            {data && <Flag name={parseFlagName(data.who)} />}
-            {data ? data.who : ""}
+            {data && <Flag name={nameToFlagCode(data.who)}/>}
+            {data ? data.who : ''}
           </Feed.User>
           <Feed.Date>
             {data ? data.duration.toString() + " seconds" : ""}
@@ -373,8 +374,9 @@ function SpeakerFeed(props: {
   speaking?: SpeakerEvent;
   speakerTimer: TimerData;
 }) {
-  const { data, queueFref, speaking, speakerTimer } = props;
-  const [user] = useAuthState(firebase.auth());
+  const {data, queueFref, speaking, speakerTimer} = props;
+  // TODO: Bandaid - I don't think the hook types nicely with the compat patch
+  const [user] = useAuthState(firebase.auth() as any);
 
   const events = data || {};
 
@@ -741,7 +743,7 @@ export default class Caucus extends React.Component<Props, State> {
     return (
       <Container style={{ "padding-bottom": "2em" }}>
         <Helmet>
-          <title>{`${caucus?.name} - Muncoordinated`}</title>
+            <title>{`${caucus?.name} - Muncoordinated`}</title>
         </Helmet>
         <Grid columns="equal" stackable>
           {header}

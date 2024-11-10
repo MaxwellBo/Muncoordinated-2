@@ -1,7 +1,7 @@
 import {Accordion, AccordionTitleProps, ButtonProps, Flag, Form, Icon, Popup} from "semantic-ui-react";
 import * as React from 'react';
 import {useState} from 'react';
-import {parseFlagName} from "../modules/member"
+import {nameToFlagCode} from "../modules/member"
 import {makeDropdownOption} from "../utils";
 import {CommitteeID, pushTemplateMembers, Template, TEMPLATE_TO_MEMBERS} from "../models/committee";
 
@@ -17,7 +17,7 @@ export function TemplatePreview(props: { template?: Template }) {
       {TEMPLATE_TO_MEMBERS[props.template]
         .map(member =>
           <div key={member.name}>
-            <Flag name={parseFlagName(member.name)} />
+            <Flag name={nameToFlagCode(member.name)} />
             {member.name}
           </div>
         )}

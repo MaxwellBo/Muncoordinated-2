@@ -1,12 +1,12 @@
 import * as React from 'react';
-import * as firebase from 'firebase/app';
+import firebase from 'firebase/compat/app';
 import {RouteComponentProps} from 'react-router';
 import {URLParameters} from '../types';
 import {Checkbox, Container, Header, Segment} from 'semantic-ui-react';
-import {Helmet} from 'react-helmet';
 import {checkboxHandler} from '../modules/handlers';
 import {CommitteeData} from "../models/committee";
 import {DEFAULT_SETTINGS, SettingsData} from "../models/settings";
+import { Helmet } from 'react-helmet';
 
 interface Props extends RouteComponentProps<URLParameters> {
 }

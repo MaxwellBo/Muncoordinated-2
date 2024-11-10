@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { RouteComponentProps } from 'react-router';
-import * as firebase from 'firebase/app';
+import firebase from 'firebase/compat/app';
 import {
   Form, Grid, Header, InputOnChangeData, DropdownProps,
   Message, Popup, Container, Segment, Icon,
@@ -12,8 +12,8 @@ import ConnectionStatus from '../components/ConnectionStatus';
 import { logCreateCommittee } from '../modules/analytics';
 import { meetId } from '../utils';
 import {CommitteeData, DEFAULT_COMMITTEE, pushTemplateMembers, putCommittee, Template} from '../models/committee';
-import { Helmet } from 'react-helmet';
 import { TemplatePreview } from '../components/template';
+import { Helmet } from 'react-helmet';
 
 interface Props extends RouteComponentProps<URLParameters> {
 }
