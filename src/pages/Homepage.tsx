@@ -22,6 +22,7 @@ interface HomepageHeadingProps {
 }
 
 const REPO_LINK = 'https://github.com/MaxwellBo/Muncoordinated-2';
+const logo = '../../logo.png'
 
 /* eslint-disable react/no-multi-comp */
 /* Heads up! HomepageHeading uses inline styling, however it's not the best practice. Use CSS or styled components for
