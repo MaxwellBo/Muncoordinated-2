@@ -20,10 +20,10 @@ import { NotFound } from './components/NotFound';
 
 const firebaseConfig = {
   apiKey: 'AIzaSyA9EuEf7m3YOTBhBNhoe7DcOIZJP2toL6w',
-  authDomain: 'muncoordinated.firebaseapp.com',
-  databaseURL: 'https://muncoordinated.firebaseio.com',
-  projectId: 'muncoordinated',
-  storageBucket: 'muncoordinated.appspot.com',
+  authDomain: 'qmun.firebaseapp.com',
+  databaseURL: 'https://qmun.firebaseio.com',
+  projectId: 'qmun',
+  storageBucket: 'qmun.appspot.com',
   messagingSenderId: '308589918735',
   appId: "1:308589918735:web:f3567ce28d637eba40017a",
   measurementId: "G-DPWPPBRD4M"
