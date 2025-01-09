@@ -632,7 +632,7 @@ export default class Files extends React.Component<Props, State> {
       (
         <Container text style={{ padding: '1em 0em' }}>
           <Helmet>
-            <title>{`Posts - Muncoordinated`}</title>
+            <title>{`Posts - QMUN`}</title>
           </Helmet>
           {inner}
         </Container>
