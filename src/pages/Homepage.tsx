@@ -135,7 +135,7 @@ class DesktopContainer extends React.Component<DesktopContainerProps, DesktopCon
               size="large"
             >
               <Container>
-              <Menu.Item as="a" active>Home</Menu.Item>
+                <Menu.Item as="a" active>Home</Menu.Item>
                 <Menu.Item as="a" href="/committees/-MEZXMLXacUeaJyXM4zR">QMUN Hub</Menu.Item>
 
                 <Menu.Item as="a" href="/guides">Background Guides</Menu.Item>
