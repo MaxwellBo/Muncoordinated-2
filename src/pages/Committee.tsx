@@ -360,7 +360,7 @@ export default class Committee extends React.Component<Props, State> {
     return (
       <Container text style={{ padding: '1em 0em' }}>
         <Helmet>
-          <title>{`${committee?.name} - Muncoordinated`}</title>
+          <title>{`${committee?.name} - QMUN 2025`}</title>
         </Helmet>
         <Header as="h1">
           <Input
