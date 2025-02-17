@@ -51,8 +51,10 @@ import firebase from "firebase/compat/app";
 import {DragDropContext, Draggable, DraggableProvided, Droppable, DropResult} from "react-beautiful-dnd";
 import { Helmet } from 'react-helmet';
 import { getDatabase, ref } from 'firebase/database';
+import { FormattedMessage, injectIntl, type IntlShape } from 'react-intl';
 
 interface Props extends RouteComponentProps<URLParameters> {
+  intl: IntlShape;
 }
 
 interface State {
@@ -69,6 +71,7 @@ export function NextSpeaking(props: {
   speakerTimer: TimerData;
   fref: firebase.database.Reference;
   autoNextSpeaker: boolean;
+  intl: IntlShape;
 }) {
   // TODO: Bandaid - I don't think the hook types nicely with the compat patch
   const [user] = useAuthState(firebase.auth() as any);
@@ -176,7 +179,7 @@ export function NextSpeaking(props: {
       onClick={nextSpeaker}
     >
       <Icon name="arrow up"/>
-      Stage
+      <FormattedMessage id="caucus.action.stage" defaultMessage="Stage" />
     </Button>
   );
 
@@ -189,7 +192,7 @@ export function NextSpeaking(props: {
       onClick={startTimer}
     >
       <Icon name="hourglass start"/>
-      Start
+      <FormattedMessage id="caucus.action.start" defaultMessage="Start" />
     </Button>
   )
 
@@ -202,7 +205,7 @@ export function NextSpeaking(props: {
       onClick={nextSpeaker}
     >
       <Icon name="arrow up"/>
-      Next
+      <FormattedMessage id="caucus.action.next" defaultMessage="Next" />
     </Button>
   );
 
@@ -215,7 +218,7 @@ export function NextSpeaking(props: {
       onClick={nextSpeaker}
     >
       <Icon name="hourglass end"/>
-      Stop
+      <FormattedMessage id="caucus.action.stop" defaultMessage="Stop" />
     </Button>
   );
 
@@ -228,7 +231,7 @@ export function NextSpeaking(props: {
       onClick={interlace}
     >
       <Icon name="random"/>
-      Order
+      <FormattedMessage id="caucus.action.order" defaultMessage="Order" />
     </Button>
   );
 
@@ -252,12 +255,13 @@ export function NextSpeaking(props: {
 
   return (
     <Segment textAlign="center" loading={!caucus}>
-      <Label attached="top left" size="large">Next speaking</Label>
+      <Label attached="top left" size="large">
+        <FormattedMessage id="caucus.label.next.speaking" defaultMessage="Next speaking" />
+      </Label>
       {button}
       <Popup
         trigger={interlaceButton}
-        content="Orders the list so that speakers are
-        'For', then 'Against', then 'Neutral', then 'For', etc."
+        content={props.intl.formatMessage({ id: 'caucus.popup.order', defaultMessage: 'Orders the list so that speakers are \'For\', then \'Against\', then \'Neutral\', then \'For\', etc.' })}
       />
       <SpeakerFeed
         data={caucus ? caucus.queue : undefined}
@@ -458,6 +462,7 @@ function Queuer(props: {
   caucus?: CaucusData;
   members?: Record<string, MemberData>;
   caucusFref: firebase.database.Reference;
+  intl: IntlShape;
 }) {
   const {members, caucus, caucusFref} = props;
   const [queueMember, setQueueMember] = React.useState<MemberOption | undefined>(undefined);
@@ -488,7 +493,9 @@ function Queuer(props: {
 
   return (
     <Segment textAlign="center">
-      <Label attached="top left" size="large">Queue</Label>
+      <Label attached="top left" size="large">
+        <FormattedMessage id="caucus.label.queue" defaultMessage="Queue" />
+      </Label>
       <Form>
         <Form.Dropdown
           icon="search"
@@ -501,36 +508,34 @@ function Queuer(props: {
           options={memberOptions}
         />
         <TimeSetter
-          loading={!caucus}
-          unitValue={recoverUnit(caucus)}
-          placeholder="Speaking time"
-          durationValue={duration ? duration.toString() : undefined}
-          onDurationChange={validatedNumberFieldHandler(caucusFref, 'speakerDuration')}
-          onUnitChange={dropdownHandler(caucusFref, 'speakerUnit')}
+          unit={recoverUnit(caucus) || Unit.Minutes}
+          duration={duration ? duration.toString() : ''}
+          onDurationChange={(duration: string) => validatedNumberFieldHandler(caucusFref, 'speakerDuration')({ currentTarget: { value: duration } } as React.FormEvent<HTMLInputElement>)}
+          onUnitChange={(unit: Unit) => dropdownHandler(caucusFref, 'speakerUnit')(undefined as any, { value: unit })}
         />
         <Form.Checkbox
-          label="Delegates can queue"
+          label={<FormattedMessage id="caucus.checkbox.delegates.queue" defaultMessage="Delegates can queue" />}
           indeterminate={!caucus}
           toggle
-          checked={caucus ? (caucus.queueIsPublic || false) : false} // zoo wee mama
+          checked={caucus ? (caucus.queueIsPublic || false) : false}
           onChange={checkboxHandler<CaucusData>(caucusFref, 'queueIsPublic')}
         />
         <Button.Group size="large" fluid>
           <Button
-            content="For"
+            content={<FormattedMessage id="caucus.button.for" defaultMessage="For" />}
             disabled={disableButtons}
             onClick={setStance(Stance.For)}
           />
           <Button.Or/>
           <Button
             disabled={disableButtons}
-            content="Neutral"
+            content={<FormattedMessage id="caucus.button.neutral" defaultMessage="Neutral" />}
             onClick={setStance(Stance.Neutral)}
           />
           <Button.Or/>
           <Button
             disabled={disableButtons}
-            content="Against"
+            content={<FormattedMessage id="caucus.button.against" defaultMessage="Against" />}
             onClick={setStance(Stance.Against)}
           />
         </Button.Group>
@@ -538,6 +543,8 @@ function Queuer(props: {
     </Segment>
   );
 }
+
+const NextSpeakingWithIntl = injectIntl(NextSpeaking);
 
 export default class Caucus extends React.Component<Props, State> {
   constructor(props: Props) {
@@ -600,7 +607,7 @@ export default class Caucus extends React.Component<Props, State> {
           attatched="top"
           size="massive"
           fluid
-          placeholder="Set caucus name"
+          placeholder={this.props.intl.formatMessage({ id: 'caucus.input.name.placeholder', defaultMessage: 'Set caucus name' })}
         />
         <Form loading={!caucus}>
           <TextArea
@@ -609,7 +616,7 @@ export default class Caucus extends React.Component<Props, State> {
             onChange={textAreaHandler<CaucusData>(caucusFref, 'topic')}
             attatched="top"
             rows={1}
-            placeholder="Set caucus details"
+            placeholder={this.props.intl.formatMessage({ id: 'caucus.input.details.placeholder', defaultMessage: 'Set caucus details' })}
           />
         </Form>
       </>
@@ -625,7 +632,9 @@ export default class Caucus extends React.Component<Props, State> {
 
     return (
       <Segment loading={!caucus}>
-        <Label attached="top left" size="large">Now speaking</Label>
+        <Label attached="top left" size="large">
+          <FormattedMessage id="caucus.label.now.speaking" defaultMessage="Now speaking" />
+        </Label>
         <Feed size="large">
           <SpeakerFeedEntry data={entryData} fref={caucusFref.child('speaking')} speakerTimer={speakerTimer}/>
         </Feed>
@@ -652,25 +661,27 @@ export default class Caucus extends React.Component<Props, State> {
 
     const renderedSpeakerTimer = (
       <Timer
-        name="Speaker timer"
+        name={this.props.intl.formatMessage({ id: 'caucus.timer.speaker', defaultMessage: 'Speaker timer' })}
         timerFref={caucusFref.child('speakerTimer')}
         key={caucusID + 'speakerTimer'}
         onChange={this.setSpeakerTimer}
         toggleKeyCode={83} // S - if changing this, update Help
         defaultUnit={recoverUnit(caucus)}
         defaultDuration={recoverDuration(caucus) || 60}
+        totalSeconds={60}
       />
     );
 
     const renderedCaucusTimer = (
       <Timer
-        name="Caucus timer"
+        name={this.props.intl.formatMessage({ id: 'caucus.timer.caucus', defaultMessage: 'Caucus timer' })}
         timerFref={caucusFref.child('caucusTimer')}
         key={caucusID + 'caucusTimer'}
         onChange={this.setCaucusTimer}
         toggleKeyCode={67} // C - if changing this, update Help
         defaultUnit={Unit.Minutes}
         defaultDuration={10}
+        totalSeconds={600}
       />
     );
 
@@ -693,11 +704,12 @@ export default class Caucus extends React.Component<Props, State> {
         caucus={caucus} 
         members={members} 
         caucusFref={caucusFref} 
+        intl={this.props.intl}
       />
     );
 
     const renderedCaucusNextSpeaking = (
-      <NextSpeaking
+      <NextSpeakingWithIntl
         caucus={caucus} 
         fref={caucusFref} 
         speakerTimer={speakerTimer} 
@@ -735,8 +747,24 @@ export default class Caucus extends React.Component<Props, State> {
     return (
       <Container style={{ 'padding-bottom': '2em' }}>
         <Helmet>
-            <title>{`${caucus?.name} - Muncoordinated`}</title>
+          <title>
+            <FormattedMessage 
+              id="caucus.page.title" 
+              defaultMessage="Caucus - {caucusName}" 
+              values={{ caucusName: caucus?.name || 'Untitled' }}
+            />
+          </title>
         </Helmet>
+        <h1>
+          {caucus?.name}
+          <Label>
+            <FormattedMessage 
+              id="caucus.status" 
+              defaultMessage="Status: {status}" 
+              values={{ status: caucus?.status || CaucusStatus.Open }}
+            />
+          </Label>
+        </h1>
         <Grid columns="equal" stackable>
           {header}
           {body}

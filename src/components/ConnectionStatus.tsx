@@ -1,65 +1,56 @@
 import * as React from 'react';
+import { FormattedMessage } from 'react-intl';
+import { Message } from 'semantic-ui-react';
 import firebase from 'firebase/compat/app';
-import { Message, Icon } from 'semantic-ui-react';
 
-interface Props {
-}
-
-export interface State {
+interface State {
   connected: boolean;
-  hasConnectedBefore: boolean;
-  fref: firebase.database.Reference;
+  connecting: boolean;
 }
 
-export default class ConnectionStatus extends React.Component<Props, State> {
-  constructor(props: Props) {
+export default class ConnectionStatus extends React.Component<{}, State> {
+  constructor(props: {}) {
     super(props);
-
     this.state = {
-      hasConnectedBefore: false,
       connected: false,
-      fref: firebase.database().ref('.info/connected')
+      connecting: true
     };
   }
 
-  firebaseCallback = (status: firebase.database.DataSnapshot | null) => {
-    if (status) {
-      this.setState((prevState: State) => { 
-
-        const connected = status.val();
-
-        if (!connected) {
-          console.info('Firebase connection lost');
-        }
-
-        return {
-          connected: connected,
-          hasConnectedBefore: connected || prevState.hasConnectedBefore
-        };
-      });
-    }
-  }
-
   componentDidMount() {
-    this.state.fref.on('value', this.firebaseCallback);
-  }
-
-  componentWillUnmount() {
-    this.state.fref.off('value', this.firebaseCallback);
+    const connectedRef = firebase.database().ref('.info/connected');
+    connectedRef.on('value', (snap) => {
+      if (snap.val() === true) {
+        this.setState({ connected: true, connecting: false });
+      } else {
+        this.setState({ connected: false, connecting: false });
+      }
+    });
   }
 
   render() {
-    const { connected, hasConnectedBefore } = this.state;
+    const { connected, connecting } = this.state;
 
-    return (!connected && hasConnectedBefore) ? (
-      <Message icon negative>
-        <Icon name="circle notched" loading />
-        <Message.Content>
-          <Message.Header>Connection Lost</Message.Header>
-          Changes are no longer being committed to the server. Either wait for a reconnection
-          or refresh the page. If you refresh the page, you will need to log in again.
-        </Message.Content>
+    if (connecting) {
+      return (
+        <Message info>
+          <FormattedMessage id="connection.status.connecting" defaultMessage="Connecting..." />
+        </Message>
+      );
+    }
+
+    if (!connected) {
+      return (
+        <Message error>
+          <FormattedMessage id="connection.status.disconnected" defaultMessage="Disconnected" />
+        </Message>
+      );
+    }
+
+    return (
+      <Message positive>
+        <FormattedMessage id="connection.status.connected" defaultMessage="Connected" />
       </Message>
-    ) : <div />;
+    );
   }
 }

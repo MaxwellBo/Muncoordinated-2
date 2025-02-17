@@ -1,62 +1,47 @@
-import {Button, DropdownProps, Form, Select} from 'semantic-ui-react';
 import * as React from 'react';
-import {Unit, UNIT_OPTIONS} from "../models/time";
+import { FormattedMessage, useIntl } from 'react-intl';
+import { Form } from 'semantic-ui-react';
+import { Unit } from '../models/time';
 
 interface Props {
-  unitValue: Unit;
-  durationValue?: string;
-  onUnitChange: (event: React.SyntheticEvent<HTMLElement>, data: DropdownProps) => void;
-  onDurationChange: (event: React.FormEvent<HTMLInputElement>) => void;
-  onSet?: () => void;
-  label?: string;
-  error?: boolean;
-  placeholder?: string;
-  loading?: boolean;
+  unit: Unit;
+  duration: string;
+  onUnitChange: (unit: Unit) => void;
+  onDurationChange: (duration: string) => void;
 }
 
-export class TimeSetter extends React.Component<Props, {}> {
-  
-  isInvalid = () => {
-    const { durationValue: n } = this.props;
+export function TimeSetter({ unit, duration, onUnitChange, onDurationChange }: Props) {
+  const intl = useIntl();
 
-    return !n || isNaN(Number(n)) || Number(n) <= 0;
-  }
-
-  handleOnSet = () => {
-    const { props, isInvalid } = this;
-
-    if (props.onSet && !isInvalid()) { // defensive, button shouldn't exist if we don't have it
-      props.onSet();
+  const unitOptions = [
+    { 
+      key: Unit.Seconds, 
+      text: intl.formatMessage({ id: 'timer.unit.seconds', defaultMessage: 'Seconds' }), 
+      value: Unit.Seconds 
+    },
+    { 
+      key: Unit.Minutes, 
+      text: intl.formatMessage({ id: 'timer.unit.minutes', defaultMessage: 'Minutes' }), 
+      value: Unit.Minutes 
     }
-  }
+  ];
 
-  render() {
-    const { props, isInvalid, handleOnSet } = this;
-
-    return (
+  return (
+    <>
       <Form.Input
-        value={props.durationValue || ''}
-        placeholder={props.placeholder || 'Duration'}
-        onChange={props.onDurationChange}
-        action
-        loading={props.loading}
-        fluid
-        error={isInvalid() || props.error}
-        label={props.label}
-      >
-        {/* <input style={{ 'text-align': 'right' }} /> */}
-        <input />
-        {/* <Button icon="minus" onClick={this.decrement} />
-        <Button icon="plus"  onClick={this.increment} /> */}
-        <Select 
-          value={props.unitValue} 
-          options={UNIT_OPTIONS} 
-          compact 
-          button 
-          onChange={props.onUnitChange} 
-        />
-        {props.onSet && (<Button onClick={handleOnSet}>Set</Button>)}
-      </Form.Input>
-    );
-  }
+        label={<FormattedMessage id="timer.duration" defaultMessage="Duration" />}
+        placeholder={intl.formatMessage({ id: 'timer.duration.placeholder', defaultMessage: 'Enter duration' })}
+        value={duration}
+        onChange={(e) => onDurationChange(e.currentTarget.value)}
+        width={6}
+      />
+      <Form.Select
+        label={<FormattedMessage id="timer.unit" defaultMessage="Unit" />}
+        options={unitOptions}
+        value={unit}
+        onChange={(_, data) => onUnitChange(data.value as Unit)}
+        width={6}
+      />
+    </>
+  );
 }

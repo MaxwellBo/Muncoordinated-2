@@ -7,6 +7,7 @@ import {checkboxHandler} from '../modules/handlers';
 import {CommitteeData} from "../models/committee";
 import {DEFAULT_SETTINGS, SettingsData} from "../models/settings";
 import { Helmet } from 'react-helmet';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 interface Props extends RouteComponentProps<URLParameters> {
 }
@@ -42,7 +43,7 @@ export default class Settings extends React.Component<Props, State> {
     this.state.committeeFref.off('value', this.firebaseCallback);
   }
 
-  renderSetting = (setting: keyof SettingsData, label: string) => {
+  renderSetting = (setting: keyof SettingsData, messageId: string, defaultMessage: string) => {
     const { committee, committeeFref } = this.state;
 
     const settingsFref = committeeFref.child('settings');
@@ -55,7 +56,7 @@ export default class Settings extends React.Component<Props, State> {
         indeterminate={value === undefined}
         checked={value || false}
         onChange={checkboxHandler<SettingsData>(settingsFref, setting)}
-        label={label}
+        label={<FormattedMessage id={messageId} defaultMessage={defaultMessage} />}
       />
     );
   }
@@ -67,17 +68,27 @@ export default class Settings extends React.Component<Props, State> {
     return (
       <Container text style={{ padding: '1em 0em' }}>
         <Helmet>
-          <title>{`Settings - Muncoordinated`}</title>
+          <title>
+            <FormattedMessage id="settings.page.title" defaultMessage="Settings - Muncoordinated" />
+          </title>
         </Helmet>
-        <Header as="h3" attached="top">Settings</Header>
+        <Header as="h3" attached="top">
+          <FormattedMessage id="settings.title" defaultMessage="Settings" />
+        </Header>
         <Segment attached="bottom" loading={!committee}>
-          {renderSetting('moveQueueUp', '\'Queue\' should appear above \'Next speaking\'')}
+          {renderSetting(
+            'moveQueueUp', 
+            'settings.queue.position', 
+            '\'Queue\' should appear above \'Next speaking\''
+          )}
           {renderSetting(
             'timersInSeparateColumns',
+            'settings.timers.arrangement',
             'Alternate arrangement with \'Speaker timer\' and \'Caucus timer\' in separate columns'
           )}
           {/* {renderSetting(
             'autoNextSpeaker',
+            'settings.auto.next',
             'The next speaker will automatically be moved to the \'Now speaking\' position after the time has elapsed for the current speaker'
           )} */}
         </Segment>

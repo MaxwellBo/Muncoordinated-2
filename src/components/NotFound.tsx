@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Message, Icon } from 'semantic-ui-react';
+import { FormattedMessage } from 'react-intl';
 
 interface Props {
   item: string;
@@ -21,9 +22,14 @@ export class NotFound extends React.PureComponent<Props, State> {
       <Message error icon>
         <Icon name="question" />
         <Message.Content>
-          <Message.Header as="h1">Not found</Message.Header>
-          The {item} you were looking for (ID: {id}) could not be found.
-          It may have been deleted, or the URL you navigated to was incorrect.
+          <Message.Header as="h1">
+            <FormattedMessage id="notfound.title" defaultMessage="Not found" />
+          </Message.Header>
+          <FormattedMessage 
+            id="notfound.message" 
+            defaultMessage="The {item} you were looking for (ID: {id}) could not be found. It may have been deleted, or the URL you navigated to was incorrect."
+            values={{ item, id }}
+          />
         </Message.Content>
       </Message>
     );

@@ -4,7 +4,8 @@ import { Card, Button, Form, Message, Modal, Icon, List, Segment, Header } from 
 import _ from 'lodash';
 import Loading from './Loading';
 import { logCreateAccount, logLogin } from '../modules/analytics';
-import {CommitteeData, CommitteeID} from "../models/committee";
+import { CommitteeData, CommitteeID } from "../models/committee";
+import { FormattedMessage, useIntl } from 'react-intl';
 
 enum Mode {
   Login = 'Login',
@@ -101,7 +102,6 @@ export class Login extends React.Component<Props, State> {
     this.setState({ creating: true });
 
     firebase.auth().createUserWithEmailAndPassword(email, password).then(credential => {
-
       const success = { 
         name: 'Account created',
         message: 'Your account was successfully created' 
@@ -191,7 +191,8 @@ export class Login extends React.Component<Props, State> {
       <List.Item key={'add'}>
         <List.Content>
           <List.Header as="a" href={'/onboard'}>
-            <Icon name="plus" />Create new committee
+            <Icon name="plus" />
+            <FormattedMessage id="auth.button.create.committee" defaultMessage="Create new committee" />
           </List.Header>
         </List.Content>
       </List.Item>
@@ -211,9 +212,10 @@ export class Login extends React.Component<Props, State> {
         {owned.map(k => renderCommittee(k, defaulted[k]))}
       </List>
     ) : (
-      <Header as='h4'> No committees created
+      <Header as='h4'>
+        <FormattedMessage id="auth.message.no.committees" defaultMessage="No committees created" />
         <Header.Subheader>
-          Create a new committee and it'll appear here!
+          <FormattedMessage id="auth.message.create.first" defaultMessage="Create a new committee and it'll appear here!" />
         </Header.Subheader>
       </Header>
     );
@@ -254,31 +256,30 @@ export class Login extends React.Component<Props, State> {
   }
 
   renderLoggedIn = (u: firebase.User) => {
-    const { logout, renderCommittees, renderNewCommitteeButton } = this;
-    const { committees } = this.state;
-    const { allowNewCommittee } = this.props;
+    const { logout, renderCommittees, renderNewCommitteeButton, props: { allowNewCommittee } } = this;
 
     return (
-      <Card centered fluid>
-        <Card.Content key="main">
+      <Card fluid>
+        <Card.Content>
           <Card.Header>
-            {u.email}
+            <FormattedMessage 
+              id="auth.header.welcome" 
+              defaultMessage="Welcome, {email}" 
+              values={{ email: u.email }}
+            />
           </Card.Header>
           <Card.Meta>
-            Logged in
+            <FormattedMessage id="auth.header.committees" defaultMessage="Your committees" />
           </Card.Meta>
+          <Card.Description>
+            {renderCommittees()}
+            {allowNewCommittee !== false && renderNewCommitteeButton()}
+          </Card.Description>
         </Card.Content>
-        <Card.Content key="committees" style={{ 
-          'maxHeight': '50vh',
-          'overflow' : 'auto'
-        }}>
-          {committees ? renderCommittees() : <Loading />}
-        </Card.Content>
-        {allowNewCommittee && <Card.Content key="create">
-          {renderNewCommitteeButton()}
-        </Card.Content>}
-        <Card.Content extra key="extra">
-          <Button basic color="red" fluid onClick={logout}>Logout</Button>
+        <Card.Content extra>
+          <Button basic fluid onClick={logout}>
+            <FormattedMessage id="auth.button.logout" defaultMessage="Log out" />
+          </Button>
         </Card.Content>
       </Card>
     );
@@ -288,181 +289,155 @@ export class Login extends React.Component<Props, State> {
     const { loggingIn, creating, user, resetting, email, password, mode } = this.state;
 
     const renderLogInButton = () => (
-      <Button 
-        primary 
-        disabled={!email || !password}
-        onClick={this.login} 
+      <Button
+        primary
+        fluid
         loading={loggingIn}
-        type="submit"
+        onClick={this.login}
       >
-        Log in
+        <FormattedMessage id="auth.button.login" defaultMessage="Log in" />
       </Button>
     );
 
     const renderCreateAccountButton = () => (
-      <Button 
-        positive
-        onClick={this.toCreateAccountMode}
-      >
-        Create account <Icon name="arrow right" />
+      <Button basic fluid onClick={this.toCreateAccountMode}>
+        <FormattedMessage id="auth.button.create.account" defaultMessage="Create an account" />
       </Button>
     );
 
     const renderSubmitCreateAccountButton = () => (
-      <Button 
-        positive
+      <Button
+        primary
         fluid
-        onClick={this.createAccount} 
-        loading={creating} 
-        disabled={!email || !password}
-        type="submit"
+        loading={creating}
+        onClick={this.createAccount}
       >
-        Create account
+        <FormattedMessage id="auth.button.submit.create" defaultMessage="Create account" />
       </Button>
-    )
+    );
 
     const renderForgotPasswordButton = () => (
-      // eslint-disable-next-line jsx-a11y/anchor-is-valid
-      <a 
-        onClick={this.toForgotPasswordMode} 
-        style={{'cursor': 'pointer'}}
-      >
-        Forgot password?
-      </a>
+      <Button basic fluid onClick={this.toForgotPasswordMode}>
+        <FormattedMessage id="auth.button.forgot.password" defaultMessage="Forgot password?" />
+      </Button>
     );
 
     const renderToLoginButton = () => (
-      <div style={{ marginBottom: '8px' }}>
-        {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-        <a 
-          onClick={this.toLoginMode} 
-          style={{
-            cursor: 'pointer',
-          }}
-        >
-          <Icon name="arrow left" />
-          Back to login
-        </a>
-      </div>
-    );
-
-    const renderSendResetEmailButton = () => (
-      <Button 
-        primary
-        fluid
-        onClick={this.resetPassword} 
-        loading={resetting} 
-        disabled={!email}
-        type="submit"
-      >
-        Send reset email
+      <Button basic fluid onClick={this.toLoginMode}>
+        <FormattedMessage id="auth.button.back.login" defaultMessage="Back to login" />
       </Button>
     );
 
-    const err = this.state.error;
-    const succ = this.state.success;
-    
+    const renderSendResetEmailButton = () => (
+      <Button
+        primary
+        fluid
+        loading={resetting}
+        onClick={this.resetPassword}
+      >
+        <FormattedMessage id="auth.button.reset.password" defaultMessage="Send reset email" />
+      </Button>
+    );
+
     return (
-      <React.Fragment>
-        {mode === Mode.Login && 
-          <Header as="h3" attached="top">
-            Login
-            <Header.Subheader>
-              to create a new committee, or access an older committee.
-            </Header.Subheader>
-          </Header>}
-        {mode === Mode.CreateAccount && 
-          <Header as="h3" attached="top">
-            Create account
-            <Header.Subheader>
-                Multiple directors may use the same account simultaneously. 
-                Choose a password you're willing to share.
-            </Header.Subheader>
-          </Header>}
-        {mode === Mode.ForgotPassword && 
-          <Header as="h3" attached="top">
-            Reset password
-          </Header>}
-        <Segment attached="bottom">
-          {mode !== Mode.Login && renderToLoginButton()}
-          <Form error={!!err} success={!!succ} loading={user === undefined}>
-            <Form.Input
-              key="email"
-              label="Email"
-              error={mode === Mode.CreateAccount && !email}
-              required={mode === Mode.CreateAccount}
-              placeholder="joe@schmoe.com"
-              value={email}
-              onChange={this.setEmail}
-            >
-              <input autoComplete="email" />
-            </Form.Input>
-            {mode === Mode.Login && <Form.Input
-              key="current-password"
-              label="Password"
-              type="password"
-              placeholder="correct horse battery staple"
-              value={password}
-              onChange={this.setPassword}
-            >
-              <input autoComplete="current-password" />
-            </Form.Input>}
-            {mode === Mode.CreateAccount && <Form.Input
-              key="new-password"
-              label="Password"
-              type="password"
-              error={!password}
-              required
-              placeholder="correct horse battery staple"
-              value={password}
-              onChange={this.setPassword}
-            >
-              <input autoComplete="new-password" />
-            </Form.Input>}
-            {this.renderSuccess()}
-            {this.renderError()}
-            {mode === Mode.Login && <Button.Group fluid widths='2'>
-               {renderLogInButton()}
-               <Button.Or />
-               {renderCreateAccountButton()}
-            </Button.Group>}
-            {mode === Mode.ForgotPassword && renderSendResetEmailButton()}
-            {mode === Mode.CreateAccount && renderSubmitCreateAccountButton()}
-            {mode === Mode.Login && renderForgotPasswordButton()}
-          </Form>
-        </Segment>
-      </React.Fragment>
+      <Card fluid>
+        <Card.Content>
+          <Card.Header>
+            {mode === Mode.Login && (
+              <FormattedMessage id="auth.header.login" defaultMessage="Log in" />
+            )}
+            {mode === Mode.CreateAccount && (
+              <FormattedMessage id="auth.header.create" defaultMessage="Create an account" />
+            )}
+            {mode === Mode.ForgotPassword && (
+              <FormattedMessage id="auth.header.reset" defaultMessage="Reset password" />
+            )}
+          </Card.Header>
+          <Card.Description>
+            <Form>
+              <Form.Input
+                label={<FormattedMessage id="auth.label.email" defaultMessage="Email" />}
+                placeholder={<FormattedMessage id="auth.placeholder.email" defaultMessage="Enter your email" />}
+                value={email}
+                onChange={this.setEmail}
+                error={mode === Mode.CreateAccount && !email}
+              />
+              {mode !== Mode.ForgotPassword && (
+                <Form.Input
+                  label={<FormattedMessage id="auth.label.password" defaultMessage="Password" />}
+                  placeholder={<FormattedMessage id="auth.placeholder.password" defaultMessage="Enter your password" />}
+                  type="password"
+                  value={password}
+                  onChange={this.setPassword}
+                  error={mode === Mode.CreateAccount && !password}
+                />
+              )}
+            </Form>
+          </Card.Description>
+        </Card.Content>
+        <Card.Content extra>
+          {mode === Mode.Login && (
+            <>
+              {renderLogInButton()}
+              {renderCreateAccountButton()}
+              {renderForgotPasswordButton()}
+            </>
+          )}
+          {mode === Mode.CreateAccount && (
+            <>
+              {renderSubmitCreateAccountButton()}
+              {renderToLoginButton()}
+            </>
+          )}
+          {mode === Mode.ForgotPassword && (
+            <>
+              {renderSendResetEmailButton()}
+              {renderToLoginButton()}
+            </>
+          )}
+        </Card.Content>
+      </Card>
     );
   }
 
   render() {
-    const { user } = this.state;
+    const { error, success, user } = this.state;
 
-    return user 
-      ? this.renderLoggedIn(user)
-      : this.renderLogin()
+    return (
+      <div>
+        {error && this.renderError()}
+        {success && this.renderSuccess()}
+        {user === undefined ? (
+          <Loading />
+        ) : user ? (
+          this.renderLoggedIn(user)
+        ) : (
+          this.renderLogin()
+        )}
+      </div>
+    );
   }
 }
 
-export class LoginModal extends React.Component<{}, 
-  { user?: firebase.User | null 
-    unsubscribe?: () => void
-  }> {
+export class LoginModal extends React.Component<{}, { 
+  user?: firebase.User | null;
+  unsubscribe?: () => void;
+}> {
   constructor(props: {}) {
     super(props);
-    this.state = {
-    };
+    this.state = {};
   }
 
   renderModalTrigger() {
     const { user } = this.state;
 
-    const text = user ? user.email : 'Login';
-
     return (
-      <Button loading={user === undefined} className="nav__auth-status">
-        <Icon name="lock" />
-        {text}
+      <Button basic>
+        {user ? (
+          <FormattedMessage id="auth.button.account" defaultMessage="Account" />
+        ) : (
+          <FormattedMessage id="auth.button.login.signup" defaultMessage="Log in / Sign up" />
+        )}
       </Button>
     );
   }

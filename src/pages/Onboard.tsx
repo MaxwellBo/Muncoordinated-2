@@ -14,122 +14,90 @@ import { meetId } from '../utils';
 import {CommitteeData, DEFAULT_COMMITTEE, pushTemplateMembers, putCommittee, Template} from '../models/committee';
 import { TemplatePreview } from '../components/template';
 import { Helmet } from 'react-helmet';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 interface Props extends RouteComponentProps<URLParameters> {
 }
 
-interface State {
+interface FormState {
   name: string;
   topic: string;
-  chair: string;
   conference: string;
+  template: Template | undefined;
   user: firebase.User | null;
-  template?: Template,
-  committeesFref: firebase.database.Reference;
-  unsubscribe?: () => void;
 }
 
-export default class Onboard extends React.Component<Props, State> {
-  constructor(props: Props) {
-    super(props);
+export default function Onboard() {
+  const [state, setState] = React.useState<FormState>({
+    name: '',
+    topic: '',
+    conference: '',
+    template: undefined,
+    user: null
+  });
 
-    this.state = {
-      name: '',
-      topic: '',
-      chair: '',
-      conference: '',
-      user: null,
-      committeesFref: firebase.database().ref('committees')
-    };
-  }
+  const intl = useIntl();
 
-  authStateChangedCallback = (user: firebase.User | null) => {
-    this.setState({ user: user });
-  }
-
-  componentDidMount() {
+  React.useEffect(() => {
     const unsubscribe = firebase.auth().onAuthStateChanged(
-      this.authStateChangedCallback,
+      (user) => setState(prev => ({ ...prev, user }))
     );
+    return () => unsubscribe();
+  }, []);
 
-    this.setState({ unsubscribe });
-  }
+  const handleInput = (event: React.FormEvent<HTMLInputElement>) => {
+    const { name, value } = event.currentTarget;
+    setState(prev => ({ ...prev, [name]: value }));
+  };
 
-  componentWillUnmount() {
-    if (this.state.unsubscribe) {
-      this.state.unsubscribe();
-    }
-  }
+  const onChangeTemplateDropdown = (_: any, { value }: any) => {
+    setState(prev => ({ ...prev, template: value }));
+  };
 
-  handleInput = (event: React.SyntheticEvent<HTMLInputElement>, data: InputOnChangeData): void => {
-    // XXX: Don't do stupid shit and choose form input names that don't
-    // map to valid state properties
-    // @ts-ignore
-    this.setState({ [data.name]: data.value });
-  }
-
-  onChangeTemplateDropdown = (event: React.SyntheticEvent<HTMLElement, Event>, data: DropdownProps): void => {
-    this.setState(old => ({ 
-      template: data.value as Template,
-      // don't clear the name if the template is deselected
-      name: data.value as string || old.name
-    }));
-  }
-
-  handleSubmit = () => {
-    const { name, topic, chair, conference, template, user } = this.state;
+  const handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
+    const { name, topic, conference, template, user } = state;
 
     if (user) {
-      const newCommittee: CommitteeData = {
-        ...DEFAULT_COMMITTEE,
+      const committeeRef = firebase.database().ref('committees').push();
+      const committeeData = {
         name,
         topic,
-        chair,
         conference,
-        creatorUid: user.uid
+        creatorUid: user.uid,
+        template,
+        createdAt: firebase.database.ServerValue.TIMESTAMP,
       };
 
-      // We can't send `undefined` properties to Firebase or it will complain
-      // so we only set this property if the template exists
-      if (template) {
-        newCommittee.template = template;
-      }
-
-      const newCommitteeRef = putCommittee(meetId(), newCommittee)
-      this.props.history.push(`/committees/${newCommitteeRef.key}`);
-      logCreateCommittee(newCommitteeRef.key ?? undefined)
-
-      if (template) {
-        // Add countries as per selected templates
-        pushTemplateMembers(newCommitteeRef.key!, template);
-      }
+      committeeRef.set(committeeData);
     }
-  }
+  };
 
-
-  renderNewCommitteeForm = () => {
-    const { user, template } = this.state;
+  const renderNewCommitteeForm = () => {
+    const { user, template } = state;
 
     return (
       <React.Fragment>
-        {!user && <Message
-          error
-          attached="top"
-          content="Log in or create an account to continue"
-        />}
+        {!user && 
+          <Message
+            error
+            attached="top"
+            content={<FormattedMessage id="onboard.login.required" defaultMessage="Log in or create an account to continue" />}
+          />
+        }
         <Segment attached={!user ? 'bottom' : undefined} >
-          <Form onSubmit={this.handleSubmit}>
+          <Form onSubmit={handleSubmit}>
             <Form.Group unstackable>
               <Form.Dropdown
-                label="Template"
+                label={<FormattedMessage id="onboard.form.template" defaultMessage="Template" />}
                 name="template"
                 width={14}
                 search
                 clearable
                 selection
-                placeholder="Template to skip manual member creation (optional)"
+                placeholder={intl.formatMessage({ id: 'onboard.form.template.placeholder', defaultMessage: 'Template to skip manual member creation (optional)' })}
                 options={Object.values(Template).map(makeDropdownOption)}
-                onChange={this.onChangeTemplateDropdown}
+                onChange={onChangeTemplateDropdown}
               />
               <Popup 
                 basic 
@@ -148,83 +116,85 @@ export default class Onboard extends React.Component<Props, State> {
               </Popup>
             </Form.Group>
             <Form.Input
-              label="Name"
+              label={<FormattedMessage id="onboard.form.name" defaultMessage="Name" />}
               name="name"
               fluid
-              value={this.state.name}
+              value={state.name}
               required
-              error={!this.state.name}
-              placeholder="Committee name"
-              onChange={this.handleInput}
+              error={!state.name}
+              placeholder={intl.formatMessage({ id: 'onboard.form.name.placeholder', defaultMessage: 'Committee name' })}
+              onChange={handleInput}
             />
             <Form.Input
-              label="Topic"
+              label={<FormattedMessage id="onboard.form.topic" defaultMessage="Topic" />}
               name="topic"
-              value={this.state.topic}
+              value={state.topic}
               fluid
-              placeholder="Committee topic"
-              onChange={this.handleInput}
+              placeholder={intl.formatMessage({ id: 'onboard.form.topic.placeholder', defaultMessage: 'Committee topic' })}
+              onChange={handleInput}
             />
             <Form.Input
-              label="Conference"
+              label={<FormattedMessage id="onboard.form.conference" defaultMessage="Conference" />}
               name="conference"
-              value={this.state.conference}
+              value={state.conference}
               fluid
-              placeholder="Conference name"
-              onChange={this.handleInput}
+              placeholder={intl.formatMessage({ id: 'onboard.form.conference.placeholder', defaultMessage: 'Conference name' })}
+              onChange={handleInput}
             />
             <Form.Button
               primary
               fluid
-              disabled={!this.state.user || this.state.name === ''}
+              disabled={!state.user || state.name === ''}
             >
-              Create committee
+              <FormattedMessage id="onboard.form.submit" defaultMessage="Create committee" />
               <Icon name="arrow right" />
             </Form.Button>
           </Form>
         </Segment>
       </React.Fragment>
     );
-  }
+  };
 
-  render() {
-    return (
-      <Container style={{ padding: '1em 0em' }}>
-        <Helmet>
-          <title>{`Create Committee - Muncoordinated`}</title>
-          <meta name="description" content="Login, create an account, or create
-                                      a committee with Muncoordinated now!" />
-        </Helmet>
-        <ConnectionStatus />
-        <Grid
-          columns="equal"
-          stackable
-        >
-          <Grid.Row>
-            <Grid.Column>
-              <Header as="h1" textAlign='center'>
-                Muncoordinated
-              </Header>
-              <Message>
-                <Message.Header>Browser compatibility notice</Message.Header>
-                  <p>
-                  Muncoordinated works best with newer versions of <a 
-                    href="https://www.google.com/chrome/">Google Chrome</a>.
-                   Use of other/older browsers has caused bugs and data loss.
-                  </p>
-              </Message>
-            </Grid.Column>
-          </Grid.Row>
-          <Grid.Row>
-            <Grid.Column>
-              <Login allowNewCommittee={false} />
-            </Grid.Column>
-            <Grid.Column>
-              {this.renderNewCommitteeForm()}
-            </Grid.Column>
-          </Grid.Row>
-        </Grid>
-      </Container>
-    );
-  }
+  return (
+    <Container style={{ padding: '1em 0em' }}>
+      <Helmet>
+        <title>
+          <FormattedMessage id="onboard.title" defaultMessage="Create Committee - Muncoordinated" />
+        </title>
+        <meta name="description" content="Login, create an account, or create a committee with Muncoordinated now!" />
+      </Helmet>
+      <ConnectionStatus />
+      <Grid columns="equal" stackable>
+        <Grid.Row>
+          <Grid.Column>
+            <Header as="h1" textAlign='center'>
+              <FormattedMessage id="home.title" defaultMessage="Muncoordinated" />
+            </Header>
+            <Message>
+              <Message.Header>
+                <FormattedMessage id="onboard.browser.notice.title" defaultMessage="Browser compatibility notice" />
+              </Message.Header>
+              <p>
+                <FormattedMessage 
+                  id="onboard.browser.notice.message" 
+                  defaultMessage="Muncoordinated works best with newer versions of {chromeLink}. Use of other/older browsers has caused bugs and data loss."
+                  values={{
+                    chromeLink: <a href="https://www.google.com/chrome/">Google Chrome</a>
+                  }}
+                />
+              </p>
+            </Message>
+          </Grid.Column>
+        </Grid.Row>
+        <Grid.Row>
+          <Grid.Column>
+            <Login allowNewCommittee={false} />
+          </Grid.Column>
+          <Grid.Column>
+            {renderNewCommitteeForm()}
+          </Grid.Column>
+        </Grid.Row>
+      </Grid>
+    </Container>
+  );
 }

@@ -7,8 +7,10 @@ import { textAreaHandler } from '../modules/handlers';
 import Loading from '../components/Loading';
 import {CommitteeData} from "../models/committee";
 import { Helmet } from 'react-helmet';
+import { FormattedMessage, injectIntl, type IntlShape } from 'react-intl';
 
 interface Props extends RouteComponentProps<URLParameters> {
+  intl: IntlShape;
 }
 
 interface State {
@@ -16,7 +18,7 @@ interface State {
   committeeFref: firebase.database.Reference;
 }
 
-export default class Notes extends React.Component<Props, State> {
+class NotesComponent extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
 
@@ -44,20 +46,30 @@ export default class Notes extends React.Component<Props, State> {
 
   render() {
     const { committee, committeeFref } = this.state;
+    const { intl } = this.props;
 
     // const trigger = <Button icon="question" size="mini" basic floated="right" />;
 
     return committee ? (
       <Container text style={{ padding: '1em 0em' }}>
         <Helmet>
-          <title>{`Notes - Muncoordinated`}</title>
+          <title>
+            <FormattedMessage 
+              id="notes.page.title" 
+              defaultMessage="Notes - {committeeName}" 
+              values={{ committeeName: committee.name }}
+            />
+          </title>
         </Helmet>
         <Form>
           <TextArea
             value={committee ? committee.notes : ''}
             onChange={textAreaHandler<CommitteeData>(committeeFref, 'notes')}
             autoHeight
-            placeholder="Notes"
+            placeholder={intl.formatMessage({ 
+              id: 'notes.placeholder', 
+              defaultMessage: 'Notes' 
+            })}
           />
           {/* <Popup
             trigger={trigger}
@@ -69,3 +81,5 @@ export default class Notes extends React.Component<Props, State> {
     ) : <Loading />;
   }
 }
+
+export default injectIntl(NotesComponent);

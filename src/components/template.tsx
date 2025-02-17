@@ -4,11 +4,17 @@ import {useState} from 'react';
 import {nameToFlagCode} from "../modules/member"
 import {makeDropdownOption} from "../utils";
 import {CommitteeID, pushTemplateMembers, Template, TEMPLATE_TO_MEMBERS} from "../models/committee";
+import { FormattedMessage, useIntl } from 'react-intl';
 
 export function TemplatePreview(props: { template?: Template }) {
   if (!props.template) {
     return (
-      <p>Select a template to see which members will be added</p>
+      <p>
+        <FormattedMessage 
+          id="template.preview.select" 
+          defaultMessage="Select a template to see which members will be added" 
+        />
+      </p>
     );
   }
 
@@ -28,10 +34,10 @@ export function TemplatePreview(props: { template?: Template }) {
 export function TemplateAdder(props: { committeeID: CommitteeID }) {
   const [template, setTemplate] = useState<Template | undefined>(undefined);
   const [activeIndex, setActiveIndex] = useState<number>(-1);
+  const intl = useIntl();
 
   const openAccordion = (event: React.MouseEvent<HTMLDivElement>, data: AccordionTitleProps) => {
     const newIndex = activeIndex === data.index as number ? -1 : data.index as number;
-
     setActiveIndex(newIndex);
   }
 
@@ -53,18 +59,24 @@ export function TemplateAdder(props: { committeeID: CommitteeID }) {
         onClick={openAccordion}
       >
         <Icon name='dropdown' />
-        Add members from a template (e.g. G20)
+        <FormattedMessage 
+          id="template.title.add" 
+          defaultMessage="Add members from a template (e.g. G20)" 
+        />
       </Accordion.Title>
       <Accordion.Content active={activeIndex === 0}>
         <Form>
           <Form.Dropdown
-            label="Template"
+            label={<FormattedMessage id="template.label.select" defaultMessage="Template" />}
             name="template"
             search
             clearable
             fluid
             selection
-            placeholder="Select a template to add"
+            placeholder={intl.formatMessage({ 
+              id: 'template.placeholder.select', 
+              defaultMessage: 'Select a template to add' 
+            })}
             value={template}
             options={Object.values(Template).map(makeDropdownOption)}
             onChange={(event, data) => setTemplate(data.value as Template)}
@@ -80,6 +92,10 @@ export function TemplateAdder(props: { committeeID: CommitteeID }) {
                 primary
                 basic
                 onClick={pushTemplate}
+                title={intl.formatMessage({ 
+                  id: 'template.button.add', 
+                  defaultMessage: 'Add members from template' 
+                })}
               />
             }>
             <Popup.Content>
