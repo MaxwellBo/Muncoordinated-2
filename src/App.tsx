@@ -11,7 +11,9 @@ import 'firebase/compat/storage';
 import 'firebase/compat/analytics';
 
 import { Route, Switch } from 'react-router-dom';
+import { IntlProvider } from 'react-intl';
 import './App.css';
+import { messages } from './i18n/messages';
 
 import Onboard from './pages/Onboard';
 import Homepage from './pages/Homepage';
@@ -32,18 +34,26 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 firebase.analytics();
 
+const browserLocale = navigator.language.split('-')[0];
+
 class App extends React.Component {
   render() {
     return (
-      <Switch>
-        <Route exact path="/" component={Homepage} />
-        <Route exact path="/onboard" component={Onboard} />
-        <Route exact path="/committees" component={Onboard} />
-        <Route path="/committees/:committeeID" component={Committee} />
-        <Route path="*">
-          <NotFound item="page" id="unknown" />
-        </Route>
-      </Switch>
+      <IntlProvider 
+        messages={messages[browserLocale] || messages['en']} 
+        locale={browserLocale} 
+        defaultLocale="en"
+      >
+        <Switch>
+          <Route exact path="/" component={Homepage} />
+          <Route exact path="/onboard" component={Onboard} />
+          <Route exact path="/committees" component={Onboard} />
+          <Route path="/committees/:committeeID" component={Committee} />
+          <Route path="*">
+            <NotFound item="page" id="unknown" />
+          </Route>
+        </Switch>
+      </IntlProvider>
     );
   }
 }

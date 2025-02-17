@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { FormattedMessage } from 'react-intl';
 import {
   Button,
   Container,
@@ -31,7 +32,6 @@ const HomepageHeading = ({ mobile }: HomepageHeadingProps) => (
   <Container text>
     <Header
       as="h1"
-      content="Muncoordinated"
       inverted
       style={{
         fontSize: mobile ? '2em' : '4em',
@@ -39,20 +39,23 @@ const HomepageHeading = ({ mobile }: HomepageHeadingProps) => (
         marginBottom: 0,
         marginTop: mobile ? '1.5em' : '3em',
       }}
-    />
+    >
+      <FormattedMessage id="home.title" defaultMessage="Muncoordinated" />
+    </Header>
     <Header
       as="h2"
-      content="The collaborative browser-based Model UN committee management app"
       inverted
       style={{
         fontSize: mobile ? '1.5em' : '1.7em',
         fontWeight: 'normal',
         marginTop: mobile ? '0.5em' : '1.5em',
       }}
-    />
+    >
+      <FormattedMessage id="home.subtitle" defaultMessage="The collaborative browser-based Model UN committee management app" />
+    </Header>
     <br />
     <Button as="a" primary size="huge" href="/onboard" onClick={logClickCreateACommitteeButton}>
-      Create a committee
+      <FormattedMessage id="home.create.committee" defaultMessage="Create a committee" />
       <Icon name="arrow right" />
     </Button>
     <br />
@@ -107,13 +110,15 @@ class DesktopContainer extends React.Component<DesktopContainerProps, DesktopCon
               size="large"
             >
               <Container>
-                <Menu.Item as="a" active>Home</Menu.Item>
+                <Menu.Item as="a" active>
+                  <FormattedMessage id="nav.home" defaultMessage="Home" />
+                </Menu.Item>
                 <Menu.Item position="right">
                   <Button as="a" href="/onboard" inverted={!fixed} onClick={logClickLogInButton}>
-                    Log in
+                    <FormattedMessage id="nav.login" defaultMessage="Log in" />
                   </Button>
                   <Button as="a" href="/onboard" inverted={!fixed} primary={fixed} style={{ marginLeft: '0.5em' }} onClick={logClickSignupButton}>
-                    Sign up
+                    <FormattedMessage id="nav.signup" defaultMessage="Sign up" />
                   </Button>
                 </Menu.Item>
               </Container>
@@ -218,11 +223,15 @@ export default class Homepage extends React.Component<{}, {
       <Statistic.Group textAlign="center">
         <Statistic>
           <Statistic.Value>{this.state.committeeNo || <Loading small />}</Statistic.Value>
-          <Statistic.Label>Committees created</Statistic.Label>
+          <Statistic.Label>
+            <FormattedMessage id="home.stats.committees" defaultMessage="Committees created" />
+          </Statistic.Label>
         </Statistic>
         <Statistic>
           <Statistic.Value>{this.state.delegateNo || <Loading small />}</Statistic.Value>
-          <Statistic.Label>Delegates participating</Statistic.Label>
+          <Statistic.Label>
+            <FormattedMessage id="home.stats.delegates" defaultMessage="Delegates participating" />
+          </Statistic.Label>
         </Statistic>
       </Statistic.Group>
     );
@@ -235,24 +244,17 @@ export default class Homepage extends React.Component<{}, {
           <Grid container stackable verticalAlign="middle">
             <Grid.Row>
               <Grid.Column width={8}>
-                <Header as="h3" style={{ fontSize: '2em' }}>Collaborative</Header>
+                <Header as="h3" style={{ fontSize: '2em' }}>
+                  <FormattedMessage id="home.collaborative.title" defaultMessage="Collaborative" />
+                </Header>
                 <p style={{ fontSize: '1.33em' }}>
-                  Using a shareable link delegates can: <br />
-                  <ShareCapabilities />
+                  <FormattedMessage id="home.collaborative.realtime" defaultMessage="Everyone will see all updates in real-time, without needing to refresh the page. It's like Google Docs, but for MUN." />
                 </p>
                 <p style={{ fontSize: '1.33em' }}>
-                  Everyone will see all updates in real-time, without needing to refresh the page. It's like Google Docs, but for MUN.
+                  <FormattedMessage id="home.collaborative.virtual" defaultMessage="For virtual MUNs, we recommend pairing Muncoordinated with Discord, which allows you to speak, pass notes, & share files and links." />
                 </p>
                 <p style={{ fontSize: '1.33em' }}>
-                 For virtual MUNs, we recommend pairing Muncoordinated with <a href="https://discord.com/">Discord</a>, which allows you to speak, pass notes, &amp; share files and links.
-                </p>
-                <p style={{ fontSize: '1.33em' }}>
-                  If you've got a big committee, multiple directors can manage it at the same time, using the same account.
-                </p>
-                <Header as="h3" style={{ fontSize: '2em' }}>Backed up to the cloud</Header>
-                <p style={{ fontSize: '1.33em' }}>
-                  You won't have to worry about data loss ever again. All committee activity is automatically saved to the server, 
-                  so you can start sessions with all data available from the day before.
+                  <FormattedMessage id="home.collaborative.directors" defaultMessage="If you've got a big committee, multiple directors can manage it at the same time, using the same account." />
                 </p>
               </Grid.Column>
               <Grid.Column floated="right" width={8}>
@@ -339,3 +341,4 @@ export default class Homepage extends React.Component<{}, {
     );
   }
 }
+
