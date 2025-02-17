@@ -13,6 +13,7 @@ import {CommitteeData} from "../models/committee";
 import {MotionData, MotionID} from "../models/motion";
 import {SpeakerEvent} from "../models/caucus";
 import { Helmet } from 'react-helmet';
+import { FormattedMessage } from 'react-intl';
 
 interface Props extends RouteComponentProps<URLParameters> {
 }
@@ -144,16 +145,30 @@ export default class Stats extends React.Component<Props, State> {
     return (
       <Container text style={{ padding: '1em 0em 1.5em' }}>
         <Helmet>
-          <title>{`Stats - Muncoordinated`}</title>
+          <title>
+            <FormattedMessage 
+              id="stats.page.title" 
+              defaultMessage="Stats - {committeeName}" 
+              values={{ committeeName: committee.name }}
+            />
+          </title>
         </Helmet>
         <Table compact celled definition>
           <Table.Header>
             <Table.Row>
               <Table.HeaderCell />
-              <Table.HeaderCell textAlign="right">Times spoken</Table.HeaderCell>
-              <Table.HeaderCell textAlign="right">Total speaking time</Table.HeaderCell>
-              <Table.HeaderCell textAlign="right">Motion proposals</Table.HeaderCell>
-              <Table.HeaderCell textAlign="right">Amendment proposals</Table.HeaderCell>
+              <Table.HeaderCell textAlign="right">
+                <FormattedMessage id="stats.table.header.times" defaultMessage="Times spoken" />
+              </Table.HeaderCell>
+              <Table.HeaderCell textAlign="right">
+                <FormattedMessage id="stats.table.header.duration" defaultMessage="Total speaking time" />
+              </Table.HeaderCell>
+              <Table.HeaderCell textAlign="right">
+                <FormattedMessage id="stats.table.header.motions" defaultMessage="Motion proposals" />
+              </Table.HeaderCell>
+              <Table.HeaderCell textAlign="right">
+                <FormattedMessage id="stats.table.header.amendments" defaultMessage="Amendment proposals" />
+              </Table.HeaderCell>
             </Table.Row>
           </Table.Header>
 

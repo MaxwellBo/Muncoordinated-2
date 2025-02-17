@@ -51,8 +51,10 @@ import firebase from "firebase/compat/app";
 import {DragDropContext, Draggable, DraggableProvided, Droppable, DropResult} from "react-beautiful-dnd";
 import { Helmet } from 'react-helmet';
 import { getDatabase, ref } from 'firebase/database';
+import { FormattedMessage, injectIntl, type IntlShape } from 'react-intl';
 
 interface Props extends RouteComponentProps<URLParameters> {
+  intl: IntlShape;
 }
 
 interface State {
@@ -69,6 +71,7 @@ export function NextSpeaking(props: {
   speakerTimer: TimerData;
   fref: firebase.database.Reference;
   autoNextSpeaker: boolean;
+  intl: IntlShape;
 }) {
   // TODO: Bandaid - I don't think the hook types nicely with the compat patch
   const [user] = useAuthState(firebase.auth() as any);
@@ -176,7 +179,7 @@ export function NextSpeaking(props: {
       onClick={nextSpeaker}
     >
       <Icon name="arrow up"/>
-      Stage
+      <FormattedMessage id="caucus.action.stage" defaultMessage="Stage" />
     </Button>
   );
 
@@ -189,7 +192,7 @@ export function NextSpeaking(props: {
       onClick={startTimer}
     >
       <Icon name="hourglass start"/>
-      Start
+      <FormattedMessage id="caucus.action.start" defaultMessage="Start" />
     </Button>
   )
 
@@ -202,7 +205,7 @@ export function NextSpeaking(props: {
       onClick={nextSpeaker}
     >
       <Icon name="arrow up"/>
-      Next
+      <FormattedMessage id="caucus.action.next" defaultMessage="Next" />
     </Button>
   );
 
@@ -215,7 +218,7 @@ export function NextSpeaking(props: {
       onClick={nextSpeaker}
     >
       <Icon name="hourglass end"/>
-      Stop
+      <FormattedMessage id="caucus.action.stop" defaultMessage="Stop" />
     </Button>
   );
 
@@ -228,7 +231,7 @@ export function NextSpeaking(props: {
       onClick={interlace}
     >
       <Icon name="random"/>
-      Order
+      <FormattedMessage id="caucus.action.order" defaultMessage="Order" />
     </Button>
   );
 
@@ -539,6 +542,8 @@ function Queuer(props: {
   );
 }
 
+const NextSpeakingWithIntl = injectIntl(NextSpeaking);
+
 export default class Caucus extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
@@ -697,11 +702,12 @@ export default class Caucus extends React.Component<Props, State> {
     );
 
     const renderedCaucusNextSpeaking = (
-      <NextSpeaking
+      <NextSpeakingWithIntl
         caucus={caucus} 
         fref={caucusFref} 
         speakerTimer={speakerTimer} 
         autoNextSpeaker={autoNextSpeaker}
+        intl={this.props.intl}
       />
     );
 
@@ -735,8 +741,24 @@ export default class Caucus extends React.Component<Props, State> {
     return (
       <Container style={{ 'padding-bottom': '2em' }}>
         <Helmet>
-            <title>{`${caucus?.name} - Muncoordinated`}</title>
+          <title>
+            <FormattedMessage 
+              id="caucus.page.title" 
+              defaultMessage="Caucus - {caucusName}" 
+              values={{ caucusName: caucus?.name || 'Untitled' }}
+            />
+          </title>
         </Helmet>
+        <h1>
+          {caucus?.name}
+          <Label>
+            <FormattedMessage 
+              id="caucus.status" 
+              defaultMessage="Status: {status}" 
+              values={{ status: caucus?.status || CaucusStatus.Open }}
+            />
+          </Label>
+        </h1>
         <Grid columns="equal" stackable>
           {header}
           {body}

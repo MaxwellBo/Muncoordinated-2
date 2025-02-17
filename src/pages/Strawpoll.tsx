@@ -36,15 +36,18 @@ import { NotFound } from '../components/NotFound';
 import { useVoterID } from '../hooks';
 import { push, remove, set, child } from 'firebase/database';
 import { Helmet } from 'react-helmet';
+import { FormattedMessage, injectIntl, type IntlShape } from 'react-intl';
 
 export interface StrawpollProps extends RouteComponentProps<URLParameters> {
+  intl: IntlShape;
 }
 
 export interface ModalProps {
-  open: boolean,
-  onChangeOpenState: (open: boolean) => void,
-  onConfirm: Function,
-  trigger: React.ReactElement<Button>
+  open: boolean;
+  onChangeOpenState: (open: boolean) => void;
+  onConfirm: Function;
+  trigger: React.ReactElement<Button>;
+  intl: IntlShape;
 }
 
 function getNumberOfVotes(option: StrawpollOptionData, medium: StrawpollMedium) {
@@ -64,36 +67,47 @@ function getNumberOfVotes(option: StrawpollOptionData, medium: StrawpollMedium) 
 
 export function DeleteStrawpollModal(props: ModalProps) {
   const onYesClick = () => {
-    props.onConfirm()
-    props.onChangeOpenState(false)
-  }
+    props.onConfirm();
+    props.onChangeOpenState(false);
+  };
 
   const onNoClick = () => {
-    props.onChangeOpenState(false)
-  }
+    props.onChangeOpenState(false);
+  };
 
   return (
     <Modal
-      size={"mini"}
+      size="mini"
       centered={false}
       open={props.open}
       onClose={() => props.onChangeOpenState(false)}
       onOpen={() => props.onChangeOpenState(true)}
       trigger={props.trigger}
     >
-      <Modal.Header>Delete strawpoll?</Modal.Header>
+      <Modal.Header>
+        <FormattedMessage id="strawpoll.delete.title" defaultMessage="Delete strawpoll?" />
+      </Modal.Header>
       <Modal.Content>
         <Modal.Description>
-          Are you sure that you want to delete this strawpoll?
+          <FormattedMessage 
+            id="strawpoll.delete.confirm" 
+            defaultMessage="Are you sure that you want to delete this strawpoll?" 
+          />
         </Modal.Description>
       </Modal.Content>
       <Modal.Actions>
-        <Button negative onClick={onYesClick}>Yes</Button>
-        <Button onClick={onNoClick}>No</Button>
+        <Button negative onClick={onYesClick}>
+          <FormattedMessage id="strawpoll.action.yes" defaultMessage="Yes" />
+        </Button>
+        <Button onClick={onNoClick}>
+          <FormattedMessage id="strawpoll.action.no" defaultMessage="No" />
+        </Button>
       </Modal.Actions>
     </Modal>
-  )
+  );
 }
+
+const DeleteStrawpollModalWithIntl = injectIntl(DeleteStrawpollModal);
 
 export default function Strawpoll(props: StrawpollProps) {
   const { committeeID, strawpollID } = props.match.params;
@@ -188,67 +202,81 @@ export default function Strawpoll(props: StrawpollProps) {
   }
 
   const renderOption = (optionID: StrawpollOptionID, option: StrawpollOptionData) => {
-    const strawpollOptionFref = child(child(strawpollFref, 'options'), optionID)
+    const strawpollOptionFref = child(child(strawpollFref, 'options'), optionID);
 
-    const isChecked =
-      option.votes
-        ? option.votes[voterID]
-          ? !!option.votes[voterID]
-          : false
-        : false
-
+    const isChecked = option.votes ? (option.votes[voterID] ? !!option.votes[voterID] : false) : false;
     const votes = getNumberOfVotes(option, medium);
 
-    /* eslint no-unused-expressions: "warn" */
     switch (stage) {
       case StrawpollStage.Preparing:
-        return <List.Item key={optionID}>
-          <Input
-            value={option.text}
-            onChange={modularFieldHandler<StrawpollOptionData>(strawpollOptionFref, 'text')}
-            fluid
-            placeholder="Enter poll option"
-            action
-          >
-            <input />
-            <Button
-              negative
-              icon="trash"
-              basic
-              onClick={() => remove(strawpollOptionFref)}
-            />
-          </Input>
-        </List.Item>
+        return (
+          <List.Item key={optionID}>
+            <Input
+              value={option.text}
+              onChange={modularFieldHandler<StrawpollOptionData>(strawpollOptionFref, 'text')}
+              fluid
+              placeholder={props.intl.formatMessage({ 
+                id: 'strawpoll.option.placeholder', 
+                defaultMessage: 'Enter poll option' 
+              })}
+              action
+            >
+              <input />
+              <Button
+                negative
+                icon="trash"
+                basic
+                onClick={() => remove(strawpollOptionFref)}
+              />
+            </Input>
+          </List.Item>
+        );
       case StrawpollStage.Voting:
-        return medium === StrawpollMedium.Link ? <Form.Field key={optionID}>
-          <Checkbox
-            label={option.text}
-            name='checkboxRadioGroup'
-            radio={type === StrawpollType.Radio || undefined}
-            value={option.text}
-            checked={isChecked}
-            onChange={onCheck(optionID)}
-          />
-        </Form.Field> :
+        return medium === StrawpollMedium.Link ? (
+          <Form.Field key={optionID}>
+            <Checkbox
+              label={option.text}
+              name="checkboxRadioGroup"
+              radio={type === StrawpollType.Radio || undefined}
+              value={option.text}
+              checked={isChecked}
+              onChange={onCheck(optionID)}
+            />
+          </Form.Field>
+        ) : (
           <List.Item key={optionID}>
             <Input
               fluid
-              placeholder="Number of votes received"
+              placeholder={props.intl.formatMessage({ 
+                id: 'strawpoll.votes.placeholder', 
+                defaultMessage: 'Number of votes received' 
+              })}
               label={option.text}
-              value={(!!option.tally || (option.tally === 0) ? option.tally : '').toString()}
+              value={(!!option.tally || option.tally === 0 ? option.tally : '').toString()}
               error={option.tally === undefined}
-              onChange={modularClearableZeroableValidatedNumberFieldHandler<StrawpollOptionData>(strawpollOptionFref, 'tally')}
+              onChange={modularClearableZeroableValidatedNumberFieldHandler<StrawpollOptionData>(
+                strawpollOptionFref,
+                'tally'
+              )}
             />
           </List.Item>
+        );
       case StrawpollStage.Results:
-        return <List.Item key={optionID}>
-          <b>{option.text}</b> {votes} votes
-          <Progress progress='value' value={votes} total={totalVotes} />
-        </List.Item>
+        return (
+          <List.Item key={optionID}>
+            <b>{option.text}</b>{' '}
+            <FormattedMessage 
+              id="strawpoll.votes.count" 
+              defaultMessage="{votes} votes" 
+              values={{ votes }} 
+            />
+            <Progress progress="value" value={votes} total={totalVotes} />
+          </List.Item>
+        );
       default:
-        return undefined
+        return undefined;
     }
-  }
+  };
 
   const renderOptions = () => {
     return <List>
@@ -294,7 +322,7 @@ export default function Strawpoll(props: StrawpollProps) {
                   onChange={togglePollType}
                   value={type}
                 />
-                <DeleteStrawpollModal
+                <DeleteStrawpollModalWithIntl
                   open={modalOpen}
                   onChangeOpenState={setOpen}
                   onConfirm={deleteStrawpoll}
@@ -307,6 +335,7 @@ export default function Strawpoll(props: StrawpollProps) {
                       <Icon name="delete" />Delete strawpoll?
                     </Button>
                   }
+                  intl={props.intl}
                 />
               </Button.Group>
             </List.Item>
@@ -396,17 +425,20 @@ export default function Strawpoll(props: StrawpollProps) {
   }
 
   return (
-    <Container text style={{ padding: '1em 0em' }}>
+    <Container text style={{ padding: '1em 0em 1.5em' }}>
       <Helmet>
-          <title>{`${strawpoll.question} - Muncoordinated`}</title>
+        <title>
+          <FormattedMessage 
+            id="strawpoll.page.title" 
+            defaultMessage="Strawpoll - {pollName}" 
+            values={{ pollName: strawpoll?.name || 'Untitled' }}
+          />
+        </title>
       </Helmet>
       <Header as="h2">
-        <Input
-          value={strawpoll ? strawpoll.question : ''}
-          onChange={modularFieldHandler<StrawpollData>(strawpollFref, 'question')}
-          fluid
-          placeholder="Type your question here"
-        />
+        {strawpoll.name || (
+          <FormattedMessage id="strawpoll.untitled" defaultMessage="Untitled Strawpoll" />
+        )}
       </Header>
       {renderMetaButtons()}
       {renderOptions()}
@@ -414,3 +446,5 @@ export default function Strawpoll(props: StrawpollProps) {
     </Container>
   );
 }
+
+export default injectIntl(Strawpoll);

@@ -21,10 +21,12 @@ import {CommitteeData, CommitteeID, pushMember, Template} from '../models/commit
 import { TemplateAdder } from '../components/template';
 import {COUNTRY_OPTIONS} from "../constants";
 import { Helmet } from 'react-helmet';
+import { FormattedMessage, injectIntl, type IntlShape } from 'react-intl';
 
 interface Props extends RouteComponentProps<URLParameters> {
   committee: CommitteeData;
   fref: firebase.database.Reference;
+  intl: IntlShape;
 }
 
 interface State {
@@ -43,7 +45,7 @@ const RANK_OPTIONS = [
   Rank.Observer
 ].map(makeDropdownOption);
 
-export default class Admin extends React.Component<Props, State> {
+export default injectIntl(class Admin extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
 
@@ -176,7 +178,7 @@ export default class Admin extends React.Component<Props, State> {
           <Dropdown
             icon="search"
             className="adder__dropdown--select-member"
-            placeholder="Select preset member"
+            placeholder={this.props.intl.formatMessage({ id: 'admin.member.select.placeholder', defaultMessage: 'Select preset member' })}
             search
             selection
             fluid
@@ -197,22 +199,25 @@ export default class Admin extends React.Component<Props, State> {
             options={RANK_OPTIONS}
             onChange={setRank}
             value={this.state.rank}
+            placeholder={this.props.intl.formatMessage({ id: 'admin.member.rank.placeholder', defaultMessage: 'Select rank' })}
           />
         </Table.HeaderCell>
-        <Table.HeaderCell collapsing >
+        <Table.HeaderCell collapsing>
           <Checkbox 
             className="adder__checkbox--toggle-present"
             toggle 
             checked={newMemberPresent} 
-            onChange={setPresent} 
+            onChange={setPresent}
+            title={this.props.intl.formatMessage({ id: 'admin.member.present.toggle', defaultMessage: 'Toggle presence status' })}
           />
         </Table.HeaderCell>
-        <Table.HeaderCell collapsing >
+        <Table.HeaderCell collapsing>
           <Checkbox 
             className="adder__checkbox--toggle-voting"
             toggle 
             checked={newMemberVoting} 
-            onChange={setVoting} 
+            onChange={setVoting}
+            title={this.props.intl.formatMessage({ id: 'admin.member.voting.toggle', defaultMessage: 'Toggle voting status' })}
           />
         </Table.HeaderCell>
         <Table.HeaderCell>
@@ -223,6 +228,7 @@ export default class Admin extends React.Component<Props, State> {
             basic
             disabled={!this.canPushMember(member)}
             onClick={this.pushSelectedMember}
+            title={this.props.intl.formatMessage({ id: 'admin.member.add', defaultMessage: 'Add member' })}
           />
         </Table.HeaderCell>
       </Table.Row>
@@ -240,10 +246,18 @@ export default class Admin extends React.Component<Props, State> {
         <Table compact celled definition>
           <Table.Header>
             <Table.Row>
-              <Table.HeaderCell />
-              <Table.HeaderCell>Rank</Table.HeaderCell>
-              <Table.HeaderCell>Present</Table.HeaderCell>
-              <Table.HeaderCell>Voting</Table.HeaderCell>
+              <Table.HeaderCell>
+                <FormattedMessage id="admin.table.header.member" defaultMessage="Member" />
+              </Table.HeaderCell>
+              <Table.HeaderCell>
+                <FormattedMessage id="admin.table.header.rank" defaultMessage="Rank" />
+              </Table.HeaderCell>
+              <Table.HeaderCell>
+                <FormattedMessage id="admin.table.header.present" defaultMessage="Present" />
+              </Table.HeaderCell>
+              <Table.HeaderCell>
+                <FormattedMessage id="admin.table.header.voting" defaultMessage="Voting" />
+              </Table.HeaderCell>
               <Table.HeaderCell />
             </Table.Row>
           </Table.Header>
@@ -256,20 +270,16 @@ export default class Admin extends React.Component<Props, State> {
             {memberItems.reverse()}
           </Table.Body>
         </Table>
-        {memberItems.length === 0
-          ? <Message error>
-            Add at least one committee member to proceed
+        {memberItems.length === 0 ? (
+          <Message error>
+            <FormattedMessage id="admin.message.no.members" defaultMessage="Add at least one committee member to proceed" />
           </Message>
-          : <Button
-            as='a'
-            onClick={this.gotoGSL}
-            primary
-            fluid
-          >
-            General Speakers' List
-              <Icon name="arrow right" />
+        ) : (
+          <Button as='a' onClick={this.gotoGSL} primary fluid>
+            <FormattedMessage id="admin.button.gsl" defaultMessage="General Speakers' List" />
+            <Icon name="arrow right" />
           </Button>
-        }
+        )}
       </>
     );
   }
@@ -280,7 +290,13 @@ export default class Admin extends React.Component<Props, State> {
     return (
       <Container style={{ padding: '1em 0em 1.5em' }}>
         <Helmet>
-          <title>{`Setup - Muncoordinated`}</title>
+          <title>
+            <FormattedMessage 
+              id="admin.page.title" 
+              defaultMessage="Admin - {committeeName}" 
+              values={{ committeeName: committee.name }}
+            />
+          </title>
         </Helmet>
         <Grid columns="2" stackable>
           <Grid.Row>
@@ -292,8 +308,8 @@ export default class Admin extends React.Component<Props, State> {
               <CommitteeStatsTable verbose={true} data={committee} />
             </Grid.Column>
           </Grid.Row>
-        </Grid >
+        </Grid>
       </Container>
     );
   }
-}
+});

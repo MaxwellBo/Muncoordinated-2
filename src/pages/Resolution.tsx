@@ -48,47 +48,68 @@ import {CommitteeStatsTable} from '../modules/committee-stats';
 import {CommitteeData, recoverMemberOptions} from "../models/committee";
 import {getThreshold, getThresholdName} from "../viewmodels/resolution";
 import { Helmet } from 'react-helmet';
+import { FormattedMessage, injectIntl, type IntlShape } from 'react-intl';
 
 const TAB_ORDER = ['feed', 'text', 'amendments', 'voting'];
 
 export const IDENTITCAL_PROPOSER_SECONDER = (
-  <Message
-    error
-    content="A resolution's proposer and seconder cannot be the same"
-  />
-);
-
-export const DELEGATES_CAN_AMEND_NOTICE = (
-  <Message
-    basic
-    attached="bottom"
-  >
-    Delegates can create and edit, but not delete, amendments.
+  <Message error>
+    <FormattedMessage 
+      id="resolution.error.same.proposer.seconder" 
+      defaultMessage="A resolution's proposer and seconder cannot be the same" 
+    />
   </Message>
 );
 
+export const DELEGATES_CAN_AMEND_NOTICE = (
+  <Message basic attached="bottom">
+    <FormattedMessage 
+      id="resolution.notice.delegates.amend" 
+      defaultMessage="Delegates can create and edit, but not delete, amendments." 
+    />
+  </Message>
+);
 
-function DeleteResolutionModal(props: { onConfirm: () => void }) {
+interface DeleteResolutionModalProps {
+  onConfirm: () => void;
+  intl: IntlShape;
+}
+
+function DeleteResolutionModal(props: DeleteResolutionModalProps) {
   const [isModalOpen, setIsModalOpen] = React.useState(false);
 
-  return (<>
-      <Dropdown.Item negative fluid basic
-          onClick={() => setIsModalOpen(true)}
+  return (
+    <>
+      <Dropdown.Item 
+        negative 
+        fluid 
+        basic
+        onClick={() => setIsModalOpen(true)}
       >
-        <Icon name="delete" /> Delete resolution?
+        <Icon name="delete" />
+        <FormattedMessage id="resolution.action.delete" defaultMessage="Delete resolution?" />
       </Dropdown.Item>
       <Confirm
         open={isModalOpen}
-        header='Delete resolution?'
-        content='Are you sure? This is irreversible and will delete all
-                  posts, text, amendments and voting history. You might want to close the resolution (top right dropdown) instead?'
+        header={props.intl.formatMessage({ 
+          id: 'resolution.delete.title', 
+          defaultMessage: 'Delete resolution?' 
+        })}
+        content={props.intl.formatMessage({ 
+          id: 'resolution.delete.confirm', 
+          defaultMessage: 'Are you sure? This is irreversible and will delete all posts, text, amendments and voting history. You might want to close the resolution (top right dropdown) instead?' 
+        })}
         onCancel={() => setIsModalOpen(false)}
-        onConfirm={() => { setIsModalOpen(false); props.onConfirm() }}
+        onConfirm={() => { setIsModalOpen(false); props.onConfirm(); }}
       />
-    </>)
+    </>
+  );
 }
 
+const DeleteResolutionModalWithIntl = injectIntl(DeleteResolutionModal);
+
 interface Props extends RouteComponentProps<URLParameters> {
+  intl: IntlShape;
 }
 
 interface State {
@@ -213,15 +234,16 @@ export default class Resolution extends React.Component<Props, State> {
     const { handleProvisionAmendment } = this;
     const { proposer, text, status } = amendment;
     const { user, committee } = this.state;
+    const { intl } = this.props;
 
     const textArea = (
       <TextArea
         value={text}
-        label="Text"
+        label={intl.formatMessage({ id: 'resolution.amendment.text.label', defaultMessage: 'Text' })}
         autoHeight
         onChange={textAreaHandler<AmendmentData>(amendmentFref, 'text')}
         rows={1}
-        placeholder="Text"
+        placeholder={intl.formatMessage({ id: 'resolution.amendment.text.placeholder', defaultMessage: 'Text' })}
       />
     );
 
@@ -671,7 +693,7 @@ export default class Resolution extends React.Component<Props, State> {
         className='icon'
       >
       <Dropdown.Menu>
-        <DeleteResolutionModal onConfirm={() => this.recoverResolutionFref().remove()} />
+        <DeleteResolutionModalWithIntl onConfirm={() => this.recoverResolutionFref().remove()} />
       </Dropdown.Menu>
     </Dropdown>)
   }
@@ -765,7 +787,13 @@ export default class Resolution extends React.Component<Props, State> {
     return (
       <Container style={{ 'padding-bottom': '2em' }}>
         <Helmet>
-          <title>{`${resolution?.name} - Muncoordinated`}</title>
+          <title>
+            <FormattedMessage 
+              id="resolution.page.title" 
+              defaultMessage="Resolution - {resolutionName}" 
+              values={{ resolutionName: resolution?.name || 'Untitled' }}
+            />
+          </title>
         </Helmet>
         <Grid columns="equal" stackable>
           <Grid.Row>

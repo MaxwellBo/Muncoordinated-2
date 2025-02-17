@@ -68,15 +68,19 @@ import {
 import {getSeconds, TimerData, Unit} from "../models/time";
 import {SettingsData} from "../models/settings";
 import { Helmet } from 'react-helmet';
+import { FormattedMessage, injectIntl, type IntlShape } from 'react-intl';
 
 const DIVISIBILITY_ERROR = (
-  <Message
-    error
-    content="Speaker time does not evenly divide the caucus time"
-  />
+  <Message error>
+    <FormattedMessage 
+      id="motions.error.divisibility" 
+      defaultMessage="Speaker time does not evenly divide the caucus time" 
+    />
+  </Message>
 );
 
 interface Props extends RouteComponentProps<URLParameters> {
+  intl: IntlShape;
 }
 
 interface Hooks {
@@ -734,7 +738,13 @@ export class MotionsComponent extends React.Component<Props & Hooks, State> {
     return (
       <Container text style={{ padding: '1em 0em' }}>
         <Helmet>
-          <title>{`Motions - Muncoordinated`}</title>
+          <title>
+            <FormattedMessage 
+              id="motions.page.title" 
+              defaultMessage="Motions - {committeeName}" 
+              values={{ committeeName: committee.name }}
+            />
+          </title>
         </Helmet>
         {renderAdder(committee)}
         <Divider hidden />
@@ -785,8 +795,4 @@ export class MotionsComponent extends React.Component<Props & Hooks, State> {
   }
 }
 
-export default function Motions(props: Props) {
-  const [voterID] = useVoterID();
-
-  return <MotionsComponent {...props} voterID={voterID} />
-}
+export default injectIntl(MotionsComponent);
