@@ -1,39 +1,41 @@
 import * as React from 'react';
 import { Divider, Header, Input, List, Segment } from 'semantic-ui-react';
-import {CommitteeID} from "../models/committee";
-import {StrawpollID} from "../models/strawpoll";
+import { CommitteeID } from "../models/committee";
+import { StrawpollID } from "../models/strawpoll";
+import { FormattedMessage, useIntl } from 'react-intl';
 
 function CopyableText(props: {
   value: string
 }) {
   const [message, setMessage] = React.useState<string>('Copy');
+  const intl = useIntl();
 
   const copy = () => {
     // We have to try-catch because this API might not be available
     try {
       navigator.clipboard.writeText(props.value)
         .then(() => {
-          setMessage('Copied!')
-          setTimeout(() => setMessage('Copy'), 3000)
+          setMessage(intl.formatMessage({ id: 'share.button.copied', defaultMessage: 'Copied!' }));
+          setTimeout(() => setMessage(intl.formatMessage({ id: 'share.button.copy', defaultMessage: 'Copy' })), 3000);
         })
         .catch(() => {
-          setMessage('Please copy manually')
-        })
+          setMessage(intl.formatMessage({ id: 'share.button.manual', defaultMessage: 'Please copy manually' }));
+        });
     } catch (e) {
-      setMessage('Please copy manually')
+      setMessage(intl.formatMessage({ id: 'share.button.manual', defaultMessage: 'Please copy manually' }));
     }
-  }
+  };
 
   return (
-      <Input fluid
-        value={props.value}
-        action={{
-          labelPosition: 'right',
-          icon: 'copy outline',
-          content: message,
-          onClick: copy
-        }}
-      />
+    <Input fluid
+      value={props.value}
+      action={{
+        labelPosition: 'right',
+        icon: 'copy outline',
+        content: message,
+        onClick: copy
+      }}
+    />
   );
 }
 
@@ -46,12 +48,20 @@ export function CommitteeShareHint(props: {
 
   return (
     <Segment>
-      <Header size='medium'>Here's the shareable link to your committee</Header>
+      <Header size='medium'>
+        <FormattedMessage 
+          id="share.committee.title" 
+          defaultMessage="Here's the shareable link to your committee" 
+        />
+      </Header>
       <CopyableText value={url} />
 
       <Divider hidden />
 
-      Copy and send this to your delegates, and they will be able to:
+      <FormattedMessage 
+        id="share.committee.instruction" 
+        defaultMessage="Copy and send this to your delegates, and they will be able to:" 
+      />
 
       <VerboseShareCapabilities />
       
@@ -61,28 +71,76 @@ export function CommitteeShareHint(props: {
 
 export function ShareCapabilities() {
   return (
-      <List bulleted>
-        <List.Item>Upload files</List.Item>
-        <List.Item>Add themselves to speakers' lists</List.Item>
-        <List.Item>Add and edit amendments on resolutions</List.Item>
-        <List.Item>Propose motions</List.Item>
-        <List.Item>Vote on motions</List.Item>
-        <List.Item>Vote on strawpolls</List.Item>
-      </List>
-  )
+    <List bulleted>
+      <List.Item>
+        <FormattedMessage id="share.capability.files" defaultMessage="Upload files" />
+      </List.Item>
+      <List.Item>
+        <FormattedMessage id="share.capability.speakers" defaultMessage="Add themselves to speakers' lists" />
+      </List.Item>
+      <List.Item>
+        <FormattedMessage id="share.capability.amendments" defaultMessage="Add and edit amendments on resolutions" />
+      </List.Item>
+      <List.Item>
+        <FormattedMessage id="share.capability.motions" defaultMessage="Propose motions" />
+      </List.Item>
+      <List.Item>
+        <FormattedMessage id="share.capability.votes" defaultMessage="Vote on motions" />
+      </List.Item>
+      <List.Item>
+        <FormattedMessage id="share.capability.strawpolls" defaultMessage="Vote on strawpolls" />
+      </List.Item>
+    </List>
+  );
 }
 
 export function VerboseShareCapabilities() {
   return (
-      <List bulleted>
-        <List.Item>Upload files</List.Item>
-        <List.Item>Add themselves to speakers' lists that have the <i>Delegates can queue</i> flag enabled</List.Item>
-        <List.Item>Add and edit amendments on resolutions that have the <i>Delegates can amend</i> flag enabled</List.Item>
-        <List.Item>Propose motions that have the <i>Delegates can propose motions</i> flag enabled</List.Item>
-        <List.Item>Vote on motions that have the <i>Delegates can vote on motions</i> flag enabled</List.Item>
-        <List.Item>Vote on strawpolls</List.Item>
-      </List>
-  )
+    <List bulleted>
+      <List.Item>
+        <FormattedMessage id="share.capability.files" defaultMessage="Upload files" />
+      </List.Item>
+      <List.Item>
+        <FormattedMessage 
+          id="share.capability.speakers.verbose" 
+          defaultMessage="Add themselves to speakers' lists that have the {flag} flag enabled" 
+          values={{ flag: <i>
+            <FormattedMessage id="share.flag.queue" defaultMessage="Delegates can queue" />
+          </i> }}
+        />
+      </List.Item>
+      <List.Item>
+        <FormattedMessage 
+          id="share.capability.amendments.verbose" 
+          defaultMessage="Add and edit amendments on resolutions that have the {flag} flag enabled" 
+          values={{ flag: <i>
+            <FormattedMessage id="share.flag.amend" defaultMessage="Delegates can amend" />
+          </i> }}
+        />
+      </List.Item>
+      <List.Item>
+        <FormattedMessage 
+          id="share.capability.motions.verbose" 
+          defaultMessage="Propose motions that have the {flag} flag enabled" 
+          values={{ flag: <i>
+            <FormattedMessage id="share.flag.propose" defaultMessage="Delegates can propose motions" />
+          </i> }}
+        />
+      </List.Item>
+      <List.Item>
+        <FormattedMessage 
+          id="share.capability.votes.verbose" 
+          defaultMessage="Vote on motions that have the {flag} flag enabled" 
+          values={{ flag: <i>
+            <FormattedMessage id="share.flag.vote" defaultMessage="Delegates can vote on motions" />
+          </i> }}
+        />
+      </List.Item>
+      <List.Item>
+        <FormattedMessage id="share.capability.strawpolls" defaultMessage="Vote on strawpolls" />
+      </List.Item>
+    </List>
+  );
 }
 
 export function StrawpollShareHint(props: {
@@ -94,36 +152,57 @@ export function StrawpollShareHint(props: {
   const url = `${hostname}/committees/${committeeID}/strawpolls/${strawpollID}`;
   return (
     <Segment>
-      <Header size='small'>Here's the shareable link to your strawpoll</Header>
+      <Header size='small'>
+        <FormattedMessage 
+          id="share.strawpoll.title" 
+          defaultMessage="Here's the shareable link to your strawpoll" 
+        />
+      </Header>
       <CopyableText value={url} />
     </Segment>
   );
 }
 
 export function MotionsShareHint(props: {
-  canVote: boolean,
-  canPropose: boolean,
+  canVote: boolean;
+  canPropose: boolean;
   committeeID: CommitteeID;
 }) {
   const hostname = window.location.hostname;
   const { committeeID, canVote, canPropose } = props;
   const url = `${hostname}/committees/${committeeID}/motions`;
 
-  let action: string
+  let actionMessageId: string;
 
   if (canVote && canPropose) {
-    action = 'vote on and propose motions'
+    actionMessageId = 'share.motions.action.both';
   } else if (canVote) {
-    action = 'vote on motions'
+    actionMessageId = 'share.motions.action.vote';
   } else if (canPropose) {
-    action = 'propose motions'
+    actionMessageId = 'share.motions.action.propose';
   } else {
-    action = 'vote on and propose motions'
+    actionMessageId = 'share.motions.action.both';
   }
 
   return (
     <Segment>
-      <Header size='small'>Here's the shareable link to {action}</Header>
+      <Header size='small'>
+        <FormattedMessage 
+          id="share.motions.title" 
+          defaultMessage="Here's the shareable link to {action}" 
+          values={{ 
+            action: <FormattedMessage 
+              id={actionMessageId} 
+              defaultMessage={
+                canVote && canPropose ? 'vote on and propose motions' :
+                canVote ? 'vote on motions' :
+                canPropose ? 'propose motions' :
+                'vote on and propose motions'
+              } 
+            />
+          }}
+        />
+      </Header>
       <CopyableText value={url} />
     </Segment>
   );

@@ -42,11 +42,11 @@ export interface StrawpollProps extends RouteComponentProps<URLParameters> {
   intl: IntlShape;
 }
 
-export interface ModalProps {
+interface ModalProps {
   open: boolean;
   onChangeOpenState: (open: boolean) => void;
-  onConfirm: Function;
-  trigger: React.ReactElement<Button>;
+  onConfirm: () => void;
+  trigger: React.ReactElement<typeof Button>;
   intl: IntlShape;
 }
 
@@ -65,24 +65,24 @@ function getNumberOfVotes(option: StrawpollOptionData, medium: StrawpollMedium) 
   }
 }
 
-export function DeleteStrawpollModal(props: ModalProps) {
+function DeleteStrawpollModal({ open, onChangeOpenState, onConfirm, trigger, intl }: ModalProps) {
   const onYesClick = () => {
-    props.onConfirm();
-    props.onChangeOpenState(false);
+    onConfirm();
+    onChangeOpenState(false);
   };
 
   const onNoClick = () => {
-    props.onChangeOpenState(false);
+    onChangeOpenState(false);
   };
 
   return (
     <Modal
       size="mini"
       centered={false}
-      open={props.open}
-      onClose={() => props.onChangeOpenState(false)}
-      onOpen={() => props.onChangeOpenState(true)}
-      trigger={props.trigger}
+      open={open}
+      onClose={() => onChangeOpenState(false)}
+      onOpen={() => onChangeOpenState(true)}
+      trigger={trigger}
     >
       <Modal.Header>
         <FormattedMessage id="strawpoll.delete.title" defaultMessage="Delete strawpoll?" />
@@ -107,55 +107,57 @@ export function DeleteStrawpollModal(props: ModalProps) {
   );
 }
 
-const DeleteStrawpollModalWithIntl = injectIntl(DeleteStrawpollModal);
-
-export default function Strawpoll(props: StrawpollProps) {
+function StrawpollComponent(props: StrawpollProps) {
   const { committeeID, strawpollID } = props.match.params;
-  const strawpollFref = getStrawpollRef(committeeID, strawpollID)
+  const strawpollFref = getStrawpollRef(committeeID, strawpollID);
   const [value, loading] = useObjectVal<StrawpollData>(strawpollFref);
-  // TODO: Bandaid - I don't think the hook types nicely with the compat patch
   const [user] = useAuthState(firebase.auth() as any);
-  const [voterID] = useVoterID()
-  const [modalOpen, setOpen] = React.useState(false)
+  const [voterID] = useVoterID();
+  const [modalOpen, setOpen] = React.useState(false);
 
   if (loading) {
-    return <Loading />
+    return <Loading />;
   }
 
-  const strawpoll: StrawpollData | undefined = value;
+  const strawpoll = value as StrawpollData | undefined;
 
   if (!strawpoll) {
-    return <Container text>
-      <NotFound id={strawpollID} item="strawpoll" />
-    </Container>;
+    return (
+      <Container text>
+        <NotFound id={strawpollID} item="strawpoll" />
+      </Container>
+    );
   }
 
-  const type: StrawpollType = strawpoll ? strawpoll.type || StrawpollType.Checkbox : StrawpollType.Checkbox;
-  const stage: StrawpollStage = strawpoll ? strawpoll.stage || StrawpollStage.Preparing : StrawpollStage.Preparing;
-  const medium: StrawpollMedium = strawpoll ? strawpoll.medium || StrawpollMedium.Link : StrawpollMedium.Link;
-  const options: Record<StrawpollOptionID, StrawpollOptionData> =
-    strawpoll ? strawpoll.options || {} : {};
+  const type = strawpoll.type || StrawpollType.Checkbox;
+  const stage = strawpoll.stage || StrawpollStage.Preparing;
+  const medium = strawpoll.medium || StrawpollMedium.Link;
+  const options = strawpoll.options || {};
 
   let totalVotes = 0;
 
   Object.keys(options).forEach(oid => {
-    totalVotes += getNumberOfVotes(options[oid], medium)
-  })
+    totalVotes += getNumberOfVotes(options[oid], medium);
+  });
 
   const addOption = () => {
     push(child(strawpollFref, 'options'), DEFAULT_STRAWPOLL_OPTION);
   }
 
-  const togglePollType = (event: React.SyntheticEvent, data: DropdownProps) => {
-    set(child(strawpollFref, 'type'), data.value);
+  const togglePollType = (event: React.SyntheticEvent<HTMLElement>, data: DropdownProps) => {
+    set(child(strawpollFref, 'type'), data.value as StrawpollType);
     // reset votes
     Object.keys(options).forEach(oid => {
       const votes = options[oid].votes;
       if (votes) {
-        set(child(child(child(strawpollFref, 'options'), oid), 'votes'),{});
+        set(child(child(child(strawpollFref, 'options'), oid), 'votes'), {});
       }
     });
-  }
+  };
+
+  const handleCheckboxChange = (event: React.FormEvent<HTMLInputElement>, data: CheckboxProps) => {
+    modularCheckboxHandler<StrawpollData>(strawpollFref, 'optionsArePublic')(event, data);
+  };
 
   const deleteStrawpoll = () => {
     remove(strawpollFref);
@@ -289,7 +291,8 @@ export default function Strawpoll(props: StrawpollProps) {
           fluid
           onClick={addOption}
         >
-          <Icon name="plus" />Add option
+          <Icon name="plus" />
+          <FormattedMessage id="strawpoll.button.add.option" defaultMessage="Add option" />
         </Button>
       </List.Item>
       }
@@ -311,40 +314,41 @@ export default function Strawpoll(props: StrawpollProps) {
                   options={[{
                     key: StrawpollType.Checkbox,
                     value: StrawpollType.Checkbox,
-                    text: "Choose many",
+                    text: props.intl.formatMessage({ id: 'strawpoll.dropdown.choose.many', defaultMessage: 'Choose many' }),
                     icon: "check square"
                   }, {
                     key: StrawpollType.Radio,
                     value: StrawpollType.Radio,
-                    text: "Choose one",
+                    text: props.intl.formatMessage({ id: 'strawpoll.dropdown.choose.one', defaultMessage: 'Choose one' }),
                     icon: "radio"
                   }]}
                   onChange={togglePollType}
                   value={type}
                 />
-                <DeleteStrawpollModalWithIntl
+                <DeleteStrawpollModal
                   open={modalOpen}
                   onChangeOpenState={setOpen}
                   onConfirm={deleteStrawpoll}
+                  intl={props.intl}
                   trigger={
                     <Button
                       color="red"
                       basic
                       onClick={() => setOpen(true)}
                     >
-                      <Icon name="delete" />Delete strawpoll?
+                      <Icon name="delete" />
+                      <FormattedMessage id="strawpoll.button.delete" defaultMessage="Delete strawpoll?" />
                     </Button>
                   }
-                  intl={props.intl}
                 />
               </Button.Group>
             </List.Item>
-            <List.Item >
+            <List.Item>
               <Checkbox
-                label="Delegates can add options"
+                label={<FormattedMessage id="strawpoll.checkbox.delegates.options" defaultMessage="Delegates can add options" />}
                 toggle
                 checked={strawpoll ? (strawpoll.optionsArePublic || false) : false}
-                onClick={modularCheckboxHandler<StrawpollData>(strawpollFref, 'optionsArePublic')}
+                onChange={handleCheckboxChange}
               />
             </List.Item>
           </List>
@@ -371,7 +375,7 @@ export default function Strawpoll(props: StrawpollProps) {
               basic
               onClick={createSharablePoll}
             >
-              Create shareable poll
+              <FormattedMessage id="strawpoll.button.create.shareable" defaultMessage="Create shareable poll" />
               <Icon name="arrow right" />
             </Button>
             <Button.Or />
@@ -380,7 +384,7 @@ export default function Strawpoll(props: StrawpollProps) {
               basic
               onClick={createManualPoll}
             >
-              Create manual poll
+              <FormattedMessage id="strawpoll.button.create.manual" defaultMessage="Create manual poll" />
               <Icon name="arrow right" />
             </Button>
           </Button.Group>
@@ -394,7 +398,7 @@ export default function Strawpoll(props: StrawpollProps) {
               onClick={editOptions}
             >
               <Icon name="arrow left" />
-              Edit options
+              <FormattedMessage id="strawpoll.button.edit.options" defaultMessage="Edit options" />
             </Button>
             <Button
               primary
@@ -402,7 +406,7 @@ export default function Strawpoll(props: StrawpollProps) {
               disabled={!user}
               onClick={viewResults}
             >
-              View results
+              <FormattedMessage id="strawpoll.button.view.results" defaultMessage="View results" />
               <Icon name="arrow right" />
             </Button>
           </Button.Group>
@@ -416,7 +420,7 @@ export default function Strawpoll(props: StrawpollProps) {
             onClick={reopenVoting}
           >
             <Icon name="arrow left" />
-            Reopen voting
+            <FormattedMessage id="strawpoll.button.reopen.voting" defaultMessage="Reopen voting" />
           </Button>
         )
       default:
@@ -431,12 +435,12 @@ export default function Strawpoll(props: StrawpollProps) {
           <FormattedMessage 
             id="strawpoll.page.title" 
             defaultMessage="Strawpoll - {pollName}" 
-            values={{ pollName: strawpoll?.name || 'Untitled' }}
+            values={{ pollName: strawpoll?.question || 'Untitled' }}
           />
         </title>
       </Helmet>
       <Header as="h2">
-        {strawpoll.name || (
+        {strawpoll.question || (
           <FormattedMessage id="strawpoll.untitled" defaultMessage="Untitled Strawpoll" />
         )}
       </Header>
@@ -447,4 +451,4 @@ export default function Strawpoll(props: StrawpollProps) {
   );
 }
 
-export default injectIntl(Strawpoll);
+export default injectIntl(StrawpollComponent);

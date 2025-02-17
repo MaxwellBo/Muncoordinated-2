@@ -22,7 +22,10 @@ import {
   Statistic,
   Tab,
   TabProps,
-  TextArea
+  TextArea,
+  Table,
+  Header,
+  Divider
 } from 'semantic-ui-react';
 import {RouteComponentProps} from 'react-router';
 import {URLParameters} from '../types';
@@ -49,6 +52,7 @@ import {CommitteeData, recoverMemberOptions} from "../models/committee";
 import {getThreshold, getThresholdName} from "../viewmodels/resolution";
 import { Helmet } from 'react-helmet';
 import { FormattedMessage, injectIntl, type IntlShape } from 'react-intl';
+import Loading from '../components/Loading';
 
 const TAB_ORDER = ['feed', 'text', 'amendments', 'voting'];
 
@@ -175,10 +179,17 @@ export default class Resolution extends React.Component<Props, State> {
   handleProvisionAmendment = (id: AmendmentID, amendment: AmendmentData) => {
     const { committeeID } = this.props.match.params;
     const { proposer, text } = amendment;
+    const { intl } = this.props;
 
     const newCaucus: CaucusData = {
       ...DEFAULT_CAUCUS,
-      name: `Amendment by ${amendment.proposer}`,
+      name: intl.formatMessage(
+        { 
+          id: 'resolution.amendment.caucus.name', 
+          defaultMessage: 'Amendment by {proposer}' 
+        },
+        { proposer: amendment.proposer }
+      ),
       topic: text,
       speaking: {
         duration: DEFAULT_CAUCUS.speakerTimer.remaining,
@@ -236,75 +247,24 @@ export default class Resolution extends React.Component<Props, State> {
     const { user, committee } = this.state;
     const { intl } = this.props;
 
-    const textArea = (
-      <TextArea
-        value={text}
-        label={intl.formatMessage({ id: 'resolution.amendment.text.label', defaultMessage: 'Text' })}
-        autoHeight
-        onChange={textAreaHandler<AmendmentData>(amendmentFref, 'text')}
-        rows={1}
-        placeholder={intl.formatMessage({ id: 'resolution.amendment.text.placeholder', defaultMessage: 'Text' })}
-      />
-    );
-
     let hasAuth = false;
 
     if (committee && user) {
       hasAuth = committee.creatorUid === user.uid;
     }
 
-    const statusDropdown = (
-      <Dropdown
-        disabled={!hasAuth}
-        value={status}
-        options={AMENDMENT_STATUS_OPTIONS}
-        onChange={dropdownHandler<AmendmentData>(amendmentFref, 'status')}
-      />
-    );
-
     const memberOptions = recoverMemberOptions(this.state.committee);
 
-    const proposerDropdown = (
-      <Form.Dropdown
-        key="proposer"
-        icon="search"
-        value={nameToMemberOption(proposer).key}
-        error={!proposer}
-        search
-        selection
-        fluid
-        label="Proposer"
-        placeholder="Proposer"
-        onChange={memberDropdownHandler<AmendmentData>(amendmentFref, 'proposer', memberOptions)}
-        options={memberOptions}
-      />
-    );
-
-    const provisionTree = recoverLinkedCaucus(amendment) ? (
-      <Button
-        floated="right"
-        onClick={() => this.gotoCaucus(amendment!.caucus)}
-      >
-        Associated caucus
-        <Icon name="arrow right" />
-      </Button>
-    ):(
-      <Button
-        floated="right"
-        disabled={!amendment || amendment.proposer === '' || !hasAuth}
-        onClick={() => handleProvisionAmendment(id, amendment!)}
-      >
-        Provision caucus
-      </Button>
-    );
-
     return (
-      <Card
-        key={id}
-      >
+      <Card key={id}>
         <Card.Content>
           <Card.Header>
-            {statusDropdown}
+            <Dropdown
+              disabled={!hasAuth}
+              value={status}
+              options={AMENDMENT_STATUS_OPTIONS}
+              onChange={dropdownHandler<AmendmentData>(amendmentFref, 'status')}
+            />
             <Button
               floated="right"
               icon="trash"
@@ -312,14 +272,71 @@ export default class Resolution extends React.Component<Props, State> {
               disabled={!hasAuth}
               basic
               onClick={() => amendmentFref.remove()}
+              title={intl.formatMessage({ 
+                id: 'resolution.amendment.action.delete', 
+                defaultMessage: 'Delete amendment' 
+              })}
             />
-            {provisionTree}
+            {recoverLinkedCaucus(amendment) ? (
+              <Button
+                floated="right"
+                onClick={() => this.gotoCaucus(amendment.caucus)}
+              >
+                <FormattedMessage 
+                  id="resolution.amendment.action.goto.caucus" 
+                  defaultMessage="Associated caucus" 
+                />
+                <Icon name="arrow right" />
+              </Button>
+            ) : (
+              <Button
+                floated="right"
+                disabled={!amendment || amendment.proposer === '' || !hasAuth}
+                onClick={() => handleProvisionAmendment(id, amendment)}
+              >
+                <FormattedMessage 
+                  id="resolution.amendment.action.provision" 
+                  defaultMessage="Provision caucus" 
+                />
+              </Button>
+            )}
           </Card.Header>
           <Card.Meta>
-            {proposerDropdown}
+            <Form.Dropdown
+              key="proposer"
+              icon="search"
+              value={nameToMemberOption(proposer).key}
+              error={!proposer}
+              search
+              selection
+              fluid
+              label={<FormattedMessage 
+                id="resolution.amendment.proposer.label" 
+                defaultMessage="Proposer" 
+              />}
+              placeholder={intl.formatMessage({ 
+                id: 'resolution.amendment.proposer.placeholder', 
+                defaultMessage: 'Select proposer' 
+              })}
+              onChange={memberDropdownHandler<AmendmentData>(amendmentFref, 'proposer', memberOptions)}
+              options={memberOptions}
+            />
           </Card.Meta>
           <Form>
-            {textArea}
+            <TextArea
+              value={text}
+              label={<FormattedMessage 
+                id="resolution.amendment.text.label" 
+                defaultMessage="Amendment text" 
+              />}
+              autoHeight
+              onChange={textAreaHandler<AmendmentData>(amendmentFref, 'text')}
+              rows={1}
+              placeholder={intl.formatMessage({ 
+                id: 'resolution.amendment.text.placeholder', 
+                defaultMessage: 'Enter amendment text' 
+              })}
+            />
           </Form>
         </Card.Content>
       </Card>
@@ -448,99 +465,110 @@ export default class Resolution extends React.Component<Props, State> {
   }
 
   renderVoting = (resolution?: ResolutionData) => {
-    const { renderVotingMember, renderCount } = this;
     const { committee } = this.state;
+    const members = committee ? committee.members : undefined;
 
-    const members = (committee ? committee.members : undefined) || {};
-    const votes = (resolution ? resolution.votes : undefined) || {};
+    if (!resolution || !members) {
+      return <Loading />;
+    }
 
-    const sortedPresentAndCanVote = _.chain(members)
-      .keys()
-      .filter(key => canVote(members[key]) && members[key].present)
-      .sortBy((key: string) => [members[key].name])
-      .value();
+    const votes = resolution.votes || {};
+    const voting = Object.keys(members).filter(key => members[key].voting);
 
-    const rendered = sortedPresentAndCanVote
-      .map((key: string) => renderVotingMember(key, members[key], votes[key]));
+    if (voting.length === 0) {
+      return (
+        <Message warning>
+          <FormattedMessage 
+            id="resolution.voting.no.voters" 
+            defaultMessage="No voting members in committee" 
+          />
+        </Message>
+      );
+    }
 
-    const vetoes = _.chain(sortedPresentAndCanVote)
-      .filter((key: string) => members[key].rank === Rank.Veto && votes[key] === Vote.Against)
-      .map(key => members[key])
-      .value();
+    const renderVoteCount = () => {
+      const voteCount = {
+        [Vote.For]: 0,
+        [Vote.Against]: 0,
+        [Vote.Abstaining]: 0
+      };
 
-    const resolutionVetoed = !!vetoes[0];
+      Object.keys(votes).forEach(vid => {
+        const vote = votes[vid] as Vote;
+        voteCount[vote] += 1;
+      });
 
-    const votesByVoters = Object.keys(votes || {})
-      .filter(k => sortedPresentAndCanVote.includes(k))
-      .map(k => votes[k]);
-
-    const fors = votesByVoters.filter(v => v === Vote.For).length;
-    const abstains = votesByVoters.filter(v => v === Vote.Abstaining).length;
-    const againsts = votesByVoters.filter(v => v === Vote.Against).length;
-    const remaining = sortedPresentAndCanVote.length - votesByVoters.length;
-
-    const requiredMajority: Majority = resolution 
-      ? (resolution.requiredMajority || DEFAULT_RESOLUTION.requiredMajority as Majority)
-      : DEFAULT_RESOLUTION.requiredMajority as Majority;
-
-    const threshold = getThreshold(requiredMajority, committee, fors, againsts);
-    const thresholdName = getThresholdName(requiredMajority);
-
-    const resolutionPassed: boolean = fors >= threshold && !resolutionVetoed; 
-    const resolutionFailed: boolean = fors + remaining < threshold && !resolutionVetoed;
-
-    const COLUMNS = 3;
-    const ROWS = Math.ceil(sortedPresentAndCanVote.length / COLUMNS);
-
-    const columns = _.times(3, i => (
-      <Grid.Column key={i}>
-        <List
-          inverted
-        >
-          {_.chain(rendered).drop(ROWS * i).take(ROWS).value()}
-        </List>
-      </Grid.Column>
-    ));
-
+      return (
+        <Statistic.Group>
+          <Statistic color="green">
+            <Statistic.Value>{voteCount[Vote.For]}</Statistic.Value>
+            <Statistic.Label>
+              <FormattedMessage 
+                id="resolution.vote.infavor" 
+                defaultMessage="In favor" 
+              />
+            </Statistic.Label>
+          </Statistic>
+          <Statistic color="red">
+            <Statistic.Value>{voteCount[Vote.Against]}</Statistic.Value>
+            <Statistic.Label>
+              <FormattedMessage 
+                id="resolution.vote.against" 
+                defaultMessage="Against" 
+              />
+            </Statistic.Label>
+          </Statistic>
+          <Statistic color="grey">
+            <Statistic.Value>{voteCount[Vote.Abstaining]}</Statistic.Value>
+            <Statistic.Label>
+              <FormattedMessage 
+                id="resolution.vote.abstain" 
+                defaultMessage="Abstain" 
+              />
+            </Statistic.Label>
+          </Statistic>
+        </Statistic.Group>
+      );
+    };
 
     return (
-      <>
-        <Segment inverted loading={!resolution} textAlign="center">
-          <Grid columns="equal">
-            {columns}
-          </Grid>
-          <Grid columns="equal">
-            {renderCount('yes', 'green', 'plus', fors)}
-            {renderCount('no', 'red', 'remove', againsts)}
-            {renderCount('abstaining', 'yellow', 'minus', abstains)}
-          </Grid>
-          {resolutionPassed && <Statistic inverted>
-            <Statistic.Value>Passed</Statistic.Value>
-            <Statistic.Label>{fors} clears the required {thresholdName} of {threshold}</Statistic.Label>
-            {requiredMajority === Majority.TwoThirdsNoAbstentions &&
-              <Statistic.Label>Further votes may change the result from 'Passed'</Statistic.Label>
-            }
-          </Statistic>}
-          {resolutionFailed && <Statistic inverted>
-            <Statistic.Value>Failed</Statistic.Value>
-            <Statistic.Label>There are insufficient votes remaining to achieve a {thresholdName}</Statistic.Label>
-          </Statistic>}
-          {resolutionVetoed && <Statistic inverted>
-            <Statistic.Value>Vetoed</Statistic.Value>
-            <Statistic.Label>{vetoes[0].name} was the first to veto the resolution</Statistic.Label>
-          </Statistic>}
-          <Segment inverted>
-            {this.renderMajoritySelector(resolution)}
-          </Segment>
-        </Segment>
-        {this.renderStats()}
-      </>
+      <div>
+        <Header as="h3">
+          <FormattedMessage 
+            id="resolution.voting.title" 
+            defaultMessage="Voting" 
+          />
+        </Header>
+        {renderVoteCount()}
+        <Table compact celled>
+          <Table.Header>
+            <Table.Row>
+              <Table.HeaderCell>
+                <FormattedMessage 
+                  id="resolution.voting.table.member" 
+                  defaultMessage="Member" 
+                />
+              </Table.HeaderCell>
+              <Table.HeaderCell>
+                <FormattedMessage 
+                  id="resolution.voting.table.vote" 
+                  defaultMessage="Vote" 
+                />
+              </Table.HeaderCell>
+            </Table.Row>
+          </Table.Header>
+          <Table.Body>
+            {voting.map(key => this.renderVotingMember(key, members[key], votes[key]))}
+          </Table.Body>
+        </Table>
+      </div>
     );
   }
 
   renderMeta = (resolution?: ResolutionData) => {
     const resolutionFref = this.recoverResolutionFref();
     const { handleProvisionResolution, amendmentsArePublic } = this;
+    const { intl } = this.props;
 
     const memberOptions = recoverMemberOptions(this.state.committee);
 
@@ -567,7 +595,7 @@ export default class Resolution extends React.Component<Props, State> {
         fluid
         onChange={memberDropdownHandler<ResolutionData>(resolutionFref, 'proposer', memberOptions)}
         options={memberOptions}
-        label="Proposer"
+        label={<FormattedMessage id="resolution.meta.proposer.label" defaultMessage="Proposer" />}
       />
     );
 
@@ -583,7 +611,7 @@ export default class Resolution extends React.Component<Props, State> {
         fluid
         onChange={memberDropdownHandler<ResolutionData>(resolutionFref, 'seconder', memberOptions)}
         options={memberOptions}
-        label="Seconder"
+        label={<FormattedMessage id="resolution.meta.seconder.label" defaultMessage="Seconder" />}
       />
     );
 
@@ -595,19 +623,18 @@ export default class Resolution extends React.Component<Props, State> {
         disabled={!resolution}
         onClick={() => this.gotoCaucus(resolution!.caucus)}
       >
-        Associated caucus
+        <FormattedMessage id="resolution.meta.caucus.associated" defaultMessage="Associated caucus" />
         <Icon name="arrow right" />
       </Form.Button>
     ) : (
-        // if there's no linked caucus
-        <Form.Button
-          loading={!resolution}
-          disabled={!resolution || !resolution.proposer || !resolution.seconder || hasError}
-          onClick={() => handleProvisionResolution(resolution!)}
-        >
-          Provision caucus
-        </Form.Button>
-      );
+      <Form.Button
+        loading={!resolution}
+        disabled={!resolution || !resolution.proposer || !resolution.seconder || hasError}
+        onClick={() => handleProvisionResolution(resolution!)}
+      >
+        <FormattedMessage id="resolution.meta.caucus.provision" defaultMessage="Provision caucus" />
+      </Form.Button>
+    );
 
     return (
       <React.Fragment>
@@ -618,7 +645,7 @@ export default class Resolution extends React.Component<Props, State> {
             {IDENTITCAL_PROPOSER_SECONDER}
             {provisionTree}
             <Form.Checkbox
-              label="Delegates can amend"
+              label={<FormattedMessage id="resolution.meta.amendments.public" defaultMessage="Delegates can amend" />}
               indeterminate={!resolution}
               toggle
               checked={amendmentsArePublic(resolution)}
@@ -633,47 +660,172 @@ export default class Resolution extends React.Component<Props, State> {
   }
 
   renderText = (resolution?: ResolutionData) => {
-    const resolutionFref = this.recoverResolutionFref();
+    const { committee } = this.state;
+    const { intl } = this.props;
+
+    if (!resolution || !committee) {
+      return <Loading />;
+    }
+
+    const { amendmentsArePublic } = this;
+
+    if (!amendmentsArePublic(resolution)) {
+      return (
+        <Message info>
+          <FormattedMessage 
+            id="resolution.text.notice.private" 
+            defaultMessage="Delegates cannot amend this resolution" 
+          />
+        </Message>
+      );
+    }
 
     return (
       <Form>
         <TextArea
-          value={resolution ? resolution.link : ''}
+          value={resolution.link}
           autoHeight
-          onChange={textAreaHandler<ResolutionData>(resolutionFref, 'link')}
-          attatched="top"
+          onChange={textAreaHandler<ResolutionData>(this.recoverResolutionFref(), 'link')}
           rows={3}
-          placeholder="Resolution text"
+          placeholder={intl.formatMessage({
+            id: 'resolution.text.placeholder',
+            defaultMessage: 'Enter resolution text'
+          })}
         />
       </Form>
-    )
+    );
   }
 
   renderHeader = (resolution?: ResolutionData) => {
+    const { committee } = this.state;
+    const members = committee ? committee.members : undefined;
+    const { intl } = this.props;
+
+    if (!resolution || !members) {
+      return <Loading />;
+    }
+
+    const memberOptions = recoverMemberOptions(committee);
     const resolutionFref = this.recoverResolutionFref();
 
-    const statusDropdown = (
-      <Dropdown
-        value={resolution ? resolution.status : ResolutionStatus.Introduced}
-        options={RESOLUTION_STATUS_OPTIONS}
-        onChange={dropdownHandler<ResolutionData>(resolutionFref, 'status')}
-        loading={!resolution}
-      />
-    );
-
     return (
-      <Input
-        value={resolution ? resolution.name : ''}
-        label={statusDropdown}
-        loading={!resolution}
-        labelPosition="right"
-        onChange={fieldHandler<ResolutionData>(resolutionFref, 'name')}
-        attatched="top"
-        size="massive"
-        fluid
-        placeholder="Set resolution name"
-      />
+      <Form>
+        <Form.Group>
+          <Form.Input
+            width={8}
+            value={resolution.name}
+            onChange={fieldHandler<ResolutionData>(resolutionFref, 'name')}
+            fluid
+            label={<FormattedMessage 
+              id="resolution.header.name.label" 
+              defaultMessage="Name" 
+            />}
+            placeholder={intl.formatMessage({
+              id: 'resolution.header.name.placeholder',
+              defaultMessage: 'Resolution name'
+            })}
+          />
+          <Form.Dropdown
+            width={4}
+            icon="search"
+            value={resolution.proposer ? nameToMemberOption(resolution.proposer).key : ''}
+            error={!resolution.proposer}
+            search
+            selection
+            fluid
+            label={<FormattedMessage 
+              id="resolution.header.proposer.label" 
+              defaultMessage="Proposer" 
+            />}
+            placeholder={intl.formatMessage({
+              id: 'resolution.header.proposer.placeholder',
+              defaultMessage: 'Select proposer'
+            })}
+            onChange={memberDropdownHandler<ResolutionData>(resolutionFref, 'proposer', memberOptions)}
+            options={memberOptions}
+          />
+          <Form.Dropdown
+            width={4}
+            icon="search"
+            value={resolution.seconder ? nameToMemberOption(resolution.seconder).key : ''}
+            error={!resolution.seconder}
+            search
+            selection
+            fluid
+            label={<FormattedMessage 
+              id="resolution.header.seconder.label" 
+              defaultMessage="Seconder" 
+            />}
+            placeholder={intl.formatMessage({
+              id: 'resolution.header.seconder.placeholder',
+              defaultMessage: 'Select seconder'
+            })}
+            onChange={memberDropdownHandler<ResolutionData>(resolutionFref, 'seconder', memberOptions)}
+            options={memberOptions}
+          />
+        </Form.Group>
+        {resolution.proposer && resolution.seconder && resolution.proposer === resolution.seconder && (
+          <Message error>
+            <FormattedMessage 
+              id="resolution.header.error.same.proposer.seconder" 
+              defaultMessage="The proposer and seconder cannot be the same member" 
+            />
+          </Message>
+        )}
+        <Form.Field>
+          <label>
+            <FormattedMessage 
+              id="resolution.header.status.label" 
+              defaultMessage="Status" 
+            />
+          </label>
+          <Dropdown
+            selection
+            value={resolution.status}
+            options={[
+              { 
+                key: ResolutionStatus.Introduced, 
+                value: ResolutionStatus.Introduced, 
+                text: intl.formatMessage({ 
+                  id: 'resolution.status.introduced', 
+                  defaultMessage: 'Introduced' 
+                }) 
+              },
+              { 
+                key: ResolutionStatus.Passed, 
+                value: ResolutionStatus.Passed, 
+                text: intl.formatMessage({ 
+                  id: 'resolution.status.passed', 
+                  defaultMessage: 'Passed' 
+                }) 
+              },
+              { 
+                key: ResolutionStatus.Failed, 
+                value: ResolutionStatus.Failed, 
+                text: intl.formatMessage({ 
+                  id: 'resolution.status.failed', 
+                  defaultMessage: 'Failed' 
+                }) 
+              }
+            ]}
+            onChange={dropdownHandler<ResolutionData>(resolutionFref, 'status')}
+          />
+        </Form.Field>
+      </Form>
     );
+  }
+
+  getStatusText = (status: ResolutionStatus, intl: IntlShape) => {
+    switch (status) {
+      case ResolutionStatus.Introduced:
+        return intl.formatMessage({ id: 'resolution.status.introduced', defaultMessage: 'Introduced' });
+      case ResolutionStatus.Passed:
+        return intl.formatMessage({ id: 'resolution.status.passed', defaultMessage: 'Passed' });
+      case ResolutionStatus.Failed:
+        return intl.formatMessage({ id: 'resolution.status.failed', defaultMessage: 'Failed' });
+      default:
+        return status;
+    }
   }
 
   renderAmendments = (amendments: Record<AmendmentID, AmendmentData>) => {
@@ -699,30 +851,55 @@ export default class Resolution extends React.Component<Props, State> {
   }
 
   renderAmendmentsGroup = (resolution?: ResolutionData) => {
-    const { renderAmendments, handlePushAmendment } = this;
-    const amendments = resolution ? resolution.amendments : undefined;
+    const { committee } = this.state;
+    const { handlePushAmendment } = this;
 
-    const adder = (
-      <Card>
-        {/* <Card.Content> */}
-        <Button
-          icon="plus"
-          primary
-          fluid
-          basic
-          onClick={handlePushAmendment}
-        />
-        {/* </Card.Content> */}
-      </Card>
-    );
+    if (!resolution || !committee) {
+      return <Loading />;
+    }
+
+    const amendments = resolution.amendments || {};
+
+    if (!this.amendmentsArePublic(resolution)) {
+      return (
+        <Message info>
+          <FormattedMessage 
+            id="resolution.amendments.notice.private" 
+            defaultMessage="Delegates cannot amend this resolution" 
+          />
+        </Message>
+      );
+    }
 
     return (
-      <Card.Group
-        itemsPerRow={1}
-      >
-        {adder}
-        {renderAmendments(amendments || {} as Record<string, AmendmentData>)}
-      </Card.Group>
+      <div>
+        <Button
+          primary
+          fluid
+          onClick={handlePushAmendment}
+        >
+          <Icon name="plus" />
+          <FormattedMessage 
+            id="resolution.amendments.action.add" 
+            defaultMessage="Add amendment" 
+          />
+        </Button>
+        <Divider />
+        {Object.keys(amendments).length === 0 ? (
+          <Message info>
+            <FormattedMessage 
+              id="resolution.amendments.notice.empty" 
+              defaultMessage="No amendments have been proposed yet" 
+            />
+          </Message>
+        ) : (
+          <Card.Group>
+            {Object.keys(amendments).map(id =>
+              this.renderAmendment(id, amendments[id], this.recoverResolutionFref().child('amendments').child(id))
+            )}
+          </Card.Group>
+        )}
+      </div>
     );
   }
 
@@ -770,22 +947,22 @@ export default class Resolution extends React.Component<Props, State> {
 
     const panes = [
       {
-        menuItem: 'Feed',
+        menuItem: <FormattedMessage id="resolution.tab.feed" defaultMessage="Feed" />,
         render: () => <Tab.Pane>{renderFeed()}</Tab.Pane>
       }, {
-        menuItem: 'Text',
+        menuItem: <FormattedMessage id="resolution.tab.text" defaultMessage="Text" />,
         render: () => <Tab.Pane>{renderText(resolution)}</Tab.Pane>
       }, {
-        menuItem: 'Amendments',
+        menuItem: <FormattedMessage id="resolution.tab.amendments" defaultMessage="Amendments" />,
         render: () => <Tab.Pane>{renderAmendmentsGroup(resolution)}</Tab.Pane>
       }, {
-        menuItem: 'Voting',
+        menuItem: <FormattedMessage id="resolution.tab.voting" defaultMessage="Voting" />,
         render: () => <Tab.Pane>{renderVoting(resolution)}</Tab.Pane>
       }
     ];
 
     return (
-      <Container style={{ 'padding-bottom': '2em' }}>
+      <Container style={{ paddingBottom: '2em' }}>
         <Helmet>
           <title>
             <FormattedMessage 
@@ -795,21 +972,11 @@ export default class Resolution extends React.Component<Props, State> {
             />
           </title>
         </Helmet>
-        <Grid columns="equal" stackable>
-          <Grid.Row>
-            <Grid.Column>
-              {this.renderHeader(resolution)}
-            </Grid.Column>
-          </Grid.Row>
-          <Grid.Row>
-            <Grid.Column width={11}>
-              <Tab panes={panes} onTabChange={this.onTabChange} activeIndex={index}/>
-            </Grid.Column>
-            <Grid.Column width={5}>
-              {this.renderMeta(resolution)}
-            </Grid.Column>
-          </Grid.Row>
-        </Grid >
+        <Tab
+          panes={panes}
+          activeIndex={index}
+          onTabChange={this.onTabChange}
+        />
       </Container>
     );
   }
