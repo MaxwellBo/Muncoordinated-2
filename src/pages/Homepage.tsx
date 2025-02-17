@@ -268,26 +268,52 @@ export default class Homepage extends React.Component<{}, {
             </Grid.Row>
             <Grid.Row>
               <Grid.Column width={8}>
-                <Header as="h3" style={{ fontSize: '2em' }}>A comprehensive feature set</Header>
+                <Header as="h3" style={{ fontSize: '2em' }}>
+                  <FormattedMessage id="home.features.title" defaultMessage="A comprehensive feature set" />
+                </Header>
                 <div style={{ fontSize: '1.33em' }}>
-                  Muncoordinated supports: <br />
+                  <FormattedMessage id="home.features.intro" defaultMessage="Muncoordinated supports:" /><br />
                   <List as="ul">
-                    <List.Item as="li">Moderated and unmoderated caucuses</List.Item>
-                    <List.Item as="li">Resolutions and amendments</List.Item>
-                    <List.Item as="li">Motions</List.Item>
-                    <List.Item as="li">Roll-call voting</List.Item>
-                    <List.Item as="li">Custom delegations</List.Item>
-                    <List.Item as="li">Strawpolls</List.Item>
-                    <List.Item as="li">File uploads</List.Item>
-                    <List.Item as="li">Delegate performance statistics</List.Item>
+                    <List.Item as="li">
+                      <FormattedMessage id="home.features.list.caucuses" defaultMessage="Moderated and unmoderated caucuses" />
+                    </List.Item>
+                    <List.Item as="li">
+                      <FormattedMessage id="home.features.list.resolutions" defaultMessage="Resolutions and amendments" />
+                    </List.Item>
+                    <List.Item as="li">
+                      <FormattedMessage id="home.features.list.motions" defaultMessage="Motions" />
+                    </List.Item>
+                    <List.Item as="li">
+                      <FormattedMessage id="home.features.list.voting" defaultMessage="Roll-call voting" />
+                    </List.Item>
+                    <List.Item as="li">
+                      <FormattedMessage id="home.features.list.delegations" defaultMessage="Custom delegations" />
+                    </List.Item>
+                    <List.Item as="li">
+                      <FormattedMessage id="home.features.list.strawpolls" defaultMessage="Strawpolls" />
+                    </List.Item>
+                    <List.Item as="li">
+                      <FormattedMessage id="home.features.list.files" defaultMessage="File uploads" />
+                    </List.Item>
+                    <List.Item as="li">
+                      <FormattedMessage id="home.features.list.stats" defaultMessage="Delegate performance statistics" />
+                    </List.Item>
                   </List>
                 </div>
-                <Header as="h3" style={{ fontSize: '2em' }}>Free and open-source</Header>
+                <Header as="h3" style={{ fontSize: '2em' }}>
+                  <FormattedMessage id="home.opensource.title" defaultMessage="Free and open-source" />
+                </Header>
                 <p style={{ fontSize: '1.33em' }}>
-                  All of Muncoordinated's features are available for free, not locked behind paywalls.
+                  <FormattedMessage id="home.opensource.free" defaultMessage="All of Muncoordinated's features are available for free, not locked behind paywalls." />
                 </p>
                 <p style={{ fontSize: '1.33em' }}>
-                  It's also <a href="https://github.com/MaxwellBo/Muncoordinated-2">open-source</a>, so you're free to customize it to your needs and liking.
+                  <FormattedMessage 
+                    id="home.opensource.customize" 
+                    defaultMessage="It's also {openSourceLink}, so you're free to customize it to your needs and liking."
+                    values={{
+                      openSourceLink: <a href="https://github.com/MaxwellBo/Muncoordinated-2">open-source</a>
+                    }}
+                  />
                 </p>
               </Grid.Column>
               <Grid.Column floated="right" width={8}>
@@ -307,31 +333,52 @@ export default class Homepage extends React.Component<{}, {
             <Grid divided inverted stackable>
               <Grid.Row>
                 <Grid.Column width={3}>
-                  <Header inverted as="h4" content="About" />
+                  <Header inverted as="h4">
+                    <FormattedMessage id="footer.about" defaultMessage="About" />
+                  </Header>
                   <List link inverted>
-                    <List.Item as="a" href={REPO_LINK}>Source</List.Item>
-                    <List.Item
-                      as="a"
-                      href="https://github.com/MaxwellBo/Muncoordinated-2/blob/master/LICENSE"
-                    >
-                      License
+                    <List.Item as="a" href={REPO_LINK}>
+                      <FormattedMessage id="footer.source" defaultMessage="Source" />
+                    </List.Item>
+                    <List.Item as="a" href="https://github.com/MaxwellBo/Muncoordinated-2/blob/master/LICENSE">
+                      <FormattedMessage id="footer.license" defaultMessage="License" />
                     </List.Item>
                   </List>
                 </Grid.Column>
                 <Grid.Column width={3}>
-                  <Header inverted as="h4" content="Services" />
+                  <Header inverted as="h4">
+                    <FormattedMessage id="footer.services" defaultMessage="Services" />
+                  </Header>
                   <List link inverted>
-                    <List.Item as="a" href="https://github.com/MaxwellBo/Muncoordinated-2/discussions">Forum</List.Item>
-                    <List.Item as="a" href="https://github.com/MaxwellBo/Muncoordinated-2/issues">Support</List.Item>
-                    <List.Item as="a" href="https://www.helpmymun.com/">MUN Resources</List.Item>
+                    <List.Item as="a" href="https://github.com/MaxwellBo/Muncoordinated-2/discussions">
+                      <FormattedMessage id="footer.forum" defaultMessage="Forum" />
+                    </List.Item>
+                    <List.Item as="a" href="https://github.com/MaxwellBo/Muncoordinated-2/issues">
+                      <FormattedMessage id="footer.support" defaultMessage="Support" />
+                    </List.Item>
+                    <List.Item as="a" href="https://www.helpmymun.com/">
+                      <FormattedMessage id="footer.resources" defaultMessage="MUN Resources" />
+                    </List.Item>
                   </List>
                 </Grid.Column>
                 <Grid.Column width={7}>
-                  <Header as="h4" inverted>Info</Header>
-                  <p>Made with <span role="img" aria-label="love">💖</span> by <a href="https://github.com/MaxwellBo">Max Bo</a>, 
-                  with assistance from the <a href="https://www.facebook.com/UQUNSA/">UQ United Nations Student Association</a>
+                  <Header as="h4" inverted>
+                    <FormattedMessage id="footer.info" defaultMessage="Info" />
+                  </Header>
+                  <p>
+                    <FormattedMessage 
+                      id="footer.made.by" 
+                      defaultMessage="Made with {heart} by {maxLink}, with assistance from the {uqLink}"
+                      values={{
+                        heart: <span role="img" aria-label="love">💖</span>,
+                        maxLink: <a href="https://github.com/MaxwellBo">Max Bo</a>,
+                        uqLink: <a href="https://www.facebook.com/UQUNSA/">UQ United Nations Student Association</a>
+                      }}
+                    />
                   </p>
-                  <p>Copyright © 2024</p>
+                  <p>
+                    <FormattedMessage id="footer.copyright" defaultMessage="Copyright © 2024" />
+                  </p>
                 </Grid.Column>
               </Grid.Row>
             </Grid>

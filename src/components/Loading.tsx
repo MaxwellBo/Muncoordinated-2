@@ -1,20 +1,24 @@
 import * as React from 'react';
-import { Loader, Dimmer, Icon } from 'semantic-ui-react';
+import { FormattedMessage } from 'react-intl';
+import { Icon, Message } from 'semantic-ui-react';
 
 interface Props {
   small?: boolean;
 }
 
-export default class Loading extends React.PureComponent<Props, {}> {
-  render() {
-    if (this.props.small) {
-      return <Icon name="circle notched" loading />;
-    } else {
-      return (
-        <Dimmer active inverted>
-          <Loader inverted size="large" />
-        </Dimmer>
-      );
-    }
+export default function Loading({ small }: Props) {
+  if (small) {
+    return <Icon loading name="spinner" />;
   }
+
+  return (
+    <Message icon info>
+      <Icon name="circle notched" loading />
+      <Message.Content>
+        <Message.Header>
+          <FormattedMessage id="common.loading" defaultMessage="Loading..." />
+        </Message.Header>
+      </Message.Content>
+    </Message>
+  );
 }
