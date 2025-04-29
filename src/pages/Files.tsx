@@ -22,6 +22,7 @@ import {CommitteeData, CommitteeID, recoverMemberOptions} from "../models/commit
 import {File, Link, PostData, PostID, PostType, Text} from "../models/post";
 import {COUNTRY_OPTIONS} from "../constants";
 import { Helmet } from 'react-helmet';
+import { FormattedMessage, injectIntl, type IntlShape } from 'react-intl';
 
 const TEXT_ICON: SemanticICONS = 'align left';
 const FILE_ICON: SemanticICONS = 'file outline';
@@ -32,6 +33,7 @@ interface EntryProps {
   post: PostData;
   onDelete: () => void;
   onPromoteToAmendment: () => void;
+  intl: IntlShape;
 }
 
 interface EntryState {
@@ -90,17 +92,28 @@ class Entry extends React.Component<EntryProps, EntryState> {
 
     if (post.timestamp) {
       const millis = new Date().getTime() - new Date(post.timestamp).getTime();
-
       const secondsSince = millis / 1000;
 
       if (secondsSince < 60) {
-        sinceText = `${action} ${Math.round(secondsSince)} seconds ago`;
+        sinceText = this.props.intl.formatMessage(
+          { id: 'files.time.seconds', defaultMessage: '{action} {seconds} seconds ago' },
+          { action, seconds: Math.round(secondsSince) }
+        );
       } else if (secondsSince < 60 * 60) {
-        sinceText = `${action} ${Math.round(secondsSince / 60 )} minutes ago`;
+        sinceText = this.props.intl.formatMessage(
+          { id: 'files.time.minutes', defaultMessage: '{action} {minutes} minutes ago' },
+          { action, minutes: Math.round(secondsSince / 60) }
+        );
       } else if (secondsSince < 60 * 60 * 24) {
-        sinceText = `${action} ${Math.round(secondsSince / (60 * 60))} hours ago`;
+        sinceText = this.props.intl.formatMessage(
+          { id: 'files.time.hours', defaultMessage: '{action} {hours} hours ago' },
+          { action, hours: Math.round(secondsSince / (60 * 60)) }
+        );
       } else {
-        sinceText = `${action} ${Math.round(secondsSince / (60 * 60 * 24))} days ago`;
+        sinceText = this.props.intl.formatMessage(
+          { id: 'files.time.days', defaultMessage: '{action} {days} days ago' },
+          { action, days: Math.round(secondsSince / (60 * 60 * 24)) }
+        );
       }
     }
 
@@ -118,10 +131,14 @@ class Entry extends React.Component<EntryProps, EntryState> {
           </Feed.Summary>
           <Feed.Extra style={{'whiteSpace': 'pre-wrap'}} text>{post.body}</Feed.Extra>
           <Feed.Meta>
-            {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-            <a onClick={this.props.onDelete}>Delete</a>
-            {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-            {post.forResolution && <a onClick={this.props.onPromoteToAmendment}>Create amendment</a>}
+            <a onClick={this.props.onDelete}>
+              <FormattedMessage id="files.action.delete" defaultMessage="Delete" />
+            </a>
+            {post.forResolution && 
+              <a onClick={this.props.onPromoteToAmendment}>
+                <FormattedMessage id="files.action.create.amendment" defaultMessage="Create amendment" />
+              </a>
+            }
           </Feed.Meta>
         </Feed.Content>
       </Feed.Event>
@@ -134,14 +151,15 @@ class Entry extends React.Component<EntryProps, EntryState> {
         <Feed.Label icon={FILE_ICON} />
         <Feed.Content>
           <Feed.Summary>
-            <Feed.User><Flag name={nameToFlagCode(post.uploader)}/> {post.uploader}</Feed.User> uploaded a file
+            <Feed.User><Flag name={nameToFlagCode(post.uploader)}/> {post.uploader}</Feed.User>
+            <FormattedMessage id="files.uploaded.file" defaultMessage=" uploaded a file" />
             <Feed.Date>{this.renderDate('Uploaded')}</Feed.Date>
           </Feed.Summary>
-          {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
           <Feed.Extra><a onClick={this.download(post.filename)}>{post.filename}</a></Feed.Extra>
           <Feed.Meta>
-            {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-            <a onClick={this.props.onDelete}>Delete</a>
+            <a onClick={this.props.onDelete}>
+              <FormattedMessage id="files.action.delete" defaultMessage="Delete" />
+            </a>
           </Feed.Meta>
         </Feed.Content>
       </Feed.Event>
@@ -154,16 +172,17 @@ class Entry extends React.Component<EntryProps, EntryState> {
         <Feed.Label icon={LINK_ICON} />
         <Feed.Content>
           <Feed.Summary>
-            <Feed.User><Flag name={nameToFlagCode(post.uploader)}/> {post.uploader}</Feed.User> posted a link
+            <Feed.User><Flag name={nameToFlagCode(post.uploader)}/> {post.uploader}</Feed.User>
+            <FormattedMessage id="files.posted.link" defaultMessage=" posted a link" />
             <Feed.Date>{this.renderDate('Posted')}</Feed.Date>
           </Feed.Summary>
           <Feed.Extra><a href={post.url}>{post.name || post.url}</a></Feed.Extra>
-          {/* Show the URL too if the link has name */}
           {post.name && <Feed.Meta><a href={post.url}>{post.url}</a></Feed.Meta>}
           <br />
           <Feed.Meta>
-            {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-            <a onClick={this.props.onDelete}>Delete</a>
+            <a onClick={this.props.onDelete}>
+              <FormattedMessage id="files.action.delete" defaultMessage="Delete" />
+            </a>
           </Feed.Meta>
         </Feed.Content>
       </Feed.Event>
@@ -186,6 +205,8 @@ class Entry extends React.Component<EntryProps, EntryState> {
   }
 }
 
+const EntryWithIntl = injectIntl(Entry);
+
 interface State {
   committee?: CommitteeData;
   committeeFref: firebase.database.Reference;
@@ -200,10 +221,11 @@ interface State {
 }
 
 interface Props extends RouteComponentProps<URLParameters> {
-  forResolution?: ResolutionID
+  forResolution?: ResolutionID;
+  intl: IntlShape;
 }
 
-export default class Files extends React.Component<Props, State> {
+export default injectIntl(class Files extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
 
@@ -388,7 +410,7 @@ export default class Files extends React.Component<Props, State> {
               error={!uploader}
               onChange={this.setMember}
               options={memberOptions}
-              label="Uploader"
+              label={this.props.intl.formatMessage({ id: 'files.form.uploader.label', defaultMessage: 'Uploader' })}
               required
             />
             <Button
@@ -396,7 +418,7 @@ export default class Files extends React.Component<Props, State> {
               loading={state === firebase.storage.TaskState.RUNNING}
               disabled={!file || !uploader}
             >
-              Upload
+              <FormattedMessage id="files.button.upload" defaultMessage="Upload" />
             </Button>
           </Form.Group>
         </Form>
@@ -436,7 +458,7 @@ export default class Files extends React.Component<Props, State> {
           selection
           onChange={this.setFilter}
           options={memberOptions}
-          label="View posts only by"
+          label={this.props.intl.formatMessage({ id: 'files.form.filter.label', defaultMessage: 'View posts only by' })}
         />
       </Form>
     )
@@ -477,16 +499,16 @@ export default class Files extends React.Component<Props, State> {
           value={body}
           onChange={this.setName}
           autoHeight
-          label="Name"
+          label={this.props.intl.formatMessage({ id: 'files.form.name.label', defaultMessage: 'Name' })}
           rows={1}
         />
         <Form.Input 
-          label="Link"
+          label={this.props.intl.formatMessage({ id: 'files.form.link.label', defaultMessage: 'Link' })}
           required
           error={!link}
           value={link}
           onChange={this.setLink}
-          placeholder="https://docs.google.com/document/x"
+          placeholder={this.props.intl.formatMessage({ id: 'files.form.link.placeholder', defaultMessage: 'https://docs.google.com/document/x' })}
         />
         <Form.Group widths="equal">
           <Form.Dropdown
@@ -499,13 +521,13 @@ export default class Files extends React.Component<Props, State> {
             error={!uploader}
             onChange={this.setMember}
             options={memberOptions}
-            label="Poster"
+            label={this.props.intl.formatMessage({ id: 'files.form.poster.label', defaultMessage: 'Poster' })}
           />
           <Button 
             type="submit" 
             disabled={!link || !uploader}
           >
-              Post
+            <FormattedMessage id="files.button.post" defaultMessage="Post" />
           </Button>
         </Form.Group>
       </Form>
@@ -523,7 +545,7 @@ export default class Files extends React.Component<Props, State> {
           value={body}
           onChange={this.setBody}
           autoHeight={true}
-          label="Body"
+          label={this.props.intl.formatMessage({ id: 'files.form.body.label', defaultMessage: 'Body' })}
           rows={3}
         />
         <Form.Group widths="equal">
@@ -537,13 +559,13 @@ export default class Files extends React.Component<Props, State> {
             error={!uploader}
             onChange={this.setMember}
             options={memberOptions}
-            label="Poster"
+            label={this.props.intl.formatMessage({ id: 'files.form.poster.label', defaultMessage: 'Poster' })}
           />
           <Button 
             type="submit" 
             disabled={!body || !uploader}
           >
-              Post
+            <FormattedMessage id="files.button.post" defaultMessage="Post" />
           </Button>
         </Form.Group>
       </Form>
@@ -583,59 +605,74 @@ export default class Files extends React.Component<Props, State> {
 
   render() {
     const { committee } = this.state;
-    const { committeeID } = this.props.match.params;
-    // TODO: rename
-    const files = committee ? (committee.files || {}) : {};
+    const { forResolution, intl } = this.props;
 
-    const panes = [
-      { 
-        menuItem: { key: 'Text', icon: TEXT_ICON, content: 'Text' }, 
-        render: () => <Tab.Pane>{this.renderPoster()}</Tab.Pane> 
-      },
-      { 
-        menuItem: { key: 'Link', icon: LINK_ICON, content: 'Link' }, 
-        render: () => <Tab.Pane>{this.renderLinker()}</Tab.Pane>
-      },
-      { 
-        menuItem: { key: 'File', icon: FILE_ICON, content: 'File' }, 
-        render: () => <Tab.Pane>{this.renderUploader()}</Tab.Pane> 
-      },
-    ];
-
-    const inner = (
-      <>
-        <Tab 
-          menu={{ attached: true, tabular: false }}
-          panes={panes} 
-        />
-        <div>&nbsp;</div> {/* Whitespace */}
-        {this.renderFilter()}
-        <Feed size="large">
-          {committee ? Object.keys(files).reverse()
-            .filter(key => this.isFiltered(files[key]))
-            .filter(key => this.isResolutionAssociated(files[key]))
-            .map(key =>
-              <Entry 
-                key={key} 
-                onDelete={this.deletePost(key)}
-                onPromoteToAmendment={this.promoteToAmendment(files[key])}
-                committeeID={committeeID}
-                post={files[key]}
-              />
-          ) : <Loading />}
-        </Feed>
-      </>
-    )
-
-    return this.props.forResolution
-      ? inner:
-      (
-        <Container text style={{ padding: '1em 0em' }}>
+    if (committee) {
+      return (
+        <Container text style={{ padding: '1em 0em 1.5em' }}>
           <Helmet>
-            <title>{`Posts - Muncoordinated`}</title>
+            <title>
+              <FormattedMessage 
+                id="files.page.title" 
+                defaultMessage="Files - {committeeName}" 
+                values={{ committeeName: committee.name }}
+              />
+            </title>
           </Helmet>
-          {inner}
+          <Tab panes={[
+            {
+              menuItem: { key: 'upload', icon: 'upload', content: 
+                <FormattedMessage id="files.tab.upload" defaultMessage="Upload" />
+              },
+              render: () => (
+                <Tab.Pane>
+                  {this.renderUploader()}
+                </Tab.Pane>
+              )
+            },
+            {
+              menuItem: { key: 'link', icon: 'linkify', content: 
+                <FormattedMessage id="files.tab.link" defaultMessage="Link" />
+              },
+              render: () => (
+                <Tab.Pane>
+                  {this.renderLinker()}
+                </Tab.Pane>
+              )
+            },
+            {
+              menuItem: { key: 'text', icon: 'align left', content: 
+                <FormattedMessage id="files.tab.text" defaultMessage="Text" />
+              },
+              render: () => (
+                <Tab.Pane>
+                  {this.renderPoster()}
+                </Tab.Pane>
+              )
+            }
+          ]} />
+          {this.renderFilter()}
+          <Feed>
+            {Object.keys(committee.files || {})
+              .map(pid => ({ ...committee.files![pid], id: pid }))
+              .filter(this.isFiltered)
+              .filter(this.isResolutionAssociated)
+              .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0))
+              .map((post, i) => (
+                <EntryWithIntl
+                  key={i}
+                  committeeID={this.props.match.params.committeeID}
+                  post={post}
+                  onDelete={this.deletePost(post.id)}
+                  onPromoteToAmendment={this.promoteToAmendment(post)}
+                />
+              ))
+            }
+          </Feed>
         </Container>
       );
+    } else {
+      return <Loading />;
+    }
   }
-}
+});

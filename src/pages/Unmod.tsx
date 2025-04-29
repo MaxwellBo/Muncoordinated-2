@@ -6,8 +6,10 @@ import Timer from '../components/Timer';
 import { URLParameters } from '../types';
 import {TimerData, Unit} from "../models/time";
 import { Helmet } from 'react-helmet';
+import { FormattedMessage, injectIntl, type IntlShape } from 'react-intl';
 
 interface Props extends RouteComponentProps<URLParameters> {
+  intl: IntlShape;
 }
 
 interface State {
@@ -15,7 +17,7 @@ interface State {
   committeeFref: firebase.database.Reference;
 }
 
-export default class Unmod extends React.Component<Props, State> {
+class UnmodComponent extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
 
@@ -30,20 +32,32 @@ export default class Unmod extends React.Component<Props, State> {
 
   render() {
     const { committeeFref } = this.state;
+    const { intl } = this.props;
 
     return (
       <Container text style={{ padding: '1em 0em' }}>
         <Helmet>
-          <title>{`Unmoderated Caucus - Muncoordinated`}</title>
+          <title>
+            <FormattedMessage 
+              id="unmod.page.title" 
+              defaultMessage="Unmoderated Caucus - Muncoordinated" 
+            />
+          </title>
         </Helmet>
         <Timer 
-          name="Unmoderated caucus" 
+          name={intl.formatMessage({ 
+            id: 'unmod.timer.name', 
+            defaultMessage: 'Unmoderated caucus' 
+          })}
           timerFref={committeeFref} 
           onChange={(x: TimerData) => x} 
           defaultDuration={10}
           defaultUnit={Unit.Minutes}
+          totalSeconds={600}
         />
       </Container>
     );
   }
 }
+
+export default injectIntl(UnmodComponent);

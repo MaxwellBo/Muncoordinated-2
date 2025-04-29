@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { FormattedMessage } from 'react-intl';
 import {
   Button,
   Container,
@@ -31,7 +32,6 @@ const HomepageHeading = ({ mobile }: HomepageHeadingProps) => (
   <Container text>
     <Header
       as="h1"
-      content="Muncoordinated"
       inverted
       style={{
         fontSize: mobile ? '2em' : '4em',
@@ -39,20 +39,23 @@ const HomepageHeading = ({ mobile }: HomepageHeadingProps) => (
         marginBottom: 0,
         marginTop: mobile ? '1.5em' : '3em',
       }}
-    />
+    >
+      <FormattedMessage id="home.title" defaultMessage="Muncoordinated" />
+    </Header>
     <Header
       as="h2"
-      content="The collaborative browser-based Model UN committee management app"
       inverted
       style={{
         fontSize: mobile ? '1.5em' : '1.7em',
         fontWeight: 'normal',
         marginTop: mobile ? '0.5em' : '1.5em',
       }}
-    />
+    >
+      <FormattedMessage id="home.subtitle" defaultMessage="The collaborative browser-based Model UN committee management app" />
+    </Header>
     <br />
     <Button as="a" primary size="huge" href="/onboard" onClick={logClickCreateACommitteeButton}>
-      Create a committee
+      <FormattedMessage id="home.create.committee" defaultMessage="Create a committee" />
       <Icon name="arrow right" />
     </Button>
     <br />
@@ -107,13 +110,15 @@ class DesktopContainer extends React.Component<DesktopContainerProps, DesktopCon
               size="large"
             >
               <Container>
-                <Menu.Item as="a" active>Home</Menu.Item>
+                <Menu.Item as="a" active>
+                  <FormattedMessage id="nav.home" defaultMessage="Home" />
+                </Menu.Item>
                 <Menu.Item position="right">
                   <Button as="a" href="/onboard" inverted={!fixed} onClick={logClickLogInButton}>
-                    Log in
+                    <FormattedMessage id="nav.login" defaultMessage="Log in" />
                   </Button>
                   <Button as="a" href="/onboard" inverted={!fixed} primary={fixed} style={{ marginLeft: '0.5em' }} onClick={logClickSignupButton}>
-                    Sign up
+                    <FormattedMessage id="nav.signup" defaultMessage="Sign up" />
                   </Button>
                 </Menu.Item>
               </Container>
@@ -218,11 +223,15 @@ export default class Homepage extends React.Component<{}, {
       <Statistic.Group textAlign="center">
         <Statistic>
           <Statistic.Value>{this.state.committeeNo || <Loading small />}</Statistic.Value>
-          <Statistic.Label>Committees created</Statistic.Label>
+          <Statistic.Label>
+            <FormattedMessage id="home.stats.committees" defaultMessage="Committees created" />
+          </Statistic.Label>
         </Statistic>
         <Statistic>
           <Statistic.Value>{this.state.delegateNo || <Loading small />}</Statistic.Value>
-          <Statistic.Label>Delegates participating</Statistic.Label>
+          <Statistic.Label>
+            <FormattedMessage id="home.stats.delegates" defaultMessage="Delegates participating" />
+          </Statistic.Label>
         </Statistic>
       </Statistic.Group>
     );
@@ -235,24 +244,17 @@ export default class Homepage extends React.Component<{}, {
           <Grid container stackable verticalAlign="middle">
             <Grid.Row>
               <Grid.Column width={8}>
-                <Header as="h3" style={{ fontSize: '2em' }}>Collaborative</Header>
+                <Header as="h3" style={{ fontSize: '2em' }}>
+                  <FormattedMessage id="home.collaborative.title" defaultMessage="Collaborative" />
+                </Header>
                 <p style={{ fontSize: '1.33em' }}>
-                  Using a shareable link delegates can: <br />
-                  <ShareCapabilities />
+                  <FormattedMessage id="home.collaborative.realtime" defaultMessage="Everyone will see all updates in real-time, without needing to refresh the page. It's like Google Docs, but for MUN." />
                 </p>
                 <p style={{ fontSize: '1.33em' }}>
-                  Everyone will see all updates in real-time, without needing to refresh the page. It's like Google Docs, but for MUN.
+                  <FormattedMessage id="home.collaborative.virtual" defaultMessage="For virtual MUNs, we recommend pairing Muncoordinated with Discord, which allows you to speak, pass notes, & share files and links." />
                 </p>
                 <p style={{ fontSize: '1.33em' }}>
-                 For virtual MUNs, we recommend pairing Muncoordinated with <a href="https://discord.com/">Discord</a>, which allows you to speak, pass notes, &amp; share files and links.
-                </p>
-                <p style={{ fontSize: '1.33em' }}>
-                  If you've got a big committee, multiple directors can manage it at the same time, using the same account.
-                </p>
-                <Header as="h3" style={{ fontSize: '2em' }}>Backed up to the cloud</Header>
-                <p style={{ fontSize: '1.33em' }}>
-                  You won't have to worry about data loss ever again. All committee activity is automatically saved to the server, 
-                  so you can start sessions with all data available from the day before.
+                  <FormattedMessage id="home.collaborative.directors" defaultMessage="If you've got a big committee, multiple directors can manage it at the same time, using the same account." />
                 </p>
               </Grid.Column>
               <Grid.Column floated="right" width={8}>
@@ -266,26 +268,52 @@ export default class Homepage extends React.Component<{}, {
             </Grid.Row>
             <Grid.Row>
               <Grid.Column width={8}>
-                <Header as="h3" style={{ fontSize: '2em' }}>A comprehensive feature set</Header>
+                <Header as="h3" style={{ fontSize: '2em' }}>
+                  <FormattedMessage id="home.features.title" defaultMessage="A comprehensive feature set" />
+                </Header>
                 <div style={{ fontSize: '1.33em' }}>
-                  Muncoordinated supports: <br />
+                  <FormattedMessage id="home.features.intro" defaultMessage="Muncoordinated supports:" /><br />
                   <List as="ul">
-                    <List.Item as="li">Moderated and unmoderated caucuses</List.Item>
-                    <List.Item as="li">Resolutions and amendments</List.Item>
-                    <List.Item as="li">Motions</List.Item>
-                    <List.Item as="li">Roll-call voting</List.Item>
-                    <List.Item as="li">Custom delegations</List.Item>
-                    <List.Item as="li">Strawpolls</List.Item>
-                    <List.Item as="li">File uploads</List.Item>
-                    <List.Item as="li">Delegate performance statistics</List.Item>
+                    <List.Item as="li">
+                      <FormattedMessage id="home.features.list.caucuses" defaultMessage="Moderated and unmoderated caucuses" />
+                    </List.Item>
+                    <List.Item as="li">
+                      <FormattedMessage id="home.features.list.resolutions" defaultMessage="Resolutions and amendments" />
+                    </List.Item>
+                    <List.Item as="li">
+                      <FormattedMessage id="home.features.list.motions" defaultMessage="Motions" />
+                    </List.Item>
+                    <List.Item as="li">
+                      <FormattedMessage id="home.features.list.voting" defaultMessage="Roll-call voting" />
+                    </List.Item>
+                    <List.Item as="li">
+                      <FormattedMessage id="home.features.list.delegations" defaultMessage="Custom delegations" />
+                    </List.Item>
+                    <List.Item as="li">
+                      <FormattedMessage id="home.features.list.strawpolls" defaultMessage="Strawpolls" />
+                    </List.Item>
+                    <List.Item as="li">
+                      <FormattedMessage id="home.features.list.files" defaultMessage="File uploads" />
+                    </List.Item>
+                    <List.Item as="li">
+                      <FormattedMessage id="home.features.list.stats" defaultMessage="Delegate performance statistics" />
+                    </List.Item>
                   </List>
                 </div>
-                <Header as="h3" style={{ fontSize: '2em' }}>Free and open-source</Header>
+                <Header as="h3" style={{ fontSize: '2em' }}>
+                  <FormattedMessage id="home.opensource.title" defaultMessage="Free and open-source" />
+                </Header>
                 <p style={{ fontSize: '1.33em' }}>
-                  All of Muncoordinated's features are available for free, not locked behind paywalls.
+                  <FormattedMessage id="home.opensource.free" defaultMessage="All of Muncoordinated's features are available for free, not locked behind paywalls." />
                 </p>
                 <p style={{ fontSize: '1.33em' }}>
-                  It's also <a href="https://github.com/MaxwellBo/Muncoordinated-2">open-source</a>, so you're free to customize it to your needs and liking.
+                  <FormattedMessage 
+                    id="home.opensource.customize" 
+                    defaultMessage="It's also {openSourceLink}, so you're free to customize it to your needs and liking."
+                    values={{
+                      openSourceLink: <a href="https://github.com/MaxwellBo/Muncoordinated-2">open-source</a>
+                    }}
+                  />
                 </p>
               </Grid.Column>
               <Grid.Column floated="right" width={8}>
@@ -305,31 +333,52 @@ export default class Homepage extends React.Component<{}, {
             <Grid divided inverted stackable>
               <Grid.Row>
                 <Grid.Column width={3}>
-                  <Header inverted as="h4" content="About" />
+                  <Header inverted as="h4">
+                    <FormattedMessage id="footer.about" defaultMessage="About" />
+                  </Header>
                   <List link inverted>
-                    <List.Item as="a" href={REPO_LINK}>Source</List.Item>
-                    <List.Item
-                      as="a"
-                      href="https://github.com/MaxwellBo/Muncoordinated-2/blob/master/LICENSE"
-                    >
-                      License
+                    <List.Item as="a" href={REPO_LINK}>
+                      <FormattedMessage id="footer.source" defaultMessage="Source" />
+                    </List.Item>
+                    <List.Item as="a" href="https://github.com/MaxwellBo/Muncoordinated-2/blob/master/LICENSE">
+                      <FormattedMessage id="footer.license" defaultMessage="License" />
                     </List.Item>
                   </List>
                 </Grid.Column>
                 <Grid.Column width={3}>
-                  <Header inverted as="h4" content="Services" />
+                  <Header inverted as="h4">
+                    <FormattedMessage id="footer.services" defaultMessage="Services" />
+                  </Header>
                   <List link inverted>
-                    <List.Item as="a" href="https://github.com/MaxwellBo/Muncoordinated-2/discussions">Forum</List.Item>
-                    <List.Item as="a" href="https://github.com/MaxwellBo/Muncoordinated-2/issues">Support</List.Item>
-                    <List.Item as="a" href="https://www.helpmymun.com/">MUN Resources</List.Item>
+                    <List.Item as="a" href="https://github.com/MaxwellBo/Muncoordinated-2/discussions">
+                      <FormattedMessage id="footer.forum" defaultMessage="Forum" />
+                    </List.Item>
+                    <List.Item as="a" href="https://github.com/MaxwellBo/Muncoordinated-2/issues">
+                      <FormattedMessage id="footer.support" defaultMessage="Support" />
+                    </List.Item>
+                    <List.Item as="a" href="https://www.helpmymun.com/">
+                      <FormattedMessage id="footer.resources" defaultMessage="MUN Resources" />
+                    </List.Item>
                   </List>
                 </Grid.Column>
                 <Grid.Column width={7}>
-                  <Header as="h4" inverted>Info</Header>
-                  <p>Made with <span role="img" aria-label="love">💖</span> by <a href="https://github.com/MaxwellBo">Max Bo</a>, 
-                  with assistance from the <a href="https://www.facebook.com/UQUNSA/">UQ United Nations Student Association</a>
+                  <Header as="h4" inverted>
+                    <FormattedMessage id="footer.info" defaultMessage="Info" />
+                  </Header>
+                  <p>
+                    <FormattedMessage 
+                      id="footer.made.by" 
+                      defaultMessage="Made with {heart} by {maxLink}, with assistance from the {uqLink}"
+                      values={{
+                        heart: <span role="img" aria-label="love">💖</span>,
+                        maxLink: <a href="https://github.com/MaxwellBo">Max Bo</a>,
+                        uqLink: <a href="https://www.facebook.com/UQUNSA/">UQ United Nations Student Association</a>
+                      }}
+                    />
                   </p>
-                  <p>Copyright © 2024</p>
+                  <p>
+                    <FormattedMessage id="footer.copyright" defaultMessage="Copyright © 2024" />
+                  </p>
                 </Grid.Column>
               </Grid.Row>
             </Grid>
@@ -339,3 +388,4 @@ export default class Homepage extends React.Component<{}, {
     );
   }
 }
+

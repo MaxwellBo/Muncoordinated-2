@@ -41,6 +41,7 @@ import {logClickSetupCommittee} from '../modules/analytics';
 import {CommitteeData, CommitteeID, DEFAULT_COMMITTEE} from "../models/committee";
 import { createMedia } from '@artsy/fresnel';
 import { Helmet } from 'react-helmet';
+import { FormattedMessage, injectIntl, type IntlShape } from 'react-intl';
 
 interface DesktopContainerProps {
   menu?: React.ReactNode;
@@ -60,6 +61,7 @@ interface MobileContainerState {
 }
 
 interface Props extends RouteComponentProps<URLParameters> {
+  intl: IntlShape;
 }
 
 interface State {
@@ -356,11 +358,18 @@ export default class Committee extends React.Component<Props, State> {
 
   renderWelcome = () => {
     const { committee, committeeFref } = this.state;
+    const { intl } = this.props;
 
     return (
       <Container text style={{ padding: '1em 0em' }}>
         <Helmet>
-          <title>{`${committee?.name} - Muncoordinated`}</title>
+          <title>
+            <FormattedMessage 
+              id="committee.page.title" 
+              defaultMessage="Committee - {committeeName}" 
+              values={{ committeeName: committee?.name || 'Untitled' }}
+            />
+          </title>
         </Helmet>
         <Header as="h1">
           <Input
@@ -368,35 +377,52 @@ export default class Committee extends React.Component<Props, State> {
             onChange={fieldHandler<CommitteeData>(committeeFref, 'name')}
             fluid
             error={committee ? !committee.name : false}
-            placeholder="Committee name"
+            placeholder={intl.formatMessage({
+              id: 'committee.input.name',
+              defaultMessage: 'Committee name'
+            })}
           />
         </Header>
         <List>
           <List.Item>
             <Input
-              label="Topic"
+              label={intl.formatMessage({
+                id: 'committee.input.topic.label',
+                defaultMessage: 'Topic'
+              })}
               value={committee ? committee.topic : ''}
               onChange={fieldHandler<CommitteeData>(committeeFref, 'topic')}
               fluid
               loading={!committee}
-              placeholder="Committee topic"
+              placeholder={intl.formatMessage({
+                id: 'committee.input.topic.placeholder',
+                defaultMessage: 'Committee topic'
+              })}
             />
           </List.Item>
           <List.Item>
             <Input
-              label="Conference"
+              label={intl.formatMessage({
+                id: 'committee.input.conference.label',
+                defaultMessage: 'Conference'
+              })}
               value={committee ? (committee.conference || '') : ''}
               onChange={fieldHandler<CommitteeData>(committeeFref, 'conference')}
               fluid
               loading={!committee}
-              placeholder="Conference name"
+              placeholder={intl.formatMessage({
+                id: 'committee.input.conference.placeholder',
+                defaultMessage: 'Conference name'
+              })}
             />
           </List.Item>
         </List>
-        <CommitteeShareHint committeeID={this.props.match.params.committeeID} />
         <Segment textAlign="center" basic style={{padding: 0}}>
           <Button as="a" primary size="large" onClick={this.gotoSetup}>
-            Setup committee
+            <FormattedMessage 
+              id="committee.action.setup" 
+              defaultMessage="Set up committee" 
+            />
             <Icon name="arrow right" />
           </Button>
         </Segment>

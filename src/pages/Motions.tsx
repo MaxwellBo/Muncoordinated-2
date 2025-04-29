@@ -68,15 +68,19 @@ import {
 import {getSeconds, TimerData, Unit} from "../models/time";
 import {SettingsData} from "../models/settings";
 import { Helmet } from 'react-helmet';
+import { FormattedMessage, injectIntl, type IntlShape } from 'react-intl';
 
 const DIVISIBILITY_ERROR = (
-  <Message
-    error
-    content="Speaker time does not evenly divide the caucus time"
-  />
+  <Message error>
+    <FormattedMessage 
+      id="motions.error.divisibility" 
+      defaultMessage="Speaker time does not evenly divide the caucus time" 
+    />
+  </Message>
 );
 
 interface Props extends RouteComponentProps<URLParameters> {
+  intl: IntlShape;
 }
 
 interface Hooks {
@@ -394,7 +398,7 @@ export class MotionsComponent extends React.Component<Props & Hooks, State> {
     const proposerTree = (
       <div>
         <Label horizontal>
-          Proposer
+          <FormattedMessage id="motions.label.proposer" defaultMessage="Proposer" />
         </Label>
         <Flag name={nameToFlagCode(proposer || '')} /> {proposer}
       </div>
@@ -403,7 +407,7 @@ export class MotionsComponent extends React.Component<Props & Hooks, State> {
     const seconderTree = (
       <div>
         <Label horizontal>
-          Seconder
+          <FormattedMessage id="motions.label.seconder" defaultMessage="Seconder" />
         </Label>
         <Flag name={nameToFlagCode(seconder || '')} /> {seconder}
       </div>
@@ -412,7 +416,7 @@ export class MotionsComponent extends React.Component<Props & Hooks, State> {
     const caucusTargetTree = (
       <div>
         <Label horizontal>
-          Target caucus
+          <FormattedMessage id="motions.label.target.caucus" defaultMessage="Target caucus" />
         </Label>
         {caucusTargetText}
       </div>
@@ -421,7 +425,7 @@ export class MotionsComponent extends React.Component<Props & Hooks, State> {
     const resolutionTargetTree = (
       <div>
         <Label horizontal>
-          Target resolution
+          <FormattedMessage id="motions.label.target.resolution" defaultMessage="Target resolution" />
         </Label>
         {resolutionTargetText}
       </div>
@@ -457,7 +461,7 @@ export class MotionsComponent extends React.Component<Props & Hooks, State> {
             negative
             onClick={() => motionFref.child('deleted').set(true)}
           >
-            Delete
+            <FormattedMessage id="motions.action.delete" defaultMessage="Delete" />
           </Button>
           {recoverSettings(committee).motionVotes && renderVoteCount()}
           {approvable(type) && <Button 
@@ -467,7 +471,7 @@ export class MotionsComponent extends React.Component<Props & Hooks, State> {
             positive
             onClick={() => handleApproveMotion(motionFref, motionData)}
           >
-            {actionName(type)}
+            <FormattedMessage id="motions.action.approve" defaultMessage="Approve" />
           </Button>}
         </Button.Group>
       </Card>
@@ -509,8 +513,8 @@ export class MotionsComponent extends React.Component<Props & Hooks, State> {
 
     const boxForNames = (
       <Form.Input
-        label="Name"
-        placeholder="Name"
+        label={this.props.intl.formatMessage({ id: 'motions.label.name', defaultMessage: 'Name' })}
+        placeholder={this.props.intl.formatMessage({ id: 'motions.placeholder.name', defaultMessage: 'Name' })}
         value={proposal}
         onChange={stateFieldHandler<Props, State>(this, 'newMotion', 'proposal')}
         fluid
@@ -528,23 +532,19 @@ export class MotionsComponent extends React.Component<Props & Hooks, State> {
 
     const speakerSetter = (
       <TimeSetter
-        error={this.hasDivisiblityError()}
-        unitValue={speakerUnit}
-        durationValue={speakerDuration ? speakerDuration.toString() : undefined}
-        onUnitChange={stateDropdownHandler<Props, State>(this, 'newMotion', 'speakerUnit')}
-        onDurationChange={stateValidatedNumberFieldHandler<Props, State>(this, 'newMotion', 'speakerDuration')}
-        label="Speaking time"
+        unit={speakerUnit}
+        duration={speakerDuration ? speakerDuration.toString() : ''}
+        onUnitChange={(unit: Unit) => stateDropdownHandler<Props, State>(this, 'newMotion', 'speakerUnit')(undefined as any, { value: unit })}
+        onDurationChange={(duration: string) => stateValidatedNumberFieldHandler<Props, State>(this, 'newMotion', 'speakerDuration')({ currentTarget: { value: duration } } as React.FormEvent<HTMLInputElement>)}
       />
     );
 
     const durationSetter = (
       <TimeSetter
-        error={this.hasDivisiblityError()}
-        unitValue={caucusUnit}
-        durationValue={caucusDuration ? caucusDuration.toString() : undefined}
-        onUnitChange={stateDropdownHandler<Props, State>(this, 'newMotion', 'caucusUnit')}
-        onDurationChange={stateValidatedNumberFieldHandler<Props, State>(this, 'newMotion', 'caucusDuration')}
-        label="Duration"
+        unit={caucusUnit}
+        duration={caucusDuration ? caucusDuration.toString() : ''}
+        onUnitChange={(unit: Unit) => stateDropdownHandler<Props, State>(this, 'newMotion', 'caucusUnit')(undefined as any, { value: unit })}
+        onDurationChange={(duration: string) => stateValidatedNumberFieldHandler<Props, State>(this, 'newMotion', 'caucusDuration')({ currentTarget: { value: duration } } as React.FormEvent<HTMLInputElement>)}
       />
     );
 
@@ -576,7 +576,7 @@ export class MotionsComponent extends React.Component<Props & Hooks, State> {
         onChange={stateDropdownHandler<Props, State>(this, 'newMotion', 'caucusTarget')}
         options={caucusOptions}
         icon="search"
-        label="Target caucus"
+        label={this.props.intl.formatMessage({ id: 'motions.label.target.caucus', defaultMessage: 'Target caucus' })}
       />
     );
 
@@ -592,7 +592,7 @@ export class MotionsComponent extends React.Component<Props & Hooks, State> {
         onChange={stateDropdownHandler<Props, State>(this, 'newMotion', 'resolutionTarget')}
         options={resolutionOptions}
         icon="search"
-        label="Target resolution"
+        label={this.props.intl.formatMessage({ id: 'motions.label.target.resolution', defaultMessage: 'Target resolution' })}
       />
     );
 
@@ -619,7 +619,7 @@ export class MotionsComponent extends React.Component<Props & Hooks, State> {
         fluid
         onChange={stateMemberDropdownHandler<Props, State>(this, 'newMotion', 'proposer', memberOptions)}
         options={memberOptions}
-        label="Proposer"
+        label={this.props.intl.formatMessage({ id: 'motions.label.proposer', defaultMessage: 'Proposer' })}
       />
     );
 
@@ -635,7 +635,7 @@ export class MotionsComponent extends React.Component<Props & Hooks, State> {
         fluid
         onChange={stateMemberDropdownHandler<Props, State>(this, 'newMotion', 'seconder', memberOptions)}
         options={memberOptions}
-        label="Seconder"
+        label={this.props.intl.formatMessage({ id: 'motions.label.seconder', defaultMessage: 'Seconder' })}
       />
     );
 
@@ -646,11 +646,11 @@ export class MotionsComponent extends React.Component<Props & Hooks, State> {
         error={hasError}
       >
         <Form.Dropdown
-          placeholder="Select type"
+          placeholder={this.props.intl.formatMessage({ id: 'motions.placeholder.type', defaultMessage: 'Select type' })}
           search
           selection
           fluid
-          label="Type"
+          label={this.props.intl.formatMessage({ id: 'motions.label.type', defaultMessage: 'Type' })}
           icon="search"
           options={MOTION_TYPE_OPTIONS}
           onChange={stateDropdownHandler<Props, State>(this, 'newMotion', 'type')}
@@ -734,7 +734,13 @@ export class MotionsComponent extends React.Component<Props & Hooks, State> {
     return (
       <Container text style={{ padding: '1em 0em' }}>
         <Helmet>
-          <title>{`Motions - Muncoordinated`}</title>
+          <title>
+            <FormattedMessage 
+              id="motions.page.title" 
+              defaultMessage="Motions - {committeeName}" 
+              values={{ committeeName: committee?.name || '' }}
+            />
+          </title>
         </Helmet>
         {renderAdder(committee)}
         <Divider hidden />
@@ -785,8 +791,4 @@ export class MotionsComponent extends React.Component<Props & Hooks, State> {
   }
 }
 
-export default function Motions(props: Props) {
-  const [voterID] = useVoterID();
-
-  return <MotionsComponent {...props} voterID={voterID} />
-}
+export default injectIntl(MotionsComponent);
