@@ -1,14 +1,12 @@
 import * as React from 'react';
 
-// This import loads the firebase namespace along with all its type information.
-import firebase from 'firebase/compat/app';
-
-// These imports load individual services into the firebase namespace.
-import 'firebase/compat/auth';
-import 'firebase/compat/database';
-import 'firebase/compat/firestore';
-import 'firebase/compat/storage';
-import 'firebase/compat/analytics';
+// Firebase v9+ modular SDK imports
+import { initializeApp } from 'firebase/app';
+import { getAuth } from 'firebase/auth';
+import { getDatabase } from 'firebase/database';
+import { getFirestore } from 'firebase/firestore';
+import { getStorage } from 'firebase/storage';
+import { getAnalytics } from 'firebase/analytics';
 
 import { Route, Switch } from 'react-router-dom';
 import './App.css';
@@ -29,8 +27,15 @@ const firebaseConfig = {
   measurementId: "G-DPWPPBRD4M"
 };
 
-firebase.initializeApp(firebaseConfig);
-firebase.analytics();
+// Initialize Firebase with modular API
+const app = initializeApp(firebaseConfig);
+
+// Initialize Firebase services
+export const auth = getAuth(app);
+export const database = getDatabase(app);
+export const firestore = getFirestore(app);
+export const storage = getStorage(app);
+export const analytics = getAnalytics(app);
 
 class App extends React.Component {
   render() {

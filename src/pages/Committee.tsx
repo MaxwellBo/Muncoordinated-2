@@ -1,5 +1,6 @@
 import * as React from 'react';
-import firebase from 'firebase/compat/app';
+import { ref, onValue, off, DatabaseReference, DataSnapshot } from 'firebase/database';
+import { database } from '../App';
 import {RouteComponentProps} from 'react-router';
 import {Route} from 'react-router-dom';
 import Caucus from './Caucus';
@@ -64,7 +65,7 @@ interface Props extends RouteComponentProps<URLParameters> {
 
 interface State {
   committee?: CommitteeData;
-  committeeFref: firebase.database.Reference;
+  committeeFref: DatabaseReference;
 }
 
 const CommitteeMedia = createMedia({
@@ -317,22 +318,22 @@ export default class Committee extends React.Component<Props, State> {
     const committeeID: CommitteeID = this.props.match.params.committeeID;
 
     this.state = {
-      committeeFref: firebase.database().ref('committees').child(committeeID),
+      committeeFref: ref(database, `committees/${committeeID}`),
     };
   }
 
-  firebaseCallback = (committee: firebase.database.DataSnapshot | null) => {
-    if (committee) {
-      this.setState({ committee: committee.val() });
+  firebaseCallback = (snapshot: DataSnapshot) => {
+    if (snapshot.exists()) {
+      this.setState({ committee: snapshot.val() });
     }
   }
 
   componentDidMount() {
-    this.state.committeeFref.on('value', this.firebaseCallback);
+    onValue(this.state.committeeFref, this.firebaseCallback);
   }
 
   componentWillUnmount() {
-    this.state.committeeFref.off('value', this.firebaseCallback);
+    off(this.state.committeeFref, 'value', this.firebaseCallback);
   }
 
   gotoSetup = () => {

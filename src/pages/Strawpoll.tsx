@@ -28,7 +28,7 @@ import {
   Modal,
   Progress
 } from 'semantic-ui-react';
-import { modularCheckboxHandler, modularClearableZeroableValidatedNumberFieldHandler, modularFieldHandler } from '../modules/handlers';
+import { checkboxHandler, clearableZeroableValidatedNumberFieldHandler, fieldHandler } from '../modules/handlers';
 import Loading from '../components/Loading';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { StrawpollShareHint } from '../components/share-hints';
