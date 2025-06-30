@@ -1,6 +1,7 @@
 import * as React from 'react';
-import { DatabaseReference } from 'firebase/database';
-import { User } from 'firebase/auth';
+import { DatabaseReference, ref, child, onValue, off, remove, DataSnapshot, push, set } from 'firebase/database';
+import { User, onAuthStateChanged } from 'firebase/auth';
+import { database, auth } from '../App';
 import * as _ from 'lodash';
 import {canVote, MemberData, MemberID, nameToMemberOption, Rank} from '../modules/member';
 import {
@@ -107,25 +108,25 @@ export default class Resolution extends React.Component<Props, State> {
     const { match } = props;
 
     this.state = {
-      committeeFref: firebase.database().ref('committees').child(match.params.committeeID),
+      committeeFref: child(ref(database, 'committees'), match.params.committeeID),
       loading: true
     };
   }
 
-  authStateChangedCallback = (user: firebase.User | null) => {
+  authStateChangedCallback = (user: User | null) => {
     this.setState({ user: user });
   }
 
-  firebaseCallback = (committee: firebase.database.DataSnapshot | null) => {
+  firebaseCallback = (committee: DataSnapshot | null) => {
     if (committee) {
       this.setState({ committee: committee.val(), loading: false });
     }
   }
 
   componentDidMount() {
-    this.state.committeeFref.on('value', this.firebaseCallback);
+    onValue(this.state.committeeFref, this.firebaseCallback);
 
-    const authUnsubscribe = firebase.auth().onAuthStateChanged(
+    const authUnsubscribe = onAuthStateChanged(auth,
       this.authStateChangedCallback,
     );
 
@@ -133,7 +134,7 @@ export default class Resolution extends React.Component<Props, State> {
   }
 
   componentWillUnmount() {
-    this.state.committeeFref.off('value', this.firebaseCallback);
+    off(this.state.committeeFref, 'value', this.firebaseCallback);
 
     if (this.state.authUnsubscribe) {
       this.state.authUnsubscribe();
@@ -143,13 +144,11 @@ export default class Resolution extends React.Component<Props, State> {
   recoverResolutionFref = () => {
     const resolutionID: ResolutionID = this.props.match.params.resolutionID;
 
-    return this.state.committeeFref
-      .child('resolutions')
-      .child(resolutionID);
+    return child(child(this.state.committeeFref, 'resolutions'), resolutionID);
   }
 
   handlePushAmendment = (): void => {
-    this.recoverResolutionFref().child('amendments').push().set(DEFAULT_AMENDMENT);
+    push(child(this.recoverResolutionFref(), 'amendments'), DEFAULT_AMENDMENT);
   }
 
   handleProvisionAmendment = (id: AmendmentID, amendment: AmendmentData) => {
@@ -197,17 +196,17 @@ export default class Resolution extends React.Component<Props, State> {
       }
     };
 
-    const ref = putCaucus(committeeID, newCaucus);
+    const caucusRef = putCaucus(committeeID, newCaucus);
 
-    ref.child('queue').push().set({
+    push(child(caucusRef, 'queue'), {
       duration: DEFAULT_CAUCUS.speakerTimer.remaining,
       who: seconder,
       stance: Stance.For,
     });
 
-    this.recoverResolutionFref().child('caucus').set(ref.key);
+    set(child(this.recoverResolutionFref(), 'caucus'), caucusRef.key);
 
-    this.gotoCaucus(ref.key);
+    this.gotoCaucus(caucusRef.key);
   }
 
   renderAmendment = (id: AmendmentID, amendment: AmendmentData, amendmentFref: DatabaseReference) => {
@@ -290,7 +289,7 @@ export default class Resolution extends React.Component<Props, State> {
               negative
               disabled={!hasAuth}
               basic
-              onClick={() => amendmentFref.remove()}
+              onClick={() => remove(amendmentFref)}
             />
             {provisionTree}
           </Card.Header>
@@ -672,7 +671,7 @@ export default class Resolution extends React.Component<Props, State> {
         className='icon'
       >
       <Dropdown.Menu>
-        <DeleteResolutionModal onConfirm={() => this.recoverResolutionFref().remove()} />
+        <DeleteResolutionModal onConfirm={() => remove(this.recoverResolutionFref())} />
       </Dropdown.Menu>
     </Dropdown>)
   }

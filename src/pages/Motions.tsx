@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { DatabaseReference, child, ref as dbRef, onValue, off, DataSnapshot, push, set } from 'firebase/database';
+import { DatabaseReference, child, ref as dbRef, onValue, off, DataSnapshot, push, set, remove } from 'firebase/database';
 import { database } from '../App';
 import {RouteComponentProps} from 'react-router';
 import {Button, Card, Checkbox, Container, Divider, Flag, Form, Icon, Label, Message, Popup} from 'semantic-ui-react';
@@ -174,7 +174,7 @@ export class MotionsComponent extends React.Component<Props & Hooks, State> {
     const caucusID = motionData.caucusTarget;
     const resolutionID = motionData.resolutionTarget;
 
-    motionFref.child('deleted').set(true);
+    set(child(motionFref, 'deleted'), true);
 
     if (motionData.type === MotionType.OpenModeratedCaucus && speakerDuration && caucusDuration && proposer) {
 
@@ -316,9 +316,9 @@ export class MotionsComponent extends React.Component<Props & Hooks, State> {
       // Remove vote if same vote, otherwise change vote
       const vote = (vote: MotionVote) => {
         if (votes[voterID] === vote) {
-          motionFref.child('votes').child(voterID).remove();
+          remove(child(child(motionFref, 'votes'), voterID));
         } else {
-          motionFref.child('votes').child(voterID).set(vote);
+          set(child(child(motionFref, 'votes'), voterID), vote);
         }
       }
 
@@ -455,7 +455,7 @@ export class MotionsComponent extends React.Component<Props & Hooks, State> {
             className="thirdwidth"
             basic
             negative
-            onClick={() => motionFref.child('deleted').set(true)}
+            onClick={() => set(child(motionFref, 'deleted'), true)}
           >
             Delete
           </Button>

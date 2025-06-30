@@ -312,7 +312,7 @@ class SpeakerFeedEntry extends React.PureComponent<{
       speaking: child(caucusRef, 'speaking'),
       speakingData: speaking,
       timerData: speakerTimer,
-      timer: caucusRef.child('speakerTimer'),
+      timer: child(caucusRef, 'speakerTimer'),
       yielding: true,
       timerResetSeconds: 0 // this shouldn't ever be used when yielding
     };
@@ -480,7 +480,7 @@ function Queuer(props: {
         duration: recoverUnit(caucus) === Unit.Minutes ? duration * 60 : duration,
       };
 
-      props.caucusFref.child('queue').push().set(newEvent);
+      push(child(props.caucusFref, 'queue'), newEvent);
     }
   }
 
@@ -630,7 +630,7 @@ export default class Caucus extends React.Component<Props, State> {
       <Segment loading={!caucus}>
         <Label attached="top left" size="large">Now speaking</Label>
         <Feed size="large">
-          <SpeakerFeedEntry data={entryData} fref={caucusFref.child('speaking')} speakerTimer={speakerTimer}/>
+          <SpeakerFeedEntry data={entryData} fref={child(caucusFref, 'speaking')} speakerTimer={speakerTimer}/>
         </Feed>
       </Segment>
     );
@@ -656,7 +656,7 @@ export default class Caucus extends React.Component<Props, State> {
     const renderedSpeakerTimer = (
       <Timer
         name="Speaker timer"
-        timerFref={caucusFref.child('speakerTimer')}
+        timerFref={child(caucusFref, 'speakerTimer')}
         key={caucusID + 'speakerTimer'}
         onChange={this.setSpeakerTimer}
         toggleKeyCode={83} // S - if changing this, update Help
@@ -668,7 +668,7 @@ export default class Caucus extends React.Component<Props, State> {
     const renderedCaucusTimer = (
       <Timer
         name="Caucus timer"
-        timerFref={caucusFref.child('caucusTimer')}
+        timerFref={child(caucusFref, 'caucusTimer')}
         key={caucusID + 'caucusTimer'}
         onChange={this.setCaucusTimer}
         toggleKeyCode={67} // C - if changing this, update Help

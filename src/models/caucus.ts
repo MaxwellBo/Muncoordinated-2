@@ -1,4 +1,5 @@
-import { DatabaseReference, push, set, update, remove } from 'firebase/database';
+import { DatabaseReference, push, set, update, remove, ref, child } from 'firebase/database';
+import { database } from '../App';
 
 import {makeDropdownOption, shortMeetId} from '../utils';
 import {CommitteeID} from "./committee";
@@ -68,42 +69,35 @@ export const DEFAULT_CAUCUS: CaucusData = {
   history: {} as Record<string, SpeakerEvent>,
 };
 export const putCaucus =
-  (committeeID: CommitteeID, caucusData: CaucusData): firebase.database.Reference => {
-  const ref = firebase.database()
-    .ref('committees')
-    .child(committeeID)
-    .child('caucuses')
-    .child(shortMeetId());
+  (committeeID: CommitteeID, caucusData: CaucusData): DatabaseReference => {
+  const dbRef = ref(database, 'committees');
+  const committeeRef = child(dbRef, committeeID);
+  const caucusesRef = child(committeeRef, 'caucuses');
+  const caucusRef = child(caucusesRef, shortMeetId());
 
-  ref.set(caucusData);
+  set(caucusRef, caucusData);
 
-  return ref;
+  return caucusRef;
 };
 
 export const putSpeaking =
-  (committeeID: CommitteeID, caucusID: CaucusID, speaker: SpeakerEvent): Promise<any> => {
+  (committeeID: CommitteeID, caucusID: CaucusID, speaker: SpeakerEvent): Promise<void> => {
 
   console.debug(speaker);
 
-  return firebase.database()
-    .ref('committees')
-    .child(committeeID)
-    .child('caucuses')
-    .child(caucusID)
-    .child('speaking')
-    .set(speaker);
+  const dbRef = ref(database, 'committees');
+  const speakingPath = child(child(child(child(dbRef, committeeID), 'caucuses'), caucusID), 'speaking');
+  
+  return set(speakingPath, speaker);
 }
 
 // tslint:disable-next-line
 export const closeCaucus = 
-  (committeeID: CommitteeID, caucusID: CaucusID): Promise<any> => {
-  return firebase.database()
-    .ref('committees')
-    .child(committeeID)
-    .child('caucuses')
-    .child(caucusID)
-    .child('status')
-    .set(CaucusStatus.Closed);
+  (committeeID: CommitteeID, caucusID: CaucusID): Promise<void> => {
+  const dbRef = ref(database, 'committees');
+  const statusPath = child(child(child(child(dbRef, committeeID), 'caucuses'), caucusID), 'status');
+  
+  return set(statusPath, CaucusStatus.Closed);
 };
 
 export interface Lifecycle {
