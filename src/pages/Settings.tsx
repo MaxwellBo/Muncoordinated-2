@@ -1,5 +1,6 @@
 import * as React from 'react';
-import firebase from 'firebase/compat/app';
+import { DatabaseReference, ref, onValue, off, DataSnapshot, child } from 'firebase/database';
+import { database } from '../App';
 import {RouteComponentProps} from 'react-router';
 import {URLParameters} from '../types';
 import {Checkbox, Container, Header, Segment} from 'semantic-ui-react';
@@ -13,7 +14,7 @@ interface Props extends RouteComponentProps<URLParameters> {
 
 interface State {
   committee?: CommitteeData;
-  committeeFref: firebase.database.Reference;
+  committeeFref: DatabaseReference;
 }
 
 export default class Settings extends React.Component<Props, State> {
@@ -23,29 +24,28 @@ export default class Settings extends React.Component<Props, State> {
     const { match } = props;
 
     this.state = {
-      committeeFref: firebase.database().ref('committees')
-        .child(match.params.committeeID)
+      committeeFref: ref(database, `committees/${match.params.committeeID}`)
     };
   }
 
-  firebaseCallback = (committee: firebase.database.DataSnapshot | null) => {
-    if (committee) {
-      this.setState({ committee: committee.val() });
+  firebaseCallback = (snapshot: DataSnapshot) => {
+    if (snapshot.exists()) {
+      this.setState({ committee: snapshot.val() });
     }
   }
 
   componentDidMount() {
-    this.state.committeeFref.on('value', this.firebaseCallback);
+    onValue(this.state.committeeFref, this.firebaseCallback);
   }
 
   componentWillUnmount() {
-    this.state.committeeFref.off('value', this.firebaseCallback);
+    off(this.state.committeeFref, 'value', this.firebaseCallback);
   }
 
   renderSetting = (setting: keyof SettingsData, label: string) => {
     const { committee, committeeFref } = this.state;
 
-    const settingsFref = committeeFref.child('settings');
+    const settingsFref = child(committeeFref, 'settings');
 
     const value = committee ? committee.settings[setting] : DEFAULT_SETTINGS[setting];
 

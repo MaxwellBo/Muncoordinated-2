@@ -205,7 +205,7 @@ export default function Strawpoll(props: StrawpollProps) {
         return <List.Item key={optionID}>
           <Input
             value={option.text}
-            onChange={modularFieldHandler<StrawpollOptionData>(strawpollOptionFref, 'text')}
+            onChange={fieldHandler<StrawpollOptionData>(strawpollOptionFref, 'text')}
             fluid
             placeholder="Enter poll option"
             action
@@ -237,7 +237,7 @@ export default function Strawpoll(props: StrawpollProps) {
               label={option.text}
               value={(!!option.tally || (option.tally === 0) ? option.tally : '').toString()}
               error={option.tally === undefined}
-              onChange={modularClearableZeroableValidatedNumberFieldHandler<StrawpollOptionData>(strawpollOptionFref, 'tally')}
+              onChange={clearableZeroableValidatedNumberFieldHandler<StrawpollOptionData>(strawpollOptionFref, 'tally')}
             />
           </List.Item>
       case StrawpollStage.Results:
@@ -315,7 +315,7 @@ export default function Strawpoll(props: StrawpollProps) {
                 label="Delegates can add options"
                 toggle
                 checked={strawpoll ? (strawpoll.optionsArePublic || false) : false}
-                onClick={modularCheckboxHandler<StrawpollData>(strawpollFref, 'optionsArePublic')}
+                onClick={checkboxHandler<StrawpollData>(strawpollFref, 'optionsArePublic')}
               />
             </List.Item>
           </List>
@@ -403,7 +403,7 @@ export default function Strawpoll(props: StrawpollProps) {
       <Header as="h2">
         <Input
           value={strawpoll ? strawpoll.question : ''}
-          onChange={modularFieldHandler<StrawpollData>(strawpollFref, 'question')}
+          onChange={fieldHandler<StrawpollData>(strawpollFref, 'question')}
           fluid
           placeholder="Type your question here"
         />

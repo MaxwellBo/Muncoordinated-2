@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { DatabaseReference, ref, onValue, off, DataSnapshot, child, push, set } from 'firebase/database';
-import { ref as storageRef, uploadBytesResumable, UploadTask, getDownloadURL, StorageReference, TaskState } from 'firebase/storage';
+import { DatabaseReference, ref, onValue, off, DataSnapshot, child, push, set, remove } from 'firebase/database';
+import { ref as storageRef, uploadBytesResumable, UploadTask, getDownloadURL, StorageReference, TaskState, getMetadata } from 'firebase/storage';
 import { database, storage } from '../App';
 import FileSaver from 'file-saver';
 import {RouteComponentProps} from 'react-router';
@@ -63,7 +63,7 @@ class Entry extends React.Component<EntryProps, EntryState> {
     const { timestamp } = this.props.post;
 
     if (!timestamp && post.type === PostType.File) {
-      this.recoverStorageRef()!.getMetadata().then((metadata: any) => {
+      getMetadata(this.recoverStorageRef()!).then((metadata: any) => {
         this.setState({ metadata: metadata });
       });
     }
@@ -72,7 +72,7 @@ class Entry extends React.Component<EntryProps, EntryState> {
   download = (filename: string) => () => {
     // We should never allow a download to be triggered for post types that 
     // don't permit downloads
-    this.recoverStorageRef()!.getDownloadURL().then((url: any) => {
+    getDownloadURL(this.recoverStorageRef()!).then((url: any) => {
       var xhr = new XMLHttpRequest();
       xhr.responseType = 'blob';
       xhr.onload = (event) => {
@@ -323,7 +323,9 @@ export default class Files extends React.Component<Props, State> {
       };
     }
 
-    this.state.committeeFref.child('files').push().set(linkData);
+    const filesRef = child(this.state.committeeFref, 'files');
+    const newFileRef = push(filesRef);
+    set(newFileRef, linkData);
 
     this.clear()
   }
@@ -346,7 +348,9 @@ export default class Files extends React.Component<Props, State> {
       };
     }
 
-    this.state.committeeFref.child('files').push().set(linkData);
+    const filesRef = child(this.state.committeeFref, 'files');
+    const newFileRef = push(filesRef);
+    set(newFileRef, linkData);
     
     this.clear()
   }
@@ -441,7 +445,8 @@ export default class Files extends React.Component<Props, State> {
   }
 
   deletePost = (postID: PostID) => () => {
-    this.state.committeeFref.child('files').child(postID).remove();
+    const postRef = child(child(this.state.committeeFref, 'files'), postID);
+    remove(postRef);
   }
 
   promoteToAmendment = (post: PostData) => () => {
