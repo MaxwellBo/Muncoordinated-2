@@ -1,5 +1,5 @@
 import * as React from 'react';
-import firebase from 'firebase/compat/app';
+import { DatabaseReference, child } from 'firebase/database';
 import {RouteComponentProps} from 'react-router';
 import {Button, Card, Checkbox, Container, Divider, Flag, Form, Icon, Label, Message, Popup} from 'semantic-ui-react';
 import {
@@ -86,7 +86,7 @@ interface Hooks {
 interface State {
   newMotion: MotionData;
   committee?: CommitteeData;
-  committeeFref: firebase.database.Reference;
+  committeeFref: DatabaseReference;
 }
 
 export class MotionsComponent extends React.Component<Props & Hooks, State> {
@@ -745,7 +745,7 @@ export class MotionsComponent extends React.Component<Props & Hooks, State> {
           checked={motionsArePublic}
           onChange={
             checkboxHandler<SettingsData>(
-              committeeFref.child('settings'),
+              child(committeeFref, 'settings'),
               'motionsArePublic')}
         />
         <Checkbox
@@ -754,7 +754,7 @@ export class MotionsComponent extends React.Component<Props & Hooks, State> {
           checked={motionVotes}
           onChange={
             checkboxHandler<SettingsData>(
-              committeeFref.child('settings'),
+              child(committeeFref, 'settings'),
               'motionVotes')}
         />
         {(motionVotes || motionsArePublic)
