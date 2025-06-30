@@ -47,10 +47,10 @@ import _ from "lodash";
 import {useObjectVal} from "react-firebase-hooks/database";
 import {MemberData, MemberOption, membersToPresentOptions, nameToFlagCode} from "../modules/member";
 import {TimeSetter} from "../components/TimeSetter";
-import firebase from "firebase/compat/app";
+import { DatabaseReference, ref as dbRef, child, push, remove, set } from 'firebase/database';
+import { database, auth } from '../App';
 import {DragDropContext, Draggable, DraggableProvided, Droppable, DropResult} from "react-beautiful-dnd";
 import { Helmet } from 'react-helmet';
-import { getDatabase, ref } from 'firebase/database';
 
 interface Props extends RouteComponentProps<URLParameters> {
 }
@@ -59,7 +59,7 @@ interface State {
   speakerTimer: TimerData;
   caucusTimer: TimerData;
   committee?: CommitteeData;
-  committeeFref: firebase.database.Reference;
+  committeeFref: DatabaseReference;
   loading: boolean;
 }
 
@@ -67,11 +67,11 @@ interface State {
 export function NextSpeaking(props: {
   caucus?: CaucusData;
   speakerTimer: TimerData;
-  fref: firebase.database.Reference;
+  fref: DatabaseReference;
   autoNextSpeaker: boolean;
 }) {
   // TODO: Bandaid - I don't think the hook types nicely with the compat patch
-  const [user] = useAuthState(firebase.auth() as any);
+  const [user] = useAuthState(auth);
 
   const handleKeyDown = (ev: KeyboardEvent) => {
     // if changing this, update Help
@@ -283,7 +283,7 @@ function StanceIcon(props: { stance: Stance }) {
 class SpeakerFeedEntry extends React.PureComponent<{
   data?: SpeakerEvent,
   speaking?: SpeakerEvent,
-  fref: firebase.database.Reference,
+  fref: DatabaseReference,
   speakerTimer: TimerData,
   draggableProvided?: DraggableProvided
 }> {
@@ -301,11 +301,13 @@ class SpeakerFeedEntry extends React.PureComponent<{
     // The only reason I'm doing this is because I honestly couldn't give a shit about propogating
     // the caucusRef all the way down. Furthermore, the only time this should ever be called is when the
     // SpeakerEvent is in the "queue" zone, meaning we'll pop up into the "caucus" field.
-    const caucusRef = (fref.parent as firebase.database.Reference).parent as firebase.database.Reference;
+    // We need to navigate up from the queue item to the caucus reference
+    const caucusPath = fref.toString().replace(/\/queue\/[^/]+$/, '');
+    const caucusRef = dbRef(database, caucusPath);
 
     const lifecycle: Lifecycle = {
-      history: caucusRef.child('history'),
-      speaking: caucusRef.child('speaking'),
+      history: child(caucusRef, 'history'),
+      speaking: child(caucusRef, 'speaking'),
       speakingData: speaking,
       timerData: speakerTimer,
       timer: caucusRef.child('speakerTimer'),
@@ -366,7 +368,7 @@ class SpeakerFeedEntry extends React.PureComponent<{
 
 function SpeakerFeed(props: {
   data?: Record<string, SpeakerEvent>,
-  queueFref: firebase.database.Reference,
+  queueFref: DatabaseReference,
   speaking?: SpeakerEvent,
   speakerTimer: TimerData
 }) {

@@ -1,5 +1,7 @@
 import * as React from 'react';
-import firebase from 'firebase/compat/app';
+import { DatabaseReference, ref, onValue, off, DataSnapshot, child, push, set } from 'firebase/database';
+import { ref as storageRef, uploadBytesResumable, UploadTask, getDownloadURL, StorageReference, TaskState } from 'firebase/storage';
+import { database, storage } from '../App';
 import FileSaver from 'file-saver';
 import {RouteComponentProps} from 'react-router';
 import {URLParameters} from '../types';
@@ -46,12 +48,11 @@ class Entry extends React.Component<EntryProps, EntryState> {
     };
   }
 
-  recoverStorageRef = (): firebase.storage.Reference | null => {
+  recoverStorageRef = (): StorageReference | null => {
     const { committeeID, post } = this.props;
 
     if (post.type === PostType.File) {
-      const storageRef = firebase.storage().ref();
-      return storageRef.child('committees').child(committeeID).child(post.filename);
+      return storageRef(storage, `committees/${committeeID}/${post.filename}`);
     } else {
       return null;
     }
@@ -188,10 +189,10 @@ class Entry extends React.Component<EntryProps, EntryState> {
 
 interface State {
   committee?: CommitteeData;
-  committeeFref: firebase.database.Reference;
+  committeeFref: DatabaseReference;
   progress?: number;
   file?: any;
-  state?: firebase.storage.TaskState;
+  state?: TaskState;
   link: string;
   body: string;
   errorCode?: string;
@@ -212,24 +213,23 @@ export default class Files extends React.Component<Props, State> {
     this.state = {
       link: '',
       body: '',
-      committeeFref: firebase.database().ref('committees')
-        .child(match.params.committeeID),
+      committeeFref: ref(database, `committees/${match.params.committeeID}`),
       filtered: []
     };
   }
 
-  firebaseCallback = (committee: firebase.database.DataSnapshot | null) => {
-    if (committee) {
-      this.setState({ committee: committee.val() });
+  firebaseCallback = (snapshot: DataSnapshot) => {
+    if (snapshot.exists()) {
+      this.setState({ committee: snapshot.val() });
     }
   }
 
   componentDidMount() {
-    this.state.committeeFref.on('value', this.firebaseCallback);
+    onValue(this.state.committeeFref, this.firebaseCallback);
   }
 
   componentWillUnmount() {
-    this.state.committeeFref.off('value', this.firebaseCallback);
+    off(this.state.committeeFref, 'value', this.firebaseCallback);
   }
 
   handleError = (error: any) => {
@@ -243,7 +243,7 @@ export default class Files extends React.Component<Props, State> {
     this.setState({progress: progress, state: snapshot.state});
   }
 
-  handleComplete = (uploadTask: firebase.storage.UploadTask) => () => {
+  handleComplete = (uploadTask: UploadTask) => () => {
     const { uploader } = this.state;
     const { forResolution } = this.props;
 
@@ -261,7 +261,9 @@ export default class Files extends React.Component<Props, State> {
       };
     }
 
-    this.state.committeeFref.child('files').push().set(file);
+    const filesRef = child(this.state.committeeFref, 'files');
+    const newFileRef = push(filesRef);
+    set(newFileRef, file);
 
     this.setState({ state: uploadTask.snapshot.state });
 
@@ -286,20 +288,16 @@ export default class Files extends React.Component<Props, State> {
 
     const { committeeID } = this.props.match.params;
 
-    const storageRef = firebase.storage().ref();
+    const fileRef = storageRef(storage, `committees/${committeeID}/${file.name}`);
 
     const metadata = {
       contentType: file.type
     };
 
-    var uploadTask = storageRef
-      .child('committees')
-      .child(committeeID)
-      .child(file.name)
-      .put(file, metadata);
+    var uploadTask = uploadBytesResumable(fileRef, file, metadata);
 
     uploadTask.on(
-      firebase.storage.TaskEvent.STATE_CHANGED, 
+      'state_changed', 
       handleSnapshot, 
       handleError, 
       handleComplete(uploadTask)
@@ -369,8 +367,8 @@ export default class Files extends React.Component<Props, State> {
         <Progress 
           percent={Math.round(progress || 0 )} 
           progress 
-          warning={state === firebase.storage.TaskState.PAUSED}
-          success={state === firebase.storage.TaskState.SUCCESS}
+          warning={state === 'paused'}
+          success={state === 'success'}
           error={!!errorCode} 
           active={true} 
           label={errorCode} 
@@ -393,7 +391,7 @@ export default class Files extends React.Component<Props, State> {
             />
             <Button
               type="submit"
-              loading={state === firebase.storage.TaskState.RUNNING}
+              loading={state === 'running'}
               disabled={!file || !uploader}
             >
               Upload

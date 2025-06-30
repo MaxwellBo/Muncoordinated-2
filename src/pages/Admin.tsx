@@ -1,5 +1,5 @@
 import * as React from 'react';
-import firebase from 'firebase/compat/app';
+import { DatabaseReference, child, remove } from 'firebase/database';
 import {
   MemberData,
   MemberID,
@@ -24,7 +24,7 @@ import { Helmet } from 'react-helmet';
 
 interface Props extends RouteComponentProps<URLParameters> {
   committee: CommitteeData;
-  fref: firebase.database.Reference;
+  fref: DatabaseReference;
 }
 
 interface State {
@@ -56,7 +56,7 @@ export default class Admin extends React.Component<Props, State> {
     };
   }
 
-  renderMemberItem = (id: MemberID, member: MemberData, fref: firebase.database.Reference) => {
+  renderMemberItem = (id: MemberID, member: MemberData, fref: DatabaseReference) => {
     return (
       <Table.Row key={id}>
         <Table.Cell>
@@ -93,7 +93,7 @@ export default class Admin extends React.Component<Props, State> {
             icon="trash"
             negative
             basic
-            onClick={() => fref.remove()}
+            onClick={() => remove(fref)}
           />
         </Table.Cell>
       </Table.Row>
@@ -229,10 +229,10 @@ export default class Admin extends React.Component<Props, State> {
     );
   }
 
-  renderCommitteeMembers = (props: { data: CommitteeData, fref: firebase.database.Reference }) => {
+  renderCommitteeMembers = (props: { data: CommitteeData, fref: DatabaseReference }) => {
     const members = this.props.committee.members || {};
     const memberItems = Object.keys(members).map(id =>
-      this.renderMemberItem(id, members[id], props.fref.child('members').child(id))
+      this.renderMemberItem(id, members[id], child(props.fref, `members/${id}`))
     );
 
     return (
