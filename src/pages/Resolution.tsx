@@ -1,5 +1,6 @@
 import * as React from 'react';
-import firebase from 'firebase/compat/app';
+import { DatabaseReference } from 'firebase/database';
+import { User } from 'firebase/auth';
 import * as _ from 'lodash';
 import {canVote, MemberData, MemberID, nameToMemberOption, Rank} from '../modules/member';
 import {
@@ -92,10 +93,10 @@ interface Props extends RouteComponentProps<URLParameters> {
 }
 
 interface State {
-  committeeFref: firebase.database.Reference;
+  committeeFref: DatabaseReference;
   committee?: CommitteeData;
   authUnsubscribe?: () => void;
-  user?: firebase.User | null;
+  user?: User | null;
   loading: boolean;
 }
 
@@ -209,7 +210,7 @@ export default class Resolution extends React.Component<Props, State> {
     this.gotoCaucus(ref.key);
   }
 
-  renderAmendment = (id: AmendmentID, amendment: AmendmentData, amendmentFref: firebase.database.Reference) => {
+  renderAmendment = (id: AmendmentID, amendment: AmendmentData, amendmentFref: DatabaseReference) => {
     const { handleProvisionAmendment } = this;
     const { proposer, text, status } = amendment;
     const { user, committee } = this.state;

@@ -47,7 +47,7 @@ import _ from "lodash";
 import {useObjectVal} from "react-firebase-hooks/database";
 import {MemberData, MemberOption, membersToPresentOptions, nameToFlagCode} from "../modules/member";
 import {TimeSetter} from "../components/TimeSetter";
-import { DatabaseReference, ref as dbRef, child, push, remove, set } from 'firebase/database';
+import { DatabaseReference, ref as dbRef, child, push, remove, set, onValue, off, get, DataSnapshot } from 'firebase/database';
 import { database, auth } from '../App';
 import {DragDropContext, Draggable, DraggableProvided, Droppable, DropResult} from "react-beautiful-dnd";
 import { Helmet } from 'react-helmet';
@@ -99,11 +99,13 @@ export function NextSpeaking(props: {
 
     const interlaced = _.flatten(_.zip(fors, againsts, neutrals));
 
-    props.fref.child('queue').set({});
+    set(child(props.fref, 'queue'), {});
 
     interlaced.forEach((se: SpeakerEvent | undefined) => {
       if (se) {
-        props.fref.child('queue').push().set(se);
+        const queueRef = child(props.fref, 'queue');
+        const newSpeakerRef = push(queueRef);
+        set(newSpeakerRef, se);
       }
     });
   };
@@ -122,7 +124,7 @@ export function NextSpeaking(props: {
     if (queueHeadKey) {
       queueHeadDetails = {
         queueHeadData: q[queueHeadKey],
-        queueHead: props.fref.child('queue').child(queueHeadKey)
+        queueHead: child(child(props.fref, 'queue'), queueHeadKey)
       };
     }
 
@@ -133,25 +135,25 @@ export function NextSpeaking(props: {
       : 60;
 
     const lifecycle: Lifecycle = {
-      history: props.fref.child('history'),
+      history: child(props.fref, 'history'),
       speakingData: props.caucus.speaking,
-      speaking: props.fref.child('speaking'),
+      speaking: child(props.fref, 'speaking'),
       timerData: props.speakerTimer,
-      timer: props.fref.child('speakerTimer'),
+      timer: child(props.fref, 'speakerTimer'),
       yielding: false,
-      timerResetSeconds: speakerSeconds
+      timerResetSeconds: speakerSeconds,
+      ...queueHeadDetails
     };
 
-    runLifecycle({...lifecycle, ...queueHeadDetails});
+    runLifecycle(lifecycle);
   };
 
-  const db = getDatabase();
-  const [skew] = useObjectVal<number>(ref(db, '.info/serverTimeOffset'));
+  const [skew] = useObjectVal<number>(dbRef(database, '.info/serverTimeOffset'));
   console.log("Got skew", skew, "millis");
 
   const startTimer = () => {
     toggleTicking({
-      timerFref: props.fref.child('speakerTimer'),
+      timerFref: child(props.fref, 'speakerTimer'),
       timer: props.speakerTimer,
       skew
     });
@@ -261,7 +263,7 @@ export function NextSpeaking(props: {
       />
       <SpeakerFeed
         data={caucus ? caucus.queue : undefined}
-        queueFref={props.fref.child('queue')}
+        queueFref={child(props.fref, 'queue')}
         speaking={caucus ? caucus.speaking : undefined}
         speakerTimer={props.speakerTimer}
       />
@@ -335,7 +337,7 @@ class SpeakerFeedEntry extends React.PureComponent<{
             {data && <StanceIcon stance={data.stance}/>}
             {data ? data.stance : ''}
           </Feed.Like>
-          {data && <Label size="mini" as="a" onClick={() => fref.remove()}>
+          {data && <Label size="mini" as="a" onClick={() => remove(fref)}>
               Remove
           </Label>}
           {data && speaking && (<Label size="mini" as="a" onClick={this.yieldHandler}>
@@ -374,7 +376,7 @@ function SpeakerFeed(props: {
 }) {
   const {data, queueFref, speaking, speakerTimer} = props;
   // TODO: Bandaid - I don't think the hook types nicely with the compat patch
-  const [user] = useAuthState(firebase.auth() as any);
+  const [user] = useAuthState(auth);
 
   const events = data || {};
 
@@ -386,7 +388,7 @@ function SpeakerFeed(props: {
             draggableProvided={provided}
             key={key}
             data={events[key]}
-            fref={queueFref.child(key)}
+            fref={child(queueFref, key)}
             speaking={speaking}
             speakerTimer={speakerTimer}
           />
@@ -422,13 +424,14 @@ function SpeakerFeed(props: {
       result.destination.index
     );
 
-    queueFref.set({});
+    set(queueFref, {});
 
     reorderedKeys.forEach(key => {
       const se = (data || {})[key]
 
       if (se) {
-        queueFref.push().set(se);
+        const newRef = push(queueFref);
+        set(newRef, se);
       }
     });
   }
@@ -459,7 +462,7 @@ function SpeakerFeed(props: {
 function Queuer(props: {
   caucus?: CaucusData;
   members?: Record<string, MemberData>;
-  caucusFref: firebase.database.Reference;
+  caucusFref: DatabaseReference;
 }) {
   const {members, caucus, caucusFref} = props;
   const [queueMember, setQueueMember] = React.useState<MemberOption | undefined>(undefined);
@@ -548,14 +551,14 @@ export default class Caucus extends React.Component<Props, State> {
     const { match } = props;
 
     this.state = {
-      committeeFref: firebase.database().ref('committees').child(match.params.committeeID),
+      committeeFref: child(dbRef(database, 'committees'), match.params.committeeID),
       caucusTimer: DEFAULT_CAUCUS.caucusTimer,
       speakerTimer: DEFAULT_CAUCUS.speakerTimer,
       loading: true
     };
   }
 
-  firebaseCallback = (committee: firebase.database.DataSnapshot | null) => {
+  firebaseCallback = (committee: DataSnapshot | null) => {
     if (committee) {
       this.setState({ committee: committee.val(), loading: false });
     }
@@ -565,19 +568,17 @@ export default class Caucus extends React.Component<Props, State> {
   // Say our route changes the committeeID, _but does not unmount the caucus component_
   // Will these listeners be purged?
   componentDidMount() {
-    this.state.committeeFref.on('value', this.firebaseCallback);
+    onValue(this.state.committeeFref, this.firebaseCallback);
   }
 
   componentWillUnmount() {
-    this.state.committeeFref.off('value', this.firebaseCallback);
+    off(this.state.committeeFref, 'value', this.firebaseCallback);
   }
 
   recoverCaucusFref = () => {
     const caucusID: CaucusID = this.props.match.params.caucusID;
 
-    return this.state.committeeFref
-      .child('caucuses')
-      .child(caucusID);
+    return child(child(this.state.committeeFref, 'caucuses'), caucusID);
   }
 
   renderHeader = (caucus?: CaucusData) => {

@@ -1,4 +1,4 @@
-import firebase from 'firebase/compat/app';
+import { DatabaseReference, push, set, update, remove } from 'firebase/database';
 
 import {makeDropdownOption, shortMeetId} from '../utils';
 import {CommitteeID} from "./committee";
@@ -107,14 +107,14 @@ export const closeCaucus =
 };
 
 export interface Lifecycle {
-  history: firebase.database.Reference;
+  history: DatabaseReference;
   speakingData?: SpeakerEvent;
-  speaking: firebase.database.Reference;
+  speaking: DatabaseReference;
   timerData: TimerData;
-  timer: firebase.database.Reference;
+  timer: DatabaseReference;
   yielding: boolean;
   queueHeadData?: SpeakerEvent;
-  queueHead?: firebase.database.Reference;
+  queueHead?: DatabaseReference;
   timerResetSeconds: number;
 }
 
@@ -126,14 +126,15 @@ export const runLifecycle = (lifecycle: Lifecycle) => {
 
   // Move the person currently speaking into history...
   if (speakingData) {
-    history.push().set({ ...speakingData, duration: timerData.elapsed });
-    speaking.set(null);
+    const newHistoryRef = push(history);
+    set(newHistoryRef, { ...speakingData, duration: timerData.elapsed });
+    set(speaking, null);
 
     if (yielding) {
       additionalYieldTime = timerData.remaining;
     }
 
-    timer.update({
+    update(timer, {
       elapsed: 0,
       remaining: timerResetSeconds,
       ticking: false // and stop it
@@ -141,17 +142,17 @@ export const runLifecycle = (lifecycle: Lifecycle) => {
   } // do nothing if no-one is currently speaking
 
   if (queueHead && queueHeadData) {
-    speaking.set({
+    set(speaking, {
       ...queueHeadData,
       duration: queueHeadData.duration + additionalYieldTime
     });
 
-    timer.update({
+    update(timer, {
       elapsed: 0,
       remaining: queueHeadData.duration + additionalYieldTime, // load the appropriate time 
       ticking: false // and stop it
     });
 
-    queueHead.set(null);
+    set(queueHead, null);
   }
 };

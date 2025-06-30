@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { DatabaseReference, child } from 'firebase/database';
+import { DatabaseReference, child, ref as dbRef, onValue, off, DataSnapshot, push, set } from 'firebase/database';
+import { database } from '../App';
 import {RouteComponentProps} from 'react-router';
 import {Button, Card, Checkbox, Container, Divider, Flag, Form, Icon, Label, Message, Popup} from 'semantic-ui-react';
 import {
@@ -96,29 +97,31 @@ export class MotionsComponent extends React.Component<Props & Hooks, State> {
     const { match } = props;
 
     this.state = {
-      committeeFref: firebase.database().ref('committees').child(match.params.committeeID),
+      committeeFref: child(dbRef(database, 'committees'), match.params.committeeID),
       newMotion: DEFAULT_MOTION
     };
   }
 
-  firebaseCallback = (committee: firebase.database.DataSnapshot | null) => {
+  firebaseCallback = (committee: DataSnapshot | null) => {
     if (committee) {
       this.setState({ committee: committee.val() });
     }
   }
 
   componentDidMount() {
-    this.state.committeeFref.on('value', this.firebaseCallback);
+    onValue(this.state.committeeFref, this.firebaseCallback);
   }
 
   componentWillUnmount() {
-    this.state.committeeFref.off('value', this.firebaseCallback);
+    off(this.state.committeeFref, 'value', this.firebaseCallback);
   }
 
   handlePushMotion = (): void => {
     const { newMotion } = this.state;
 
-    this.state.committeeFref.child('motions').push().set(newMotion);
+    const motionsRef = child(this.state.committeeFref, 'motions');
+    const newMotionRef = push(motionsRef);
+    set(newMotionRef, newMotion);
 
     const duration = newMotion.caucusUnit === 'min'
       ? (newMotion.caucusDuration || 0) + 1
@@ -147,11 +150,8 @@ export class MotionsComponent extends React.Component<Props & Hooks, State> {
       : {} as Record<string, MotionData>;
 
     Object.keys(motions).forEach(key => {
-      committeeFref
-        .child('motions')
-        .child(key)
-        .child('deleted')
-        .set(true)
+      const motionDeletedRef = child(child(child(committeeFref, 'motions'), key), 'deleted');
+      set(motionDeletedRef, true);
     })
   }
 
@@ -162,7 +162,7 @@ export class MotionsComponent extends React.Component<Props & Hooks, State> {
   }
 
   handleApproveMotion = (
-    motionFref: firebase.database.Reference,
+    motionFref: DatabaseReference,
     motionData: MotionData
   ): void => {
     const committeeID: CommitteeID = this.props.match.params.committeeID;
@@ -296,7 +296,7 @@ export class MotionsComponent extends React.Component<Props & Hooks, State> {
     }
   }
 
-  renderMotion = (id: MotionID, motionData: MotionData, motionFref: firebase.database.Reference) => {
+  renderMotion = (id: MotionID, motionData: MotionData, motionFref: DatabaseReference) => {
     const { handleApproveMotion } = this;
     const { committee } = this.state;
     const { proposer, proposal, type, caucusUnit, caucusDuration, speakerUnit,
@@ -716,7 +716,7 @@ export class MotionsComponent extends React.Component<Props & Hooks, State> {
           return 1;
         }
       }).map(key => {
-        return renderMotion(key, motions[key], committeeFref.child('motions').child(key));
+        return renderMotion(key, motions[key], child(child(committeeFref, 'motions'), key));
       });
   }
 
