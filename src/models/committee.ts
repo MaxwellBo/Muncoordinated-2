@@ -320,6 +320,7 @@ export const TEMPLATE_TO_MEMBERS: Record<Template, {
     {name: 'Sweden'},
   ],
   'G20': [
+    {name: 'African Union'}, // permanent member since 2023
     {name: 'Argentina'},
     {name: 'Australia'},
     {name: 'Brazil'},
@@ -349,7 +350,6 @@ export const TEMPLATE_TO_MEMBERS: Record<Template, {
     {name: 'Croatia'},
     {name: 'Czechia'},
     {name: 'Denmark'},
-    {name: 'United Kingdom'},
     {name: 'Estonia'},
     {name: 'Finland'}, // since 2023
     {name: 'France'},
@@ -361,10 +361,9 @@ export const TEMPLATE_TO_MEMBERS: Record<Template, {
     {name: 'Latvia'},
     {name: 'Lithuania'},
     {name: 'Luxembourg'},
-    {name: 'North Macedonia'},
     {name: 'Montenegro'},
-    {name: 'Netherlands Antilles'},
     {name: 'Netherlands'},
+    {name: 'North Macedonia'},
     {name: 'Norway'},
     {name: 'Poland'},
     {name: 'Portugal'},
@@ -374,7 +373,7 @@ export const TEMPLATE_TO_MEMBERS: Record<Template, {
     {name: 'Spain'},
     {name: 'Sweden'}, // since 2024
     {name: 'Turkey'},
-    {name: 'United Arab Emirates'},
+    {name: 'United Kingdom'},
     {name: 'United States'},
   ],
   'UN Security Council': [
