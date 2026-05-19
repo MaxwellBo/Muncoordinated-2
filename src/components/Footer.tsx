@@ -46,7 +46,7 @@ export default class Footer extends React.PureComponent<Props, State> {
 
     return (
       <div style={{ position: 'fixed', bottom: 5, left: 5, background: '#FFFFFF' }}>
-        <VersionLink version={latestVersion || CLIENT_VERSION} /> bởi <a href="https://github.com/MaxwellBo">Max Bo</a>, <a href="https://www.facebook.com/UQUNSA/">UQUNSA</a> &amp; <a href="https://github.com/penny2k8">Minh Le</a>
+        Phiên bản <VersionLink version={latestVersion || CLIENT_VERSION} /> bởi <a href="https://github.com/MaxwellBo">Max Bo</a>, <a href="https://www.facebook.com/UQUNSA/">UQUNSA</a> &amp; <a href="https://github.com/penny2k8">Minh Le</a>
       </div>
     );
   }
