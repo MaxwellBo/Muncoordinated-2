@@ -55,7 +55,7 @@ export class TimeSetter extends React.Component<Props, {}> {
           button 
           onChange={props.onUnitChange} 
         />
-        {props.onSet && (<Button onClick={handleOnSet}>Set</Button>)}
+        {props.onSet && (<Button onClick={handleOnSet}>Đặt</Button>)}
       </Form.Input>
     );
   }

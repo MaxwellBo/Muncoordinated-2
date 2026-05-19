@@ -115,19 +115,19 @@ export default class Onboard extends React.Component<Props, State> {
         {!user && <Message
           error
           attached="top"
-          content="Log in or create an account to continue"
+          content="Đăng nhập hoặc đăng ký để tiếp tục"
         />}
         <Segment attached={!user ? 'bottom' : undefined} >
           <Form onSubmit={this.handleSubmit}>
             <Form.Group unstackable>
               <Form.Dropdown
-                label="Template"
+                label="Mẫu"
                 name="template"
                 width={14}
                 search
                 clearable
                 selection
-                placeholder="Template to skip manual member creation (optional)"
+                placeholder="Chọn mẫu hội đồng để bỏ qua việc nhập thủ công thành viên (không bắt buộc) "
                 options={Object.values(Template).map(makeDropdownOption)}
                 onChange={this.onChangeTemplateDropdown}
               />
@@ -148,29 +148,29 @@ export default class Onboard extends React.Component<Props, State> {
               </Popup>
             </Form.Group>
             <Form.Input
-              label="Name"
+              label="Tên"
               name="name"
               fluid
               value={this.state.name}
               required
               error={!this.state.name}
-              placeholder="Committee name"
+              placeholder="Tên hội đồng"
               onChange={this.handleInput}
             />
             <Form.Input
-              label="Topic"
+              label="Chủ đề"
               name="topic"
               value={this.state.topic}
               fluid
-              placeholder="Committee topic"
+              placeholder="Chủ đề của hội đồng"
               onChange={this.handleInput}
             />
             <Form.Input
-              label="Conference"
+              label="Hội nghị"
               name="conference"
               value={this.state.conference}
               fluid
-              placeholder="Conference name"
+              placeholder="Tên hội nghị"
               onChange={this.handleInput}
             />
             <Form.Button
@@ -178,7 +178,7 @@ export default class Onboard extends React.Component<Props, State> {
               fluid
               disabled={!this.state.user || this.state.name === ''}
             >
-              Create committee
+              Tạo hội đồng
               <Icon name="arrow right" />
             </Form.Button>
           </Form>
@@ -191,9 +191,8 @@ export default class Onboard extends React.Component<Props, State> {
     return (
       <Container style={{ padding: '1em 0em' }}>
         <Helmet>
-          <title>{`Create Committee - Muncoordinated`}</title>
-          <meta name="description" content="Login, create an account, or create
-                                      a committee with Muncoordinated now!" />
+          <title>{`Tạo hội đồng - vi-Muncoordinated`}</title>
+          <meta name="description" content="Đăng nhập, tạo tài khoản hoặc tạo hội đồng vi-Muncoordinated ngay tại đây!" />
         </Helmet>
         <ConnectionStatus />
         <Grid
@@ -206,11 +205,11 @@ export default class Onboard extends React.Component<Props, State> {
                 Muncoordinated
               </Header>
               <Message>
-                <Message.Header>Browser compatibility notice</Message.Header>
+                <Message.Header>Lưu ý về trình duyệt sử dụng</Message.Header>
                   <p>
-                  Muncoordinated works best with newer versions of <a 
+                  Muncoordinated và vi-Muncoordinated hoạt động trơn tru nhất với phiên bản mới nhất của <a 
                     href="https://www.google.com/chrome/">Google Chrome</a>.
-                   Use of other/older browsers has caused bugs and data loss.
+                   Sử dụng Muncoordinated và vi-Muncoordiated ở các trình duyệt khác/cũ hơn sẽ xảy ra lỗi và/hoặc mất dữ liệu.
                   </p>
               </Message>
             </Grid.Column>

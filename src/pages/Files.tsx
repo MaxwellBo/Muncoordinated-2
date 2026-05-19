@@ -134,14 +134,14 @@ class Entry extends React.Component<EntryProps, EntryState> {
         <Feed.Label icon={FILE_ICON} />
         <Feed.Content>
           <Feed.Summary>
-            <Feed.User><Flag name={nameToFlagCode(post.uploader)}/> {post.uploader}</Feed.User> uploaded a file
+            <Feed.User><Flag name={nameToFlagCode(post.uploader)}/> {post.uploader}</Feed.User> đã tải lên một tệp tin
             <Feed.Date>{this.renderDate('Uploaded')}</Feed.Date>
           </Feed.Summary>
           {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
           <Feed.Extra><a onClick={this.download(post.filename)}>{post.filename}</a></Feed.Extra>
           <Feed.Meta>
             {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-            <a onClick={this.props.onDelete}>Delete</a>
+            <a onClick={this.props.onDelete}>Xóa</a>
           </Feed.Meta>
         </Feed.Content>
       </Feed.Event>
@@ -154,7 +154,7 @@ class Entry extends React.Component<EntryProps, EntryState> {
         <Feed.Label icon={LINK_ICON} />
         <Feed.Content>
           <Feed.Summary>
-            <Feed.User><Flag name={nameToFlagCode(post.uploader)}/> {post.uploader}</Feed.User> posted a link
+            <Feed.User><Flag name={nameToFlagCode(post.uploader)}/> {post.uploader}</Feed.User> đã đăng một đường link
             <Feed.Date>{this.renderDate('Posted')}</Feed.Date>
           </Feed.Summary>
           <Feed.Extra><a href={post.url}>{post.name || post.url}</a></Feed.Extra>
@@ -388,7 +388,7 @@ export default class Files extends React.Component<Props, State> {
               error={!uploader}
               onChange={this.setMember}
               options={memberOptions}
-              label="Uploader"
+              label="Người đăng"
               required
             />
             <Button
@@ -436,7 +436,7 @@ export default class Files extends React.Component<Props, State> {
           selection
           onChange={this.setFilter}
           options={memberOptions}
-          label="View posts only by"
+          label="Chỉ xem nội dung được đăng tải bởi"
         />
       </Form>
     )
@@ -477,11 +477,11 @@ export default class Files extends React.Component<Props, State> {
           value={body}
           onChange={this.setName}
           autoHeight
-          label="Name"
+          label="Tên"
           rows={1}
         />
         <Form.Input 
-          label="Link"
+          label="Đường dẫn"
           required
           error={!link}
           value={link}
@@ -499,7 +499,7 @@ export default class Files extends React.Component<Props, State> {
             error={!uploader}
             onChange={this.setMember}
             options={memberOptions}
-            label="Poster"
+            label="Người đăng"
           />
           <Button 
             type="submit" 
@@ -523,7 +523,7 @@ export default class Files extends React.Component<Props, State> {
           value={body}
           onChange={this.setBody}
           autoHeight={true}
-          label="Body"
+          label="Nội dung"
           rows={3}
         />
         <Form.Group widths="equal">
@@ -537,7 +537,7 @@ export default class Files extends React.Component<Props, State> {
             error={!uploader}
             onChange={this.setMember}
             options={memberOptions}
-            label="Poster"
+            label="Người đăng"
           />
           <Button 
             type="submit" 
@@ -589,15 +589,15 @@ export default class Files extends React.Component<Props, State> {
 
     const panes = [
       { 
-        menuItem: { key: 'Text', icon: TEXT_ICON, content: 'Text' }, 
+        menuItem: { key: 'Text', icon: TEXT_ICON, content: 'Văn bản' }, 
         render: () => <Tab.Pane>{this.renderPoster()}</Tab.Pane> 
       },
       { 
-        menuItem: { key: 'Link', icon: LINK_ICON, content: 'Link' }, 
+        menuItem: { key: 'Link', icon: LINK_ICON, content: 'Đường dẫn' }, 
         render: () => <Tab.Pane>{this.renderLinker()}</Tab.Pane>
       },
       { 
-        menuItem: { key: 'File', icon: FILE_ICON, content: 'File' }, 
+        menuItem: { key: 'File', icon: FILE_ICON, content: 'Tệp tin' }, 
         render: () => <Tab.Pane>{this.renderUploader()}</Tab.Pane> 
       },
     ];

@@ -125,8 +125,8 @@ export class Login extends React.Component<Props, State> {
 
     firebase.auth().sendPasswordResetEmail(email).then(() => {
       const success = {
-        name: 'Password reset',
-        message: `Check your inbox at ${email} for further instructions`
+        name: 'Đặt lại mật khẩu',
+        message: `Vui lòng kiểm tra hộp thư chính của email ${email}`
       };
 
       this.setState({ resetting: false, success });
@@ -191,7 +191,7 @@ export class Login extends React.Component<Props, State> {
       <List.Item key={'add'}>
         <List.Content>
           <List.Header as="a" href={'/onboard'}>
-            <Icon name="plus" />Create new committee
+            <Icon name="plus" />Tạo hội đồng mới
           </List.Header>
         </List.Content>
       </List.Item>
@@ -211,9 +211,9 @@ export class Login extends React.Component<Props, State> {
         {owned.map(k => renderCommittee(k, defaulted[k]))}
       </List>
     ) : (
-      <Header as='h4'> No committees created
+      <Header as='h4'> Không có hội đồng nào
         <Header.Subheader>
-          Create a new committee and it'll appear here!
+          Tạo một hội đồng mới và nó sẽ xuất hiện ở đây!
         </Header.Subheader>
       </Header>
     );
@@ -265,7 +265,7 @@ export class Login extends React.Component<Props, State> {
             {u.email}
           </Card.Header>
           <Card.Meta>
-            Logged in
+            Đăng nhập thành công
           </Card.Meta>
         </Card.Content>
         <Card.Content key="committees" style={{ 
@@ -278,7 +278,7 @@ export class Login extends React.Component<Props, State> {
           {renderNewCommitteeButton()}
         </Card.Content>}
         <Card.Content extra key="extra">
-          <Button basic color="red" fluid onClick={logout}>Logout</Button>
+          <Button basic color="red" fluid onClick={logout}>Đăng xuất</Button>
         </Card.Content>
       </Card>
     );
@@ -295,7 +295,7 @@ export class Login extends React.Component<Props, State> {
         loading={loggingIn}
         type="submit"
       >
-        Log in
+        Đăng nhập
       </Button>
     );
 
@@ -304,7 +304,7 @@ export class Login extends React.Component<Props, State> {
         positive
         onClick={this.toCreateAccountMode}
       >
-        Create account <Icon name="arrow right" />
+        Tạo tài khoản mới <Icon name="arrow right" />
       </Button>
     );
 
@@ -317,7 +317,7 @@ export class Login extends React.Component<Props, State> {
         disabled={!email || !password}
         type="submit"
       >
-        Create account
+        Tạo tài khoản mới
       </Button>
     )
 
@@ -327,7 +327,7 @@ export class Login extends React.Component<Props, State> {
         onClick={this.toForgotPasswordMode} 
         style={{'cursor': 'pointer'}}
       >
-        Forgot password?
+        Quên mật khẩu?
       </a>
     );
 
@@ -341,7 +341,7 @@ export class Login extends React.Component<Props, State> {
           }}
         >
           <Icon name="arrow left" />
-          Back to login
+          Quay lại trang đăng nhập
         </a>
       </div>
     );
@@ -355,7 +355,7 @@ export class Login extends React.Component<Props, State> {
         disabled={!email}
         type="submit"
       >
-        Send reset email
+        Gửi email đặt lại mật khấu
       </Button>
     );
 
@@ -366,22 +366,22 @@ export class Login extends React.Component<Props, State> {
       <React.Fragment>
         {mode === Mode.Login && 
           <Header as="h3" attached="top">
-            Login
+            Đăng nhập
             <Header.Subheader>
-              to create a new committee, or access an older committee.
+              để tạo hội đồng mới, hoặc truy cập các hội đồng đã tạo
             </Header.Subheader>
           </Header>}
         {mode === Mode.CreateAccount && 
           <Header as="h3" attached="top">
-            Create account
+            Tạo tài khoản
             <Header.Subheader>
-                Multiple directors may use the same account simultaneously. 
-                Choose a password you're willing to share.
+                Một tài khoản có thể được sử dụng bởi nhiều người cùng một lúc.
+                Chọn một mật khẩu mà bạn sẵn sàng chia sẻ.
             </Header.Subheader>
           </Header>}
         {mode === Mode.ForgotPassword && 
           <Header as="h3" attached="top">
-            Reset password
+            Đặt lại mật khẩu
           </Header>}
         <Segment attached="bottom">
           {mode !== Mode.Login && renderToLoginButton()}
@@ -399,7 +399,7 @@ export class Login extends React.Component<Props, State> {
             </Form.Input>
             {mode === Mode.Login && <Form.Input
               key="current-password"
-              label="Password"
+              label="Mật khẩu"
               type="password"
               placeholder="correct horse battery staple"
               value={password}
@@ -409,7 +409,7 @@ export class Login extends React.Component<Props, State> {
             </Form.Input>}
             {mode === Mode.CreateAccount && <Form.Input
               key="new-password"
-              label="Password"
+              label="Mật khẩu"
               type="password"
               error={!password}
               required

@@ -76,13 +76,13 @@ export function recoverResolution(committee: CommitteeData | undefined, resoluti
 export type CommitteeID = string;
 
 export enum Template {
-  AfricanUnion = 'African Union',
-  ASEAN = 'Association of Southeast Asian Nations',
+  AfricanUnion = 'Liên minh châu Phi',
+  ASEAN = 'Hiệp hội các quốc gia Đông Nam Á',
   BRICS = 'BRICS',
-  EU = 'European Union',
+  EU = 'Liên Minh châu Âu',
   G20 = 'G20',
-  NATO = 'North Atlantic Treaty Organization',
-  SecurityCouncil = 'UN Security Council',
+  NATO = 'Tổ chức Hiệp ước Bắc Đại Tây Dương',
+  SecurityCouncil = 'Hội đồng Bảo an Liên Hợp Quốc',
   // TODO: Support these templates against at some point
   // UNHRC = 'UN Human Rights Council',
   // UNICEF = 'UN Children\'s Fund',
@@ -211,7 +211,7 @@ export const TEMPLATE_TO_MEMBERS: Record<Template, {
   name: MemberData['name']
   rank?: Rank // not allowed to use members due to import order
 }[]> = {
-  'African Union': [
+  'Liên minh châu Phi': [
     {name: 'Algeria'},
     {name: 'Angola'},
     {name: 'Benin'},
@@ -260,17 +260,17 @@ export const TEMPLATE_TO_MEMBERS: Record<Template, {
     {name: 'Zambia'},
     {name: 'Zimbabwe'}
   ],
-  'Association of Southeast Asian Nations': [
+  'Hiệp hội các quốc gia Đông Nam Á': [
     {name: 'Brunei'},
-    {name: 'Cambodia'},
+    {name: 'Campuchia'},
     {name: 'Indonesia'},
-    {name: 'Laos'},
+    {name: 'Lào'},
     {name: 'Malaysia'},
     {name: 'Myanmar'},
     {name: 'Philippines'},
     {name: 'Singapore'},
-    {name: 'Thailand'},
-    {name: 'Vietnam'}
+    {name: 'Thái Lan'},
+    {name: 'Việt Nam'}
   ],
   'BRICS': [
     {name: 'Brazil'},
@@ -279,7 +279,7 @@ export const TEMPLATE_TO_MEMBERS: Record<Template, {
     {name: 'Russia'},
     {name: 'South Africa'}
   ],
-  'European Union': [
+  'Liên Minh châu Âu': [
     {name: 'Austria'},
     {name: 'Belgium'},
     {name: 'Bulgaria'},
@@ -330,7 +330,7 @@ export const TEMPLATE_TO_MEMBERS: Record<Template, {
     {name: 'United Kingdom'},
     {name: 'United States'},
   ],
-  'North Atlantic Treaty Organization': [
+  'Tổ chức Hiệp ước Bắc Đại Tây Dương': [
     {name: 'Albania'},
     {name: 'Belgium'},
     {name: 'Bulgaria'},
@@ -366,22 +366,22 @@ export const TEMPLATE_TO_MEMBERS: Record<Template, {
     {name: 'United Arab Emirates'},
     {name: 'United States'},
   ],
-  'UN Security Council': [
+  'Hội đồng Bảo an Liên Hợp Quốc': [
     {name: 'Algeria'},
-    {name: 'China', rank: Rank.Veto},
-    {name: 'Denmark'},
-    {name: 'France', rank: Rank.Veto},
-    {name: 'Greece'},
+    {name: 'Đan Mạch'},
+    {name: 'Hàn Quốc'},
+    {name: 'Hy Lạp'},
     {name: 'Guyana'},
     {name: 'Pakistan'},
     {name: 'Panama'},
-    {name: 'Russia', rank: Rank.Veto},
+    {name: 'Pháp', rank: Rank.Veto},
+    {name: 'Nga', rank: Rank.Veto},
     {name: 'Sierra Leone'},
     {name: 'Slovenia'},
     {name: 'Somalia'},
-    {name: 'South Korea'},
-    {name: 'United Kingdom', rank: Rank.Veto},
-    {name: 'United States', rank: Rank.Veto},
+    {name: 'Trung Quốc', rank: Rank.Veto},
+    {name: 'Vương quốc Anh', rank: Rank.Veto},
+    {name: 'Hoa Kỳ', rank: Rank.Veto},
   ],
 }
 export const pushTemplateMembers = (committeeID: CommitteeID, template: Template) => {
@@ -404,7 +404,7 @@ export const pushTemplateMembers = (committeeID: CommitteeID, template: Template
             name: member.name,
             rank: member.rank ?? Rank.Standard,
             present: true,
-            voting: false
+            voting: false,
           })
       );
   });

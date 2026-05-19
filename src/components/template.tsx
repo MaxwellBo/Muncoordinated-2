@@ -8,7 +8,7 @@ import {CommitteeID, pushTemplateMembers, Template, TEMPLATE_TO_MEMBERS} from ".
 export function TemplatePreview(props: { template?: Template }) {
   if (!props.template) {
     return (
-      <p>Select a template to see which members will be added</p>
+      <p>Chọn một hội đồng mẫu để xem danh sách các quốc gia trong mẫu đó</p>
     );
   }
 
@@ -53,18 +53,18 @@ export function TemplateAdder(props: { committeeID: CommitteeID }) {
         onClick={openAccordion}
       >
         <Icon name='dropdown' />
-        Add members from a template (e.g. G20)
+        Thêm thành viên từ mẫu
       </Accordion.Title>
       <Accordion.Content active={activeIndex === 0}>
         <Form>
           <Form.Dropdown
-            label="Template"
+            label="Mẫu"
             name="template"
             search
             clearable
             fluid
             selection
-            placeholder="Select a template to add"
+            placeholder="Chọn một mẫu để thêm"
             value={template}
             options={Object.values(Template).map(makeDropdownOption)}
             onChange={(event, data) => setTemplate(data.value as Template)}

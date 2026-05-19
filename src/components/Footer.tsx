@@ -7,17 +7,17 @@ interface State {
   latestVersion?: string;
 }
 
-export const CLIENT_VERSION = 'v2.20.12';
+export const CLIENT_VERSION = 'v2.20.12-vi';
 
 export function VersionLink(props: { 
   version: string 
 }) {
-  return <a href="https://github.com/MaxwellBo/Muncoordinated-2/releases">
+  return <a href="https://github.com/penny2k8/vi-Muncoordinated-2/releases">
     {props.version}
   </a>
 }
 
-const RELEASES_LATEST = 'https://api.github.com/repos/MaxwellBo/Muncoordinated-2/releases/latest';
+const RELEASES_LATEST = 'https://api.github.com/penny2k8/vi-Muncoordinated-2/releases/latest';
 
 export default class Footer extends React.PureComponent<Props, State> {
   constructor(props: Props) {
@@ -46,7 +46,7 @@ export default class Footer extends React.PureComponent<Props, State> {
 
     return (
       <div style={{ position: 'fixed', bottom: 5, left: 5, background: '#FFFFFF' }}>
-        <VersionLink version={latestVersion || CLIENT_VERSION} /> by <a href="https://github.com/MaxwellBo">Max Bo</a> &amp; <a href="https://www.facebook.com/UQUNSA/">UQUNSA</a>
+        <VersionLink version={latestVersion || CLIENT_VERSION} /> bởi <a href="https://github.com/MaxwellBo">Max Bo</a>, <a href="https://www.facebook.com/UQUNSA/">UQUNSA</a> &amp; <a href="https://github.com/penny2k8">Minh Le</a>
       </div>
     );
   }

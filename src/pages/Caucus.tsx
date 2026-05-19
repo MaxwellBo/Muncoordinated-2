@@ -176,7 +176,7 @@ export function NextSpeaking(props: {
       onClick={nextSpeaker}
     >
       <Icon name="arrow up"/>
-      Stage
+      Tiếp theo
     </Button>
   );
 
@@ -189,7 +189,7 @@ export function NextSpeaking(props: {
       onClick={startTimer}
     >
       <Icon name="hourglass start"/>
-      Start
+      Bắt đầu
     </Button>
   )
 
@@ -202,7 +202,7 @@ export function NextSpeaking(props: {
       onClick={nextSpeaker}
     >
       <Icon name="arrow up"/>
-      Next
+      Tiếp theo
     </Button>
   );
 
@@ -215,7 +215,7 @@ export function NextSpeaking(props: {
       onClick={nextSpeaker}
     >
       <Icon name="hourglass end"/>
-      Stop
+      Dừng
     </Button>
   );
 
@@ -228,7 +228,7 @@ export function NextSpeaking(props: {
       onClick={interlace}
     >
       <Icon name="random"/>
-      Order
+      Sắp xếp
     </Button>
   );
 
@@ -252,12 +252,11 @@ export function NextSpeaking(props: {
 
   return (
     <Segment textAlign="center" loading={!caucus}>
-      <Label attached="top left" size="large">Next speaking</Label>
+      <Label attached="top left" size="large">Phát biểu tiếp theo</Label>
       {button}
       <Popup
         trigger={interlaceButton}
-        content="Orders the list so that speakers are
-        'For', then 'Against', then 'Neutral', then 'For', etc."
+        content="Sắp xếp danh sách lượt nói theo thứ tự 'Ủng hộ', 'Trung lập' rồi 'Phản đối' "
       />
       <SpeakerFeed
         data={caucus ? caucus.queue : undefined}
@@ -334,10 +333,10 @@ class SpeakerFeedEntry extends React.PureComponent<{
             {data ? data.stance : ''}
           </Feed.Like>
           {data && <Label size="mini" as="a" onClick={() => fref.remove()}>
-              Remove
+            Xóa
           </Label>}
           {data && speaking && (<Label size="mini" as="a" onClick={this.yieldHandler}>
-            Yield
+            Nhượng lại
           </Label>)}
         </Feed.Meta>
       </Feed.Content>
@@ -488,7 +487,7 @@ function Queuer(props: {
 
   return (
     <Segment textAlign="center">
-      <Label attached="top left" size="large">Queue</Label>
+      <Label attached="top left" size="large">Thêm người nói</Label>
       <Form>
         <Form.Dropdown
           icon="search"
@@ -508,31 +507,35 @@ function Queuer(props: {
           onDurationChange={validatedNumberFieldHandler(caucusFref, 'speakerDuration')}
           onUnitChange={dropdownHandler(caucusFref, 'speakerUnit')}
         />
-        <Form.Checkbox
+        {/* <Form.Checkbox
           label="Delegates can queue"
           indeterminate={!caucus}
           toggle
           checked={caucus ? (caucus.queueIsPublic || false) : false} // zoo wee mama
           onChange={checkboxHandler<CaucusData>(caucusFref, 'queueIsPublic')}
-        />
+        /> */}
         <Button.Group size="large" fluid>
-          <Button
-            content="For"
+          <Button icon labelPosition='left'
             disabled={disableButtons}
             onClick={setStance(Stance.For)}
-          />
-          <Button.Or/>
-          <Button
+          >
+            <Icon name="thumbs up outline"/>
+            Ủng hộ
+          </Button>
+          <Button icon labelPosition='left'
             disabled={disableButtons}
-            content="Neutral"
             onClick={setStance(Stance.Neutral)}
-          />
-          <Button.Or/>
-          <Button
+          >
+            <Icon name="hand point right outline"/>
+            Trung lập
+          </Button>
+          <Button icon labelPosition='left'
             disabled={disableButtons}
-            content="Against"
             onClick={setStance(Stance.Against)}
-          />
+          >
+            <Icon name="thumbs down outline"/>
+            Phản đối
+          </Button>
         </Button.Group>
       </Form>
     </Segment>
@@ -600,7 +603,7 @@ export default class Caucus extends React.Component<Props, State> {
           attatched="top"
           size="massive"
           fluid
-          placeholder="Set caucus name"
+          placeholder="Tên phiên thảo luận"
         />
         <Form loading={!caucus}>
           <TextArea
@@ -609,7 +612,7 @@ export default class Caucus extends React.Component<Props, State> {
             onChange={textAreaHandler<CaucusData>(caucusFref, 'topic')}
             attatched="top"
             rows={1}
-            placeholder="Set caucus details"
+            placeholder="Thông tin phiên thảo luận"
           />
         </Form>
       </>
@@ -625,7 +628,7 @@ export default class Caucus extends React.Component<Props, State> {
 
     return (
       <Segment loading={!caucus}>
-        <Label attached="top left" size="large">Now speaking</Label>
+        <Label attached="top left" size="large">Đang phát biểu</Label>
         <Feed size="large">
           <SpeakerFeedEntry data={entryData} fref={caucusFref.child('speaking')} speakerTimer={speakerTimer}/>
         </Feed>
@@ -652,7 +655,7 @@ export default class Caucus extends React.Component<Props, State> {
 
     const renderedSpeakerTimer = (
       <Timer
-        name="Speaker timer"
+        name="Thời lượng phát biểu"
         timerFref={caucusFref.child('speakerTimer')}
         key={caucusID + 'speakerTimer'}
         onChange={this.setSpeakerTimer}
@@ -664,7 +667,7 @@ export default class Caucus extends React.Component<Props, State> {
 
     const renderedCaucusTimer = (
       <Timer
-        name="Caucus timer"
+        name="Thời lượng phiên"
         timerFref={caucusFref.child('caucusTimer')}
         key={caucusID + 'caucusTimer'}
         onChange={this.setCaucusTimer}
@@ -735,7 +738,7 @@ export default class Caucus extends React.Component<Props, State> {
     return (
       <Container style={{ 'padding-bottom': '2em' }}>
         <Helmet>
-            <title>{`${caucus?.name} - Muncoordinated`}</title>
+            <title>{`${caucus?.name} - vi-Muncoordinated`}</title>
         </Helmet>
         <Grid columns="equal" stackable>
           {header}

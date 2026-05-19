@@ -18,11 +18,11 @@ export function getThreshold(requiredMajority: Majority, committee: CommitteeDat
 export function getThresholdName(majority: Majority): string {
   switch (majority) {
     case Majority.TwoThirds:
-      return "two-thirds majority"
+      return "đa số 2/3"
     case Majority.TwoThirdsNoAbstentions:
-      return "two-thirds majority"
+      return "đa số 2/3"
     case Majority.Simple:
     default:
-      return "simple majority";
+      return "đa số quá bán";
   }
 }

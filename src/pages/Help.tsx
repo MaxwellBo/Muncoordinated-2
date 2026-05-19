@@ -12,7 +12,7 @@ export const KEYBOARD_SHORTCUT_LIST = (
       <Button size="mini">
         N
       </Button>
-      Next speaker
+      Người nói tiếp theo
     </List.Item>
     <List.Item>
       <Button size="mini">
@@ -21,7 +21,7 @@ export const KEYBOARD_SHORTCUT_LIST = (
       <Button size="mini">
         S
       </Button>
-      Toggle speaker timer
+      Chạy/Dừng đồng hồ thời gian nói
     </List.Item>
     <List.Item>
       <Button size="mini">
@@ -30,7 +30,7 @@ export const KEYBOARD_SHORTCUT_LIST = (
       <Button size="mini">
         C
       </Button>
-      Toggle caucus timer
+      Chạy/Dừng đồng hồ thời gian phiên họp
     </List.Item>
   </List>
 );
@@ -48,45 +48,45 @@ export default class Help extends React.PureComponent<{}, {}> {
     return (
       <Container text style={{ padding: '1em 0em' }}>
         <Helmet>
-          <title>{`Help - Muncoordinated`}</title>
+          <title>{`Trợ giúp - vi-Muncoordinated`}</title>
         </Helmet>
-        <Header as="h3" attached="top">Keyboard shortcuts</Header>
+        <Header as="h3" attached="top">Phím tắt</Header>
         <Segment attached="bottom">
         {KEYBOARD_SHORTCUT_LIST}
         </Segment>
-        <Header as="h3" attached="top">Bug reporting &amp; help requests</Header>
+        <Header as="h3" attached="top">Báo lỗi &amp; yêu cầu hỗ trợ</Header>
         <Segment attached="bottom">
-          In the event that a bug or issue crops up, follow these steps:
+          Trong trường hợp có lỗi xảy ra, hãy thực hiện những bước sau:
           <br />
           <List ordered>
             <List.Item>
-              Create an issue on the <a href="https://github.com/MaxwellBo/Muncoordinated-2/issues">
-                Muncoordinated issue tracking page
-              </a>. You can also use this for help requests regarding the apps usage.
+              Tạo một lỗi tại <a href="https://github.com/MaxwellBo/Muncoordinated-2/issues">
+                trang theo dõi lỗi của vi-Muncoordinated
+              </a>. Trang này cũng có thể được sử dụng để đưa ra yêu cầu hỗ trợ sử dụng phần mềm.
             </List.Item>
             <List.Item>
-              Describe what you intended to do
+              Miêu tả bạn muốn làm gì
             </List.Item>
             <List.Item>
-              Describe what happened instead 
+              Miêu tả điều gì đã xảy ra
             </List.Item>
             <List.Item>
-              List the version of the app you're using (<VersionLink version={CLIENT_VERSION} />)
+              Thêm phiên bản ứng dụng bạn đang dùng (<VersionLink version={CLIENT_VERSION} />)
             </List.Item>
             <List.Item>
-              List the time, date, and browser that you were using when this occured
+              Bổ sung thời gian và trình duyệt bạn đang sử dụng khi gặp lỗi
             </List.Item>
           </List>
         </Segment>
-        <Header as="h3" attached="top">License</Header>
+        <Header as="h3" attached="top">Giấy phép</Header>
         <Segment attached="bottom">
-          Muncoordinated is licensed under {gpl}
+          vi-Muncoordinated và Muncoordinated (phần mềm gốc) đều sử dụng giấy phép bản quyền {gpl}
         </Segment>
-        <Header as="h3" attached="top">Social media</Header>
+        {/*<Header as="h3" attached="top">Social media</Header>
         <Segment attached="bottom">
           Want to meet likeminded Muncoordinators? Come check out our 
           forum <a href="https://github.com/MaxwellBo/Muncoordinated-2/discussions">The Muncoordinator's Discussion Space</a>.
-        </Segment>
+        </Segment>*/} 
       </Container>
     );
   }

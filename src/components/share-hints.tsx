@@ -6,21 +6,21 @@ import {StrawpollID} from "../models/strawpoll";
 function CopyableText(props: {
   value: string
 }) {
-  const [message, setMessage] = React.useState<string>('Copy');
+  const [message, setMessage] = React.useState<string>('Sao chép');
 
   const copy = () => {
     // We have to try-catch because this API might not be available
     try {
       navigator.clipboard.writeText(props.value)
         .then(() => {
-          setMessage('Copied!')
-          setTimeout(() => setMessage('Copy'), 3000)
+          setMessage('Thành công!')
+          setTimeout(() => setMessage('Sao chép'), 1000)
         })
         .catch(() => {
-          setMessage('Please copy manually')
+          setMessage('Vui lòng sao chép thủ công')
         })
     } catch (e) {
-      setMessage('Please copy manually')
+      setMessage('Vui lòng sao chép thủ công')
     }
   }
 
@@ -46,12 +46,12 @@ export function CommitteeShareHint(props: {
 
   return (
     <Segment>
-      <Header size='medium'>Here's the shareable link to your committee</Header>
-      <CopyableText value={url} />
+      <Header size='medium'>Link chia sẻ hội đồng</Header>
+      <CopyableText value={url}/>
 
       <Divider hidden />
 
-      Copy and send this to your delegates, and they will be able to:
+      Với link này, các đại biểu của bạn sẽ có thể:
 
       <VerboseShareCapabilities />
       
@@ -62,12 +62,11 @@ export function CommitteeShareHint(props: {
 export function ShareCapabilities() {
   return (
       <List bulleted>
-        <List.Item>Upload files</List.Item>
-        <List.Item>Add themselves to speakers' lists</List.Item>
-        <List.Item>Add and edit amendments on resolutions</List.Item>
-        <List.Item>Propose motions</List.Item>
-        <List.Item>Vote on motions</List.Item>
-        <List.Item>Vote on strawpolls</List.Item>
+        <List.Item>Tải lên file</List.Item>
+        <List.Item>Tự thêm bản thân vào danh sách phát biểu</List.Item>
+        <List.Item>Thêm và thay đổi các đề xuất chỉnh sửa dự thảo nghị quyết</List.Item>
+        <List.Item>Đề xuất kiến nghị</List.Item>
+        <List.Item>Biểu quyết kiến nghị</List.Item>
       </List>
   )
 }
@@ -75,12 +74,11 @@ export function ShareCapabilities() {
 export function VerboseShareCapabilities() {
   return (
       <List bulleted>
-        <List.Item>Upload files</List.Item>
-        <List.Item>Add themselves to speakers' lists that have the <i>Delegates can queue</i> flag enabled</List.Item>
-        <List.Item>Add and edit amendments on resolutions that have the <i>Delegates can amend</i> flag enabled</List.Item>
-        <List.Item>Propose motions that have the <i>Delegates can propose motions</i> flag enabled</List.Item>
-        <List.Item>Vote on motions that have the <i>Delegates can vote on motions</i> flag enabled</List.Item>
-        <List.Item>Vote on strawpolls</List.Item>
+        <List.Item>Tải lên file</List.Item>
+        <List.Item>Tự thêm bản thân vào danh sách phát biểu</List.Item>
+        <List.Item>Thêm và thay đổi các đề xuất chỉnh sửa dự thảo nghị quyết</List.Item>
+        <List.Item>Đề xuất kiến nghị</List.Item>
+        <List.Item>Biểu quyết kiến nghị</List.Item>
       </List>
   )
 }
@@ -124,7 +122,7 @@ export function MotionsShareHint(props: {
   return (
     <Segment>
       <Header size='small'>Here's the shareable link to {action}</Header>
-      <CopyableText value={url} />
+      <CopyableText value={url}/>
     </Segment>
   );
 }

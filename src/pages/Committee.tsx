@@ -159,9 +159,33 @@ interface ResponsiveContainerProps extends RouteComponentProps<URLParameters> {
 
 function ResponsiveNav(props: ResponsiveContainerProps) {
   const committeeID: CommitteeID = props.match.params.committeeID;
+  
+
 
   const makeMenuItem = (name: string, icon: SemanticICONS) => {
     const destination = `/committees/${committeeID}/${name.toLowerCase()}`;
+    let label;
+    if (name == "Setup")
+    {
+        label = "Thiết lập";
+    }
+    else if (name == "Motions")
+    {
+      label = "Kiến nghị";
+    }
+    else if (name == "Caucuses")
+    {
+      label = "Thảo luận";
+    }
+    else if (name == "Stats")
+    {
+      label = "Thống kê";
+    }
+    else if (name == "Unmod")
+    {
+      label = "Thảo luận mở";
+    }
+
 
     return (
       <Menu.Item
@@ -170,6 +194,7 @@ function ResponsiveNav(props: ResponsiveContainerProps) {
         active={props.location.pathname === destination}
         onClick={() => props.history.push(destination)}
         text={name}
+        content={label}
         // icon={icon}
       />
     );
@@ -270,26 +295,26 @@ function ResponsiveNav(props: ResponsiveContainerProps) {
         {makeMenuItem('Setup', 'users')}
         {makeMenuItem('Motions', 'sort numeric descending')}
         {makeMenuItem('Unmod', 'discussions')}
-        <Dropdown key="caucuses" item text="Caucuses" loading={!committee}>
+        <Dropdown key="caucuses" item text="Phiên thảo luận" loading={!committee}>
           <Dropdown.Menu>
-            {makeSubmenuButton('New caucus', 'add', pushCaucus)}
+            {makeSubmenuButton('Phiên thảo luận mới', 'add', pushCaucus)}
             {caucusItems}
           </Dropdown.Menu>
         </Dropdown>
-        <Dropdown key="resolutions" item text="Resolutions" loading={!committee}>
+        <Dropdown key="resolutions" item text="Nghị quyết" loading={!committee}>
           <Dropdown.Menu>
-            {makeSubmenuButton('New resolution', 'add', pushResolution)}
+            {makeSubmenuButton('Nghị quyết mới', 'add', pushResolution)}
             {resolutionItems}
           </Dropdown.Menu>
         </Dropdown>
-        <Dropdown key="strawpolls" item text="Strawpolls" loading={!committee}>
+        {/*<Dropdown key="strawpolls" item text="Biểu quyết" loading={!committee}>
           <Dropdown.Menu>
             {makeSubmenuButton('New strawpoll', 'add', pushStrawpoll)}
             {strawpollItems}
           </Dropdown.Menu>
-        </Dropdown>
-        {makeMenuItem('Notes', 'sticky note outline')}
-        {makeMenuItem('Posts', 'file outline')}
+        </Dropdown>*/}
+        {/*{makeMenuItem('Notes', 'sticky note outline')}
+        {makeMenuItem('Posts', 'file outline')}*/}
         {makeMenuItem('Stats', 'chart bar')}
         <Menu.Menu key="icon-submenu" position="right">
           {makeMenuIcon('Settings', 'settings')}
@@ -360,7 +385,7 @@ export default class Committee extends React.Component<Props, State> {
     return (
       <Container text style={{ padding: '1em 0em' }}>
         <Helmet>
-          <title>{`${committee?.name} - Muncoordinated`}</title>
+          <title>{`${committee?.name} - vi-Muncoordinated`}</title>
         </Helmet>
         <Header as="h1">
           <Input
@@ -368,35 +393,35 @@ export default class Committee extends React.Component<Props, State> {
             onChange={fieldHandler<CommitteeData>(committeeFref, 'name')}
             fluid
             error={committee ? !committee.name : false}
-            placeholder="Committee name"
+            placeholder="Tên hội đồng"
           />
         </Header>
         <List>
           <List.Item>
             <Input
-              label="Topic"
+              label="Chủ đề"
               value={committee ? committee.topic : ''}
               onChange={fieldHandler<CommitteeData>(committeeFref, 'topic')}
               fluid
               loading={!committee}
-              placeholder="Committee topic"
+              placeholder="Chủ đề hội đồng"
             />
           </List.Item>
           <List.Item>
             <Input
-              label="Conference"
+              label="Hội nghị"
               value={committee ? (committee.conference || '') : ''}
               onChange={fieldHandler<CommitteeData>(committeeFref, 'conference')}
               fluid
               loading={!committee}
-              placeholder="Conference name"
+              placeholder="Tên hội nghị"
             />
           </List.Item>
         </List>
         <CommitteeShareHint committeeID={this.props.match.params.committeeID} />
         <Segment textAlign="center" basic style={{padding: 0}}>
           <Button as="a" primary size="large" onClick={this.gotoSetup}>
-            Setup committee
+            Thiết lập hội đồng
             <Icon name="arrow right" />
           </Button>
         </Segment>

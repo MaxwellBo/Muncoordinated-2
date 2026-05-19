@@ -142,15 +142,15 @@ export const hasTextArea = (motionType: MotionType): boolean => {
 export const detailLabel = (motionType: MotionType): string => {
   switch (motionType) {
     case MotionType.OpenModeratedCaucus:
-      return 'Topic';
+      return 'Chủ đề';
     case MotionType.IntroduceDraftResolution:
-      return 'Name';
+      return 'Tên';
     case MotionType.IntroduceAmendment:
-      return 'Text';
+      return 'Nội dung';
     case MotionType.ProposeStrawpoll:
-      return 'Question';
+      return 'Vấn đề';
     case MotionType.AddWorkingPaper:
-      return "Task"
+      return "Công việc"
     default:
       return '';
   }
@@ -170,13 +170,33 @@ export const hasDuration = (motionType: MotionType): boolean => {
 export const showMotionType = (motionType: MotionType, time: string): string => {
   switch (motionType) {
     case MotionType.ExtendUnmoderatedCaucus:
-      return `Extend unmoderated caucus by ${time}`;
+      return `Kéo dài phiên thảo luận mở ${time}`;
     case MotionType.ExtendModeratedCaucus:
-      return `Extend moderated caucus by ${time}`;
+      return `Kéo dài phiên thảo luận kín ${time}`;
     case MotionType.OpenModeratedCaucus:
-      return `${time} moderated caucus`;
+      return `Phiên thảo luận kín dài ${time}`;
     case MotionType.OpenUnmoderatedCaucus:
-      return `${time} unmoderated caucus`;
+      return `Phiên thảo luận mở dài ${time}`;
+    case MotionType.CloseModeratedCaucus:
+      return `Đóng phiên thảo luận kín`;
+    case MotionType.IntroduceDraftResolution:
+      return `Giới thiệu dự thảo nghị quyết`;
+    case MotionType.IntroduceAmendment:
+      return `Giới thiệu chỉnh sửa dự thảo nghị quyết`;
+    case MotionType.VoteOnResolution:
+      return `Biểu quyết thông qua dự thảo nghị quyết`;
+    case MotionType.OpenDebate:
+      return `Mở phiên họp`;
+    case MotionType.SuspendDebate:
+      return `Tạm dừng phiên họp`;
+    case MotionType.ResumeDebate:
+      return `Tiếp tục phiên họp`;
+    case MotionType.CloseDebate:
+      return `Đóng phiên họp`;
+    case MotionType.ReorderDraftResolutions:
+      return `Sắp xếp lại trình tự dự thảo nghị quyết`
+    case MotionType.AddWorkingPaper:
+      return `Giới thiệu văn bản làm việc`;
     default:
       return sentenceCase(motionType ?? 'Unknown type');
   }

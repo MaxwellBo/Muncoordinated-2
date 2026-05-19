@@ -24,13 +24,8 @@ export enum Majority {
 }
 
 export const MAJORITY_OPTIONS: DropdownItemProps[] = [
-  {key: Majority.Simple, value: Majority.Simple, text: "Simple (50%) majority required"},
-  {key: Majority.TwoThirds, value: Majority.TwoThirds, text: "Two-thirds majority required"},
-  {
-    key: Majority.TwoThirdsNoAbstentions,
-    value: Majority.TwoThirdsNoAbstentions,
-    text: "Two-thirds majority required, ignoring abstentions"
-  },
+  {key: Majority.Simple, value: Majority.Simple, text: "Cần 50% đại biểu tán thành để thông qua (đa số quá bán)"},
+  {key: Majority.TwoThirds, value: Majority.TwoThirds, text: "Cần 2/3 đại biểu tán thành để thông qua (đa số 2/3)"},
 ]
 export type ResolutionID = string;
 
