@@ -35,10 +35,9 @@ describe('Run through creating a new committee', function () {
   })
 
   it('creates a new Security Council committee', function () {
-    cy.get('div')
-      .contains('Template to skip manual member creation (optional)')
+    cy.contains('div', 'Template to skip manual member creation (optional)')
       .type(TEMPLATE + '{enter}')
-      .contains(TEMPLATE)
+    cy.contains('div', TEMPLATE)
 
     cy.get('input[placeholder="Committee name"')
       .should('have.value', TEMPLATE)
