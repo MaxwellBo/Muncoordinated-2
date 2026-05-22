@@ -10,3 +10,78 @@
 .thirdwidth {
   width: 33%;
 }
+
+.homepage-hero.ui.segment {
+  min-height: 700px;
+  padding: 1em 0;
+}
+
+.homepage-hero-content.ui.text.container {
+  max-width: min(700px, 100%) !important;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.homepage-title.ui.header {
+  font-size: 4rem;
+  font-weight: normal;
+  margin-bottom: 0;
+  margin-top: 3em;
+  overflow-wrap: anywhere;
+}
+
+.homepage-subtitle.ui.header {
+  font-size: 1.7rem;
+  font-weight: normal;
+  margin-top: 1.5em;
+}
+
+.homepage-cta.ui.button {
+  margin-top: 1.5rem;
+}
+
+@media only screen and (max-width: 767px) {
+  .homepage-hero.ui.segment {
+    min-height: auto;
+    padding: 1rem 0 4rem;
+  }
+
+  .homepage-menu.ui.menu {
+    font-size: 0.95rem;
+  }
+
+  .homepage-menu.ui.menu .item {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+
+  .homepage-menu.ui.menu .right.item {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .homepage-menu.ui.menu .ui.button {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .homepage-hero-content.ui.text.container {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    width: 100% !important;
+  }
+
+  .homepage-title.ui.header {
+    font-size: clamp(2.4rem, 11vw, 3rem);
+    margin-top: 2.25rem;
+  }
+
+  .homepage-subtitle.ui.header {
+    font-size: clamp(1.3rem, 6vw, 1.55rem);
+    margin-top: 1.25rem;
+  }
+
+  .homepage-main.ui.segment {
+    padding: 2.5em 0 !important;
+  }
+}

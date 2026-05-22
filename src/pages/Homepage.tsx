@@ -17,45 +17,27 @@ import { logClickCreateACommitteeButton, logClickLogInButton, logClickSignupButt
 import Loading from '../components/Loading';
 import { ShareCapabilities } from '../components/share-hints';
 
-interface HomepageHeadingProps {
-  mobile: boolean;
-}
-
 const REPO_LINK = 'https://github.com/MaxwellBo/Muncoordinated-2';
 
 /* eslint-disable react/no-multi-comp */
-/* Heads up! HomepageHeading uses inline styling, however it's not the best practice. Use CSS or styled components for
- * such things.
- */
-const HomepageHeading = ({ mobile }: HomepageHeadingProps) => (
-  <Container text>
+const HomepageHeading = () => (
+  <Container text className="homepage-hero-content">
     <Header
       as="h1"
+      className="homepage-title"
       content="Muncoordinated"
       inverted
-      style={{
-        fontSize: mobile ? '2em' : '4em',
-        fontWeight: 'normal',
-        marginBottom: 0,
-        marginTop: mobile ? '1.5em' : '3em',
-      }}
     />
     <Header
       as="h2"
+      className="homepage-subtitle"
       content="The collaborative browser-based Model UN committee management app"
       inverted
-      style={{
-        fontSize: mobile ? '1.5em' : '1.7em',
-        fontWeight: 'normal',
-        marginTop: mobile ? '0.5em' : '1.5em',
-      }}
     />
-    <br />
-    <Button as="a" primary size="huge" href="/onboard" onClick={logClickCreateACommitteeButton}>
+    <Button as="a" className="homepage-cta" primary size="huge" href="/onboard" onClick={logClickCreateACommitteeButton}>
       Create a committee
       <Icon name="arrow right" />
     </Button>
-    <br />
   </Container>
 )
 
@@ -98,8 +80,9 @@ class DesktopContainer extends React.Component<DesktopContainerProps, DesktopCon
       <>
       {/* @ts-ignore */}
         <Visibility once={false} onBottomPassed={this.showFixedMenu} onBottomPassedReverse={this.hideFixedMenu}>
-          <Segment inverted textAlign="center" style={{ minHeight: 700, padding: '1em 0em' }} vertical>
+          <Segment inverted textAlign="center" className="homepage-hero" vertical>
             <Menu
+              className="homepage-menu"
               fixed={fixed ? 'top' : undefined}
               inverted={!fixed}
               pointing={!fixed}
@@ -118,7 +101,7 @@ class DesktopContainer extends React.Component<DesktopContainerProps, DesktopCon
                 </Menu.Item>
               </Container>
             </Menu>
-            <HomepageHeading mobile={false} />
+            <HomepageHeading />
           </Segment>
         </Visibility>
         {children}
@@ -231,7 +214,7 @@ export default class Homepage extends React.Component<{}, {
   render() {
     return (
       <ResponsiveContainer>
-        <Segment style={{ padding: '3em 0em' }} vertical>
+        <Segment className="homepage-main" style={{ padding: '3em 0em' }} vertical>
           <Grid container stackable verticalAlign="middle">
             <Grid.Row>
               <Grid.Column width={8}>
