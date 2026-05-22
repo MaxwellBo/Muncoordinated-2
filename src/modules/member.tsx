@@ -44,6 +44,14 @@ export function nameToFlagCode(name: string): FlagNames {
     return 'mk';
   }
 
+  if (name === 'South Sudan') {
+    return 'ss';
+  }
+
+  if (name === 'Timor-Leste') {
+    return 'tl';
+  }
+
   if (FLAG_NAME_SET.has(name)) {
     return name.toLowerCase() as FlagNames;
   } 
