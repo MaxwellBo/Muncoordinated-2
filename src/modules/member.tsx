@@ -45,7 +45,7 @@ export function nameToFlagCode(name: string): FlagNames {
   }
 
   if (name === 'South Sudan') {
-    return 'ss';
+    return 'fm';
   }
 
   if (name === 'Timor-Leste') {

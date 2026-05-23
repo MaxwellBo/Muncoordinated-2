@@ -172,9 +172,9 @@ export type FlagNames =
   'rwanda' | 'sa' | 'saudi arabia' | 'sb' | 'solomon islands' | 'sc' | 'seychelles' | 'gb sct' | 'scotland' | 'sd' |
   'sudan' | 'se' | 'sweden' | 'sg' | 'singapore' | 'sh' | 'saint helena' | 'si' | 'slovenia' | 'sj' | 'svalbard' |
   'jan mayen' | 'sk' | 'slovakia' | 'sl' | 'sierra leone' | 'sm' | 'san marino' | 'sn' | 'senegal' | 'so' |
-  'somalia' | 'sr' | 'suriname' | 'ss' | 'south sudan' | 'st' | 'sao tome' | 'sv' | 'el salvador' | 'sy' | 'syria' | 'sz' | 'swaziland' |
+  'somalia' | 'sr' | 'suriname' | 'st' | 'sao tome' | 'sv' | 'el salvador' | 'sy' | 'syria' | 'sz' | 'swaziland' |
   'tc' | 'caicos islands' | 'td' | 'chad' | 'tf' | 'french territories' | 'tg' | 'togo' | 'th' | 'thailand' | 'tj' |
-  'tajikistan' | 'tk' | 'tokelau' | 'tl' | 'timor-leste' | 'tm' | 'turkmenistan' | 'tn' | 'tunisia' | 'to' | 'tonga' |
+  'tajikistan' | 'tk' | 'tokelau' | 'tl' | 'timorleste' | 'tm' | 'turkmenistan' | 'tn' | 'tunisia' | 'to' | 'tonga' |
   'tr' | 'turkey' | 'tt' | 'trinidad' | 'tv' | 'tuvalu' | 'tw' | 'taiwan' | 'tz' | 'tanzania' | 'ua' | 'ukraine' |
   'ug' | 'uganda' | 'um' | 'us minor islands' | 'us' | 'america' | 'united states' | 'uy' | 'uruguay' | 'uz' |
   'uzbekistan' | 'va' | 'vatican city' | 'vc' | 'saint vincent' | 've' | 'venezuela' | 'vg' |
@@ -386,7 +386,7 @@ export const COUNTRY_OPTIONS = [
   {key: 'so', value: 'so', flag: 'so', text: 'Somalia'},
   {key: 'za', value: 'za', flag: 'za', text: 'South Africa'},
   {key: 'kr', value: 'kr', flag: 'kr', text: 'South Korea'},
-  {key: 'ss', value: 'ss', flag: 'ss', text: 'South Sudan'},
+  {key: 'ss', value: 'ss', flag: 'fm', text: 'South Sudan'},
   {key: 'es', value: 'es', flag: 'es', text: 'Spain'},
   {key: 'lk', value: 'lk', flag: 'lk', text: 'Sri Lanka'},
   {key: 'sd', value: 'sd', flag: 'sd', text: 'Sudan'},
