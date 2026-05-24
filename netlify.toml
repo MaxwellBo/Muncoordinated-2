@@ -1,0 +1,13 @@
+[build]
+  command = "yarn build"
+  publish = "build"
+
+[build.environment]
+  NODE_VERSION = "22"
+  CYPRESS_CACHE_FOLDER = "./node_modules/CypressBinary"
+
+# E2E runs in GitHub Actions; the UI-installed Cypress plugin should not block previews.
+[[context.deploy-preview.plugins]]
+  package = "netlify-plugin-cypress"
+  [context.deploy-preview.plugins.inputs]
+    enable = false
