@@ -385,7 +385,7 @@ export default class Committee extends React.Component<Props, State> {
           <List.Item>
             <Input
               label="Conference"
-              value={committee ? (committee.conference || '') : ''}
+              value={committee ? committee.conference : ''}
               onChange={fieldHandler<CommitteeData>(committeeFref, 'conference')}
               fluid
               loading={!committee}

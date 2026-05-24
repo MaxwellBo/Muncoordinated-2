@@ -512,7 +512,7 @@ function Queuer(props: {
           label="Delegates can queue"
           indeterminate={!caucus}
           toggle
-          checked={caucus ? (caucus.queueIsPublic || false) : false} // zoo wee mama
+          checked={caucus ? caucus.queueIsPublic : false}
           onChange={checkboxHandler<CaucusData>(caucusFref, 'queueIsPublic')}
         />
         <Button.Group size="large" fluid>
