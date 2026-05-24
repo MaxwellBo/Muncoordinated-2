@@ -361,7 +361,7 @@ export default class Homepage extends React.Component<{}, {
                   <p>Made with <span role="img" aria-label="love">💖</span> by <a href="https://github.com/MaxwellBo">Max Bo</a>, 
                   with assistance from the <a href="https://www.facebook.com/UQUNSA/">UQ United Nations Student Association</a>
                   </p>
-                  <p>Copyright © 2024</p>
+                  <p>Copyright © 2026</p>
                 </Grid.Column>
               </Grid.Row>
             </Grid>
