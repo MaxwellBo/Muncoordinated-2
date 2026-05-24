@@ -27,6 +27,18 @@ Open [http://localhost:5173](http://localhost:5173) to view it in the browser.
 The page will reload if you make edits.<br>
 You will also see any lint errors in the console.
 
+To run the app against the Firebase local emulator suite, start the emulators in
+one terminal and Vite with emulator wiring in another:
+
+```sh
+yarn emulators
+VITE_USE_FIREBASE_EMULATORS=true yarn start
+```
+
+These commands expect the Firebase CLI (`firebase`) to be available on your
+PATH through `yarn install` and Java 21 or newer to be installed. On macOS, the
+scripts automatically use a Homebrew OpenJDK 21 install when one is present.
+
 ## Tests
 
 
@@ -40,10 +52,12 @@ See the section about [running tests](https://vitest.dev/guide/workspace.html#ru
 ## Integration tests
 
 ```sh
-yarn cypress run
+yarn test:e2e
 ```
 
-Launches the integration test runner.<br>
+Launches the Firebase Auth, Realtime Database, and Storage emulators, starts the
+Vite dev server against them, seeds the Cypress test user and sandbox committee,
+and runs the integration test runner.<br>
 See the section about [The Test Runner](https://docs.cypress.io/guides/core-concepts/test-runner.html)
 
 ## Building

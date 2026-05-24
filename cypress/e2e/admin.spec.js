@@ -14,6 +14,17 @@ function clickAddMember() {
   cy.get(SELECT_MEMBER).should('have.class', 'error')
 }
 
+function removeExistingMembers() {
+  cy.get('body').then($body => {
+    if (!$body.find(REMOVE_MEMBER).length) {
+      return
+    }
+
+    cy.get(REMOVE_MEMBER).first().click()
+    removeExistingMembers()
+  })
+}
+
 describe('Add members and checks that the thresholds are sensible', function () {
   before(function () {
     purge()
@@ -31,7 +42,7 @@ describe('Add members and checks that the thresholds are sensible', function () 
   })
 
   it('removes all pre-existing members', function () {
-    cy.get(REMOVE_MEMBER).click({ multiple: true })
+    removeExistingMembers()
   })
 
   it('adds Afghanistan', function () {
