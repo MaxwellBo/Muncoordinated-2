@@ -43,8 +43,8 @@ export interface ResolutionData {
   caucus?: CaucusID;
   amendments?: Record<AmendmentID, AmendmentData>;
   votes?: Votes;
-  amendmentsArePublic?: boolean; // TODO: Migrate
-  requiredMajority?: Majority; // TODO: Migrate
+  amendmentsArePublic: boolean;
+  requiredMajority: Majority;
 }
 
 export enum Vote {

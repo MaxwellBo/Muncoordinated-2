@@ -93,7 +93,7 @@ export interface CommitteeData {
   name: string;
   chair: string;
   topic: string;
-  conference?: string; // TODO: Migrate
+  conference: string;
   template?: Template;
   creatorUid: firebase.UserInfo['uid'];
   members?: Record<MemberID, MemberData>;
