@@ -130,13 +130,37 @@ async function seedRealtimeDatabase({ projectId, databaseHost, ownerUid }) {
   });
 }
 
+async function clearStorageEmulator({ storageHost, projectId }) {
+  const bucket = `${projectId}.appspot.com`;
+
+  let list;
+  try {
+    list = await request(`http://${storageHost}/v0/b/${bucket}/o`);
+  } catch (error) {
+    // Bucket may not exist until the first upload.
+    return;
+  }
+
+  const items = list?.items ?? [];
+
+  await Promise.all(
+    items.map((item) =>
+      request(`http://${storageHost}/v0/b/${bucket}/o/${encodeURIComponent(item.name)}`, {
+        method: 'DELETE',
+      }),
+    ),
+  );
+}
+
 export async function seedFirebaseEmulators(config) {
   const projectId = config.env.firebaseProjectId;
   const authHost = config.env.firebaseAuthEmulatorHost;
   const databaseHost = config.env.firebaseDatabaseEmulatorHost;
+  const storageHost = config.env.firebaseStorageEmulatorHost;
 
   const ownerUid = await createTestUser({ projectId, authHost });
   await seedRealtimeDatabase({ projectId, databaseHost, ownerUid });
+  await clearStorageEmulator({ storageHost, projectId });
 }
 
 export function registerFirebaseEmulatorSeed(on, config) {
