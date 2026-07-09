@@ -8,6 +8,7 @@ on:
       - database.rules.json
       - storage.rules
       - firebase.json
+      - scripts/deploy-firebase-rules.mjs
       - .github/workflows/firebase-rules.yml
   workflow_dispatch:
 
