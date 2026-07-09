@@ -18,6 +18,10 @@
 .env.test.local
 .env.production.local
 
+# Firebase / Google Cloud service account keys
+*-firebase-adminsdk-*.json
+service-account*.json
+
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*

@@ -282,14 +282,29 @@ export default class Files extends React.Component<Props, State> {
 
   postFile = () => {
     const { handleSnapshot, handleError, handleComplete } = this;
-    const { file } = this.state;
+    const { file, committee } = this.state;
+    const user = firebase.auth().currentUser;
 
     const { committeeID } = this.props.match.params;
 
+    if (!committee?.creatorUid) {
+      this.setState({ errorCode: 'storage/unauthorized' });
+      return;
+    }
+
     const storageRef = firebase.storage().ref();
 
+    const customMetadata: Record<string, string> = {
+      committeeCreatorUid: committee.creatorUid,
+    };
+
+    if (user) {
+      customMetadata.owner = user.uid;
+    }
+
     const metadata = {
-      contentType: file.type
+      contentType: file.type,
+      customMetadata,
     };
 
     var uploadTask = storageRef

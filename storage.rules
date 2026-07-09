@@ -1,8 +1,60 @@
 rules_version = '2';
+
+// Storage cannot read Realtime Database, so ownership is enforced via
+// custom metadata stamped at upload time:
+//   owner                — Firebase Auth uid of the uploader (optional; when signed in)
+//   committeeCreatorUid  — committee.creatorUid (committee director)
 service firebase.storage {
   match /b/{bucket}/o {
-    match /{allPaths=**} {
-      allow read, write: if false;
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner() {
+      return isSignedIn()
+        && resource.metadata.owner == request.auth.uid;
+    }
+
+    function isCommitteeDirector() {
+      return isSignedIn()
+        && resource.metadata.committeeCreatorUid == request.auth.uid;
+    }
+
+    function canManage() {
+      return isOwner() || isCommitteeDirector();
+    }
+
+    function hasDirectorMetadata() {
+      return request.resource.metadata.keys().hasAll(['committeeCreatorUid'])
+        && request.resource.metadata.committeeCreatorUid is string
+        && request.resource.metadata.committeeCreatorUid.size() > 0;
+    }
+
+    // If an owner is claimed, it must match the signed-in user.
+    function ownerMetadataIsValid() {
+      return !('owner' in request.resource.metadata)
+        || (isSignedIn() && request.resource.metadata.owner == request.auth.uid);
+    }
+
+    function preservesOwnershipMetadata() {
+      return request.resource.metadata.committeeCreatorUid == resource.metadata.committeeCreatorUid
+        && (
+          (!('owner' in resource.metadata) && !('owner' in request.resource.metadata))
+          || request.resource.metadata.owner == resource.metadata.owner
+        );
+    }
+
+    match /committees/{committeeId}/{fileName} {
+      allow read: if true;
+
+      // Anyone can upload; director uid must be stamped for later deletes.
+      allow create: if hasDirectorMetadata() && ownerMetadataIsValid();
+
+      // Overwrite / metadata update: owner or committee director only.
+      allow update: if canManage() && preservesOwnershipMetadata();
+
+      // Delete: owner or committee director only.
+      allow delete: if canManage();
     }
   }
 }
