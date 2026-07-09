@@ -15,11 +15,14 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: yarn
+          cache: pnpm
 
       - name: Set up Java
         uses: actions/setup-java@v4
@@ -28,7 +31,7 @@ jobs:
           java-version: 21
 
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
       - name: Run Cypress against Firebase emulators
-        run: yarn test:e2e
+        run: pnpm test:e2e

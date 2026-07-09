@@ -18,7 +18,7 @@ This version of Muncoordinated began development at the end of 2017, ahead of Sy
 
 
 ```sh
-yarn && yarn start
+pnpm install && pnpm start
 ```
 
 Runs the app in the development mode.<br>
@@ -31,19 +31,19 @@ To run the app against the Firebase local emulator suite, start the emulators in
 one terminal and Vite with emulator wiring in another:
 
 ```sh
-yarn emulators
-VITE_USE_FIREBASE_EMULATORS=true yarn start
+pnpm emulators
+VITE_USE_FIREBASE_EMULATORS=true pnpm start
 ```
 
 These commands expect the Firebase CLI (`firebase`) to be available on your
-PATH through `yarn install` and Java 21 or newer to be installed. On macOS, the
+PATH through `pnpm install` and Java 21 or newer to be installed. On macOS, the
 scripts automatically use a Homebrew OpenJDK 21 install when one is present.
 
 ## Tests
 
 
 ```sh
-yarn test
+pnpm test
 ```
 
 Launches the test runner in the interactive watch mode.<br>
@@ -52,7 +52,7 @@ See the section about [running tests](https://vitest.dev/guide/workspace.html#ru
 ## Integration tests
 
 ```sh
-yarn test:e2e
+pnpm test:e2e
 ```
 
 Launches the Firebase Auth, Realtime Database, and Storage emulators, starts the
@@ -63,7 +63,7 @@ See the section about [The Test Runner](https://docs.cypress.io/guides/core-conc
 ## Building
 
 ```sh
-yarn build
+pnpm build
 ```
 
 Builds the app for production to the `build` folder.<br>
