@@ -21,7 +21,6 @@ import {
   putCaucus,
   putSpeaking, Stance
 } from '../models/caucus';
-import { DEFAULT_SPEAKER_TIME_SECONDS } from '../models/constants';
 import {
   CommitteeData,
   CommitteeID,
@@ -255,9 +254,7 @@ export class MotionsComponent extends React.Component<Props & Hooks, State> {
 
       // @ts-ignore Assert that this exists
       const caucus: CaucusData = committee.caucuses[caucusID];
-      const speakerSeconds = !caucus.speakerDuration || !caucus.speakerUnit ?
-        DEFAULT_SPEAKER_TIME_SECONDS
-        : getSeconds(caucus.speakerDuration, caucus.speakerUnit);
+      const speakerSeconds = getSeconds(caucus.speakerDuration, caucus.speakerUnit);
 
       putSpeaking(committeeID, caucusID, {
         who: proposer,

@@ -6,15 +6,11 @@ import {DEFAULT_TIMER, TimerData, Unit} from "./time";
 import {DEFAULT_SPEAKER_TIME_SECONDS, DEFAULT_CAUCUS_TIME_SECONDS} from "./constants";
 
 export function recoverUnit(caucus?: CaucusData): Unit {
-  return caucus ? (caucus.speakerUnit || Unit.Seconds) : Unit.Seconds;
+  return caucus ? caucus.speakerUnit : Unit.Seconds;
 }
 
 export function recoverDuration(caucus?: CaucusData): number | undefined {
-  return caucus
-      ? caucus.speakerDuration
-          ? caucus.speakerDuration
-          : undefined
-      : undefined;
+  return caucus?.speakerDuration;
 }
 
 export type CaucusID = string;
@@ -29,10 +25,10 @@ export interface CaucusData {
   topic: string;
   status: CaucusStatus;
   speakerTimer: TimerData;
-  speakerDuration?: number; // TODO: Migrate
-  speakerUnit?: Unit; // TODO: Migrate
+  speakerDuration: number;
+  speakerUnit: Unit;
   caucusTimer: TimerData;
-  queueIsPublic?: boolean; // TODO: Migrate
+  queueIsPublic: boolean;
   speaking?: SpeakerEvent;
   queue?: Record<string, SpeakerEvent>;
   history?: Record<string, SpeakerEvent>;

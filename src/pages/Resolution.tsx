@@ -411,7 +411,6 @@ export default class Resolution extends React.Component<Props, State> {
 
   renderMajoritySelector = (resolution?: ResolutionData) => {
     const resolutionFref = this.recoverResolutionFref();
-    const requiredMajority = resolution ? resolution.requiredMajority : undefined;
 
     return (
       <Dropdown
@@ -419,7 +418,7 @@ export default class Resolution extends React.Component<Props, State> {
         search
         options={MAJORITY_OPTIONS}
         onChange={dropdownHandler<ResolutionData>(resolutionFref, 'requiredMajority')}
-        value={requiredMajority || DEFAULT_RESOLUTION.requiredMajority}
+        value={resolution ? resolution.requiredMajority : DEFAULT_RESOLUTION.requiredMajority}
       />
     )
 
@@ -457,9 +456,9 @@ export default class Resolution extends React.Component<Props, State> {
     const againsts = votesByVoters.filter(v => v === Vote.Against).length;
     const remaining = sortedPresentAndCanVote.length - votesByVoters.length;
 
-    const requiredMajority: Majority = resolution 
-      ? (resolution.requiredMajority || DEFAULT_RESOLUTION.requiredMajority as Majority)
-      : DEFAULT_RESOLUTION.requiredMajority as Majority;
+    const requiredMajority = resolution
+      ? resolution.requiredMajority
+      : DEFAULT_RESOLUTION.requiredMajority;
 
     const threshold = getThreshold(requiredMajority, committee, fors, againsts);
     const thresholdName = getThresholdName(requiredMajority);
@@ -711,9 +710,7 @@ export default class Resolution extends React.Component<Props, State> {
   }
 
   amendmentsArePublic = (resolution?: ResolutionData): boolean => {
-    return resolution
-      ? resolution.amendmentsArePublic || false
-      : false;
+    return resolution ? resolution.amendmentsArePublic : false;
   }
 
   renderFeed = () => {
