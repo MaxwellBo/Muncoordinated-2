@@ -7,6 +7,7 @@ import createHistory from 'history/createBrowserHistory';
 import * as ReactGA from 'react-ga';
 import * as Sentry from "@sentry/react";
 import 'semantic-ui-css/semantic.min.css';
+import './index.css';
 
 ReactGA.initialize('UA-122177622-1');
 ReactGA.pageview(window.location.pathname + window.location.search);

@@ -9,3 +9,68 @@ body {
 body {
   font-family: sans-serif;
 }
+
+/* Semantic UI's flag sprite predates these current ISO 3166 codes. */
+i.flag.aq:not(.icon):before {
+  background-image: none;
+  content: '🇦🇶';
+}
+
+i.flag.bl:not(.icon):before {
+  background-image: none;
+  content: '🇧🇱';
+}
+
+i.flag.bq:not(.icon):before {
+  background-image: none;
+  content: '🇧🇶';
+}
+
+i.flag.cw:not(.icon):before {
+  background-image: none;
+  content: '🇨🇼';
+}
+
+i.flag.gg:not(.icon):before {
+  background-image: none;
+  content: '🇬🇬';
+}
+
+i.flag.im:not(.icon):before {
+  background-image: none;
+  content: '🇮🇲';
+}
+
+i.flag.je:not(.icon):before {
+  background-image: none;
+  content: '🇯🇪';
+}
+
+i.flag.mf:not(.icon):before {
+  background-image: none;
+  content: '🇲🇫';
+}
+
+i.flag.ss:not(.icon):before {
+  background-image: none;
+  content: '🇸🇸';
+}
+
+i.flag.sx:not(.icon):before {
+  background-image: none;
+  content: '🇸🇽';
+}
+
+i.flag.aq:not(.icon):before,
+i.flag.bl:not(.icon):before,
+i.flag.bq:not(.icon):before,
+i.flag.cw:not(.icon):before,
+i.flag.gg:not(.icon):before,
+i.flag.im:not(.icon):before,
+i.flag.je:not(.icon):before,
+i.flag.mf:not(.icon):before,
+i.flag.ss:not(.icon):before,
+i.flag.sx:not(.icon):before {
+  font-size: 14px;
+  line-height: 11px;
+}

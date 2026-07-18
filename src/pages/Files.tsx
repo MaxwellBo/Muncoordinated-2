@@ -15,7 +15,7 @@ import {
   Tab,
   TextAreaProps
 } from 'semantic-ui-react';
-import {MemberOption, nameToFlagCode} from '../modules/member';
+import {canonicalCountryName, MemberOption, nameToFlagCode} from '../modules/member';
 import Loading from '../components/Loading';
 import {DEFAULT_AMENDMENT, putAmendment, ResolutionID} from '../models/resolution';
 import {CommitteeData, CommitteeID, recoverMemberOptions} from "../models/committee";
@@ -581,7 +581,7 @@ export default class Files extends React.Component<Props, State> {
     return COUNTRY_OPTIONS
       .filter(x => filtered.includes(x.key))
       .map(x => x.text)
-      .includes(post.uploader)
+      .includes(canonicalCountryName(post.uploader))
   }
 
   isResolutionAssociated = (post: PostData) => {

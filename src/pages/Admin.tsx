@@ -4,6 +4,7 @@ import {
   MemberData,
   MemberID,
   Rank,
+  canonicalCountryName,
   nameToFlagCode,
   nameToMemberOption,
   MemberOption
@@ -103,10 +104,10 @@ export default class Admin extends React.Component<Props, State> {
   canPushMember = (member: MemberOption) => { 
     const members = this.props.committee.members || {};
     const memberNames = Object.keys(members).map(id => 
-      members[id].name
+      canonicalCountryName(members[id].name)
     );
 
-    return !_.includes(memberNames, member.text);
+    return !_.includes(memberNames, canonicalCountryName(member.text));
   }
 
   pushSelectedMember = (event: React.MouseEvent<HTMLButtonElement>, data: ButtonProps) => {

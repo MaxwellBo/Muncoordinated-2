@@ -1,4 +1,9 @@
-import {COUNTRY_OPTIONS, FlagNames} from '../constants';
+import {
+  COUNTRY_NAME_ALIASES,
+  COUNTRY_OPTIONS,
+  FlagNames,
+  LEGACY_COUNTRY_OPTIONS
+} from '../constants';
 import {objectToList} from "../utils";
 import * as _ from "lodash";
 
@@ -28,33 +33,32 @@ export interface MemberOption {
   text: string;
 }
 
+const COUNTRY_BY_CODE = new Map(
+  [...COUNTRY_OPTIONS, ...LEGACY_COUNTRY_OPTIONS].map(option => [option.value, option])
+);
+const COUNTRY_BY_NAME = new Map(
+  [...COUNTRY_OPTIONS, ...LEGACY_COUNTRY_OPTIONS].map(option => [option.text, option])
+);
+
+export function nameToCountryOption(name: string): MemberOption | undefined {
+  const exactMatch = COUNTRY_BY_NAME.get(name);
+  if (exactMatch) {
+    return exactMatch;
+  }
+
+  const aliasedCode = COUNTRY_NAME_ALIASES[name];
+  return aliasedCode ? COUNTRY_BY_CODE.get(aliasedCode) : undefined;
+}
+
+export function canonicalCountryName(name: string): string {
+  return nameToCountryOption(name)?.text ?? name;
+}
+
 export function nameToFlagCode(name: string): FlagNames {
-  // renamed 2016
-  if (name === 'Czechia') {
-    return 'cz';
+  const option = nameToCountryOption(name);
+  if (option) {
+    return option.flag as FlagNames;
   }
-
-  // renamed 2018
-  if (name === 'Eswatini') {
-    return 'sz';
-  }
-
-  // renamed 2019
-  if (name === 'North Macedonia') {
-    return 'mk';
-  }
-
-  if (name === 'South Sudan') {
-    return 'fm';
-  }
-
-  if (name === 'Timor-Leste') {
-    return 'tl';
-  }
-
-  if (FLAG_NAME_SET.has(name)) {
-    return name.toLowerCase() as FlagNames;
-  } 
 
   // Federated States of Micronesia looks kinda like the UN flag?
   return 'fm';
@@ -76,11 +80,6 @@ export function membersToPresentOptions(members: Record<MemberID, MemberData> | 
 }
 
 export function nameToMemberOption(name: string): MemberOption {
-  if (FLAG_NAME_SET.has(name)) {
-    return COUNTRY_OPTIONS.filter(c => c.text === name)[0];
-  } else {
-    return {key: name, value: name, flag: 'fm', text: name};
-  }
+  return nameToCountryOption(name)
+    ?? {key: name, value: name, flag: 'fm', text: name};
 }
-
-const FLAG_NAME_SET = new Set(COUNTRY_OPTIONS.map(x => x.text));

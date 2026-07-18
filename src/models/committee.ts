@@ -1,4 +1,12 @@
-import {MemberData, MemberID, MemberOption, membersToOptions, membersToPresentOptions, Rank} from '../modules/member';
+import {
+  canonicalCountryName,
+  MemberData,
+  MemberID,
+  MemberOption,
+  membersToOptions,
+  membersToPresentOptions,
+  Rank
+} from '../modules/member';
 import {logCreateMember} from '../modules/analytics';
 import _ from 'lodash';
 import {CaucusData, CaucusID, DEFAULT_CAUCUS} from "./caucus";
@@ -219,13 +227,13 @@ export const TEMPLATE_TO_MEMBERS: Record<Template, {
     {name: 'Burkina Faso'},
     {name: 'Burundi'},
     {name: 'Cameroon'},
-    {name: 'Cape Verde'},
+    {name: 'Cabo Verde'},
     {name: 'Central African Republic'},
     {name: 'Chad'},
     {name: 'Comoros'},
-    {name: 'Congo'},
-    {name: 'Congo Brazzaville'},
-    {name: 'Cote Divoire'},
+    {name: 'Democratic Republic of the Congo'},
+    {name: 'Republic of the Congo'},
+    {name: "Côte d'Ivoire"},
     {name: 'Djibouti'},
     {name: 'Egypt'},
     {name: 'Equatorial Guinea'},
@@ -252,7 +260,7 @@ export const TEMPLATE_TO_MEMBERS: Record<Template, {
     {name: 'Niger'},
     {name: 'Nigeria'},
     {name: 'Rwanda'},
-    {name: 'Sao Tome'},
+    {name: 'Sao Tome and Principe'},
     {name: 'Senegal'},
     {name: 'Seychelles'},
     {name: 'Sierra Leone'},
@@ -260,7 +268,7 @@ export const TEMPLATE_TO_MEMBERS: Record<Template, {
     {name: 'South Africa'},
     {name: 'South Sudan'},
     {name: 'Sudan'},
-    {name: 'Tanzania'},
+    {name: 'United Republic of Tanzania'},
     {name: 'Togo'},
     {name: 'Tunisia'},
     {name: 'Uganda'},
@@ -269,17 +277,17 @@ export const TEMPLATE_TO_MEMBERS: Record<Template, {
     {name: 'Zimbabwe'}
   ],
   'Association of Southeast Asian Nations': [
-    {name: 'Brunei'},
+    {name: 'Brunei Darussalam'},
     {name: 'Cambodia'},
     {name: 'Indonesia'},
-    {name: 'Laos'},
+    {name: "Lao People's Democratic Republic"},
     {name: 'Malaysia'},
     {name: 'Myanmar'},
     {name: 'Philippines'},
     {name: 'Singapore'},
     {name: 'Thailand'},
     {name: 'Timor-Leste'},
-    {name: 'Vietnam'}
+    {name: 'Viet Nam'}
   ],
   'BRICS': [
     {name: 'Brazil'},
@@ -288,8 +296,8 @@ export const TEMPLATE_TO_MEMBERS: Record<Template, {
     {name: 'Ethiopia'},
     {name: 'India'},
     {name: 'Indonesia'},
-    {name: 'Iran'},
-    {name: 'Russia'},
+    {name: 'Iran (Islamic Republic of)'},
+    {name: 'Russian Federation'},
     {name: 'Saudi Arabia'},
     {name: 'South Africa'},
     {name: 'United Arab Emirates'}
@@ -338,13 +346,13 @@ export const TEMPLATE_TO_MEMBERS: Record<Template, {
     {name: 'Italy'},
     {name: 'Japan'},
     {name: 'Mexico'},
-    {name: 'Russia'},
+    {name: 'Russian Federation'},
     {name: 'Saudi Arabia'},
     {name: 'South Africa'},
-    {name: 'South Korea'},
-    {name: 'Turkey'},
+    {name: 'Republic of Korea'},
+    {name: 'Türkiye'},
     {name: 'United Kingdom'},
-    {name: 'United States'},
+    {name: 'United States of America'},
   ],
   'North Atlantic Treaty Organization': [
     {name: 'Albania'},
@@ -377,14 +385,14 @@ export const TEMPLATE_TO_MEMBERS: Record<Template, {
     {name: 'Slovenia'},
     {name: 'Spain'},
     {name: 'Sweden'}, // since 2024
-    {name: 'Turkey'},
-    {name: 'United States'},
+    {name: 'Türkiye'},
+    {name: 'United States of America'},
   ],
   'UN Security Council': [
     {name: 'Bahrain'},
     {name: 'China', rank: Rank.Veto},
     {name: 'Colombia'},
-    {name: 'Congo'},
+    {name: 'Democratic Republic of the Congo'},
     {name: 'Denmark'},
     {name: 'France', rank: Rank.Veto},
     {name: 'Greece'},
@@ -392,10 +400,10 @@ export const TEMPLATE_TO_MEMBERS: Record<Template, {
     {name: 'Liberia'},
     {name: 'Pakistan'},
     {name: 'Panama'},
-    {name: 'Russia', rank: Rank.Veto},
+    {name: 'Russian Federation', rank: Rank.Veto},
     {name: 'Somalia'},
     {name: 'United Kingdom', rank: Rank.Veto},
-    {name: 'United States', rank: Rank.Veto},
+    {name: 'United States of America', rank: Rank.Veto},
   ],
 }
 export const pushTemplateMembers = (committeeID: CommitteeID, template: Template) => {
@@ -406,12 +414,12 @@ export const pushTemplateMembers = (committeeID: CommitteeID, template: Template
   ref.child('members').once('value', (snapshot) => {
     const members: Record<MemberID, MemberData> = snapshot.val() || {};
     const memberNames = Object.keys(members).map(id =>
-      members[id].name
+      canonicalCountryName(members[id].name)
     );
 
     [...TEMPLATE_TO_MEMBERS[template]]
       // Don't try and readd members that already exist
-      .filter(member => !_.includes(memberNames, member.name))
+      .filter(member => !_.includes(memberNames, canonicalCountryName(member.name)))
       .forEach(
         member =>
           pushMember(committeeID, {
