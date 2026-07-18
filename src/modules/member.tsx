@@ -6,6 +6,7 @@ import {
 } from '../constants';
 import {objectToList} from "../utils";
 import * as _ from "lodash";
+import type {DropdownItemProps} from 'semantic-ui-react';
 
 export enum Rank {
   Veto = 'Veto',
@@ -39,6 +40,13 @@ const COUNTRY_BY_CODE = new Map(
 const COUNTRY_BY_NAME = new Map(
   [...COUNTRY_OPTIONS, ...LEGACY_COUNTRY_OPTIONS].map(option => [option.text, option])
 );
+const COUNTRY_ALIASES_BY_CODE = Object.entries(COUNTRY_NAME_ALIASES)
+  .reduce((aliasesByCode, [alias, code]) => {
+    const aliases = aliasesByCode.get(code) ?? [];
+    aliases.push(alias);
+    aliasesByCode.set(code, aliases);
+    return aliasesByCode;
+  }, new Map<string, string[]>());
 
 export function nameToCountryOption(name: string): MemberOption | undefined {
   const exactMatch = COUNTRY_BY_NAME.get(name);
@@ -52,6 +60,25 @@ export function nameToCountryOption(name: string): MemberOption | undefined {
 
 export function canonicalCountryName(name: string): string {
   return nameToCountryOption(name)?.text ?? name;
+}
+
+export function searchCountryOptions(
+  options: DropdownItemProps[],
+  query: string
+): DropdownItemProps[] {
+  const normalizedQuery = _.deburr(query).toLowerCase();
+
+  return options.filter(option => {
+    const text = typeof option.text === 'string' ? option.text : '';
+    const country = nameToCountryOption(text)
+      ?? COUNTRY_BY_CODE.get(String(option.value));
+    const aliases = country
+      ? COUNTRY_ALIASES_BY_CODE.get(country.value) ?? []
+      : [];
+
+    return [text, ...aliases]
+      .some(term => _.deburr(term).toLowerCase().includes(normalizedQuery));
+  });
 }
 
 export function nameToFlagCode(name: string): FlagNames {

@@ -7,7 +7,8 @@ import {
   canonicalCountryName,
   nameToFlagCode,
   nameToMemberOption,
-  MemberOption
+  MemberOption,
+  searchCountryOptions
 } from '../modules/member';
 import { Dropdown, Flag, Table, Button, Checkbox,
   CheckboxProps, DropdownProps, ButtonProps, Container, Message, Icon, Grid } from 'semantic-ui-react';
@@ -178,7 +179,7 @@ export default class Admin extends React.Component<Props, State> {
             icon="search"
             className="adder__dropdown--select-member"
             placeholder="Select preset member"
-            search
+            search={searchCountryOptions}
             selection
             fluid
             allowAdditions

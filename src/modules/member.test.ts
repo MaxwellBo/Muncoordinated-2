@@ -8,7 +8,8 @@ import {
   canonicalCountryName,
   nameToCountryOption,
   nameToFlagCode,
-  nameToMemberOption
+  nameToMemberOption,
+  searchCountryOptions
 } from './member';
 
 describe('country options', () => {
@@ -64,5 +65,17 @@ describe('stored country name compatibility', () => {
 
   it('uses the current Serbian code for name-only database rows', () => {
     expect(nameToMemberOption('Serbia').value).toBe('rs');
+  });
+
+  it('finds canonical options by legacy names and unaccented text', () => {
+    expect(searchCountryOptions(COUNTRY_OPTIONS, 'Turkey')).toEqual([
+      nameToMemberOption('Türkiye'),
+    ]);
+    expect(searchCountryOptions(COUNTRY_OPTIONS, 'Turkiye')).toEqual([
+      nameToMemberOption('Türkiye'),
+    ]);
+    expect(searchCountryOptions(COUNTRY_OPTIONS, 'Cote dIvoire')).toEqual([
+      nameToMemberOption("Côte d'Ivoire"),
+    ]);
   });
 });
