@@ -1,15 +1,3 @@
-html,
-body {
-  margin: 0;
-  padding: 0;
-  max-width: 100%;
-  overflow-x: hidden;
-}
-
-body {
-  font-family: sans-serif;
-}
-
 /* Semantic UI's flag sprite predates these current ISO 3166 codes. */
 i.flag.aq:not(.icon):before {
   background-image: none;
@@ -72,5 +60,6 @@ i.flag.mf:not(.icon):before,
 i.flag.ss:not(.icon):before,
 i.flag.sx:not(.icon):before {
   font-size: 14px;
+  font-style: normal;
   line-height: 11px;
 }
